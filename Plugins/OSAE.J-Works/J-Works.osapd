@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>J-Works</plugin-name>
+<plugin-id>ef9bf28e-4724-4f10-8cd0-33f10c2ba145</plugin-id>
+<plugin-version>0.3.5</plugin-version>
+<plugin-state>beta</plugin-state>
+<short-description>Plug-in for J-Works JSB34x/JSB/38x/JSB39x series (http://www.j-works.com)</short-description>
+<author>Jim Kearney</author>
+<destination-folder>JWorks</destination-folder>
+<main-file>OSAE.JWorks.dll</main-file>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=J-Works</wiki-url>
+<additional-assemblies>
+<name>Jsb34x.dll</name>
+<name>Jsb383.dll</name>
+</additional-assemblies>
+</plugin-description>

@@ -1,0 +1,15 @@
+﻿<Window x:Class="GUI2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+    <Grid>
+        <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FFFFFFFE" Focusable="True" MouseDown="canvas1_MouseDown" MouseLeftButtonDown ="canvas1_RightButtonDown">
+            <Canvas.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add"/>
+                </ContextMenu>
+            </Canvas.ContextMenu>
+        </Canvas>
+        <Menu Height="23" HorizontalAlignment="Left" Margin="158,356,0,0" Name="menu1" VerticalAlignment="Top" Width="200" />
+    </Grid>
+</Window>

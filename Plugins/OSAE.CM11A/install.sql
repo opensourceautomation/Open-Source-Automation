@@ -1,0 +1,15 @@
+CALL osae_sp_object_type_add ('CM11A','X10 Plugin Class','','PLUGIN',1,0,0,1);
+CALL osae_sp_object_type_state_add ('ON','Running','CM11A');
+CALL osae_sp_object_type_state_add ('OFF','Stopped','CM11A');
+CALL osae_sp_object_type_event_add ('ON','Started','CM11A');
+CALL osae_sp_object_type_event_add ('OFF','Stopped','CM11A');
+CALL osae_sp_object_type_method_add ('ON','Start','CM11A','','','','');
+CALL osae_sp_object_type_method_add ('OFF','Stop','CM11A','','','','');
+CALL osae_sp_object_type_method_add ('CLEAR','Clear CM11A Memory','CM11A','','','','');
+CALL osae_sp_object_type_method_add ('RESET','Reset the CM11A','CM11A','','','','');
+CALL osae_sp_object_type_method_add ('SET POLL RATE','Set CM11a Poll Rate','CM11A','Rate in ms','','30000','');
+CALL osae_sp_object_type_method_add ('SET LEARNING MODE','Set Learning Mode','CM11A','TRUE/FALSE','','TRUE','');
+CALL osae_sp_object_type_property_add ('Port','Integer','','CM11A',0);
+CALL osae_sp_object_type_property_add ('Poll Rate','Integer','120','CM11A',0);
+CALL osae_sp_object_type_property_add ('Learning Mode','Boolean','TRUE','CM11A',0);
+CALL osae_sp_object_type_property_add ('System Plugin','Boolean','FALSE','CM11A',0);

@@ -1,0 +1,8 @@
+C:\Users\Brian\Development\Open Source Automation\output\AddIns\Onkyo\install.sql
+C:\Users\Brian\Development\Open Source Automation\output\AddIns\Onkyo\Screenshot.jpg
+C:\Users\Brian\Development\Open Source Automation\output\AddIns\Onkyo\Onkyo.osapd
+C:\Users\Brian\Development\Open Source Automation\Plugins\OSAE.Onkyo\OSAE.Onkyo\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Brian\Development\Open Source Automation\Plugins\OSAE.Onkyo\OSAE.Onkyo\obj\Debug\OSAE.Onkyo.dll
+C:\Users\Brian\Development\Open Source Automation\Plugins\OSAE.Onkyo\OSAE.Onkyo\obj\Debug\OSAE.Onkyo.pdb
+C:\Users\Brian\Development\Open Source Automation\output\AddIns\Onkyo\OSAE.Onkyo.dll
+C:\Users\Brian\Development\Open Source Automation\output\AddIns\Onkyo\OSAE.Onkyo.pdb

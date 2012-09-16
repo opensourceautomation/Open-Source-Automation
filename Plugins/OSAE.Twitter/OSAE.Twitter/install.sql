@@ -1,0 +1,13 @@
+CALL osae_sp_object_type_add ('TWITTER','Twitter Plugin','','PLUGIN',1,0,0,1);
+CALL osae_sp_object_type_state_add ('ON','Running','TWITTER');
+CALL osae_sp_object_type_state_add ('OFF','Stopped','TWITTER');
+CALL osae_sp_object_type_event_add ('ON','Started','TWITTER');
+CALL osae_sp_object_type_event_add ('OFF','Stopped','TWITTER');
+CALL osae_sp_object_type_method_add ('ON','Start','TWITTER','','','','');
+CALL osae_sp_object_type_method_add ('OFF','Stop','TWITTER','','','','');
+CALL osae_sp_object_type_method_add ('AUTHENTICATE','Authenticate','TWITTER','','','','');
+CALL osae_sp_object_type_method_add ('TWEET','Tweet','TWITTER','Text','','','');
+CALL osae_sp_object_type_property_add ('Token','String','','TWITTER',0);
+CALL osae_sp_object_type_property_add ('Token Secret','String','','TWITTER',0);
+CALL osae_sp_object_type_property_add ('Pin','String','','TWITTER',0);
+CALL osae_sp_object_type_property_add('Auth Token', 'String', '', 'TWITTER', 0);

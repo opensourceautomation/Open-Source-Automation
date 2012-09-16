@@ -1,0 +1,26 @@
+CALL osae_sp_object_type_add ('ONKYO','Onkyo Plugin','','PLUGIN',1,1,0,1);
+CALL osae_sp_object_type_state_add ('ON','Running','ONKYO');
+CALL osae_sp_object_type_state_add ('OFF','Stopped','ONKYO');
+CALL osae_sp_object_type_event_add ('ON','Started','ONKYO');
+CALL osae_sp_object_type_event_add ('OFF','Stopped','ONKYO');
+CALL osae_sp_object_type_method_add ('ON','Start','ONKYO','','','','');
+CALL osae_sp_object_type_method_add ('OFF','Stop','ONKYO','','','','');
+CALL osae_sp_object_type_method_add ('SCAN','Scan for Receivers','ONKYO','','','','');
+CALL osae_sp_object_type_property_add ('System Plugin','String','TRUE','ONKYO',0);
+
+CALL osae_sp_object_type_add ('ONKYO RECEIVER','Onkyo Receiver','','ONKYO RECEIVER',0,0,0,1);
+CALL osae_sp_object_type_state_add ('ON','On','ONKYO RECEIVER');
+CALL osae_sp_object_type_state_add ('OFF','Off','ONKYO RECEIVER');
+CALL osae_sp_object_type_event_add ('ON','On','ONKYO RECEIVER');
+CALL osae_sp_object_type_event_add ('OFF','Off','ONKYO RECEIVER');
+CALL osae_sp_object_type_method_add ('ON','On','ONKYO RECEIVER','','','','');
+CALL osae_sp_object_type_method_add ('OFF','Standby','ONKYO RECEIVER','','','','');
+CALL osae_sp_object_type_method_add ('MUTE','Mute','ONKYO RECEIVER','','','',''); 
+CALL osae_sp_object_type_method_add ('UNMUTE','Un-Mute','ONKYO RECEIVER','','','','');
+CALL osae_sp_object_type_method_add ('VOLUME UP','Turn Volume Up','ONKYO RECEIVER','','','','');
+CALL osae_sp_object_type_method_add ('VOLUME DOWN','Turn Volume Down','ONKYO RECEIVER','','','','');
+CALL osae_sp_object_type_method_add ('SET VOLUME','Set Volume','ONKYO RECEIVER','Level','','','');
+CALL osae_sp_object_type_property_add ('Communication Type','String','','ONKYO RECEIVER',0);
+CALL osae_sp_object_type_property_add ('Network Port','String','','ONKYO RECEIVER',0);
+CALL osae_sp_object_type_property_add ('IP','Integer','','ONKYO RECEIVER',0);
+CALL osae_sp_object_type_property_add ('COM Port','Integer','','ONKYO RECEIVER',0);

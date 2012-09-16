@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>Weather Plugin</plugin-name>
+<plugin-id>fb3a052d-587b-40f7-a553-ad7680157c25</plugin-id>
+<plugin-version>0.3.7</plugin-version>
+<plugin-state>alpha</plugin-state>
+<short-description>Get current conditions and furture forcasts</short-description>
+<author>Brian Woodworth</author>
+<destination-folder>Weather</destination-folder>
+<main-file>OSAE.Weather.dll</main-file>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=Weather</wiki-url>
+<additional-assemblies>
+</additional-assemblies>
+</plugin-description>

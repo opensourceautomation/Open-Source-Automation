@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.OneWire", "OSAE.OneWire.csproj", "{B12CD3CD-70EB-4150-A4C8-3CF70F63894C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B12CD3CD-70EB-4150-A4C8-3CF70F63894C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B12CD3CD-70EB-4150-A4C8-3CF70F63894C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B12CD3CD-70EB-4150-A4C8-3CF70F63894C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B12CD3CD-70EB-4150-A4C8-3CF70F63894C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

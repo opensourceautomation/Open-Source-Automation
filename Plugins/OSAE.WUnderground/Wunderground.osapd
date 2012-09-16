@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>WUnderground</plugin-name>
+<plugin-id>d0e7ca84-823e-4455-bd7b-3d4220487cae</plugin-id>
+<plugin-version>0.3.5</plugin-version>
+<plugin-state>alpha</plugin-state>
+<short-description>Get current conditions from Weather Underground</short-description>
+<author>Brian, Automate</author>
+<destination-folder>Wunderground</destination-folder>
+<main-file>WUnderground.dll</main-file>
+<wiki-url></wiki-url>
+<additional-assemblies>
+</additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
+</plugin-description>

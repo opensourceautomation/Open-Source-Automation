@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>Bluetooth</plugin-name>
+<plugin-id>6bf00c24-713c-4608-8033-355c29347480</plugin-id>
+<plugin-version>0.3.7</plugin-version>
+<plugin-state>alpha</plugin-state>
+<short-description>Detect when your bluetooth devices are within range.</short-description>
+<author>Brian Woodworth</author>
+<destination-folder>Bluetooth</destination-folder>
+<main-file>OSAE.Bluetooth.dll</main-file>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=Bluetooth</wiki-url>
+<additional-assemblies>
+<name>InTheHand.Net.Personal.dll</name>
+</additional-assemblies>
+</plugin-description>

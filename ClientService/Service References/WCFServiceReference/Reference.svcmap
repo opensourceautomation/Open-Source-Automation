@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="0a77011f-ac8f-4b87-8a81-a85bd958d8b0" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="net.tcp://192.168.1.141:8731/WCFService/mex" Protocol="mex" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="4e49e562-6fcd-4304-be21-5a7a1b2c3d39" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="cbaa9359-a582-4b5d-b972-6372ab550dd3" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="0994dd46-24ad-4591-8f6d-4a47cc4c52ce" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
+    <MetadataFile FileName="OSAE.xsd" MetadataType="Schema" ID="8f641b1c-502a-4eab-a4f3-eaffc61d55e4" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
+    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="b39c9ec8-245d-4ca6-bd90-486cccf9ec3d" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
+    <MetadataFile FileName="service2.xsd" MetadataType="Schema" ID="2e26f871-c0f5-4d44-ae2d-179ce490d826" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl">
+      <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
+      <xsd:complexType name="weatherParametersType">
+        <xsd:all>
+          <xsd:element name="maxt" type="xsd:boolean" />
+          <xsd:element name="mint" type="xsd:boolean" />
+          <xsd:element name="temp" type="xsd:boolean" />
+          <xsd:element name="dew" type="xsd:boolean" />
+          <xsd:element name="pop12" type="xsd:boolean" />
+          <xsd:element name="qpf" type="xsd:boolean" />
+          <xsd:element name="sky" type="xsd:boolean" />
+          <xsd:element name="snow" type="xsd:boolean" />
+          <xsd:element name="wspd" type="xsd:boolean" />
+          <xsd:element name="wdir" type="xsd:boolean" />
+          <xsd:element name="wx" type="xsd:boolean" />
+          <xsd:element name="waveh" type="xsd:boolean" />
+          <xsd:element name="icons" type="xsd:boolean" />
+          <xsd:element name="rh" type="xsd:boolean" />
+          <xsd:element name="appt" type="xsd:boolean" />
+          <xsd:element name="incw34" type="xsd:boolean" />
+          <xsd:element name="incw50" type="xsd:boolean" />
+          <xsd:element name="incw64" type="xsd:boolean" />
+          <xsd:element name="cumw34" type="xsd:boolean" />
+          <xsd:element name="cumw50" type="xsd:boolean" />
+          <xsd:element name="cumw64" type="xsd:boolean" />
+          <xsd:element name="critfireo" type="xsd:boolean" />
+          <xsd:element name="dryfireo" type="xsd:boolean" />
+          <xsd:element name="conhazo" type="xsd:boolean" />
+          <xsd:element name="ptornado" type="xsd:boolean" />
+          <xsd:element name="phail" type="xsd:boolean" />
+          <xsd:element name="ptstmwinds" type="xsd:boolean" />
+          <xsd:element name="pxtornado" type="xsd:boolean" />
+          <xsd:element name="pxhail" type="xsd:boolean" />
+          <xsd:element name="pxtstmwinds" type="xsd:boolean" />
+          <xsd:element name="ptotsvrtstm" type="xsd:boolean" />
+          <xsd:element name="pxtotsvrtstm" type="xsd:boolean" />
+          <xsd:element name="tmpabv14d" type="xsd:boolean" />
+          <xsd:element name="tmpblw14d" type="xsd:boolean" />
+          <xsd:element name="tmpabv30d" type="xsd:boolean" />
+          <xsd:element name="tmpblw30d" type="xsd:boolean" />
+          <xsd:element name="tmpabv90d" type="xsd:boolean" />
+          <xsd:element name="tmpblw90d" type="xsd:boolean" />
+          <xsd:element name="prcpabv14d" type="xsd:boolean" />
+          <xsd:element name="prcpblw14d" type="xsd:boolean" />
+          <xsd:element name="prcpabv30d" type="xsd:boolean" />
+          <xsd:element name="prcpblw30d" type="xsd:boolean" />
+          <xsd:element name="prcpabv90d" type="xsd:boolean" />
+          <xsd:element name="prcpblw90d" type="xsd:boolean" />
+          <xsd:element name="precipa_r" type="xsd:boolean" />
+          <xsd:element name="sky_r" type="xsd:boolean" />
+          <xsd:element name="temp_r" type="xsd:boolean" />
+          <xsd:element name="td_r" type="xsd:boolean" />
+          <xsd:element name="wdir_r" type="xsd:boolean" />
+          <xsd:element name="wspd_r" type="xsd:boolean" />
+          <xsd:element name="wwa" type="xsd:boolean" />
+          <xsd:element name="wgust" type="xsd:boolean" />
+        </xsd:all>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="NDFDgenRequest">
+    <wsdl:part name="latitude" type="xsd:decimal" />
+    <wsdl:part name="longitude" type="xsd:decimal" />
+    <wsdl:part name="product" type="xsd:string" />
+    <wsdl:part name="startTime" type="xsd:dateTime" />
+    <wsdl:part name="endTime" type="xsd:dateTime" />
+    <wsdl:part name="Unit" type="xsd:string" />
+    <wsdl:part name="weatherParameters" type="tns:weatherParametersType" />
+  </wsdl:message>
+  <wsdl:message name="NDFDgenResponse">
+    <wsdl:part name="dwmlOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="NDFDgenLatLonListRequest">
+    <wsdl:part name="listLatLon" type="xsd:string" />
+    <wsdl:part name="product" type="xsd:string" />
+    <wsdl:part name="startTime" type="xsd:dateTime" />
+    <wsdl:part name="endTime" type="xsd:dateTime" />
+    <wsdl:part name="Unit" type="xsd:string" />
+    <wsdl:part name="weatherParameters" type="tns:weatherParametersType" />
+  </wsdl:message>
+  <wsdl:message name="NDFDgenLatLonListResponse">
+    <wsdl:part name="dwmlOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListSubgridRequest">
+    <wsdl:part name="lowerLeftLatitude" type="xsd:decimal" />
+    <wsdl:part name="lowerLeftLongitude" type="xsd:decimal" />
+    <wsdl:part name="upperRightLatitude" type="xsd:decimal" />
+    <wsdl:part name="upperRightLongitude" type="xsd:decimal" />
+    <wsdl:part name="resolution" type="xsd:decimal" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListSubgridResponse">
+    <wsdl:part name="listLatLonOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListLineRequest">
+    <wsdl:part name="endPoint1Lat" type="xsd:decimal" />
+    <wsdl:part name="endPoint1Lon" type="xsd:decimal" />
+    <wsdl:part name="endPoint2Lat" type="xsd:decimal" />
+    <wsdl:part name="endPoint2Lon" type="xsd:decimal" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListLineResponse">
+    <wsdl:part name="listLatLonOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListZipCodeRequest">
+    <wsdl:part name="zipCodeList" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListZipCodeResponse">
+    <wsdl:part name="listLatLonOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListCityNamesRequest">
+    <wsdl:part name="displayLevel" type="xsd:integer" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListCityNamesResponse">
+    <wsdl:part name="listLatLonOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListSquareRequest">
+    <wsdl:part name="centerPointLat" type="xsd:decimal" />
+    <wsdl:part name="centerPointLon" type="xsd:decimal" />
+    <wsdl:part name="distanceLat" type="xsd:decimal" />
+    <wsdl:part name="distanceLon" type="xsd:decimal" />
+    <wsdl:part name="resolution" type="xsd:decimal" />
+  </wsdl:message>
+  <wsdl:message name="LatLonListSquareResponse">
+    <wsdl:part name="listLatLonOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="CornerPointsRequest">
+    <wsdl:part name="sector" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="CornerPointsResponse">
+    <wsdl:part name="listLatLonOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="GmlLatLonListRequest">
+    <wsdl:part name="listLatLon" type="xsd:string" />
+    <wsdl:part name="requestedTime" type="xsd:dateTime" />
+    <wsdl:part name="featureType" type="xsd:string" />
+    <wsdl:part name="weatherParameters" type="tns:weatherParametersType" />
+  </wsdl:message>
+  <wsdl:message name="GmlLatLonListResponse">
+    <wsdl:part name="dwGmlOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="GmlTimeSeriesRequest">
+    <wsdl:part name="listLatLon" type="xsd:string" />
+    <wsdl:part name="startTime" type="xsd:dateTime" />
+    <wsdl:part name="endTime" type="xsd:dateTime" />
+    <wsdl:part name="compType" type="xsd:string" />
+    <wsdl:part name="featureType" type="xsd:string" />
+    <wsdl:part name="propertyName" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="GmlTimeSeriesResponse">
+    <wsdl:part name="dwGmlOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="NDFDgenByDayRequest">
+    <wsdl:part name="latitude" type="xsd:decimal" />
+    <wsdl:part name="longitude" type="xsd:decimal" />
+    <wsdl:part name="startDate" type="xsd:date" />
+    <wsdl:part name="numDays" type="xsd:integer" />
+    <wsdl:part name="Unit" type="xsd:string" />
+    <wsdl:part name="format" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="NDFDgenByDayResponse">
+    <wsdl:part name="dwmlByDayOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="NDFDgenByDayLatLonListRequest">
+    <wsdl:part name="listLatLon" type="xsd:string" />
+    <wsdl:part name="startDate" type="xsd:date" />
+    <wsdl:part name="numDays" type="xsd:integer" />
+    <wsdl:part name="Unit" type="xsd:string" />
+    <wsdl:part name="format" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="NDFDgenByDayLatLonListResponse">
+    <wsdl:part name="dwmlByDayOut" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:portType name="ndfdXMLPortType">
+    <wsdl:operation name="NDFDgen">
+      <documentation>Returns National Weather Service digital weather forecast data.  Supports latitudes and longitudes for the Continental United States, Alaska, Hawaii, Guam, and Puerto Rico only. Allowable values for the input variable "product" are "time-series" and "glance". Allowable values for the input variable "Unit" are "e" for U.S. Standare/English units and "m" for Metric units. For both products, a start and end time (Local) are required.  For the time-series product, the input variable "weatherParameters" has array elements set to "true" to indicate which weather parameters are being requested.  If an array element is set to "false", data for that weather parameter are not to be returned.</documentation>
+      <wsdl:input message="tns:NDFDgenRequest" />
+      <wsdl:output message="tns:NDFDgenResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="NDFDgenLatLonList">
+      <documentation>Returns National Weather Service digital weather forecast data.  Supports latitudes and longitudes for the Continental United States, Alaska, Hawaii, Guam, and Puerto Rico only.  The latitude and longitude are delimited by a comma and multiple pairs are delimited by a space (i.e. 30.00,-77.00 40.00,-90.00). Allowable values for the input variable "product" are "time-series" and "glance". Allowable values for the input variable "Unit" are "e" for U.S. Standare/English units and "m" for Metric units. For both products, a start and end time (Local) are required. For both products, a start and end time (Local) are required.  For the time-series product, the input variable "weatherParameters" has array elements set to "true" to indicate which weather parameters are being requested.  If an array element is set to "false", data for that weather parameter are not to be returned.</documentation>
+      <wsdl:input message="tns:NDFDgenLatLonListRequest" />
+      <wsdl:output message="tns:NDFDgenLatLonListResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListSubgrid">
+      <documentation>Returns a list of Latitude and longitude pairs for a rectangle defined by its lower left and upper right points.  Provides points in a format suitable for use in calling multi-point functions NDFDgenLatLonList and NDFDgenByDayLatLonList.  Supports latitudes and longitudes for the Continental United States, Alaska, Hawaii, Guam, and Puerto Rico.</documentation>
+      <wsdl:input message="tns:LatLonListSubgridRequest" />
+      <wsdl:output message="tns:LatLonListSubgridResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListLine">
+      <documentation>Returns a list of latitude and longitude pairs along a line defined by two points.  Supports latitudes and longitudes for the Continental United States, Alaska, Hawaii, Guam, and Puerto Rico only.  Provides points in a format suitable for use in calling multi-point functions NDFDgenLatLonList and NDFDgenByDayLatLonList.</documentation>
+      <wsdl:input message="tns:LatLonListLineRequest" />
+      <wsdl:output message="tns:LatLonListLineResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListZipCode">
+      <documentation>Returns the latitude and longitude pairs corresponding to a list of one or more zip codes.  Supports zip codes for the Continental United States, Alaska, Hawaii, and Puerto Rico only. Provides points in a format suitable for use in calling multi-point functions NDFDgenLatLonList and NDFDgenByDayLatLonList.</documentation>
+      <wsdl:input message="tns:LatLonListZipCodeRequest" />
+      <wsdl:output message="tns:LatLonListZipCodeResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListCityNames">
+      <documentation>Returns the latitude and longitude pairs corresponding to a predefined list of US cities.  Provides points in a format suitable for use in calling multi-point functions NDFDgenLatLonList and NDFDgenByDayLatLonList.  The response also includes a list of city names with the order of the names matching the order of the corresponding point.</documentation>
+      <wsdl:input message="tns:LatLonListCityNamesRequest" />
+      <wsdl:output message="tns:LatLonListCityNamesResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListSquare">
+      <documentation>Returns a list of latitude and longitude pairs in a rectangle defined by a central point and distance from that point in the latitudinal and longitudinal directions.  Supports latitudes and longitudes for the Continental United States, Alaska, Hawaii, Guam, and Puerto Rico only.  Provides points in a format suitable for use in calling multi-point functions NDFDgenLatLonList and NDFDgenByDayLatLonList.</documentation>
+      <wsdl:input message="tns:LatLonListSquareRequest" />
+      <wsdl:output message="tns:LatLonListSquareResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="CornerPoints">
+      <documentation>Returns latitude and longitude pairs of the four corners of an NDFD grid.  Provides points in a format suitable for use in calling multi-point functions NDFDgenLatLonList and NDFDgenByDayLatLonList.  Supports latitudes and longitudes for the Continental United States, Hawaii, Guam, and Puerto Rico only.  Also provides a minimum resolution for requesting the grid.</documentation>
+      <wsdl:input message="tns:CornerPointsRequest" />
+      <wsdl:output message="tns:CornerPointsResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="GmlLatLonList">
+      <documentation>Returns National Weather Service digital weather forecast data encoded in GML.  Supports latitudes and longitudes for the Continental United States, Alaska, Hawaii, Guam, and Puerto Rico only.  The latitude and longitude are delimited by a comma and multiple pairs are delimited by a space (i.e. 30.00,-77.00 40.00,-90.00). Allowable values for the input variable "featureType" are "Forecast_Gml2Point", "Forecast_GmlObs", "NdfdMultiPointCoverage", "Ndfd_KmlPoint", and "Forecast_GmlsfPoint".  For all feature types a time (UTC) is required to indicate when data is requested.  The input variable "weatherParameters" has array elements set to "true" to indicate which weather parameters are being requested.  If an array element is set to "false", data for that weather parameter are not to be returned.</documentation>
+      <wsdl:input message="tns:GmlLatLonListRequest" />
+      <wsdl:output message="tns:GmlLatLonListResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="GmlTimeSeries">
+      <documentation>Returns National Weather Service digital weather forecast data encoded in GML.  Supports latitudes and longitudes for the Continental United States, Alaska, Hawaii, Guam, and Puerto Rico only.  The latitude and longitude are delimited by a comma and multiple pairs are delimited by a space (i.e. 30.00,-77.00 40.00,-90.00). Allowable values for the input variable "featureType" are "Forecast_Gml2Point", "Forecast_GmlObs", "NdfdMultiPointCoverage", "Ndfd_KmlPoint", and "Forecast_GmlsfPoint".  For all feature types a start and end time (UTC) is required to indicate when data is requested.  a comparison type (IsEqual, Between, GreaterThan, GreaterThan, GreaterThanEqualTo, LessThan, and  LessThanEqualTo). The input variable "propertyName" contains a comma delimited string of NDFD element to indicate which weather parameters are being requested.</documentation>
+      <wsdl:input message="tns:GmlTimeSeriesRequest" />
+      <wsdl:output message="tns:GmlTimeSeriesResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="NDFDgenByDay">
+      <documentation>Returns National Weather Service digital weather forecast data.  Supports latitudes and longitudes for the Continental United States, Hawaii, Guam, and Puerto Rico only.  Allowable values for the input variable "format" are "24 hourly" and "12 hourly".  The input variable "startDate" is a date string representing the first day (Local) of data to be returned. The input variable "numDays" is the integer number of days for which the user wants data. Allowable values for the input variable "Unit" are "e" for U.S. Standare/English units and "m" for Metric units.</documentation>
+      <wsdl:input message="tns:NDFDgenByDayRequest" />
+      <wsdl:output message="tns:NDFDgenByDayResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="NDFDgenByDayLatLonList">
+      <documentation>Returns National Weather Service digital weather forecast data.  Supports latitudes and longitudes for the Continental United States, Hawaii, Guam, and Puerto Rico only.  The latitude and longitude are delimited by a comma and multiple pairs are delimited by a space (i.e. 30.00,-77.00 40.00,-90.00). Allowable values for the input variable "format" are "24 hourly" and "12 hourly".  The input variable "startDate" is a date string representing the first day (Local) of data to be returned. The input variable "numDays" is the integer number of days for which the user wants data. Allowable values for the input variable "Unit" are "e" for U.S. Standare/English units and "m" for Metric units.</documentation>
+      <wsdl:input message="tns:NDFDgenByDayLatLonListRequest" />
+      <wsdl:output message="tns:NDFDgenByDayLatLonListResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ndfdXMLBinding" type="tns:ndfdXMLPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <wsdl:operation name="NDFDgen">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#NDFDgen" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NDFDgenLatLonList">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#NDFDgenLatLonList" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListSubgrid">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#LatLonListSubgrid" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListLine">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#LatLonListLine" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListZipCode">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#LatLonListZipCode" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListCityNames">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#LatLonListCityNames" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LatLonListSquare">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#LatLonListSquare" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CornerPoints">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#CornerPoints" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GmlLatLonList">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#GmlLatLonList" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GmlTimeSeries">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#GmlTimeSeries" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NDFDgenByDay">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#NDFDgenByDay" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NDFDgenByDayLatLonList">
+      <soap:operation soapAction="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#NDFDgenByDayLatLonList" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ndfdXML">
+    <wsdl:port name="ndfdXMLPort" binding="tns:ndfdXMLBinding">
+      <soap:address location="http://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

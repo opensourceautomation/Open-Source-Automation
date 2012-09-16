@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>AprilaireThermostat</plugin-name>
+<plugin-id>9f0f3f5b-2056-4123-a2c7-c22050279000</plugin-id>
+<plugin-version>0.3.1</plugin-version>
+<plugin-state>alpha</plugin-state>
+<short-description>Aprilaire Thermostat</short-description>
+<author>Automate</author>
+<destination-folder>AprilaireThermostat</destination-folder>
+<main-file>OSAE.AprilaireThermostat.dll</main-file>
+<wiki-url></wiki-url>
+<additional-assemblies>
+</additional-assemblies>
+</plugin-description>

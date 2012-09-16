@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>RFXCOM</plugin-name>
+<plugin-id>e9c99fff-1da0-4e02-b116-c12a35445df1</plugin-id>
+<plugin-version>0.2.3</plugin-version>
+<plugin-state>alpha</plugin-state>
+<short-description>Plugin to support RFXCOM tranceivers</short-description>
+<author>Brian</author>
+<destination-folder>RFXCOM</destination-folder>
+<main-file>OSAE.RFXCOM.dll</main-file>
+<wiki-url></wiki-url>
+<additional-assemblies>
+</additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
+</plugin-description>

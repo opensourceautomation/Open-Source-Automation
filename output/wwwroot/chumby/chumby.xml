@@ -1,0 +1,167 @@
+<?xml version="1.0"?> 
+<!-- actionRoot specifies the base URL for your actions.  the action specified below 
+for each button is appended onto the actionRoot to get the full URL for the 
+command to be issued 
+ie: <actionRoot>&<action> 
+http://192.168.1.2/chumby.php&device=SinkLight&state=1&type=light
+the rest of the xml should be self-explanatory
+button specifies the buttons
+label specifies plain text
+and status specifies graphics that represent on/off 
+-->
+<panel>
+  <actionRoot>http://10.0.1.4/runMethod.php</actionRoot>
+  <title id="Test Panel"> 
+   <button type="rectangle">
+      <btncolor>0x0000ff</btncolor> 
+      <btnborder>0xffffff</btnborder> 
+      <labelsize>17</labelsize> 
+      <btnwidth>60</btnwidth> 
+      <btnheight>30</btnheight> 
+      <btnx>250</btnx> 
+      <btny>35</btny> 
+      <label>Test</label> 
+      <labelx>125</labelx> 
+      <labely>30</labely> 
+      <labeloffsetx>0</labeloffsetx>
+      <labeloffsety>0</labeloffsety>
+      <action>oid=1101&mid=96</action> 
+    </button> 
+   <button type="rectangle">
+      <btncolor>0x00ff00</btncolor> 
+      <btnborder>0x0000cc</btnborder> 
+      <labelsize>17</labelsize> 
+      <btnwidth>90</btnwidth> 
+      <btnheight>30</btnheight> 
+      <btnx>350</btnx> 
+      <btny>100</btny> 
+      <label>Test2</label> 
+      <labelx>125</labelx> 
+      <labely>30</labely> 
+      <labeloffsetx>0</labeloffsetx>
+      <labeloffsety>0</labeloffsety>
+      <action>device=SinkLight&state=0&type=light</action> 
+    </button> 
+   <button type="rectangle">
+      <btncolor>0x0000ff</btncolor> 
+      <btnborder>0xff0000</btnborder> 
+      <labelsize>17</labelsize> 
+      <btnwidth>120</btnwidth> 
+      <btnheight>50</btnheight> 
+      <btnx>250</btnx> 
+      <btny>350</btny> 
+      <label>Test3</label> 
+      <labelcolor>0xddff04</labelcolor> 
+      <labelx>125</labelx> 
+      <labely>30</labely> 
+      <labeloffsetx>0</labeloffsetx>
+      <labeloffsety>0</labeloffsety>
+      <action>device=NookLight&state=0&type=light</action> 
+    </button> 
+   <button type="circle">
+      <btncolor>0xdddddd</btncolor> 
+      <btnborder>0x0000ff</btnborder> 
+      <labelsize>15</labelsize> 
+      <btnradius>20</btnradius> 
+      <btnx>25</btnx> 
+      <btny>350</btny> 
+      <label>OK</label> 
+      <labelcolor>0x000000</labelcolor> 
+      <labelx>125</labelx> 
+      <labely>30</labely> 
+      <labeloffsetx>-5</labeloffsetx>
+      <labeloffsety>0</labeloffsety>
+      <action>device=NookLight&state=1&type=light</action> 
+    </button> 
+   <button type="ellipse">
+      <btncolor>0x00dd55</btncolor> 
+      <btnborder>0x2255ff</btnborder> 
+      <labelsize>17</labelsize> 
+      <btnwidth>40</btnwidth> 
+      <btnheight>20</btnheight> 
+      <btnx>55</btnx> 
+      <btny>50</btny> 
+      <label>OK</label> 
+      <labelcolor>0xffffff</labelcolor> 
+      <labelx>125</labelx> 
+      <labely>30</labely> 
+      <labeloffsetx>5</labeloffsetx>
+      <labeloffsety>-2</labeloffsety>
+      <action>device=KitchenLight&state=1&type=light</action> 
+    </button> 
+   <button type="tri">
+      <btncolor>0xaaaaaa</btncolor> 
+      <btnborder>0x00ffff</btnborder> 
+      <btntype>up</btntype> 
+      <labelsize>17</labelsize> 
+      <btnwidth>40</btnwidth> 
+      <btnheight>40</btnheight> 
+      <btnx>705</btnx> 
+      <btny>350</btny> 
+      <action>device=KitchenLight&state=0&type=light</action> 
+    </button> 
+   <button type="tri">
+      <btncolor>0xaffaaa</btncolor> 
+      <btnborder>0x00ffff</btnborder> 
+      <btntype>down</btntype> 
+      <labelsize>17</labelsize> 
+      <btnwidth>40</btnwidth> 
+      <btnheight>50</btnheight> 
+      <btnx>755</btnx> 
+      <btny>350</btny> 
+      <action>device=EntryLight&state=0&type=light</action> 
+    </button> 
+   <button type="tri">
+      <btncolor>0x993311</btncolor> 
+      <btnborder>0xffffff</btnborder> 
+      <btntype>left</btntype> 
+      <btnwidth>40</btnwidth> 
+      <btnheight>20</btnheight> 
+      <btnx>650</btnx> 
+      <btny>300</btny> 
+      <action>device=EntryLight&state=1&type=light</action> 
+    </button> 
+   <button type="tri">
+      <btncolor>0x118899</btncolor> 
+      <btnborder>0xffffff</btnborder> 
+      <btntype>right</btntype> 
+      <btnwidth>40</btnwidth> 
+      <btnheight>20</btnheight> 
+      <btnx>620</btnx> 
+      <btny>300</btny> 
+      <action>device=PorchLight&state=1&type=light</action> 
+    </button> 
+    <label id="Test Label">
+      <labelx>1</labelx> 
+      <labely>550</labely> 
+      <labelsize>50</labelsize> 
+      <labelcolor>0xffffff</labelcolor> 
+    </label>
+    <label id="another label">
+      <labelx>400</labelx> 
+      <labely>250</labely> 
+      <labelsize>30</labelsize> 
+      <labelcolor>0x225599</labelcolor> 
+    </label>
+    <label id="on/off status ">
+      <labelx>40</labelx> 
+      <labely>235</labely> 
+      <labelsize>20</labelsize> 
+      <labelcolor>0x881180</labelcolor> 
+    </label>
+    <status id="blah blah">
+      <statusx>20</statusx> 
+      <statusy>250</statusy> 
+      <statusradius>10</statusradius> 
+      <statuscolor>0x00ff00</statuscolor> 
+      <statusborder>0xddaa66</statusborder> 
+    </status>
+    <status id="blah blah 2">
+      <statusx>190</statusx> 
+      <statusy>250</statusy> 
+      <statusradius>10</statusradius> 
+      <statuscolor>0xff0000</statuscolor> 
+      <statusborder>0xddaa66</statusborder> 
+    </status>
+  </title>
+</panel>

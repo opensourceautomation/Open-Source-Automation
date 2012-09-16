@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="WCFService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="WSDualHttpBinding_IWCFService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <wsrm:RMAssertion xmlns:wsrm="http://schemas.xmlsoap.org/ws/2005/02/rm/policy">
+          <wsrm:InactivityTimeout Milliseconds="600000" />
+          <wsrm:AcknowledgementInterval Milliseconds="200" />
+        </wsrm:RMAssertion>
+        <cdp:CompositeDuplex xmlns:cdp="http://schemas.microsoft.com/net/2006/06/duplex" />
+        <ow:OneWay xmlns:ow="http://schemas.microsoft.com/ws/2005/05/routing/policy" />
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://localhost:8731/Design_Time_Addresses/WCF/WCFService/?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:8731/Design_Time_Addresses/WCF/WCFService/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:8731/Design_Time_Addresses/WCF/WCFService/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/OSAE" />
+      <xsd:import schemaLocation="http://localhost:8731/Design_Time_Addresses/WCF/WCFService/?xsd=xsd3" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IWCFService_SendMessageToClients_InputMessage">
+    <wsdl:part name="parameters" element="tns:SendMessageToClients" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_SendMessageToClients_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SendMessageToClientsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_Subscribe_InputMessage">
+    <wsdl:part name="parameters" element="tns:Subscribe" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_Subscribe_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SubscribeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_Unsubscribe_InputMessage">
+    <wsdl:part name="parameters" element="tns:Unsubscribe" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_Unsubscribe_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UnsubscribeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_messageHost_InputMessage">
+    <wsdl:part name="parameters" element="tns:messageHost" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_messageHost_OutputMessage">
+    <wsdl:part name="parameters" element="tns:messageHostResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetAllObjects_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllObjects" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetAllObjects_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllObjectsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObject_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObject" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObjectByAddress_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectByAddress" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObjectByAddress_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectByAddressResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_ExecuteMethod_InputMessage">
+    <wsdl:part name="parameters" element="tns:ExecuteMethod" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_ExecuteMethod_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ExecuteMethodResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_AddObject_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddObject" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_AddObject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddObjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_UpdateObject_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateObject" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_UpdateObject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateObjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_DeleteObject_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteObject" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_DeleteObject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteObjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObjectsByType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByType" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObjectsByType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByTypeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObjectsByBaseType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByBaseType" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObjectsByBaseType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByBaseTypeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObjectsByContainer_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByContainer" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetObjectsByContainer_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByContainerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetPlugins_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPlugins" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_GetPlugins_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPluginsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_SendPattern_InputMessage">
+    <wsdl:part name="parameters" element="tns:SendPattern" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_SendPattern_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SendPatternResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_AddScript_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddScript" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_AddScript_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddScriptResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_UpdateScript_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateScript" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_UpdateScript_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateScriptResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_ExecuteSQL_InputMessage">
+    <wsdl:part name="parameters" element="tns:ExecuteSQL" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_ExecuteSQL_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ExecuteSQLResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_SetProperty_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetProperty" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_SetProperty_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetPropertyResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_SetState_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetState" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_SetState_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetStateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFService_OnMessageReceived_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OnMessageReceived" />
+  </wsdl:message>
+  <wsdl:portType name="IWCFService">
+    <wsdl:operation name="SendMessageToClients">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/SendMessageToClients" message="tns:IWCFService_SendMessageToClients_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/SendMessageToClientsResponse" message="tns:IWCFService_SendMessageToClients_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Subscribe">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/Subscribe" message="tns:IWCFService_Subscribe_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/SubscribeResponse" message="tns:IWCFService_Subscribe_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Unsubscribe">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/Unsubscribe" message="tns:IWCFService_Unsubscribe_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/UnsubscribeResponse" message="tns:IWCFService_Unsubscribe_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="messageHost">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/messageHost" message="tns:IWCFService_messageHost_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/messageHostResponse" message="tns:IWCFService_messageHost_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllObjects">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/GetAllObjects" message="tns:IWCFService_GetAllObjects_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/GetAllObjectsResponse" message="tns:IWCFService_GetAllObjects_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetObject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/GetObject" message="tns:IWCFService_GetObject_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/GetObjectResponse" message="tns:IWCFService_GetObject_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectByAddress">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/GetObjectByAddress" message="tns:IWCFService_GetObjectByAddress_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/GetObjectByAddressResponse" message="tns:IWCFService_GetObjectByAddress_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ExecuteMethod">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/ExecuteMethod" message="tns:IWCFService_ExecuteMethod_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/ExecuteMethodResponse" message="tns:IWCFService_ExecuteMethod_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddObject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/AddObject" message="tns:IWCFService_AddObject_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/AddObjectResponse" message="tns:IWCFService_AddObject_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateObject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/UpdateObject" message="tns:IWCFService_UpdateObject_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/UpdateObjectResponse" message="tns:IWCFService_UpdateObject_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteObject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/DeleteObject" message="tns:IWCFService_DeleteObject_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/DeleteObjectResponse" message="tns:IWCFService_DeleteObject_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByType">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/GetObjectsByType" message="tns:IWCFService_GetObjectsByType_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/GetObjectsByTypeResponse" message="tns:IWCFService_GetObjectsByType_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByBaseType">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/GetObjectsByBaseType" message="tns:IWCFService_GetObjectsByBaseType_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/GetObjectsByBaseTypeResponse" message="tns:IWCFService_GetObjectsByBaseType_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByContainer">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/GetObjectsByContainer" message="tns:IWCFService_GetObjectsByContainer_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/GetObjectsByContainerResponse" message="tns:IWCFService_GetObjectsByContainer_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPlugins">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/GetPlugins" message="tns:IWCFService_GetPlugins_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/GetPluginsResponse" message="tns:IWCFService_GetPlugins_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendPattern">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/SendPattern" message="tns:IWCFService_SendPattern_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/SendPatternResponse" message="tns:IWCFService_SendPattern_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddScript">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/AddScript" message="tns:IWCFService_AddScript_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/AddScriptResponse" message="tns:IWCFService_AddScript_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateScript">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/UpdateScript" message="tns:IWCFService_UpdateScript_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/UpdateScriptResponse" message="tns:IWCFService_UpdateScript_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ExecuteSQL">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/ExecuteSQL" message="tns:IWCFService_ExecuteSQL_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/ExecuteSQLResponse" message="tns:IWCFService_ExecuteSQL_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetProperty">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/SetProperty" message="tns:IWCFService_SetProperty_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/SetPropertyResponse" message="tns:IWCFService_SetProperty_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetState">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/SetState" message="tns:IWCFService_SetState_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/SetStateResponse" message="tns:IWCFService_SetState_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OnMessageReceived">
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/OnMessageReceived" message="tns:IWCFService_OnMessageReceived_OutputCallbackMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WSDualHttpBinding_IWCFService" type="tns:IWCFService">
+    <wsp:PolicyReference URI="#WSDualHttpBinding_IWCFService_policy" />
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendMessageToClients">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/SendMessageToClients" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Subscribe">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/Subscribe" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Unsubscribe">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/Unsubscribe" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="messageHost">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/messageHost" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllObjects">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/GetAllObjects" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObject">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/GetObject" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectByAddress">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/GetObjectByAddress" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ExecuteMethod">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/ExecuteMethod" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddObject">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/AddObject" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateObject">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/UpdateObject" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteObject">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/DeleteObject" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByType">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/GetObjectsByType" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByBaseType">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/GetObjectsByBaseType" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByContainer">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/GetObjectsByContainer" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPlugins">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/GetPlugins" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendPattern">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/SendPattern" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddScript">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/AddScript" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateScript">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/UpdateScript" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ExecuteSQL">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/ExecuteSQL" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetProperty">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/SetProperty" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetState">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/SetState" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OnMessageReceived">
+      <soap12:operation soapAction="http://tempuri.org/IWCFService/OnMessageReceived" style="document" />
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WCFService">
+    <wsdl:port name="WSDualHttpBinding_IWCFService" binding="tns:WSDualHttpBinding_IWCFService">
+      <soap12:address location="http://localhost:8731/Design_Time_Addresses/WCF/WCFService/" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>http://localhost:8731/Design_Time_Addresses/WCF/WCFService/</wsa10:Address>
+        <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+          <Dns>localhost</Dns>
+        </Identity>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
