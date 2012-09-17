@@ -1,4 +1,4 @@
-GitHub Markup
+Open Source Automation
 =============
 
 Open Source Automation has been created with the sole purpose to make home automation available to everyone. Currently there are many home automation programs on the market, but they are all very expensive. This makes it difficult for the average user to set up a professional home automation system without taking out a second mortgage. On top of the cost, these programs are very restrictive. Users are forced to use only the hardware that is supported and without an open extendable architecture they are at the mercy of the software company to develop new interfaces.
