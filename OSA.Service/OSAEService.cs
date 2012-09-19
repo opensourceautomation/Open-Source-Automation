@@ -1,26 +1,20 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.ServiceProcess;
-using System.Net.Sockets;
-using System.Threading;
-using System.Net;
-using System.Text; 
-using System.IO;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Timers;
-using MySql.Data.MySqlClient;
-using System.Data;
-using Microsoft.Win32;
-using System.Xml;
-using OpenSourceAutomation;
 using System.AddIn.Hosting;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Web;
-using System.Text.RegularExpressions;
+using System.ServiceProcess;
+using System.Threading;
+using System.Timers;
 using System.Xml.Linq;
-using System.Linq;
+using MySql.Data.MySqlClient;
+using OpenSourceAutomation;
 
 namespace OSAE.Service
 {
@@ -474,6 +468,7 @@ namespace OSAE.Service
                         else
                         {
                             //add code to create the object.  We need the plugin to specify the type though
+                            
                             MySqlDataAdapter adapter;
                             DataSet dataset = new DataSet();
                             MySqlCommand command = new MySqlCommand();

@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.IO;
-using System.Data;
-using System.Threading;
-using OpenSourceAutomation;
 using System.AddIn.Hosting;
+using System.Reflection;
+using OpenSourceAutomation;
 
 namespace OSAE.Service
 {

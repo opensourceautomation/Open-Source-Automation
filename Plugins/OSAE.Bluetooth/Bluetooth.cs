@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using InTheHand.Net;
-using InTheHand.Net.Sockets;
-using InTheHand.Net.Bluetooth;
-using InTheHand.Net.Bluetooth.AttributeIds;
-using System.Timers;
-using System.Threading;
-using System.Data;
 using System.AddIn;
+using System.Collections.Generic;
+using System.Threading;
+using System.Timers;
+using InTheHand.Net;
+using InTheHand.Net.Bluetooth;
+using InTheHand.Net.Sockets;
 using OpenSourceAutomation;
 
 namespace OSAE.Bluetooth

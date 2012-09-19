@@ -1,12 +1,9 @@
 ﻿using System;
+using System.AddIn;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Timers;
-using System.Data;
-using System.Net.NetworkInformation;
-using System.AddIn;
 using OpenSourceAutomation;
 
 namespace OSAE.NetworkMonitor

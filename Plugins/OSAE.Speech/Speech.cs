@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Speech.Synthesis;
 using System.AddIn;
-using System.Data;
-using System.Threading;
+using System.Speech.Synthesis;
 using OpenSourceAutomation;
-using WMPLib;
+
 namespace OSAE.Speech
 {
     [AddIn("SPEECH", Version = "0.3.6")]

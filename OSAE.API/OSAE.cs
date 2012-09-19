@@ -308,7 +308,7 @@ namespace OSAE
         /// Delete an object
         /// </summary>
         /// <param name="Name"></param>
-        public void ObjectDeleteByAdddress(string address)
+        public void ObjectDeleteByAddress(string address)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -960,7 +960,7 @@ namespace OSAE
         #region Property Array Methods
 
         /// <summary>
-        /// 
+		/// propertyLabel is usually left null
         /// </summary>
         /// <param name="objectName"></param>
         /// <param name="propertyName"></param>
@@ -1328,33 +1328,8 @@ namespace OSAE
 
         #endregion
 
-        /// <summary>
-        /// Returns a Dataset with all of the properties and their values for a plugin object
-        /// </summary>
-        /// <param name="ObjectName"></param>
-        /// <returns></returns>
-        public DataSet GetPluginSettings(string ObjectName)
-        {
-            using (MySqlCommand command = new MySqlCommand())
-            {
-                DataSet dataset = new DataSet();
-                try
-                {
-                    command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_name=@ObjectName";
-                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                    dataset = RunQuery(command);
-
-                    return dataset;
-                }
-                catch (Exception ex)
-                {
-                    AddToLog("API - GetPluginSettings error: " + ex.Message, true);
-                    return dataset;
-                }
-            }
-        }
-
-        /// <summary>
+		#region Object Getters
+		/// <summary>
         /// Returns a Dataset of all objects of specified type
         /// </summary>
         /// <param name="ObjectType"></param>
@@ -1568,95 +1543,6 @@ namespace OSAE
         }
 
         /// <summary>
-        /// Returns an ObjectProperty whcih contains the value, type, ID, last updated, and name
-        /// </summary>
-        /// <param name="ObjectName"></param>
-        /// <param name="ObjectProperty"></param>
-        /// <returns></returns>
-        public ObjectProperty GetObjectPropertyValue(string ObjectName, string ObjectProperty)
-        {
-            MySqlCommand command = new MySqlCommand();
-            DataSet dataset = new DataSet();
-            try
-            {
-                command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
-                command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
-                dataset = RunQuery(command);
-
-                if (dataset.Tables[0].Rows.Count > 0)
-                {
-                    ObjectProperty p = new ObjectProperty();
-                    p.Id = dataset.Tables[0].Rows[0]["object_property_id"].ToString();
-                    p.DataType = dataset.Tables[0].Rows[0]["property_datatype"].ToString();
-                    p.LastUpdated = dataset.Tables[0].Rows[0]["last_updated"].ToString();
-                    p.Name = dataset.Tables[0].Rows[0]["property_name"].ToString();
-                    p.Value = dataset.Tables[0].Rows[0]["property_value"].ToString();
-
-                    return p;
-                }
-                else
-                {
-                    ObjectProperty p = new ObjectProperty();
-                    p.Id = string.Empty;
-                    p.DataType = string.Empty;
-                    p.LastUpdated = string.Empty;
-                    p.Name = string.Empty;
-                    p.Value = string.Empty;
-
-                    return p;
-                }
-            }
-            catch (Exception ex)
-            {
-                AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Returns a ObjectState object
-        /// </summary>
-        /// <param name="ObjectName"></param>
-        /// <returns></returns>
-        public ObjectState GetObjectStateValue(string ObjectName)
-        {           
-            DataSet dataset = new DataSet();
-            ObjectState state = new ObjectState();
-            try
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.CommandText = "SELECT state_label, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@ObjectName";
-                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                    dataset = RunQuery(command);
-                }
-
-                if (dataset.Tables[0].Rows.Count > 0)
-                {
-                    state.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
-                    state.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
-
-                    return state;
-                }
-                else
-                {
-                    AddToLog("API - GetObjectStateValue error: Object does not exist | ObjectName: " + ObjectName, true);
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                AddToLog("API - GetObjectStateValue error: " + ex.Message + " | ObjectName: " + ObjectName, true);
-                return null;
-            }
-            finally
-            {
-                dataset.Dispose();
-            }
-        }
-
-        /// <summary>
         /// Returns an OSAEObject with the specified address
         /// </summary>
         /// <param name="address"></param>
@@ -1754,6 +1640,96 @@ namespace OSAE
                 return null;
             }
         }
+		#endregion Object Getters
+
+		/// <summary>
+		/// Returns an ObjectProperty whcih contains the value, type, ID, last updated, and name
+		/// </summary>
+		/// <param name="ObjectName"></param>
+		/// <param name="ObjectProperty"></param>
+		/// <returns></returns>
+		public ObjectProperty GetObjectPropertyValue(string ObjectName, string ObjectProperty)
+		{
+			MySqlCommand command = new MySqlCommand();
+			DataSet dataset = new DataSet();
+			try
+			{
+				command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
+				command.Parameters.AddWithValue("@ObjectName", ObjectName);
+				command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
+				dataset = RunQuery(command);
+
+				if (dataset.Tables[0].Rows.Count > 0)
+				{
+					ObjectProperty p = new ObjectProperty();
+					p.Id = dataset.Tables[0].Rows[0]["object_property_id"].ToString();
+					p.DataType = dataset.Tables[0].Rows[0]["property_datatype"].ToString();
+					p.LastUpdated = dataset.Tables[0].Rows[0]["last_updated"].ToString();
+					p.Name = dataset.Tables[0].Rows[0]["property_name"].ToString();
+					p.Value = dataset.Tables[0].Rows[0]["property_value"].ToString();
+
+					return p;
+				}
+				else
+				{
+					ObjectProperty p = new ObjectProperty();
+					p.Id = string.Empty;
+					p.DataType = string.Empty;
+					p.LastUpdated = string.Empty;
+					p.Name = string.Empty;
+					p.Value = string.Empty;
+
+					return p;
+				}
+			}
+			catch (Exception ex)
+			{
+				AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
+				return null;
+			}
+		}
+
+		/// <summary>
+		/// Returns a ObjectState object
+		/// </summary>
+		/// <param name="ObjectName"></param>
+		/// <returns></returns>
+		public ObjectState GetObjectStateValue(string ObjectName)
+		{
+			DataSet dataset = new DataSet();
+			ObjectState state = new ObjectState();
+			try
+			{
+				using (MySqlCommand command = new MySqlCommand())
+				{
+					command.CommandText = "SELECT state_label, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@ObjectName";
+					command.Parameters.AddWithValue("@ObjectName", ObjectName);
+					dataset = RunQuery(command);
+				}
+
+				if (dataset.Tables[0].Rows.Count > 0)
+				{
+					state.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
+					state.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
+
+					return state;
+				}
+				else
+				{
+					AddToLog("API - GetObjectStateValue error: Object does not exist | ObjectName: " + ObjectName, true);
+					return null;
+				}
+			}
+			catch (Exception ex)
+			{
+				AddToLog("API - GetObjectStateValue error: " + ex.Message + " | ObjectName: " + ObjectName, true);
+				return null;
+			}
+			finally
+			{
+				dataset.Dispose();
+			}
+		}
 
         /// <summary>
         /// Returns the name of the plugin object of the specified type on the scecified machine.
@@ -1793,6 +1769,32 @@ namespace OSAE
                 return string.Empty;
             }
         }
+
+		/// <summary>
+		/// Returns a Dataset with all of the properties and their values for a plugin object
+		/// </summary>
+		/// <param name="ObjectName"></param>
+		/// <returns></returns>
+		public DataSet GetPluginSettings(string ObjectName)
+		{
+			using (MySqlCommand command = new MySqlCommand())
+			{
+				DataSet dataset = new DataSet();
+				try
+				{
+					command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_name=@ObjectName";
+					command.Parameters.AddWithValue("@ObjectName", ObjectName);
+					dataset = RunQuery(command);
+
+					return dataset;
+				}
+				catch (Exception ex)
+				{
+					AddToLog("API - GetPluginSettings error: " + ex.Message, true);
+					return dataset;
+				}
+			}
+		}
 
         /// <summary>
         /// Returns true or false whether the object with the specified address exists
@@ -1907,7 +1909,7 @@ namespace OSAE
         }
 
         /// <summary>
-        /// 
+		/// CALL osae_sp_pattern_parse(pattern) and returns result
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns>

@@ -10,7 +10,6 @@
 
 namespace OpenSourceAutomation.AddInSideAdapters
 {
-
     [System.AddIn.Pipeline.AddInAdapterAttribute()]
     public class IOpenSourceAutomationAddInViewToContractAddInAdapter : System.AddIn.Pipeline.ContractBase, OpenSourceAutomation.Contracts.IOpenSourceAutomationAddInContract
     {
