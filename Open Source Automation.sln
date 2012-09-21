@@ -18,8 +18,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.Service", "OSA.Service
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "GUI", "GUI\GUI.vbproj", "{E4025895-1C60-4E94-BD66-AC1EDEAA26B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginInstaller", "PluginInstaller\PluginInstaller.csproj", "{BDE035A8-BC05-4A34-AC39-3CD8882D7389}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.Bluetooth", "Plugins\OSAE.Bluetooth\OSAE.Bluetooth.csproj", "{B4B34AAF-973C-427D-9B42-183573407908}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.Email", "Plugins\OSAE.Email\OSAE.Email.csproj", "{8DF9EAA8-F830-4642-95FA-826F732E58D0}"
@@ -53,6 +51,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interfaces", "Interfaces", "{F255C14F-7EC8-4020-B066-3D1A67F26F5E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{0C37D9E4-EE97-4740-A811-710B2D0BBF8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginDescriptionEditor", "PluginDescriptionEditor\PluginDescriptionEditor.csproj", "{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -154,16 +154,6 @@ Global
 		{E4025895-1C60-4E94-BD66-AC1EDEAA26B3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{E4025895-1C60-4E94-BD66-AC1EDEAA26B3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E4025895-1C60-4E94-BD66-AC1EDEAA26B3}.Release|x86.ActiveCfg = Release|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{BDE035A8-BC05-4A34-AC39-3CD8882D7389}.Release|x86.ActiveCfg = Release|Any CPU
 		{B4B34AAF-973C-427D-9B42-183573407908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B4B34AAF-973C-427D-9B42-183573407908}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4B34AAF-973C-427D-9B42-183573407908}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -300,6 +290,16 @@ Global
 		{353C51D9-3C4C-4FB9-8971-E175E364B13C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{353C51D9-3C4C-4FB9-8971-E175E364B13C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{353C51D9-3C4C-4FB9-8971-E175E364B13C}.Release|x86.ActiveCfg = Release|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
