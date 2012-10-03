@@ -1,7 +1,10 @@
 ﻿Imports System.Data
 Imports MySql.Data.MySqlClient
 Imports System.Text.RegularExpressions
-Public Class lblLineStartPos
+
+
+
+Public Class frmScriptEditor
     Private CN As MySqlConnection
     Private iLine As Integer
     Private iLineStart As Integer
@@ -28,8 +31,9 @@ Public Class lblLineStartPos
             OSAEApi.AddToLog("Error Connecting to Database: " & myerror.Message, True)
         End Try
     End Sub
-
     Private Sub btnRunScript_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnRunScript.Click
+
+
         Dim sType As String = ""
         Dim iLoop As Integer
         Dim sObject As String = "", sOption As String = "", sMethod As String = "", sParam1 As String = "", sParam2 As String = ""
@@ -50,16 +54,25 @@ Public Class lblLineStartPos
         sScript = txtScript.Text
         Dim iEmbeddedScriptStart As Integer = 0
         Dim iEmbeddedScriptEnd As Integer = 0
-        iEmbeddedScriptStart = sScript.IndexOf("Script:", iEmbeddedScriptStart)
-        Do While iEmbeddedScriptStart > 0
-            iEmbeddedScriptEnd = sScript.IndexOf(vbCrLf, iEmbeddedScriptStart)
-            sTempLine = sScript.Substring(iEmbeddedScriptStart, (iEmbeddedScriptEnd - iEmbeddedScriptStart))
-            sSubScriptName = sScript.Substring(iEmbeddedScriptStart, (iEmbeddedScriptEnd - iEmbeddedScriptStart)).Replace("Script:", "")
-            Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT Script FROM OSAE_Pattern WHERE Pattern='" & sSubScriptName & "'")
-            sSubScript = Convert.ToString(dsResults.Tables(0).Rows(0)("Script"))
-            sScript = sScript.Replace(sTempLine, sSubScript)
-            iEmbeddedScriptStart = sScript.IndexOf("Script:", iEmbeddedScriptEnd)
-        Loop
+        Try
+            iEmbeddedScriptStart = sScript.IndexOf("Script:", iEmbeddedScriptStart)
+            Do While iEmbeddedScriptStart > 0
+                iEmbeddedScriptEnd = sScript.IndexOf(vbCrLf, iEmbeddedScriptStart)
+                sTempLine = sScript.Substring(iEmbeddedScriptStart, (iEmbeddedScriptEnd - iEmbeddedScriptStart))
+                sSubScriptName = sScript.Substring(iEmbeddedScriptStart, (iEmbeddedScriptEnd - iEmbeddedScriptStart)).Replace("Script:", "")
+                Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT Script FROM OSAE_Pattern WHERE Pattern='" & sSubScriptName & "'")
+                sSubScript = Convert.ToString(dsResults.Tables(0).Rows(0)("Script"))
+                sScript = sScript.Replace(sTempLine, sSubScript)
+                iEmbeddedScriptStart = sScript.IndexOf("Script:", iEmbeddedScriptEnd)
+            Loop
+        Catch ex As Exception
+            Display_Results("Error in Script: :" & ex.Message)
+        End Try
+
+        'This regex removes c# style like: //comments
+        Static removeComments As New Regex("([\r\n ]*//[^\r\n]*)+")
+        sScript = removeComments.Replace(sScript, "")
+
         Dim scriptArray() = sScript.Split(vbCrLf)
         txtEcho.Text = ""
 

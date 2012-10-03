@@ -1362,7 +1362,7 @@ Public Class GUI
     End Sub
 
     Private Sub mnuScriptEditor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuScriptEditor.Click
-        lblLineStartPos.Show()
+        frmScriptEditor.Show()
     End Sub
 
     Private Sub mnuSchedules_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuSchedules.Click
