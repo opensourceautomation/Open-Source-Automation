@@ -88,8 +88,8 @@ Public Class ScriptProcessor
             Display_Results("Error in Script: :" & ex.Message)
         End Try
 
-        'This regex removes c# style //comments, or we can use full http://regexlib.com/REDetails.aspx?regexp_id=2143
-        Static removeComments As New Regex("(\/\/.*)|([\r\n ]*//[^\r\n]*)+")
+        'This regex removes c# style like: //comments
+        Static removeComments As New Regex("([\r\n ]*//[^\r\n]*)+")
         sScript = removeComments.Replace(sScript, "")
 
         Dim scriptArray() = sScript.Split(vbCrLf)
