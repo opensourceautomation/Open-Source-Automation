@@ -214,8 +214,8 @@ Public Class frmScripts
     End Sub
 
     Private Sub btnEditScript_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnEditScript.Click
-        lblLineStartPos.Show()
-        lblLineStartPos.radPattern.Checked = True
-        lblLineStartPos.cboPatterns.Text = dgvScripts("pattern", dgvScripts.CurrentCell.RowIndex).Value
+        frmScriptEditor.Show()
+        frmScriptEditor.radPattern.Checked = True
+        frmScriptEditor.cboPatterns.Text = dgvScripts("pattern", dgvScripts.CurrentCell.RowIndex).Value
     End Sub
 End Class
