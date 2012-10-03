@@ -6,7 +6,7 @@ using OpenSourceAutomation;
 
 namespace OSAE.WebServer
 {
-    [AddIn("Web Server", Version = "0.3.7")]
+    [AddIn("Web Server", Version = "0.3.8")]
     public class WebServer : IOpenSourceAutomationAddInv2
     {
         HttpServer.HttpServer server = new HttpServer.HttpServer();
@@ -27,8 +27,13 @@ namespace OSAE.WebServer
                 afm = new AdvancedFileModule("/", osae.APIpath + @"\wwwroot");
                 afm.ServeUnknownTypes(true, "php");
                 afm.AddCgiApplication("php", @"C:\php\php-cgi.exe");
-                server.Add(afm);
 
+                //Need both as Image path is not consistant in DB.
+                afm.AddVirtualDirectory("Images", osae.APIpath + @"\Images");
+                afm.AddVirtualDirectory("/Images", osae.APIpath + @"\Images");
+                
+                server.Add(afm);
+                
                 osae.AddToLog("starting server...", true);
                 server.Start(IPAddress.Any, Int32.Parse(osae.GetObjectPropertyValue(pName, "Port").Value));
 
