@@ -2,6 +2,7 @@
 Option Explicit On
 Imports System.AddIn
 Imports OpenSourceAutomation
+Imports System.Text.RegularExpressions
 
 <AddIn("Script Processor", Version:="1.0.0")>
 Public Class ScriptProcessor
@@ -86,6 +87,11 @@ Public Class ScriptProcessor
         Catch ex As Exception
             Display_Results("Error in Script: :" & ex.Message)
         End Try
+
+        'This regex removes c# style //comments, or we can use full http://regexlib.com/REDetails.aspx?regexp_id=2143
+        Static removeComments As New Regex("(\/\/.*)|([\r\n ]*//[^\r\n]*)+")
+        sScript = removeComments.Replace(sScript, "")
+
         Dim scriptArray() = sScript.Split(vbCrLf)
 
         For iLoop = 0 To scriptArray.Length - 1
