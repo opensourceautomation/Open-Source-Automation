@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Mail;
-using System.Net;
-using System.Data;
 using System.AddIn;
+using System.Net;
+using System.Net.Mail;
 using OpenSourceAutomation;
 
 namespace OSAE.Email
@@ -20,17 +16,22 @@ namespace OSAE.Email
         {
             //process command
             try
-            {
-                string to = "";
-                string parameter2 = "";
-                string subject = "";
-                string body = "";
+            {                
+                string to = string.Empty;
+                string parameter2 = string.Empty;
+                string subject = string.Empty;
+                string body = string.Empty;
                 ObjectProperty prop = osae.GetObjectPropertyValue(method.Parameter1, "Email Address");
-                if(prop != null)
+                if (prop != null)
+                {
                     to = prop.Value;
+                }
 
-                if (to == "")
+                if (to == string.Empty)
+                {
                     to = method.Parameter1;
+                }
+
                 // To
                 MailMessage mailMsg = new MailMessage();
                 mailMsg.To.Add(to);
@@ -46,7 +47,9 @@ namespace OSAE.Email
 
                 // Make sure there is a body of text.
                 if (parameter2.Equals(""))
+                {
                     throw new ArgumentOutOfRangeException("Message body missing.");
+                }
 
                 // See if there is a subject.
                 // Opening delimiter in first char is good indication of subject.
@@ -75,17 +78,19 @@ namespace OSAE.Email
                 // Init SmtpClient and send
                 SmtpClient smtpClient = new SmtpClient(osae.GetObjectPropertyValue(pName, "SMTP Server").Value, Int32.Parse(osae.GetObjectPropertyValue(pName, "SMTP Port").Value));
                 if (osae.GetObjectPropertyValue(pName, "ssl").Value == "TRUE")
+                {
                     smtpClient.EnableSsl = true;
+                }
                 else
+                {
                     smtpClient.EnableSsl = false;
+                }
 
                 smtpClient.Timeout = 10000;
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential(osae.GetObjectPropertyValue(pName, "Username").Value, osae.GetObjectPropertyValue(pName, "Password").Value);
-
-
-
+                
                 osae.AddToLog("to: " + mailMsg.To, true);
                 osae.AddToLog("from: " + mailMsg.From, true);
                 osae.AddToLog("subject: " + mailMsg.Subject, true);
@@ -97,15 +102,11 @@ namespace OSAE.Email
                 osae.AddToLog("ssl: " + osae.GetObjectPropertyValue(pName, "ssl").Value, true);
 
                 smtpClient.Send(mailMsg);
-
-
             }
             catch (Exception ex)
             {
                 osae.AddToLog("Error Sending email - " + ex.Message + " -" + ex.InnerException, true);
             }
-
-
         }
 
         public void RunInterface(string pluginName)
@@ -114,12 +115,11 @@ namespace OSAE.Email
             //No constant processing
         }
 
-
+        /// <summary>
+        /// Interface implementation, this plugin does not perform any actions on shutdown
+        /// </summary>
         public void Shutdown()
         {
-
         }
-
-
     }
 }
