@@ -7,7 +7,9 @@
     $results = mysql_query($query)
     or die ('Error in query: $query. ' . mysql_error());
     $row = mysql_fetch_row($results);
-    list($width, $height) = getimagesize($row[0]);
+	
+	// Need to go down one level, as images are not in wwwroot folder, and PHP doesnt resolve HttpServer Virtual Folder
+    list($width, $height) = getimagesize('../'.$row[0]);
     $offset = ($_GET["w"]/2)-($width/2)-33;
     
     echo '<center><div style="position:relative; z-index:1;">';
