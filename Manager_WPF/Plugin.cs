@@ -1,14 +1,17 @@
 ﻿using System;
-using System.ComponentModel;
-using System.IO;
-using System.Drawing;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
 
 namespace Manager_WPF
 {
+    /// <summary>
+    /// Holds the information about a plugin e.g. its name, type, author, version e.t.c
+    /// </summary>
     public class PluginDescription : INotifyPropertyChanged 
     {
         /// <summary>

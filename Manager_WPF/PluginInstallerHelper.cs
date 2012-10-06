@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.SharpZipLib.Zip;
-using System.IO;
-using System.Xml;
-using System.Data;
 
 namespace Manager_WPF
 {
+    /// <summary>
+    /// Helper class used to install new plugins
+    /// </summary>
     internal class PluginInstallerHelper
     {
         public static void InstallPlugin(string filepath)
@@ -186,6 +185,11 @@ namespace Manager_WPF
             return NoError;
         }
 
+        /// <summary>
+        /// Unistalls a plugin
+        /// </summary>
+        /// <param name="desc">The information about the plugin to be deleted</param>
+        /// <returns>true if deleted false otherwise</returns>
         public static bool UninstallPlugin(PluginDescription desc)
         {
             bool returnValue = false;
@@ -204,6 +208,10 @@ namespace Manager_WPF
         }
 
         
+        /// <summary>
+        /// Deletes a folder and its contents on disk
+        /// </summary>
+        /// <param name="FolderName">The folder to be deleted</param>
         public static void deleteFolder(string FolderName)
         {
             DirectoryInfo dir = new DirectoryInfo(FolderName);

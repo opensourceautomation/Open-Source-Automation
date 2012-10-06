@@ -54,6 +54,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{0C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginDescriptionEditor", "PluginDescriptionEditor\PluginDescriptionEditor.csproj", "{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.UI.Controls", "OSAE.UI.Controls\OSAE.UI.Controls.csproj", "{503092C1-23FE-4AD8-B855-CF1D24D632A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -300,6 +302,16 @@ Global
 		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}.Release|x86.ActiveCfg = Release|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -321,5 +333,6 @@ Global
 		{E53124A5-CEC6-40F5-BB01-89D280AD22E9} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 		{318EC31C-54EF-4138-A837-E6B0E0EE39BA} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 		{E4025895-1C60-4E94-BD66-AC1EDEAA26B3} = {2A452081-FFE5-43C4-82D1-7202917BC509}
+		{503092C1-23FE-4AD8-B855-CF1D24D632A9} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 	EndGlobalSection
 EndGlobal
