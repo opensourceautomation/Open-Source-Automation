@@ -1,6 +1,12 @@
 *.suo
 *.user
+*.pdb
 _ReSharper.*
 bin
 obj
-/output/lib
+lib
+AddIns
+AddInViews
+AddInSideAdapters
+HostSideAdapters
+OSAE.API.dll
