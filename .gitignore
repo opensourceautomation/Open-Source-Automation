@@ -1,6 +1,11 @@
 *.suo
 *.user
 *.pdb
+*.exe
+*.config
+*.manifest
+*.xml
+*.msi
 _ReSharper.*
 bin
 obj

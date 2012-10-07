@@ -61,14 +61,19 @@
                     <TextBlock Height="92" HorizontalAlignment="Left" Margin="352,14,0,0" Name="txbkDescription" Text="TextBlock" VerticalAlignment="Top" Width="300" TextWrapping="Wrap" FontSize="14" />
                 </Grid>
             </GroupBox>
-            <TextBlock HorizontalAlignment="Right" Margin="0,11,12,0" Width="30" Height="30" Name="txblSettings" VerticalAlignment="Top">
+            <TextBlock HorizontalAlignment="Right" Margin="0,11,56,0" Width="30" Height="30" Name="txblSettings" VerticalAlignment="Top">
             <Hyperlink TextDecorations="None" Name="hypSettings" Click="hypSettings_Click">
                 <Image Source="Resources/settings.png" Name="image1" Stretch="Fill" ToolTip="Settings" />
             </Hyperlink>
             </TextBlock>
-            <TextBlock HorizontalAlignment="Right" Margin="0,11,52,0" Width="38" Height="30" Name="txblGUI" VerticalAlignment="Top">
+            <TextBlock HorizontalAlignment="Right" Margin="0,11,96,0" Width="38" Height="30" Name="txblGUI" VerticalAlignment="Top">
             <Hyperlink TextDecorations="None" Name="hypGUI" Click="hypGUI_Click">
                 <Image Height="30" Source="Resources/screen.jpg" Name="imgGUI" Stretch="Fill" Width="38" ToolTip="Open GUI"  />
+            </Hyperlink>
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Right" Margin="0,11,06,0" Width="38" Height="30" Name="txblLog" VerticalAlignment="Top">
+            <Hyperlink TextDecorations="None" Name="hypLog" Click="hypLog_Click">
+                <Image Height="30" Source="/OSAE.Manager;component/Resources/logs.jpg" Name="imgLog" Stretch="Fill" Width="38" ToolTip="Open Logs"  />
             </Hyperlink>
             </TextBlock>
             <TextBlock HorizontalAlignment="Right" Margin="0,64,5,0" Width="150" Height="17" Name="txblNewVersion" VerticalAlignment="Top" Visibility="Hidden">

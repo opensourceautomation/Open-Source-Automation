@@ -86,6 +86,9 @@
     <Compile Include="InstallPlugin.xaml.cs">
       <DependentUpon>InstallPlugin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LogWindow.xaml.cs">
+      <DependentUpon>LogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PluginInstallerHelper.cs" />
     <Compile Include="Service References\WCFServiceReference\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -97,6 +100,10 @@
     </Compile>
     <Compile Include="SingleInstance.cs" />
     <Page Include="InstallPlugin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -192,6 +199,15 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\logs.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OSAE.UI.Controls\OSAE.UI.Controls.csproj">
+      <Project>{503092C1-23FE-4AD8-B855-CF1D24D632A9}</Project>
+      <Name>OSAE.UI.Controls</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

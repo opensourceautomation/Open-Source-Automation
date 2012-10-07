@@ -662,6 +662,12 @@ namespace Manager_WPF
             }
         }
 
+        private void hypLog_Click(object sender, RoutedEventArgs e)
+        {
+            LogWindow l = new LogWindow();
+            l.ShowDialog();
+        }
+
     }
 
 
