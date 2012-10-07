@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="OSAE.UI.Controls.AddNewObject"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="234" d:DesignWidth="580">
+    <Grid>
+        <Label Content="Name" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="73" IsEnabled="True" />
+        <Label Content="Description" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" Width="73" />
+        <Label Content="Type" Height="28" HorizontalAlignment="Left" Margin="12,80,0,0" Name="label3" VerticalAlignment="Top" Width="73" />
+        <Label Content="Address" Height="28" HorizontalAlignment="Left" Margin="12,114,0,0" Name="label4" VerticalAlignment="Top" Width="73" />
+        <Label Content="Container" Height="28" HorizontalAlignment="Left" Margin="12,148,0,0" Name="label5" VerticalAlignment="Top" Width="73" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="91,80,0,0" Name="objectTypesComboBox" VerticalAlignment="Top" Width="357" ItemsSource="{Binding Path=object_type}"  DisplayMemberPath="object_type" SelectedValuePath="object_type" IsEditable="False" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="91,148,0,0" Name="containersComboBox" VerticalAlignment="Top" Width="357" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" />
+        <Label Content="Mandatory" Height="28" HorizontalAlignment="Left" Margin="461,12,0,0" Name="label6" VerticalAlignment="Top" Width="106" FontStyle="Italic" FontSize="11" />
+        <Label Content="Mandatory" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="461,80,0,0" Name="label7" VerticalAlignment="Top" Width="106" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="91,14,0,0" Name="nameTextBox" VerticalAlignment="Top" Width="357" LostFocus="nameTextBox_LostFocus" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="91,48,0,0" Name="descriptionTextBox" VerticalAlignment="Top" Width="357" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="91,114,0,0" Name="addressTextBox" VerticalAlignment="Top" Width="357" />
+        <Label Content="Optional" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="461,46,0,0" Name="label8" VerticalAlignment="Top" Width="106" />
+        <Label Content="Optional" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="461,113,0,0" Name="label9" VerticalAlignment="Top" Width="106" />
+        <Label Content="Optional" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="461,148,0,0" Name="label10" VerticalAlignment="Top" Width="106" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,196,213,0" Name="cancelbutton" VerticalAlignment="Top" Width="75" Click="cancelbutton_Click" />
+        <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="211,196,0,0" Name="addButton" VerticalAlignment="Top" Width="75" Click="addButton_Click" />
+    </Grid>
+</UserControl>
