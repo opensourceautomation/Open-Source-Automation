@@ -69,7 +69,7 @@ namespace OSAE
             ComputerName = Dns.GetHostName();
             _parentProcess = parentProcess;
             APIpath = myRegistry.Read("INSTALLDIR");
-        }
+        }      
 
         /// <summary>
         /// Adds a message to the log
@@ -1832,35 +1832,17 @@ namespace OSAE
         /// <param name="SQL"></param>
         /// <returns></returns>
         public DataSet RunQuery(MySqlCommand command)
-        {
-            MySqlConnection connection = new MySqlConnection(connectionString = "SERVER=" + DBConnection + ";" +
-                    "DATABASE=" + DBName + ";" +
-                    "PORT=" + DBPort + ";" +
-                    "UID=" + DBUsername + ";" +
-                    "PASSWORD=" + DBPassword + ";");
-            MySqlDataAdapter adapter;
+        {           
             DataSet dataset = new DataSet();
-            bool goodConnection = false;
             
-            try
-            {
-                connection.Open();
-                connection.Close();
-                goodConnection = true;
-            }
-            catch
-            {
-                goodConnection = false;
-                AddToLog("API - Cannot run query - bad connection: ", true);
-            }
-            if (goodConnection)
+            if (API.Common.TestConnection())
             {
                 lock (locker)
                 {
-                    using (connection = new MySqlConnection(connectionString))
+                    using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
                     {
-                        command.Connection = connection;
-                        adapter = new MySqlDataAdapter(command);
+                        MySqlDataAdapter adapter = new MySqlDataAdapter(command);
+                        command.Connection = connection;                        
                         adapter.Fill(dataset);
                     }
                 }
@@ -1875,34 +1857,21 @@ namespace OSAE
         /// <returns></returns>
         public DataSet RunSQL(string sql)
         {
-            MySqlConnection connection = new MySqlConnection(connectionString = "SERVER=" + DBConnection + ";" +
-                    "DATABASE=" + DBName + ";" +
-                    "PORT=" + DBPort + ";" +
-                    "UID=" + DBUsername + ";" +
-                    "PASSWORD=" + DBPassword + ";");
-            MySqlCommand command = new MySqlCommand(sql);
-            MySqlDataAdapter adapter;
             DataSet dataset = new DataSet();
-            bool goodConnection = false;
-            try
+
+            using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
             {
-                connection.Open();
-                connection.Close();
-                goodConnection = true;
-            }
-            catch
-            {
-                goodConnection = false;
-                AddToLog("API - Cannot run query - bad connection: ", true);
-            }
-            if (goodConnection)
-            {
-                lock (locker)
+                MySqlCommand command = new MySqlCommand(sql);
+                MySqlDataAdapter adapter;  
+
+                if (API.Common.TestConnection())
                 {
-                    connection = new MySqlConnection(connectionString);
-                    command.Connection = connection;
-                    adapter = new MySqlDataAdapter(command);
-                    adapter.Fill(dataset);
+                    lock (locker)
+                    {                        
+                        command.Connection = connection;
+                        adapter = new MySqlDataAdapter(command);
+                        adapter.Fill(dataset);
+                    }
                 }
             }
             return dataset;
