@@ -153,17 +153,20 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Service References\WCFServiceReference\OSAE1.xsd">
+    <None Include="Service References\WCFServiceReference\Arrays.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\WCFServiceReference\service1.wsdl" />
-    <None Include="Service References\WCFServiceReference\service3.xsd">
+    <None Include="Service References\WCFServiceReference\OSAE.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\WCFServiceReference\service31.xsd">
+    <None Include="Service References\WCFServiceReference\service.wsdl" />
+    <None Include="Service References\WCFServiceReference\service.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\WCFServiceReference\service32.xsd">
+    <None Include="Service References\WCFServiceReference\service1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\WCFServiceReference\service2.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

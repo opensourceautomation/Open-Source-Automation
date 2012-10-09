@@ -11,6 +11,6 @@ namespace WCF
     interface IMessageCallback
     {
         [OperationContract(IsOneWay = true)]
-        void OnMessageReceived(string msgType, string message, DateTime timestamp);
+        void OnMessageReceived(string msgType, string message, string from, DateTime timestamp);
     }
 }

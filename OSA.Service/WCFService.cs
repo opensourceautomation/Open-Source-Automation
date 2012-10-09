@@ -19,7 +19,7 @@ namespace WCF
 
         private static readonly List<IMessageCallback> subscribers = new List<IMessageCallback>();
 
-        public void SendMessageToClients(string msgType, string message)
+        public void SendMessageToClients(string msgType, string message, string from)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace WCF
                     {
                         try
                         {
-                            callback.OnMessageReceived(msgType, message, DateTime.Now);
+                            callback.OnMessageReceived(msgType, message, from, DateTime.Now);
                             osae.AddToLog("Message sent to client: " + message, false);
                         }
                         catch (TimeoutException ex)
@@ -92,12 +92,12 @@ namespace WCF
             }
         }
 
-        public void messageHost(string message)
+        public void messageHost(string msgType, string message, string from)
         {
             try
             {
                 if (MessageReceived != null)
-                    MessageReceived(null, new CustomEventArgs(message));
+                    MessageReceived(null, new CustomEventArgs(msgType, message, from));
             }
             catch
             {
@@ -237,10 +237,14 @@ namespace WCF
     public class CustomEventArgs : EventArgs
     {
         public string Message;
+        public string MsgType;
+        public string From;
 
-        public CustomEventArgs(string message)
+        public CustomEventArgs(string msgType, string message, string from)
         {
             Message = message;
+            MsgType = msgType;
+            From = from;
         }
 
     }

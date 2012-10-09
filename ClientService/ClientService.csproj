@@ -86,20 +86,20 @@
     </None>
     <None Include="Properties\DataSources\OSAE.OSAEObject.datasource" />
     <None Include="Properties\DataSources\System.Data.DataSet.datasource" />
-    <None Include="Service References\WCFServiceReference\Arrays.xsd">
+    <None Include="Service References\WCFServiceReference\Arrays1.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\WCFServiceReference\OSAE.xsd">
+    <None Include="Service References\WCFServiceReference\OSAE1.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\WCFServiceReference\service.wsdl" />
-    <None Include="Service References\WCFServiceReference\service.xsd">
+    <None Include="Service References\WCFServiceReference\service1.wsdl" />
+    <None Include="Service References\WCFServiceReference\service3.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\WCFServiceReference\service1.xsd">
+    <None Include="Service References\WCFServiceReference\service31.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\WCFServiceReference\service2.xsd">
+    <None Include="Service References\WCFServiceReference\service32.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

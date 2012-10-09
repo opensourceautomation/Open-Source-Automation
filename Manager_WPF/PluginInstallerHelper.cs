@@ -166,6 +166,25 @@ namespace Manager_WPF
                         foreach (string str in delfiles)
                             System.IO.File.Delete(str);
 
+                        osae.AddToLog("Sending message to service to load plugin.", true);
+                        using (MySql.Data.MySqlClient.MySqlCommand command = new MySql.Data.MySqlClient.MySqlCommand())
+                        {
+                            command.CommandText = "CALL osae_sp_method_queue_add (@pobject,@pmethod,@pparameter1,@pparameter2,@pfromobject,@pdebuginfo);";
+                            command.Parameters.AddWithValue("@pobject", "SERVICE-" + osae.ComputerName);
+                            command.Parameters.AddWithValue("@pmethod", "LOAD PLUGIN");
+                            command.Parameters.AddWithValue("@pparameter1", "");
+                            command.Parameters.AddWithValue("@pparameter2", "");
+                            command.Parameters.AddWithValue("@pfromobject", "");
+                            command.Parameters.AddWithValue("@pdebuginfo", "");
+                            try
+                            {
+                                osae.RunQuery(command);
+                            }
+                            catch (Exception ex)
+                            {
+                                osae.AddToLog("Error adding LOAD PLUGIN method: " + command.CommandText + " - error: " + ex.Message, true);
+                            }
+                        }
 
                     }
 

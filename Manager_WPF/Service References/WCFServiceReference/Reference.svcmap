@@ -18,14 +18,15 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="net.tcp://192.168.1.141:8731/WCFService/mex" Protocol="mex" SourceId="1" />
+    <MetadataSource Address="net.tcp://192.168.1.110:8731/WCFService/mex" Protocol="mex" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="service1.wsdl" MetadataType="Wsdl" ID="a07670fa-1be0-48d1-bcb4-caa56488c84d" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
-    <MetadataFile FileName="service3.xsd" MetadataType="Schema" ID="893fa426-cb84-42fe-9a80-a5fec71b6983" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
-    <MetadataFile FileName="service31.xsd" MetadataType="Schema" ID="e9e15c19-35b1-4f2b-a7a1-dd6e86aae63d" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
-    <MetadataFile FileName="OSAE1.xsd" MetadataType="Schema" ID="bae1feff-a955-457d-be94-94bbc6b5f73e" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
-    <MetadataFile FileName="service32.xsd" MetadataType="Schema" ID="ef4801d1-5ddd-455c-82e2-af5a02582de0" SourceId="1" SourceUrl="net.tcp://192.168.1.141:8731/WCFService/mex" />
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="154d7e9e-3f93-46e9-a326-97e3c53c35b2" SourceId="1" SourceUrl="net.tcp://192.168.1.110:8731/WCFService/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="777dd1fc-c8cb-4b7d-96fe-f5b5db8ba75b" SourceId="1" SourceUrl="net.tcp://192.168.1.110:8731/WCFService/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="52fb0447-f45c-41e6-bcdc-9a5947033076" SourceId="1" SourceUrl="net.tcp://192.168.1.110:8731/WCFService/mex" />
+    <MetadataFile FileName="OSAE.xsd" MetadataType="Schema" ID="8cdfab92-6692-4d34-946e-3a044d838c92" SourceId="1" SourceUrl="net.tcp://192.168.1.110:8731/WCFService/mex" />
+    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="804e62ee-3f81-4113-97ea-dcd0ffd9a8aa" SourceId="1" SourceUrl="net.tcp://192.168.1.110:8731/WCFService/mex" />
+    <MetadataFile FileName="service2.xsd" MetadataType="Schema" ID="ad343f1e-316d-4183-93bf-af4008878ad7" SourceId="1" SourceUrl="net.tcp://192.168.1.110:8731/WCFService/mex" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

@@ -89,7 +89,7 @@ namespace Manager_WPF
 
             if (connectToService())
             {
-                Thread thread = new Thread(() => messageHost("connected"));
+                Thread thread = new Thread(() => messageHost("info", "connected"));
                 thread.Start();
             }
 
@@ -161,16 +161,16 @@ namespace Manager_WPF
             }
         }
 
-        private void messageHost(string message)
+        private void messageHost(string msgType, string message)
         {
             try
             {
                 if (wcfObj.State == CommunicationState.Opened)
-                    wcfObj.messageHost(message);
+                    wcfObj.messageHost(msgType, message, osae.ComputerName);
                 else
                 {
                     if (connectToService())
-                        wcfObj.messageHost(message);
+                        wcfObj.messageHost(msgType, message, osae.ComputerName);
                 }
             }
             catch (Exception ex)
@@ -250,7 +250,7 @@ namespace Manager_WPF
                 {
                     if (connectToService())
                     {
-                        Thread thread = new Thread(() => messageHost("connected"));
+                        Thread thread = new Thread(() => messageHost("info", "connected"));
                         thread.Start();
                     }
                 }
@@ -401,7 +401,7 @@ namespace Manager_WPF
             e.Handled = true;
         }
 
-        public void OnMessageReceived(string msgType, string message, DateTime timestamp)
+        public void OnMessageReceived(string msgType, string message, string from, DateTime timestamp)
         {
             osae.AddToLog("Message received: " + msgType + " - " + message, false);
             //this.Invoke((MethodInvoker)delegate
@@ -415,10 +415,11 @@ namespace Manager_WPF
                             enabled = true;
                         foreach (PluginDescription plugin in pluginList)
                         {
-                            if (plugin.Name == split[0].Trim())
+                            if ((plugin.Type == split[5].Trim() && osae.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
                             {
                                 plugin.Status = split[3].Trim();
                                 plugin.Enabled = enabled;
+                                plugin.Name = split[0].Trim();
                                 if (split[4].Trim() != "")
                                     plugin.Upgrade = split[4].Trim();
                                 else
@@ -439,7 +440,7 @@ namespace Manager_WPF
                         }
                         break;
                     case "service":
-                        string[] serv = ("0.3.7|0.3.9").Split('|');
+                        string[] serv = message.Split('|');
                         if (serv[0] != serv[1] && txblNewVersion.Visibility == Visibility.Hidden)
                         {
                             ShowNewVersion("Version " + serv[1] + " Available");
@@ -557,7 +558,7 @@ namespace Manager_WPF
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
-                    Thread thread = new Thread(() => messageHost("ENABLEPLUGIN|" + pd.Name + "|True"));
+                    Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|True"));
                     thread.Start();
                     osae.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
                     if (myService.Status == ServiceControllerStatus.Running)
@@ -591,7 +592,7 @@ namespace Manager_WPF
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
-                    Thread thread = new Thread(() => messageHost("ENABLEPLUGIN|" + pd.Name + "|False"));
+                    Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|False"));
                     thread.Start();
                     osae.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
 

@@ -230,7 +230,7 @@ namespace ClientService
                             osae.AddToLog("status: " + plugin.Enabled.ToString(), true);
                             osae.AddToLog("PluginName: " + plugin.PluginName, true);
                             osae.AddToLog("PluginVersion: " + plugin.PluginVersion, true);
-                            Thread thread = new Thread(() => messageHost("plugin|" + plugin.PluginName + "|" + plugin.Status
+                            Thread thread = new Thread(() => messageHost("plugin", "plugin|" + plugin.PluginName + "|" + plugin.Status
                                 + "|" + plugin.PluginVersion + "|" + plugin.Enabled));
                             thread.Start(); 
                         }
@@ -254,7 +254,7 @@ namespace ClientService
                             osae.ObjectPropertySet(plugin.PluginName, "Computer Name", osae.ComputerName);
 
                             osae.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
-                            Thread thread = new Thread(() => messageHost("plugin|" + plugin.PluginName + "|" + plugin.Status
+                            Thread thread = new Thread(() => messageHost("plugin", "plugin|" + plugin.PluginName + "|" + plugin.Status
                                 + "|" + plugin.PluginVersion + "|" + plugin.Enabled));
                             thread.Start(); 
                         }
@@ -294,7 +294,7 @@ namespace ClientService
             }
         }
 
-        public void OnMessageReceived(string msgType, string message, DateTime timestamp)
+        public void OnMessageReceived(string msgType, string message, string from, DateTime timestamp)
         {
             osae.AddToLog("received message: " + msgType + " | " + message, false);
             switch (msgType)
@@ -461,16 +461,16 @@ namespace ClientService
             }
         }
 
-        private void messageHost(string message)
+        private void messageHost(string msgType, string message)
         {
             try
             {
                 if (wcfObj.State == CommunicationState.Opened)
-                    wcfObj.messageHost(message);
+                    wcfObj.messageHost(msgType, message, osae.ComputerName);
                 else
                 {
                     if (connectToService())
-                        wcfObj.messageHost(message);
+                        wcfObj.messageHost(msgType, message, osae.ComputerName);
                 }
             }
             catch (Exception ex)

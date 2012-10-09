@@ -313,24 +313,6 @@ namespace OSAE.Service
                                 sendMessageToClients("command", method.Parameter1
                                     + " | " + method.Parameter2 + " | " + osae.ComputerName);
                             }
-                            else if (method.MethodName == "RELOAD PLUGINS")
-                            {
-                                string path = osae.APIpath;
-                                AddInStore.Update(path);
-
-                                Collection<AddInToken> tokens = null;
-                                tokens = AddInStore.FindAddIns(typeof(IOpenSourceAutomationAddInv2), path);
-                                foreach (AddInToken token in tokens)
-                                {
-                                    if (!pluginExist(token.Name))
-                                    {
-                                        Plugin plugin = new Plugin(token);
-                                        plugins.Add(plugin);
-                                        sendMessageToClients("plugin", plugin.PluginName +
-                                            " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | " + plugin.Status + " | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType);
-                                    }
-                                }
-                            }
                             else if (method.MethodName == "START PLUGIN")
                             {
                                 foreach (Plugin p in plugins)
@@ -358,6 +340,10 @@ namespace OSAE.Service
                                         }
                                     }
                                 }
+                            }
+                            else if (method.MethodName == "LOAD PLUGIN")
+                            {
+                                LoadPlugins();
                             }
                             command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
                             osae.AddToLog("Removing method from queue: " + command.CommandText, false);
@@ -415,10 +401,13 @@ namespace OSAE.Service
             AddInStore.Update(path);
             Collection<AddInToken> tokens = null;
             tokens = AddInStore.FindAddIns(typeof(IOpenSourceAutomationAddInv2), path);
+            osae.AddToLog("Found " + tokens.Count.ToString() + " tokens", true);
             foreach (AddInToken token in tokens)
             {
-                plugins.Add(new Plugin(token));
+                if (!pluginExist(token.Name))
+                    plugins.Add(new Plugin(token));
             }
+            osae.AddToLog("Found " + plugins.Count.ToString() + " plugins", true);
             MySqlConnection connection = new MySqlConnection("SERVER=" + osae.DBConnection + ";" +
                             "DATABASE=" + osae.DBName + ";" +
                             "PORT=" + osae.DBPort + ";" +
@@ -454,7 +443,10 @@ namespace OSAE.Service
                                 osae.AddToLog("Plugin Object found: " + obj.Name + " - Enabled: " + obj.Enabled.ToString(), true);
                                 if (obj.Enabled == 1)
                                 {
-                                    enablePlugin(plugin);
+                                    if (plugin.process == null)
+                                    {
+                                        enablePlugin(plugin);
+                                    }
                                     osae.AddToLog("ProcessID: " + plugin.process.ProcessId, true);
                                 }
                                 else
@@ -487,7 +479,7 @@ namespace OSAE.Service
                             osae.ObjectPropertySet(plugin.PluginName, "Computer Name", osae.ComputerName);
 
                             osae.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
-                            sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType);
+                            sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
                                             
                         }
                         masterPlugins.Add(plugin);
@@ -527,7 +519,7 @@ namespace OSAE.Service
                         osae.AddToLog("client connected", false);
                         foreach (Plugin p in masterPlugins)
                         {
-                            string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType;
+                            string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName;
 
                             sendMessageToClients("plugin", msg);
                         }
@@ -636,7 +628,7 @@ namespace OSAE.Service
             try
             {
                 osae.AddToLog("Sending message to clients: " + msgType + " - " + message, false);
-                Thread thread = new Thread(() => wcfService.SendMessageToClients(msgType, message));
+                Thread thread = new Thread(() => wcfService.SendMessageToClients(msgType, message, osae.ComputerName));
                 thread.Start();
             }
             catch(Exception ex)
@@ -721,7 +713,7 @@ namespace OSAE.Service
 
                 if (plug)
                 {
-                    string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType;
+                    string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName;
                     sendMessageToClients("plugin", msg);
                 }
             }
@@ -815,7 +807,7 @@ namespace OSAE.Service
                 {
                     plugin.addin.RunInterface(plugin.PluginName);
                     osae.ObjectStateSet(plugin.PluginName, "ON");
-                    sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType);
+                    sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
                     osae.AddToLog("Plugin enabled: " + plugin.PluginName, true);
                     osae.AddToLog("Process ID: " + plugin.process.ProcessId.ToString(), true);
                 }
@@ -841,7 +833,7 @@ namespace OSAE.Service
                 GC.Collect();
                 p.Enabled = false;
                 p.process.Shutdown();
-                sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType);
+                sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName);
             }
             catch (Exception ex)
             {

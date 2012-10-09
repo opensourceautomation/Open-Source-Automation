@@ -15,7 +15,7 @@ namespace WCF
     public interface IWCFService
     {
         [OperationContract]
-        void SendMessageToClients(string msgType, string message);
+        void SendMessageToClients(string msgType, string message, string from);
 
         [OperationContract]
         bool Subscribe();
@@ -24,7 +24,7 @@ namespace WCF
         bool Unsubscribe();
 
         [OperationContract]
-        void messageHost(string message);
+        void messageHost(string msgType, string message, string from);
 
         [OperationContract]
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]

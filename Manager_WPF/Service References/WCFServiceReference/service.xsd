@@ -6,6 +6,7 @@
       <xs:sequence>
         <xs:element minOccurs="0" name="msgType" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="from" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -41,7 +42,9 @@
   <xs:element name="messageHost">
     <xs:complexType>
       <xs:sequence>
+        <xs:element minOccurs="0" name="msgType" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="from" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -323,6 +326,7 @@
       <xs:sequence>
         <xs:element minOccurs="0" name="msgType" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="from" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="timestamp" type="xs:dateTime" />
       </xs:sequence>
     </xs:complexType>
