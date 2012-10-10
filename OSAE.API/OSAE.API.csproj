@@ -56,6 +56,7 @@
     <Compile Include="ObjectProperty.cs" />
     <Compile Include="ObjectState.cs" />
     <Compile Include="OSAE.cs" />
+    <Compile Include="OSAE.Obselete.cs" />
     <Compile Include="OSAEMethod.cs" />
     <Compile Include="OSAEObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

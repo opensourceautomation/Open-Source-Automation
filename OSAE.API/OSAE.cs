@@ -11,7 +11,7 @@ namespace OSAE
     /// API used to interact with the various components of OSA
     /// </summary>
     public partial class OSAE
-    {
+    {        
         #region Properties
 
         private object locker = new object();                
@@ -69,7 +69,7 @@ namespace OSAE
             ComputerName = Dns.GetHostName();
             _parentProcess = parentProcess;
             APIpath = myRegistry.Read("INSTALLDIR");
-        }      
+        }
 
         /// <summary>
         /// Adds a message to the log
@@ -106,7 +106,7 @@ namespace OSAE
                     System.IO.FileInfo file = new System.IO.FileInfo(filePath);
                     file.Directory.Create();
                     StreamWriter sw = File.AppendText(filePath);
-                    sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - LOGGING ERROR: " 
+                    sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - LOGGING ERROR: "
                         + ex.Message + " - " + ex.InnerException);
                     sw.Close();
                     if (file.Length > 1000000)
@@ -245,7 +245,6 @@ namespace OSAE
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                //command.CommandText = "CALL osae_sp_object_add (@Name, @Description, @ObjectType, @Address, @Container, @Enabled, @results)";
                 command.CommandText = "osae_sp_object_add";
                 command.CommandType = CommandType.StoredProcedure;
 
@@ -260,14 +259,12 @@ namespace OSAE
                 try
                 {
                     //RunQuery(command);
-                    MySqlConnection connection = new MySqlConnection(connectionString = "SERVER=" + DBConnection + ";" +
-                        "DATABASE=" + DBName + ";" +
-                        "PORT=" + DBPort + ";" +
-                        "UID=" + DBUsername + ";" +
-                        "PASSWORD=" + DBPassword + ";");
-                    command.Connection = connection;
-                    command.Connection.Open();
-                    command.ExecuteNonQuery();
+                    using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                    {
+                        command.Connection = connection;
+                        command.Connection.Open();
+                        command.ExecuteNonQuery();
+                    }
 
                     if (command.Parameters["?results"].Value.ToString() == "1")
                         AddToLog("API - ObjectAdded successfully", true);
@@ -430,6 +427,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
+                
                 AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
@@ -1006,7 +1004,7 @@ namespace OSAE
                 catch (Exception ex)
                 {
                     AddToLog("API - ObjectPropertyArrayGetRandom error: " + command.CommandText + " - error: " + ex.Message, true);
-                    return "";
+                    return string.Empty;
                 }
             }
         }
@@ -1499,7 +1497,7 @@ namespace OSAE
             List<OSAEObject> objects = new List<OSAEObject>();
             try
             {
-                if (ContainerName == "")
+                if (ContainerName == string.Empty)
                     command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
                 else
                 {
@@ -1548,16 +1546,18 @@ namespace OSAE
         /// <param name="address"></param>
         /// <returns></returns>
         public OSAEObject GetObjectByAddress(string address)
-        {
-            MySqlCommand command = new MySqlCommand();
+        {            
             DataSet dataset = new DataSet();
             OSAEObject obj = null;
 
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
-                command.Parameters.AddWithValue("@Address", address);
-                dataset = RunQuery(command);
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
+                    command.Parameters.AddWithValue("@Address", address);
+                    dataset = RunQuery(command);
+                }
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
@@ -1597,15 +1597,17 @@ namespace OSAE
         /// <param name="name"></param>
         /// <returns></returns>
         public OSAEObject GetObjectByName(string name)
-        {
-            MySqlCommand command = new MySqlCommand();
+        {           
             DataSet dataset = new DataSet();
 
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
-                command.Parameters.AddWithValue("@Name", name);
-                dataset = RunQuery(command);
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
+                    command.Parameters.AddWithValue("@Name", name);
+                    dataset = RunQuery(command);
+                }
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
@@ -1649,15 +1651,18 @@ namespace OSAE
 		/// <param name="ObjectProperty"></param>
 		/// <returns></returns>
 		public ObjectProperty GetObjectPropertyValue(string ObjectName, string ObjectProperty)
-		{
-			MySqlCommand command = new MySqlCommand();
+		{			
 			DataSet dataset = new DataSet();
+
 			try
 			{
-				command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
-				command.Parameters.AddWithValue("@ObjectName", ObjectName);
-				command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
-				dataset = RunQuery(command);
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
+                    dataset = RunQuery(command);
+                }
 
 				if (dataset.Tables[0].Rows.Count > 0)
 				{
@@ -1738,24 +1743,29 @@ namespace OSAE
         /// <param name="machineName"></param>
         /// <returns></returns>
         public string GetPluginName(string objectType, string machineName)
-        {
-            MySqlCommand command = new MySqlCommand();
+        {            
             DataSet dataset = new DataSet();
+
             try
             {
-                command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_type=@ObjectType AND property_name='Computer Name' AND (property_value IS NULL OR property_value='' OR property_value=@MachineName) LIMIT 1";
-                command.Parameters.AddWithValue("@ObjectType", objectType);
-                command.Parameters.AddWithValue("@MachineName", machineName);
-                dataset = RunQuery(command);
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_type=@ObjectType AND property_name='Computer Name' AND (property_value IS NULL OR property_value='' OR property_value=@MachineName) LIMIT 1";
+                    command.Parameters.AddWithValue("@ObjectType", objectType);
+                    command.Parameters.AddWithValue("@MachineName", machineName);
+                    dataset = RunQuery(command);
+                }
 
                 if (dataset.Tables[0].Rows.Count > 0)
                     return dataset.Tables[0].Rows[0]["object_name"].ToString();
                 else
                 {
-                    command = new MySqlCommand();
-                    command.CommandText = "SELECT * FROM osae_object WHERE object_name=@ObjectType2";
-                    command.Parameters.AddWithValue("@ObjectType2", objectType);
-                    dataset = RunQuery(command);
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.CommandText = "SELECT * FROM osae_object WHERE object_name=@ObjectType2";
+                        command.Parameters.AddWithValue("@ObjectType2", objectType);
+                        dataset = RunQuery(command);
+                    }
 
                     if (dataset.Tables[0].Rows.Count > 0)
                         return objectType;
@@ -1777,23 +1787,23 @@ namespace OSAE
 		/// <returns></returns>
 		public DataSet GetPluginSettings(string ObjectName)
 		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				DataSet dataset = new DataSet();
-				try
-				{
-					command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_name=@ObjectName";
-					command.Parameters.AddWithValue("@ObjectName", ObjectName);
-					dataset = RunQuery(command);
+            DataSet dataset = new DataSet();
 
-					return dataset;
-				}
-				catch (Exception ex)
-				{
-					AddToLog("API - GetPluginSettings error: " + ex.Message, true);
-					return dataset;
-				}
-			}
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_name=@ObjectName";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    dataset = RunQuery(command);
+                }
+                return dataset;
+            }
+            catch (Exception ex)
+            {
+                AddToLog("API - GetPluginSettings error: " + ex.Message, true);
+                return dataset;
+            }		
 		}
 
         /// <summary>
@@ -1802,15 +1812,17 @@ namespace OSAE
         /// <param name="address"></param>
         /// <returns></returns>
         public bool ObjectExists(string address)
-        {
-            MySqlCommand command = new MySqlCommand();
+        {            
             DataSet dataset = new DataSet();
 
             try
             {
-                command.CommandText = "SELECT * FROM osae_v_object WHERE address=@Address";
-                command.Parameters.AddWithValue("@Address", address);
-                dataset = RunQuery(command);
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT * FROM osae_v_object WHERE address=@Address";
+                    command.Parameters.AddWithValue("@Address", address);
+                    dataset = RunQuery(command);
+                }
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
@@ -1860,17 +1872,19 @@ namespace OSAE
             DataSet dataset = new DataSet();
 
             using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
-            {
-                MySqlCommand command = new MySqlCommand(sql);
+            {                
                 MySqlDataAdapter adapter;  
 
                 if (API.Common.TestConnection())
                 {
                     lock (locker)
-                    {                        
-                        command.Connection = connection;
-                        adapter = new MySqlDataAdapter(command);
-                        adapter.Fill(dataset);
+                    {
+                        MySqlCommand command = new MySqlCommand(sql);
+                        {
+                            command.Connection = connection;
+                            adapter = new MySqlDataAdapter(command);
+                            adapter.Fill(dataset);
+                        }
                     }
                 }
             }
@@ -1883,14 +1897,16 @@ namespace OSAE
         /// <param name="pattern"></param>
         /// <returns></returns>
         public string PatternParse(string pattern)
-        {
-            MySqlCommand command = new MySqlCommand();
+        {            
             DataSet dataset = new DataSet();
             try
             {
-                command.CommandText = "CALL osae_sp_pattern_parse(@Pattern)";
-                command.Parameters.AddWithValue("@Pattern", pattern);
-                dataset = RunQuery(command);
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "CALL osae_sp_pattern_parse(@Pattern)";
+                    command.Parameters.AddWithValue("@Pattern", pattern);
+                    dataset = RunQuery(command);
+                }
 
                 if (dataset.Tables[0].Rows.Count > 0)
                     return dataset.Tables[0].Rows[0]["vInput"].ToString();
@@ -1905,14 +1921,16 @@ namespace OSAE
         }
 
         public string MatchPattern(string str)
-        {
-            MySqlCommand command = new MySqlCommand();
+        {            
             DataSet dataset = new DataSet();
             try
             {
-                command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
-                command.Parameters.AddWithValue("@Name", str);
-                dataset = RunQuery(command);
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
+                    command.Parameters.AddWithValue("@Name", str);
+                    dataset = RunQuery(command);
+                }
 
                 if (dataset.Tables[0].Rows.Count > 0)
                     return dataset.Tables[0].Rows[0]["pattern"].ToString();
@@ -1928,31 +1946,35 @@ namespace OSAE
 
         public void NamedScriptUpdate(string name, string oldName, string scriptText)
         {
-            MySqlCommand command = new MySqlCommand();
-            command.CommandText = "CALL osae_sp_pattern_update (@poldpattern, @pnewpattern, @pscript)";
-            command.Parameters.AddWithValue("@poldpattern", oldName);
-            command.Parameters.AddWithValue("@pnewpattern", name);
-            command.Parameters.AddWithValue("@pscript", scriptText);
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_update (@poldpattern, @pnewpattern, @pscript)";
+                command.Parameters.AddWithValue("@poldpattern", oldName);
+                command.Parameters.AddWithValue("@pnewpattern", name);
+                command.Parameters.AddWithValue("@pscript", scriptText);
 
-            try
-            {
-                RunQuery(command);
-            }
-            catch (Exception ex)
-            {
-                AddToLog("API - NamedScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    AddToLog("API - NamedScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
             }
         }
 
         private DataSet GetObjectProperties(string ObjectName)
-        {
-            MySqlCommand command = new MySqlCommand();
+        {            
             DataSet dataset = new DataSet();
             try
             {
-                command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName ORDER BY property_name";
-                command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                dataset = RunQuery(command);
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName ORDER BY property_name";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    dataset = RunQuery(command);
+                }
 
                 return dataset;
             }
@@ -1990,83 +2012,6 @@ namespace OSAE
                 return methods;
             }
         }
-
-        #region Obsolete Methods
-        [System.Obsolete("Use ObjectPropertyArrayGetRandom")]
-        public string GetListItem(string objName, string PropertyName)
-        {            
-            DataSet dataset = new DataSet();
-            try
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.CommandText = "SELECT item_name FROM osae_v_object_property_array WHERE object_name=@ObjectName AND property_name=@PropertyName ORDER BY RAND() LIMIT 1;";
-                    command.Parameters.AddWithValue("@ObjectName", objName);
-                    command.Parameters.AddWithValue("@PropertyName", PropertyName);
-                    dataset = RunQuery(command);
-                }
-
-                if (dataset.Tables[0].Rows.Count > 0)
-                    return dataset.Tables[0].Rows[0]["item_name"].ToString();
-                else
-                    return "";
-            }
-            catch (Exception ex)
-            {
-                AddToLog("API - GetListItem error: " + ex.Message, true);
-                return "";
-            }            
-        }
-
-        [System.Obsolete("use GetObjectPropertyValue")]
-        public string GetObjectProperty(string ObjectName, string ObjectProperty)
-        {            
-            DataSet dataset = new DataSet();
-            try
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.CommandText = "SELECT property_value, property_datatype FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
-                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                    command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
-                    dataset = RunQuery(command);
-                }
-
-                if (dataset.Tables[0].Rows.Count > 0)
-                    return dataset.Tables[0].Rows[0]["property_value"].ToString();
-                else
-                    return "";
-            }
-            catch (Exception ex)
-            {
-                AddToLog("API - GetObjectProperty error: " + ex.Message, true);
-                return "";
-            }            
-        }
-
-        [System.Obsolete("use GetObjectStateValue")]
-        public string GetObjectState(string ObjectName)
-        {            
-            DataSet dataset = new DataSet();
-            try
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.CommandText = "SELECT state_name FROM osae_v_object WHERE object_name=@ObjectName";
-                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                    dataset = RunQuery(command);
-                }
-
-                return dataset.Tables[0].Rows[0]["state_name"].ToString();
-            }
-            catch (Exception ex)
-            {
-                AddToLog("API - GetObjectState error: " + ex.Message, true);
-                return "";
-            }
-        }
-                
-        #endregion
     }
 
    
