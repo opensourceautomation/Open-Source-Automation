@@ -53,6 +53,9 @@
     <Compile Include="Common.cs" />
     <Compile Include="Images\ImageManager.cs" />
     <Compile Include="Images\OSAEImage.cs" />
+    <Compile Include="Logging.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ObjectProperty.cs" />
     <Compile Include="ObjectState.cs" />
     <Compile Include="OSAE.cs" />

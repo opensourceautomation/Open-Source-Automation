@@ -1,9 +1,10 @@
-﻿using System;
-using System.Data;
-using MySql.Data.MySqlClient;
-
-namespace OSAE
+﻿namespace OSAE
 {
+    using System;
+    using System.Data;
+    using MySql.Data.MySqlClient;
+    using System.IO;
+
     public partial class OSAE
 	{        
         [System.Obsolete("Use ObjectPropertyArrayGetRandom")]
@@ -28,7 +29,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetListItem error: " + ex.Message, true);
+                logging.AddToLog("API - GetListItem error: " + ex.Message, true);
                 return "";
             }
         }
@@ -55,7 +56,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectProperty error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectProperty error: " + ex.Message, true);
                 return "";
             }
         }
@@ -78,9 +79,50 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectState error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectState error: " + ex.Message, true);
                 return "";
             }
+        }
+
+        /// <summary>
+        /// Adds a message to the log
+        /// </summary>
+        /// <param name="audit"></param>
+        /// <param name="alwaysLog"></param>
+        [System.Obsolete("use Logging class")]
+        public void AddToLog(string audit, bool alwaysLog)
+        {
+            logging.AddToLog(audit, alwaysLog);
+        }
+
+        /// <summary>
+        /// Add an entry to the degug table
+        /// </summary>
+        /// <param name="entry">String to add to the debug table</param>
+        [System.Obsolete("use Logging class")]
+        public void DebugLogAdd(string entry)
+        {
+            logging.DebugLogAdd(entry);
+        }
+
+        /// <summary>
+        /// Add an entry to the event log table
+        /// </summary>
+        /// <param name="objectName">Object Name</param>
+        /// <param name="eventName">Event Name</param>
+        [System.Obsolete("use Logging class")]
+        public void EventLogAdd(string objectName, string eventName, string parameter1 = null, string parameter2 = null)
+        {
+            logging.EventLogAdd(objectName, eventName, parameter1, parameter2);
+        }
+
+        /// <summary>
+        /// Deletes everything from the event_log table
+        /// </summary>
+        [System.Obsolete("use Logging class")]
+        public void EventLogClear()
+        {
+            logging.EventLogClear();
         }
     }
 }
