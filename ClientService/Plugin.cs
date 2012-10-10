@@ -8,6 +8,7 @@ using System.Data;
 using System.Threading;
 using OpenSourceAutomation;
 using System.AddIn.Hosting;
+using OSAE.API;
 
 namespace ClientService
 {
@@ -22,6 +23,7 @@ namespace ClientService
         private IOpenSourceAutomationAddInv2 _addin;
         private AddInProcess _process;
         private OSAE.OSAE osae = new OSAE.OSAE("Plugin");
+        private Logging logging = new Logging("Plugin");
 
         #region Properties
         public Assembly Assembly;
@@ -76,7 +78,7 @@ namespace ClientService
         public Plugin(AddInToken token)
         {
             _token = token;
-            _pluginName = osae.GetPluginName(_token.Name, osae.ComputerName);
+            _pluginName = osae.GetPluginName(_token.Name, OSAE.API.Common.ComputerName );
             _pluginType = _token.Name;
             _pluginVersion = _token.Version;
             _latestAvailableVersion = "";
@@ -84,14 +86,14 @@ namespace ClientService
 
         public Plugin()
         {
-            _latestAvailableVersion = "";
+            _latestAvailableVersion = string.Empty;
         }
 
         public bool ActivatePlugin()
         {
             try
             {
-                osae.AddToLog("Activating Plugin: " + PluginName, true);
+                logging.AddToLog("Activating Plugin: " + PluginName, true);
                 // Create application domain setup information.
                 AppDomainSetup domaininfo = new AppDomainSetup();
                 domaininfo.ApplicationBase = osae.APIpath;
@@ -100,9 +102,9 @@ namespace ClientService
                 // Create the application domain.
                 AppDomain domain = AppDomain.CreateDomain(PluginName + "_Domain", null, domaininfo);
                 // Write application domain information to the console.
-                osae.AddToLog("Host domain: " + AppDomain.CurrentDomain.FriendlyName, true);
-                osae.AddToLog("child domain: " + domain.FriendlyName, true);
-                osae.AddToLog("Application base is: " + domain.SetupInformation.ApplicationBase, true);
+                logging.AddToLog("Host domain: " + AppDomain.CurrentDomain.FriendlyName, true);
+                logging.AddToLog("child domain: " + domain.FriendlyName, true);
+                logging.AddToLog("Application base is: " + domain.SetupInformation.ApplicationBase, true);
                 
                 //_addin = _token.Activate<IOpenSourceAutomationAddIn>(domain);
                 _process = new AddInProcess(Platform.AnyCpu);
@@ -112,13 +114,13 @@ namespace ClientService
             }
             catch(Exception ex)
             {
-                osae.AddToLog("Error activating plugin (" + _pluginName + "): " + ex.Message + " - " + ex.InnerException, true);
+                logging.AddToLog("Error activating plugin (" + _pluginName + "): " + ex.Message + " - " + ex.InnerException, true);
                 _enabled = false;
                 return false;
             }
             catch
             {
-                osae.AddToLog("Error activating plugin", true);
+                logging.AddToLog("Error activating plugin", true);
                 return false;
             }
         }
