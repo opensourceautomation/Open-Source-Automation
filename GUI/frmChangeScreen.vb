@@ -19,7 +19,10 @@ Public Class frmChangeScreen
                 iCounter = iCounter + 1
                 sImage = (Convert.ToString(myReader.Item("property_value")))
                 'sImage = gAppPath & sImage
-                sImage = sImage.Replace(".\", OSAEApi.APIpath & "\")
+
+                ''sImage = sImage.Replace(".\", OSAEApi.APIpath & "\")
+                sImage = OSAEApi.APIpath + sImage
+
                 If File.Exists(sImage) Then
                     'aControlStateImage(aScreenObject(iLoop).Control_Index).Image = Image.FromFile(sImage)
                     ImageList1.Images.Add(Image.FromFile(sImage))
