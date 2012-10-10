@@ -9,7 +9,7 @@ using OpenSourceAutomation;
 
 namespace OSAE.RFXCOM
 {
-    [AddIn("RFXCOM", Version = "0.2.5")]
+    [AddIn("RFXCOM", Version = "0.2.8")]
     public class RFXCOM : IOpenSourceAutomationAddInv2
     {
         OSAE osae = new OSAE("RFXCOM");
@@ -321,6 +321,7 @@ namespace OSAE.RFXCOM
 
         public void RunInterface(string pluginName)
         {
+            osae.AddToLog("Plugin version: 0.2.8", true);
             pName = pluginName;
             RSInit("COM" + osae.GetObjectPropertyValue(pluginName,"Port").Value, 38400);
             if(RSOpen())
@@ -1304,7 +1305,7 @@ namespace OSAE.RFXCOM
 
         public void decode_Lighting2()
         {
-            osae.AddToLog("Recieved Lighting2 Message", false);
+            osae.AddToLog("Recieved Lighting2 Message.  Type: " + recbuf[(byte)LIGHTING2.subtype].ToString(), false);
             OSAEObject obj = new OSAEObject(); 
             
             switch (recbuf[(byte)LIGHTING2.subtype])
@@ -1312,11 +1313,23 @@ namespace OSAE.RFXCOM
                 case (byte)LIGHTING2.sTypeAC:
                 case (byte)LIGHTING2.sTypeHEU:
                 case (byte)LIGHTING2.sTypeANSLUT:
-                    obj = osae.GetObjectByAddress(("0" + recbuf[(byte)LIGHTING2.id1].ToString("X")).Substring(recbuf[(byte)LIGHTING2.id1].ToString("X").Length - 2) +
-                        "-" + ("0" + recbuf[(byte)LIGHTING2.id2].ToString("X")).Substring(recbuf[(byte)LIGHTING2.id2].ToString("X").Length - 2) +
-                        "-" + ("0" + recbuf[(byte)LIGHTING2.id3].ToString("X")).Substring(recbuf[(byte)LIGHTING2.id3].ToString("X").Length - 2) +
-                        "-" + ("0" + recbuf[(byte)LIGHTING2.id4].ToString("X")).Substring(recbuf[(byte)LIGHTING2.id4].ToString("X").Length - 2) +
-                        "-" + ("0" + recbuf[(byte)LIGHTING2.unitcode].ToString("X")).Substring(recbuf[(byte)LIGHTING2.unitcode].ToString("X").Length - 2));
+                    osae.AddToLog("id1: " + recbuf[(byte)LIGHTING2.id1].ToString(), true);
+                    osae.AddToLog("id2: " + recbuf[(byte)LIGHTING2.id2].ToString(), true);
+                    osae.AddToLog("id3: " + recbuf[(byte)LIGHTING2.id3].ToString(), true);
+                    osae.AddToLog("id4: " + recbuf[(byte)LIGHTING2.id4].ToString(), true);
+                    osae.AddToLog("uc: " + recbuf[(byte)LIGHTING2.unitcode].ToString(), true);
+
+                   
+
+                    string address = (recbuf[(byte)LIGHTING2.id1].ToString("X") +
+                                "-" + recbuf[(byte)LIGHTING2.id2].ToString("X") +
+                                "-" + recbuf[(byte)LIGHTING2.id3].ToString("X") +
+                                "-" + recbuf[(byte)LIGHTING2.id4].ToString("X") +
+                                "-" + recbuf[(byte)LIGHTING2.unitcode].ToString("X"));
+
+                    osae.AddToLog("Address: " + address, true);
+
+                    obj = osae.GetObjectByAddress(address);
                         
                     switch (recbuf[(byte)LIGHTING2.subtype])
                     {
@@ -1331,12 +1344,7 @@ namespace OSAE.RFXCOM
                             break;
                     }
                     osae.AddToLog("Sequence nbr  = " + recbuf[(byte)LIGHTING2.seqnbr].ToString(), false);
-                    osae.AddToLog("ID            = " + ("0" + recbuf[(byte)LIGHTING2.id1].ToString("X")).Substring(recbuf[(byte)LIGHTING2.id1].ToString("X").Length - 2) +
-                        "-" + ("0" + recbuf[(byte)LIGHTING2.id2].ToString("X")).Substring(recbuf[(byte)LIGHTING2.id2].ToString("X").Length - 2) +
-                        "-" + ("0" + recbuf[(byte)LIGHTING2.id3].ToString("X")).Substring(recbuf[(byte)LIGHTING2.id3].ToString("X").Length - 2) +
-                        "-" + ("0" + recbuf[(byte)LIGHTING2.id4].ToString("X")).Substring(recbuf[(byte)LIGHTING2.id4].ToString("X").Length - 2) +
-                        "-" + ("0" + recbuf[(byte)LIGHTING2.unitcode].ToString("X")).Substring(recbuf[(byte)LIGHTING2.unitcode].ToString("X").Length - 2), false);
-                    osae.AddToLog("Unit          = " + recbuf[(byte)LIGHTING2.unitcode].ToString(), false);
+                    osae.AddToLog("ID - Unit            = " + address, false);
                     switch (recbuf[(byte)LIGHTING2.cmnd])
                     {
                         case (byte)LIGHTING2.sOff:
