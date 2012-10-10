@@ -47,5 +47,8 @@ END$$
 
 
 delimiter ;
+
+alter table osae_object_property modify property_value VARCHAR(4000) DEFAULT NULL ; 
+
 -- Set DB version 
 CALL osae_sp_object_property_set('SYSTEM', 'DB Version', '0.4.0', '', '');
