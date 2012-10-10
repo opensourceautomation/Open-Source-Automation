@@ -97,7 +97,7 @@ namespace OSAE.Service
             try
             {
                 osae.APIpath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName);
-                IPHostEntry ipEntry = Dns.GetHostByName(osae.ComputerName);
+                IPHostEntry ipEntry = Dns.GetHostByName(API.Common.ComputerName);
                 IPAddress[] addr = ipEntry.AddressList;
                 _computerIP = addr[0].ToString();
 
@@ -123,11 +123,7 @@ namespace OSAE.Service
 
             try
             {
-                MySqlConnection connection = new MySqlConnection("SERVER=" + osae.DBConnection + ";" +
-                    "DATABASE=" + osae.DBName + ";" +
-                    "PORT=" + osae.DBPort + ";" +
-                    "UID=" + osae.DBUsername + ";" +
-                    "PASSWORD=" + osae.DBPassword + ";");
+                MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString);
                 connection.Open();
                 MySqlCommand command = new MySqlCommand();
                 command.Connection = connection;
