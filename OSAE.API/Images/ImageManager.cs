@@ -8,7 +8,7 @@
 
     public class ImageManager
     {
-        OSAE osae = new OSAE("OSAE.API.Images.ImageManager");
+        OSAE osae = new OSAE("OSAE.API");
 
         /// <summary>
         /// Adds an image to the DB
@@ -77,8 +77,7 @@
                     }
                     else
                     {
-                        OSAE osae = new OSAE("OSAE.API.Images");
-                        osae.AddToLog("API - Failed to get requested image from DB: ", true);
+                        osae.AddToLog("API.Images - Failed to get requested image from DB: ", true);
                     }
                 }
             }
@@ -116,8 +115,7 @@
                     }
                     catch (Exception e)
                     {
-                        OSAE osae = new OSAE("OSAE.API.Images");
-                        osae.AddToLog("API - GetImageList - Failed \r\n\r\n" + e.Message, true);
+                        osae.AddToLog("API.Images - GetImageList - Failed \r\n\r\n" + e.Message, true);
 
                     }
                 }
@@ -158,8 +156,7 @@
                     }
                     catch (Exception e)
                     {
-                        OSAE osae = new OSAE("OSAE.API.Images");
-                        osae.AddToLog("API - GetImages - Failed \r\n\r\n" + e.Message, true);
+                        osae.AddToLog("API.Images - GetImages - Failed \r\n\r\n" + e.Message, true);
 
                     }
                 }

@@ -1,13 +1,16 @@
 
 USE osae;
 
+
+delimiter $$
 CREATE TABLE `osae_images` (
   `image_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `image_data` longblob NOT NULL,
   `image_name` varchar(45) NOT NULL,
   `image_type` varchar(4) NOT NULL,
   PRIMARY KEY (`image_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=257 DEFAULT CHARSET=latin1$$
+) ENGINE=InnoDB AUTO_INCREMENT=257 DEFAULT CHARSET=latin1
+  $$
 
 delimiter $$
 
@@ -42,4 +45,7 @@ BEGIN
 	WHERE image_id = pimage_id;
 END$$
 
--- Data in database still requires export for intial images installer.
+
+delimiter ;
+-- Set DB version 
+CALL osae_sp_object_property_set('SYSTEM', 'DB Version', '0.4.0', '', '');
