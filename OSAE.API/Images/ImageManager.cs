@@ -77,7 +77,7 @@
                     }
                     else
                     {
-                        osae.AddToLog("API.Images - Failed to get requested image from DB: ", true);
+                        osae.AddToLog("API - Failed to get requested image from DB: ", true);
                     }
                 }
             }
@@ -115,8 +115,7 @@
                     }
                     catch (Exception e)
                     {
-                        osae.AddToLog("API.Images - GetImageList - Failed \r\n\r\n" + e.Message, true);
-
+                        osae.AddToLog("API - GetImageList - Failed \r\n\r\n" + e.Message, true);
                     }
                 }
             }
@@ -156,8 +155,7 @@
                     }
                     catch (Exception e)
                     {
-                        osae.AddToLog("API.Images - GetImages - Failed \r\n\r\n" + e.Message, true);
-
+                        osae.AddToLog("API - GetImages - Failed \r\n\r\n" + e.Message, true);
                     }
                 }
             }
