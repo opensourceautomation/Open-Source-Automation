@@ -230,7 +230,10 @@ Public Class GUI
         gCurrentScreen = sScreen
         OSAEApi.ObjectPropertySet(gAppName, "Current Screen", sScreen)
         sPath = OSAEApi.GetObjectProperty(sScreen, "Background Image")
-        sPath = sPath.Replace(".\", OSAEApi.APIpath & "\")
+
+        'sPath = sPath.Replace(".\", OSAEApi.APIpath & "\")
+        sPath = OSAEApi.APIpath + sPath
+
         If gCurrentScreen <> sScreen Then gCurrentScreen = sScreen
         Controls_Clear()
         gXRatio = 1

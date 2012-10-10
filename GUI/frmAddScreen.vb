@@ -8,7 +8,7 @@ Public Class frmAddScreen
             Dim res As DialogResult = file1.ShowDialog()
             If res = DialogResult.OK Then
                 sChosenPath = file1.FileName
-                txtScreenImage.Text = file1.FileName.Replace(OSAEApi.APIpath, ".")
+                txtScreenImage.Text = file1.FileName.Replace(OSAEApi.APIpath, "")
                 If File.Exists(sChosenPath) Then
                     Dim msScrren As MemoryStream = New MemoryStream(File.ReadAllBytes(file1.FileName))
                     picScreen.Image = Image.FromStream(msScrren)
@@ -32,7 +32,7 @@ Public Class frmAddScreen
             Return
         End If
 
-        If File.Exists(OSAEApi.APIpath & txtScreenImage.Text.Substring(1)) Then
+        If File.Exists(OSAEApi.APIpath & txtScreenImage.Text) Then
             Dim sName As String
             sName = "Screen - " & txtNewScreenName.Text
             txtNewScreenName.Text = ""
@@ -41,7 +41,7 @@ Public Class frmAddScreen
             GUI.Load_Screen(sName)
             Me.Close()
         Else
-            MessageBox.Show("I could not find: " & OSAEApi.APIpath & txtScreenImage.Text.Substring(1) & vbCrLf & "OSAE Path = " & OSAEApi.APIpath & vbCrLf & "If this path is not your installation folder, it is an API issue", "Add Scrren")
+            MessageBox.Show("I could not find: " & OSAEApi.APIpath & txtScreenImage.Text & vbCrLf & "OSAE Path = " & OSAEApi.APIpath & vbCrLf & "If this path is not your installation folder, it is an API issue", "Add Scrren")
         End If
     End Sub
     Private Sub btnNewScreenCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnNewScreenCancel.Click

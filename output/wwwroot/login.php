@@ -27,7 +27,7 @@ if(isset($_GET["attempt"]))
         <div class="span4" >                               
         </div>                 
         <div class="span4" style="margin-left: 0;">                       
-          <img src="images/OSA.png">                   
+          <img src="Images/OSA.png">                   
         </div>                   
         <div class="span4">                               
         </div>      
