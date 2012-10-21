@@ -165,7 +165,7 @@ namespace OSAE.RFXCOM
                         kar[(byte)LIGHTING2.id2] = (byte)Int32.Parse(addr[1], System.Globalization.NumberStyles.HexNumber);
                         kar[(byte)LIGHTING2.id3] = (byte)Int32.Parse(addr[2], System.Globalization.NumberStyles.HexNumber);
                         kar[(byte)LIGHTING2.id4] = (byte)Int32.Parse(addr[3], System.Globalization.NumberStyles.HexNumber);
-                        kar[(byte)LIGHTING2.unitcode] = (byte)Int32.Parse(addr[4], System.Globalization.NumberStyles.HexNumber);
+                        kar[(byte)LIGHTING2.unitcode] = (byte)Int32.Parse(addr[4]);
 
 
                         switch (method.MethodName)
@@ -183,7 +183,7 @@ namespace OSAE.RFXCOM
                                 else
                                 {
                                     kar[(byte)LIGHTING2.cmnd] = (byte)LIGHTING2.sOn;
-                                    kar[(byte)LIGHTING2.level] = (byte)Math.Round((double)Int32.Parse(method.Parameter1) / 7, 0);
+                                    //kar[(byte)LIGHTING2.level] = (byte)Math.Round((double)Int32.Parse(method.Parameter1) / 7, 0);
                                 }
                                 osae.ObjectStateSet(obj.Name, "ON");
 
@@ -1313,23 +1313,22 @@ namespace OSAE.RFXCOM
                 case (byte)LIGHTING2.sTypeAC:
                 case (byte)LIGHTING2.sTypeHEU:
                 case (byte)LIGHTING2.sTypeANSLUT:
-                    osae.AddToLog("id1: " + recbuf[(byte)LIGHTING2.id1].ToString(), true);
-                    osae.AddToLog("id2: " + recbuf[(byte)LIGHTING2.id2].ToString(), true);
-                    osae.AddToLog("id3: " + recbuf[(byte)LIGHTING2.id3].ToString(), true);
-                    osae.AddToLog("id4: " + recbuf[(byte)LIGHTING2.id4].ToString(), true);
-                    osae.AddToLog("uc: " + recbuf[(byte)LIGHTING2.unitcode].ToString(), true);
+                    //osae.AddToLog("id1: " + recbuf[(byte)LIGHTING2.id1].ToString(), true);
+                    //osae.AddToLog("id2: " + recbuf[(byte)LIGHTING2.id2].ToString(), true);
+                    //osae.AddToLog("id3: " + recbuf[(byte)LIGHTING2.id3].ToString(), true);
+                    //osae.AddToLog("id4: " + recbuf[(byte)LIGHTING2.id4].ToString(), true);
+                    //osae.AddToLog("uc: " + recbuf[(byte)LIGHTING2.unitcode].ToString(), true);
 
-                   
 
-                    string address = (recbuf[(byte)LIGHTING2.id1].ToString("X") +
-                                "-" + recbuf[(byte)LIGHTING2.id2].ToString("X") +
-                                "-" + recbuf[(byte)LIGHTING2.id3].ToString("X") +
-                                "-" + recbuf[(byte)LIGHTING2.id4].ToString("X") +
-                                "-" + recbuf[(byte)LIGHTING2.unitcode].ToString("X"));
 
-                    osae.AddToLog("Address: " + address, true);
+                    obj = osae.GetObjectByAddress((recbuf[(byte)LIGHTING2.id1].ToString("X") +
+                        "-" + recbuf[(byte)LIGHTING2.id2].ToString("X") +
+                        "-" + recbuf[(byte)LIGHTING2.id3].ToString("X") +
+                        "-" + recbuf[(byte)LIGHTING2.id4].ToString("X") +
+                        "-" + recbuf[(byte)LIGHTING2.unitcode].ToString()));
+                    
 
-                    obj = osae.GetObjectByAddress(address);
+                    
                         
                     switch (recbuf[(byte)LIGHTING2.subtype])
                     {
@@ -1344,7 +1343,8 @@ namespace OSAE.RFXCOM
                             break;
                     }
                     osae.AddToLog("Sequence nbr  = " + recbuf[(byte)LIGHTING2.seqnbr].ToString(), false);
-                    osae.AddToLog("ID - Unit            = " + address, false);
+                    //osae.AddToLog("ID - Unit            = " + address, false);
+                    osae.AddToLog("Unit          = " + recbuf[(byte)LIGHTING2.unitcode].ToString(), false);
                     switch (recbuf[(byte)LIGHTING2.cmnd])
                     {
                         case (byte)LIGHTING2.sOff:
@@ -2727,15 +2727,27 @@ namespace OSAE.RFXCOM
             osae.AddToLog("Sequence nbr  = " + recbuf[(byte)TEMP.seqnbr].ToString(), false);
             osae.AddToLog("ID            = " + (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), false);
 
+            
+            double temp = Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2);
+            string strTemp = "";
+
+            if (osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "Farenheit")
+            {
+                temp = (temp * 9 / 5) + 32;
+                strTemp = temp.ToString() + " °F";
+            }
+            else
+                strTemp = temp.ToString() + " °C";
+
             if ((recbuf[(byte)TEMP.tempsign] & 0x80) == 0)
             {
-                osae.AddToLog("Temperature   = " + (((Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                osae.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                osae.AddToLog("Temperature   = " + strTemp, false);
+                osae.ObjectPropertySet(obj.Name, "Temperature", temp.ToString());
             }
             else
             {
-                osae.AddToLog("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                osae.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                osae.AddToLog("Temperature   = -" + strTemp, false);
+                osae.ObjectPropertySet(obj.Name, "Temperature", "-" + temp.ToString());
             }
             osae.AddToLog("Signal level  = " + (recbuf[(byte)TEMP.rssi] >> 4).ToString(), false);
             if ((recbuf[(byte)TEMP.battery_level] & 0xf) == 0)
