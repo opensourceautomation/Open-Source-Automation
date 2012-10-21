@@ -226,6 +226,11 @@ File "MySql.Data.dll"
   SetOutPath "$INSTDIR\wwwroot\mobile"
   File "..\output\wwwroot\mobile\*.*"
   
+  CreateDirectory "images"
+  SetOutPath "$INSTDIR\wwwroot\mobile\images"
+  File "..\output\wwwroot\mobile\images\*.*"
+  SetOutPath "$INSTDIR\wwwroot\mobile"
+  
   CreateDirectory "jquery"
   SetOutPath "$INSTDIR\wwwroot\mobile\jquery"
   File "..\output\wwwroot\mobile\jquery\*.*"
