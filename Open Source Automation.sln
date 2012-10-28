@@ -56,6 +56,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginDescriptionEditor", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.UI.Controls", "OSAE.UI.Controls\OSAE.UI.Controls.csproj", "{503092C1-23FE-4AD8-B855-CF1D24D632A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.PowerShellTools", "OSAE.PowerShellProcessor\OSAE.PowerShellTools.csproj", "{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{FB9DA2FC-022D-4FC1-824C-61217AE079E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -312,6 +316,16 @@ Global
 		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|x86.ActiveCfg = Release|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -334,5 +348,6 @@ Global
 		{318EC31C-54EF-4138-A837-E6B0E0EE39BA} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 		{E4025895-1C60-4E94-BD66-AC1EDEAA26B3} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 		{503092C1-23FE-4AD8-B855-CF1D24D632A9} = {2A452081-FFE5-43C4-82D1-7202917BC509}
+		{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B} = {FB9DA2FC-022D-4FC1-824C-61217AE079E2}
 	EndGlobalSection
 EndGlobal
