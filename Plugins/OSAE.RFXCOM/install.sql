@@ -7,6 +7,9 @@ CALL osae_sp_object_type_method_add ('ON','Start','RFXCOM','','','','');
 CALL osae_sp_object_type_method_add ('OFF','Stop','RFXCOM','','','','');
 CALL osae_sp_object_type_property_add('Port', 'Integer', '', 'RFXCOM', 0);
 CALL osae_sp_object_type_property_add('Learning Mode', 'Boolean', '', 'RFXCOM', 0);
+CALL osae_sp_object_type_property_add ('Temp Units','String','','RFXCOM',0);
+CALL osae_sp_object_type_property_option_add('RFXCOM','Temp Units','Celsius');
+CALL osae_sp_object_type_property_option_add('RFXCOM','Temp Units','Farenheit ');
 
 CALL osae_sp_object_type_add ('OS TEMP SENSOR','Oregon Scientific Temperature Sensor','','',0,0,0,1);
 CALL osae_sp_object_type_event_add ('TEMPERATURE','Temperature Changed','OS TEMP SENSOR');
@@ -27,7 +30,7 @@ CALL osae_sp_object_type_property_add('Battery', 'String', '', 'HUMIDITY METER',
 
 CALL osae_sp_object_type_add ('TEMP HUM METER','Temperature and Humidity Meter','','',0,0,0,1);
 CALL osae_sp_object_type_event_add ('HUMIDITY','Humidity Changed','TEMP HUM METER');
-CALL osae_sp_object_type_event_add ('TEMPERATURE','Temperature Changed','TEMP HUM METERR');
+CALL osae_sp_object_type_event_add ('TEMPERATURE','Temperature Changed','TEMP HUM METER');
 CALL osae_sp_object_type_property_add('Temperature', 'String', '', 'TEMP HUM METER', 0);
 CALL osae_sp_object_type_property_add('Humidity', 'String', '', 'TEMP HUM METER', 0);
 CALL osae_sp_object_type_property_add('Status', 'String', '', 'TEMP HUM METER', 0);

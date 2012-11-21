@@ -33,6 +33,7 @@ namespace Manager_WPF
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
         private bool clicked = true;
+        private bool starting = false;
         private const string Unique = "OSAE Manager";
 
         [STAThread]
@@ -254,8 +255,9 @@ namespace Manager_WPF
                         thread.Start();
                     }
                 }
+                starting = false;
             }
-            else if (svcStatus == "Stopped")
+            else if (svcStatus == "Stopped" && !starting)
             {
                 setLabel(Brushes.Red, "STOPPED");
                 foreach (PluginDescription pd in pluginList)
@@ -272,7 +274,7 @@ namespace Manager_WPF
                     Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
                     m_WorkerThreadStart.Start();
                 }
-
+                
             }
         }
 
@@ -321,6 +323,7 @@ namespace Manager_WPF
             {
                 MessageBox.Show("Error stopping service.  Make sure you are running Manager as Administrator");
                 osae.AddToLog("Error starting service: " + ex.Message, true);
+                starting = false;
             }
         }
 
@@ -473,6 +476,7 @@ namespace Manager_WPF
             }
             else if (btnService.Content.ToString() == "Start")
             {
+                starting = true;
                 setLabel(Brushes.Green, "STARTING...");
                 foreach (PluginDescription pd in pluginList)
                 {
