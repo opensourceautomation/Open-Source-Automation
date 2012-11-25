@@ -47,6 +47,7 @@ Partial Class GUI
         Me.mnuSchedules = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuScreensTool = New System.Windows.Forms.ToolStripMenuItem()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
+        Me.CameraViewerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.cmsMain.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -80,7 +81,7 @@ Partial Class GUI
         '
         'mnuAddControl
         '
-        Me.mnuAddControl.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuStateImage, Me.mnuPropertyLabel, Me.mnuMethodImage, Me.mnuNavigationImage, Me.mnuTimerLabel, Me.mnuUserControl})
+        Me.mnuAddControl.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuStateImage, Me.mnuPropertyLabel, Me.mnuMethodImage, Me.mnuNavigationImage, Me.mnuTimerLabel, Me.mnuUserControl, Me.CameraViewerToolStripMenuItem})
         Me.mnuAddControl.Name = "mnuAddControl"
         Me.mnuAddControl.Size = New System.Drawing.Size(153, 22)
         Me.mnuAddControl.Text = "Add Control"
@@ -184,6 +185,12 @@ Partial Class GUI
         Me.TextBox1.TabIndex = 1
         Me.TextBox1.Visible = False
         '
+        'CameraViewerToolStripMenuItem
+        '
+        Me.CameraViewerToolStripMenuItem.Name = "CameraViewerToolStripMenuItem"
+        Me.CameraViewerToolStripMenuItem.Size = New System.Drawing.Size(168, 22)
+        Me.CameraViewerToolStripMenuItem.Text = "Camera Viewer"
+        '
         'GUI
         '
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
@@ -229,5 +236,6 @@ Partial Class GUI
     Friend WithEvents mnuScreensTool As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuTimerLabel As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuUserControl As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents CameraViewerToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
