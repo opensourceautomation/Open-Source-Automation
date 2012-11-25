@@ -4,6 +4,7 @@
 	</Manufacturer>
 	<Manufacturer id="0098" name="2GIG Technologies">
 		<Product type="1e12" id="015c" name="CT30 Thermostat" config="2gig/ct30.xml"/>
+		<Product type="6401" id="0105" name="CT30 Thermostat" config="2gig/ct100.xml"/>
 	</Manufacturer>
 	<Manufacturer id="002a" name="3e Technologies">
 	</Manufacturer>
@@ -240,6 +241,7 @@
 		<Product type="0401" id="0209" name="VRI06-1LX Multilevel Scene Switch" config="leviton/vri06.xml"/>
 		<Product type="0501" id="0206" name="VRI10-1LX Multilevel Scene Switch" config="leviton/vri10.xml"/>
 		<Product type="0501" id="0209" name="VRI10-1LZ Scene Capable Dimmer" config="leviton/vri10.xml"/>
+		<Product type="0602" id="0209" name="VRMX1-1LZ Multilevel Scene Switch" config="leviton/vri10.xml"/>
 		<Product type="0901" id="0215" name="VRC51-1LX One Scene Controller"/>
 		<Product type="0702" id="0261" name="VRCZ4-M0Z 4-Button Zone Controller"/>
 		<Product type="0b02" id="030b" name="VRC0P-1LW Plug-in Serial Interface Module"/>

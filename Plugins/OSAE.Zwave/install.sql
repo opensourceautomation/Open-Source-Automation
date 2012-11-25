@@ -16,6 +16,7 @@ CALL osae_sp_object_type_method_add ('NETWORK UPDATE','Network Update','ZWAVE','
 CALL osae_sp_object_type_property_add ('Port','Integer','','ZWAVE',0);
 CALL osae_sp_object_type_property_add ('Computer Name','String','','ZWAVE',0);
 CALL osae_sp_object_type_property_add ('Home ID','String','','ZWAVE',0);
+CALL osae_sp_object_type_property_add ('Polling Interval','Integer','','ZWAVE',0);
 
 CALL osae_sp_object_type_add ('ZWAVE BINARY SWITCH','ZWave Binary Switch','','BINARY SWITCH',0,0,0,1);
 CALL osae_sp_object_type_state_add ('ON','On','ZWAVE BINARY SWITCH');
@@ -73,6 +74,8 @@ CALL osae_sp_object_type_property_add ('Home ID','String','','ZWAVE THERMOSTAT',
 CALL osae_sp_object_type_property_add ('Temperature','String','','ZWAVE THERMOSTAT',0);
 CALL osae_sp_object_type_property_add ('Operating Mode','String','','ZWAVE THERMOSTAT',0);
 CALL osae_sp_object_type_property_add ('Fan Mode','String','','ZWAVE THERMOSTAT',0);
+CALL osae_sp_object_type_property_add ('Fan State','String','','ZWAVE THERMOSTAT',0);
+CALL osae_sp_object_type_property_add ('Override State','String','','ZWAVE THERMOSTAT',0);
 CALL osae_sp_object_type_property_add ('Heat Setpoint','String','','ZWAVE THERMOSTAT',0);
 CALL osae_sp_object_type_property_add ('Cool Setpoint','String','','ZWAVE THERMOSTAT',0);
 CALL osae_sp_object_type_property_add ('Poll','Boolean','','ZWAVE THERMOSTAT',0);
