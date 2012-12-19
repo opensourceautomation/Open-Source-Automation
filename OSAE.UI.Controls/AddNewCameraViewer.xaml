@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="OSAE.UI.Controls.AddNewCameraViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" d:DesignWidth="580" Height="131">
+    <Grid Height="131" VerticalAlignment="Top">
+        <Label Content="Object" Height="28" HorizontalAlignment="Left" Margin="13,34,0,0" Name="label3" VerticalAlignment="Top" Width="73" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="92,34,0,0" x:Name="objectsComboBox" VerticalAlignment="Top" Width="357" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" />
+        <Label Content="Mandatory" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="462,34,0,0" Name="label7" VerticalAlignment="Top" Width="106" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,86,213,0" Name="cancelbutton" VerticalAlignment="Top" Width="75" Click="cancelbutton_Click" />
+        <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="211,86,0,0" Name="addButton" VerticalAlignment="Top" Width="75" Click="addButton_Click" />
+    </Grid>
+</UserControl>

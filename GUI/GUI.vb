@@ -196,6 +196,7 @@ Public Class GUI
         iUserControlCount = 0
         Application.DoEvents()
 
+
     End Sub
 
     Private Sub Load_App_Name()
@@ -1074,6 +1075,19 @@ Public Class GUI
                     MessageBox.Show("GUI Error Load_Objects 5: " & myerror.Message)
                     CN.Close()
                 End Try
+            ElseIf aScreenObject(iLoop).Control_Type = "CONTROL CAMERA VIEWER" Then
+                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Object Name")
+                Try
+                    Me.Controls.Add(New ucCameraViewer(OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Object_Name, "Stream Address").Value))
+                    aScreenObject(iLoop).Control_Index = Me.Controls.Count - 1
+                    Me.Controls(aScreenObject(iLoop).Control_Index).Top = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y")
+                    Me.Controls(aScreenObject(iLoop).Control_Index).Left = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X")
+                    Me.Controls(aScreenObject(iLoop).Control_Index).BringToFront()
+
+                Catch myerror As MySqlException
+                    MessageBox.Show("GUI Error Load Camera Viewer: " & myerror.Message)
+                    CN.Close()
+                End Try
             ElseIf aScreenObject(iLoop).Control_Type = "USER CONTROL" Then
                 iUserControlCount += 1
                 'aScreenObject(iLoop).Control_Index = iObjectCount
@@ -1087,7 +1101,7 @@ Public Class GUI
                     Me.Controls(aScreenObject(iLoop).Control_Index).Top = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y")
                     Me.Controls(aScreenObject(iLoop).Control_Index).Left = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X")
                     Me.Controls(aScreenObject(iLoop).Control_Index).BringToFront()
-              
+
                     '
                 End If
                 ' OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X")
@@ -1517,5 +1531,9 @@ Public Class GUI
 
 
 
+    End Sub
+
+    Private Sub CameraViewerToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CameraViewerToolStripMenuItem.Click
+        frmAddCameraViewer.Show()
     End Sub
 End Class

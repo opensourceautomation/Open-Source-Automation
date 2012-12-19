@@ -43,7 +43,7 @@ namespace OSAE.Zwave
                     // Add any app specific options here...
                     m_options.AddOptionBool("ConsoleOutput", false);
                     m_options.AddOptionBool("IntervalBetweenPolls", true);
-                    m_options.AddOptionInt("PollInterval", 50);
+                    m_options.AddOptionInt("PollInterval", poll);
 
 
                     // Lock the options
@@ -620,6 +620,11 @@ namespace OSAE.Zwave
                                     else if (value.Label == "Fan State")
                                     {
                                         node.Level = value.Val;
+                                        osae.ObjectPropertySet(nodeObject.Name, "Fan State", node.Level);
+                                    }
+                                    else if (value.Label == "Fan Mode")
+                                    {
+                                        node.Level = value.Val;
                                         osae.ObjectPropertySet(nodeObject.Name, "Fan Mode", node.Level);
                                     }
                                     else if (value.Label == "Heating 1")
@@ -636,6 +641,11 @@ namespace OSAE.Zwave
                                     {
                                         node.Level = value.Val;
                                         osae.ObjectPropertySet(nodeObject.Name, "Battery Level", node.Level);
+                                    }
+                                    else if (value.Label == "Override State")
+                                    {
+                                        node.Level = value.Val;
+                                        osae.ObjectPropertySet(nodeObject.Name, "Override State", node.Level);
                                     }
                                     break;
                                 case "Routing Multilevel Sensor":
