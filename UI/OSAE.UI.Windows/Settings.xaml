@@ -1,0 +1,18 @@
+﻿<Window x:Class="OSAE.UI.Windows.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Height="335" Width="302" Loaded="Window_Loaded" ResizeMode="NoResize" Topmost="False" MaxHeight="335" MaxWidth="302" MinHeight="335" MinWidth="302">
+    <Grid>
+        <Image Height="59" HorizontalAlignment="Center" Margin="0,20,0,0" Name="image1" Stretch="Fill" VerticalAlignment="Top" Width="173" /> <!--Source="Resources/OSA.png"--> 
+        <Label Content="Database Version:" Height="28" HorizontalAlignment="Left" Margin="10,89,0,0" Name="label1" VerticalAlignment="Top" />
+        <Label Content="Zipcode:" Height="28" HorizontalAlignment="Left" Margin="60,115,0,0" Name="label2" VerticalAlignment="Top" />
+        <Label Content="Debugging" Height="28" HorizontalAlignment="Left" Margin="46,143,0,0" Name="label3" VerticalAlignment="Top" />
+        <Label Content="Label" Height="28" HorizontalAlignment="Left" Margin="121,89,0,0" Name="lblDBVersion" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="121,117,0,0" Name="txbxZipcode" VerticalAlignment="Top" Width="120" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="121,146,0,0" Name="cbDebugging" VerticalAlignment="Top" Width="120">
+            <ComboBoxItem Content="TRUE" />
+            <ComboBoxItem Content="FALSE" />
+        </ComboBox>
+        <Button Content="Save &amp; Close" Height="37" HorizontalAlignment="Center" Margin="0,0,0,20" Name="button1" VerticalAlignment="Bottom" Width="91" Click="button1_Click" />
+    </Grid>
+</Window>

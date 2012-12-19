@@ -11,8 +11,9 @@ namespace OSAE.Speech
         OSAE OSAEApi = new OSAE("SPEECH");
         SpeechSynthesizer oSpeech = new SpeechSynthesizer();
         WMPLib.WindowsMediaPlayer wmPlayer = new WMPLib.WindowsMediaPlayer();
-        String gAppName = "";
-        String gSelectedVoice = "";
+        String gAppName = string.Empty;
+        String gSelectedVoice = string.Empty;
+
         public void RunInterface(string pluginName)
         {
             gAppName = pluginName;

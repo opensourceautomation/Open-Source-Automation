@@ -93,10 +93,14 @@ namespace ClientService
         {
             try
             {
+                // TODO Remove Log Message after testing
+                osae.AddToLog("Running New Service Code", true);
+
                 logging.AddToLog("Activating Plugin: " + PluginName, true);
                 // Create application domain setup information.
                 AppDomainSetup domaininfo = new AppDomainSetup();
                 domaininfo.ApplicationBase = osae.APIpath;
+                domaininfo.PrivateBinPathProbe = osae.APIpath;
                 //domaininfo.ApplicationTrust = AddInSecurityLevel.Host;
 
                 // Create the application domain.

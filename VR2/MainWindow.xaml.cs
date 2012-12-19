@@ -1,21 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Speech;
-using System.Speech.Recognition;
 using System.Data;
-namespace VR2
+using System.Speech.Recognition;
+using System.Windows;
+using System.Windows.Documents;
 
+namespace VR2
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -24,14 +14,17 @@ namespace VR2
     {
         OSAE.OSAE OSAEApi = new OSAE.OSAE("VR2");
         SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
-        String gAppName = "";
+        String gAppName = string.Empty;
         Boolean gVRMuted = true;
         Boolean gVREnabled = false;
         String gWakePhrase = "Computer";
         String gSleepPhrase = "Thank You";
-        String gSpeechPlugin = "";
+        String gSpeechPlugin = string.Empty;
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -43,8 +36,7 @@ namespace VR2
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-          
+        {          
             Load_App_Name();
             try
             {
@@ -200,11 +192,11 @@ namespace VR2
             }
             try
             {
-            Choices myChoices = new Choices(grammerList.ToArray());
-            GrammarBuilder builder = new GrammarBuilder(myChoices);
-            Grammar gram = new Grammar(builder);
-            oRecognizer.LoadGrammar(gram);
-            AddToLog("Grammer Load Completed (" + grammerList.Count + " items)");
+                Choices myChoices = new Choices(grammerList.ToArray());
+                GrammarBuilder builder = new GrammarBuilder(myChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer Load Completed (" + grammerList.Count + " items)");
             }
             catch (Exception ex)
             {

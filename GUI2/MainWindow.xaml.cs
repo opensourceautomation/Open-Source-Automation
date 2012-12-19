@@ -41,8 +41,8 @@ namespace GUI2
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CN.ConnectionString = "SERVER=" + OSAEApi.DBConnection + ";" + "DATABASE=" + OSAEApi.DBName + ";" + "PORT=" + OSAEApi.DBPort + ";" + "UID=" + OSAEApi.DBUsername + ";" + "PASSWORD=" + OSAEApi.DBPassword + ";";
-            CN2.ConnectionString = "SERVER=" + OSAEApi.DBConnection + ";" + "DATABASE=" + OSAEApi.DBName + ";" + "PORT=" + OSAEApi.DBPort + ";" + "UID=" + OSAEApi.DBUsername + ";" + "PASSWORD=" + OSAEApi.DBPassword + ";";
+            CN.ConnectionString = OSAE.API.Common.ConnectionString;
+            CN2.ConnectionString = OSAE.API.Common.ConnectionString;
            
             Load_App_Name();
             gCurrentScreen = OSAEApi.GetObjectProperty(gAppName, "Default Screen");
