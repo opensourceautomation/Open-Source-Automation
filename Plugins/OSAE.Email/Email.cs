@@ -6,7 +6,7 @@ using OpenSourceAutomation;
 
 namespace OSAE.Email
 {
-    [AddIn("Email", Version = "0.3.8")]
+    [AddIn("Email", Version = "0.3.7")]
     public class Email : IOpenSourceAutomationAddInv2
     {
         string pName;

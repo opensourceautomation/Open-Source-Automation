@@ -33,16 +33,6 @@
         /// <param name="alwaysLog"></param>
         public void AddToLog(string audit, bool alwaysLog)
         {
-            AddToLog(audit, callingProcess, alwaysLog);           
-        }
-
-        /// <summary>
-        /// Adds a message to the log
-        /// </summary>
-        /// <param name="audit"></param>
-        /// <param name="alwaysLog"></param>
-        public void AddToLog(string audit, string logFile, bool alwaysLog)
-        {
             try
             {
                 OSAE osae = new OSAE("");
@@ -51,7 +41,7 @@
                 {
                     lock (logLocker)
                     {
-                        string filePath = Common.ApiPath + "/Logs/" + logFile + ".log";
+                        string filePath = Common.ApiPath + "/Logs/" + callingProcess + ".log";
                         System.IO.FileInfo file = new System.IO.FileInfo(filePath);
                         file.Directory.Create();
                         StreamWriter sw = File.AppendText(filePath);
@@ -69,7 +59,7 @@
             {
                 lock (logLocker)
                 {
-                    string filePath = Common.ApiPath + "/Logs/" + logFile + ".log";
+                    string filePath = Common.ApiPath + "/Logs/" + callingProcess + ".log";
                     System.IO.FileInfo file = new System.IO.FileInfo(filePath);
                     file.Directory.Create();
                     StreamWriter sw = File.AppendText(filePath);

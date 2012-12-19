@@ -1,17 +1,20 @@
 ﻿using System;
-using System.AddIn.Hosting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.Linq;
+using System.ServiceProcess;
+using System.Text;
 using System.IO;
 using System.Net;
-using System.ServiceModel;
-using System.ServiceProcess;
 using System.Threading;
+using System.ServiceModel;
 using Microsoft.Win32;
-using OpenSourceAutomation;
 using OSAE;
+using System.AddIn.Hosting;
+using OpenSourceAutomation;
 
 namespace ClientService
 {

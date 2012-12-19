@@ -28,7 +28,6 @@ namespace OSAE.Service
         private bool goodConnection = false;
         private WebServiceHost serviceHost = new WebServiceHost(typeof(OSAERest.api));
         private OSAE osae = new OSAE("OSAE Service");
-        private API.Logging logging = new API.Logging("OSAE Service");
         private bool running = true;
         
         System.Timers.Timer timer = new System.Timers.Timer();
@@ -43,16 +42,16 @@ namespace OSAE.Service
             if (args.Length > 0)
             {
                 OSAE osacl = new OSAE("OSACL");
-                API.Logging loggingcl = new API.Logging("OSACL");
                 string pattern = osacl.MatchPattern(args[0]);
-                loggingcl.AddToLog("Processing command: " + args[0] + ", Named Script: " + pattern, true);
-                if (pattern != string.Empty)
+                osacl.AddToLog("Processing command: " + args[0] + ", Named Script: " + pattern, true);
+                if (pattern != "")
                     osacl.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, "");
             }
             else
             {
                 ServiceBase.Run(new OSAEService());
-            }            
+            }
+            
         }
         
         /// <summary>
@@ -61,7 +60,7 @@ namespace OSAE.Service
         /// </summary>
         public OSAEService()
         {
-            logging.AddToLog("Service Starting", true);
+            osae.AddToLog("Service Starting", true);
 
             try
             {
@@ -70,7 +69,7 @@ namespace OSAE.Service
             }
             catch(Exception ex)
             {
-                logging.AddToLog("CreateEventSource error: " + ex.Message, true);
+                osae.AddToLog("CreateEventSource error: " + ex.Message, true);
             }
             this.ServiceName = "OSAE";
             this.EventLog.Source = "OSAE";
@@ -116,11 +115,11 @@ namespace OSAE.Service
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error getting registry settings and/or deleting logs: " + ex.Message, true);
+                osae.AddToLog("Error getting registry settings and/or deleting logs: " + ex.Message, true);
             }
 
-            logging.AddToLog("OnStart", true);
-            logging.AddToLog("Removing orphaned methods", true);
+            osae.AddToLog("OnStart", true);
+            osae.AddToLog("Removing orphaned methods", true);
 
             try
             {
@@ -134,10 +133,10 @@ namespace OSAE.Service
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error clearing method queue", true);
+                osae.AddToLog("Error clearing method queue", true);
             }
 
-            logging.AddToLog("Creating Computer object", true);
+            osae.AddToLog("Creating Computer object", true);
             if (osae.GetObjectByName(osae.ComputerName) == null)
             {
                 OSAEObject obj = osae.GetObjectByAddress(_computerIP);
@@ -166,7 +165,7 @@ namespace OSAE.Service
 
             try
             {
-                logging.AddToLog("Creating Service object", true);
+                osae.AddToLog("Creating Service object", true);
                 OSAEObject svcobj = osae.GetObjectByName("SERVICE-" + osae.ComputerName);
                 if (svcobj == null)
                     osae.ObjectAdd("SERVICE-" + osae.ComputerName, "SERVICE-" + osae.ComputerName, "SERVICE", "", "SYSTEM", true);
@@ -174,7 +173,7 @@ namespace OSAE.Service
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error creating service object - " + ex.Message, true);
+                osae.AddToLog("Error creating service object - " + ex.Message, true);
             }
 
             try
@@ -183,7 +182,7 @@ namespace OSAE.Service
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error starting RESTful web service: " + ex.Message, true);
+                osae.AddToLog("Error starting RESTful web service: " + ex.Message, true);
             }
             
             wcfService = new WCF.WCFService();
@@ -195,7 +194,7 @@ namespace OSAE.Service
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error starting WCF service: " + ex.Message, true);
+                osae.AddToLog("Error starting WCF service: " + ex.Message, true);
             }
 
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
@@ -222,38 +221,47 @@ namespace OSAE.Service
         /// </summary>
         protected override void OnStop()
         {
-            logging.AddToLog("stopping...", true);
-            checkPlugins.Enabled = false;
-
-            ShutDownPlugins();
+            osae.AddToLog("stopping...", true);
+            try
+            {
+                checkPlugins.Enabled = false;
+                running = false;
+                if (sHost.State == CommunicationState.Opened)
+                    sHost.Close();
+                serviceHost.Close();
+                osae.AddToLog("shutting down plugins", true);
+                foreach (Plugin p in plugins)
+                {
+                    if (p.Enabled)
+                    {
+                        osae.AddToLog("Shutting down " + p.PluginName, true);
+                        p.addin.Shutdown();
+                        p.process.Shutdown();
+                        p.addin = null;
+                    }
+                }
+            }
+            catch { }
         }
 
         protected override void OnShutdown() 
         {
-            logging.AddToLog("stopping...", true);
-            ShutDownPlugins();
-        }
-
-        /// <summary>
-        /// Shuts down the plugins that are currently loaded
-        /// </summary>
-        private void ShutDownPlugins()
-        {
+            osae.AddToLog("stopping...", true);
             try
             {
                 running = false;
                 if (sHost.State == CommunicationState.Opened)
                     sHost.Close();
                 serviceHost.Close();
-                logging.AddToLog("shutting down plugins", true);
+                osae.AddToLog("shutting down plugins", true);
                 foreach (Plugin p in plugins)
                 {
                     if (p.Enabled)
                     {
-                        logging.AddToLog("Shutting down " + p.PluginName, true);
-                        p.Addin.Shutdown();
-                        p.Process.Shutdown();
-                        p.Addin = null;
+                        osae.AddToLog("Shutting down " + p.PluginName, true);
+                        p.addin.Shutdown();
+                        p.process.Shutdown();
+                        p.addin = null;
                     }
                 }
             }
@@ -288,11 +296,11 @@ namespace OSAE.Service
                         sendMessageToClients("log", "found method in queue: " + method.ObjectName +
                             "(" + method.MethodName + ")   p1: " + method.Parameter1 +
                             "  p2: " + method.Parameter2);
-                        logging.AddToLog("Found method in queue: " + method.MethodName, false);
-                        logging.AddToLog("-- object name: " + method.ObjectName, false);
-                        logging.AddToLog("-- param 1: " + method.Parameter1, false);
-                        logging.AddToLog("-- param 2: " + method.Parameter2, false);
-                        logging.AddToLog("-- object owner: " + method.Owner, false);
+                        osae.AddToLog("Found method in queue: " + method.MethodName, false);
+                        osae.AddToLog("-- object name: " + method.ObjectName, false);
+                        osae.AddToLog("-- param 1: " + method.Parameter1, false);
+                        osae.AddToLog("-- param 2: " + method.Parameter2, false);
+                        osae.AddToLog("-- object owner: " + method.Owner, false);
 
                         if (method.ObjectName == "SERVICE-" + osae.ComputerName)
                         {
@@ -334,7 +342,7 @@ namespace OSAE.Service
                                 LoadPlugins();
                             }
                             command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
-                            logging.AddToLog("Removing method from queue: " + command.CommandText, false);
+                            osae.AddToLog("Removing method from queue: " + command.CommandText, false);
                             osae.RunQuery(command);
                         }
                         else
@@ -345,10 +353,10 @@ namespace OSAE.Service
                                 if (plugin.Enabled == true && (method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower()))
                                 {
                                     command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
-                                    logging.AddToLog("Removing method from queue: " + command.CommandText, false);
+                                    osae.AddToLog("Removing method from queue: " + command.CommandText, false);
                                     osae.RunQuery(command);
                                    
-                                    plugin.Addin.ProcessCommand(method);
+                                    plugin.addin.ProcessCommand(method);
                                     processed = true;
                                     break;
                                 }
@@ -362,7 +370,7 @@ namespace OSAE.Service
 
                                 
                                 command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
-                                logging.AddToLog("Removing method from queue: " + command.CommandText, false);
+                                osae.AddToLog("Removing method from queue: " + command.CommandText, false);
                                 osae.RunQuery(command);
                                 processed = true;
                             }
@@ -371,7 +379,7 @@ namespace OSAE.Service
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("Error in QueryCommandQueue: " + ex.Message, true);
+                    osae.AddToLog("Error in QueryCommandQueue: " + ex.Message, true);
                     //timer.Enabled = true;
                 }
                 System.Threading.Thread.Sleep(100);
@@ -384,18 +392,18 @@ namespace OSAE.Service
         /// </summary>
         public void LoadPlugins()
         {
-            logging.AddToLog("Entered LoadPlugins", true);
+            osae.AddToLog("Entered LoadPlugins", true);
             string path = osae.APIpath;
             AddInStore.Update(path);
             Collection<AddInToken> tokens = null;
             tokens = AddInStore.FindAddIns(typeof(IOpenSourceAutomationAddInv2), path);
-            logging.AddToLog("Found " + tokens.Count.ToString() + " tokens", true);
+            osae.AddToLog("Found " + tokens.Count.ToString() + " tokens", true);
             foreach (AddInToken token in tokens)
             {
                 if (!pluginExist(token.Name))
                     plugins.Add(new Plugin(token));
             }
-            logging.AddToLog("Found " + plugins.Count.ToString() + " plugins", true);
+            osae.AddToLog("Found " + plugins.Count.ToString() + " plugins", true);
             MySqlConnection connection = new MySqlConnection("SERVER=" + osae.DBConnection + ";" +
                             "DATABASE=" + osae.DBName + ";" +
                             "PORT=" + osae.DBPort + ";" +
@@ -406,9 +414,9 @@ namespace OSAE.Service
             {
                 try
                 {
-                    logging.AddToLog("---------------------------------------", true);
-                    logging.AddToLog("Plugin name: " + plugin.PluginName, true);
-                    logging.AddToLog("Testing connection", true);
+                    osae.AddToLog("---------------------------------------", true); 
+                    osae.AddToLog("Plugin name: " + plugin.PluginName, true);
+                    osae.AddToLog("Testing connection", true);
                     if (!goodConnection)
                     {
                         try
@@ -428,20 +436,20 @@ namespace OSAE.Service
                             OSAEObject obj = osae.GetObjectByName(plugin.PluginName);
                             if (obj != null)
                             {
-                                logging.AddToLog("Plugin Object found: " + obj.Name + " - Enabled: " + obj.Enabled.ToString(), true);
+                                osae.AddToLog("Plugin Object found: " + obj.Name + " - Enabled: " + obj.Enabled.ToString(), true);
                                 if (obj.Enabled == 1)
                                 {
-                                    if (plugin.Process == null)
+                                    if (plugin.process == null)
                                     {
                                         enablePlugin(plugin);
                                     }
-                                    logging.AddToLog("ProcessID: " + plugin.Process.ProcessId, true);
+                                    osae.AddToLog("ProcessID: " + plugin.process.ProcessId, true);
                                 }
                                 else
                                     plugin.Enabled = false;
 
-                                logging.AddToLog("Status: " + plugin.Enabled.ToString(), true);
-                                logging.AddToLog("PluginVersion: " + plugin.PluginVersion, true);
+                                osae.AddToLog("Status: " + plugin.Enabled.ToString(), true);
+                                osae.AddToLog("PluginVersion: " + plugin.PluginVersion, true);
                                 
                             }
                         }
@@ -462,11 +470,11 @@ namespace OSAE.Service
                                 plugin.PluginName = plugin.PluginType + "-" + osae.ComputerName;
                             else
                                 plugin.PluginName = plugin.PluginType;
-                            logging.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
+                            osae.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
                             osae.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
                             osae.ObjectPropertySet(plugin.PluginName, "Computer Name", osae.ComputerName);
 
-                            logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
+                            osae.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
                             sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
                                             
                         }
@@ -477,11 +485,11 @@ namespace OSAE.Service
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("Error loading plugin: " + ex.Message, true);
+                    osae.AddToLog("Error loading plugin: " + ex.Message, true);
                 }
                 catch
                 {
-                    logging.AddToLog("Error loading plugin", true);
+                    osae.AddToLog("Error loading plugin", true);
                 }
             }
         }
@@ -744,14 +752,14 @@ namespace OSAE.Service
                 {
                     if (plugin.Enabled)
                     {
-                        Process process = Process.GetProcessById(plugin.Process.ProcessId);
+                        Process process = Process.GetProcessById(plugin.process.ProcessId);
                     }
                 }
                 catch (Exception ex)
                 {
                     osae.AddToLog(plugin.PluginName + " - Plugin has crashed. Attempting to restart.", true);
                     enablePlugin(plugin);
-                    osae.AddToLog("New Process ID: " + plugin.Process.ProcessId, true);
+                    osae.AddToLog("New Process ID: " + plugin.process.ProcessId, true);
                 }
             
             }
@@ -779,7 +787,7 @@ namespace OSAE.Service
         {
             foreach (Plugin p in plugins)
             {
-                if (p.Token.Name == name)
+                if (p.token.Name == name)
                     return true;
             }
             return false;
@@ -793,11 +801,11 @@ namespace OSAE.Service
             {
                 if (plugin.ActivatePlugin())
                 {
-                    plugin.Addin.RunInterface(plugin.PluginName);
+                    plugin.addin.RunInterface(plugin.PluginName);
                     osae.ObjectStateSet(plugin.PluginName, "ON");
                     sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
                     osae.AddToLog("Plugin enabled: " + plugin.PluginName, true);
-                    osae.AddToLog("Process ID: " + plugin.Process.ProcessId.ToString(), true);
+                    osae.AddToLog("Process ID: " + plugin.process.ProcessId.ToString(), true);
                 }
             }
             catch (Exception ex)
@@ -816,11 +824,11 @@ namespace OSAE.Service
             osae.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
             try
             {
-                p.Addin.Shutdown();
-                p.Addin = null;
+                p.addin.Shutdown();
+                p.addin = null;
                 GC.Collect();
                 p.Enabled = false;
-                p.Process.Shutdown();
+                p.process.Shutdown();
                 sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName);
             }
             catch (Exception ex)

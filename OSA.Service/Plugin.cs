@@ -7,79 +7,80 @@ namespace OSAE.Service
 {
     public class Plugin
     {
+        private string _pluginName;
+        private string _pluginType;
+        private string _pluginVersion;
+        private bool _enabled;
+        private string _latestAvailableVersion;
+        private AddInToken _token;
+        private IOpenSourceAutomationAddInv2 _addin;
+        private AddInProcess _process;
         private OSAE osae = new OSAE("Plugin");
 
         #region Properties
         public Assembly Assembly;
 
-        /// <summary>
-        /// Gets or sets the plugin name
-        /// </summary>
-        public string PluginName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the plugin type
-        /// </summary>
-        public string PluginType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the plugin version
-        /// </summary>
-        public string PluginVersion { get; set; }
-
-        /// <summary>
-        /// Gets or sets the latest available version
-        /// </summary>
-        public string LatestAvailableVersion { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether the plugin is enabled
-        /// </summary>
-        public bool Enabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets the addin token
-        /// </summary>
-        public AddInToken Token { get; set; }
-
-        /// <summary>
-        /// Gets or sets the addin process
-        /// </summary>
-        public AddInProcess Process { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public IOpenSourceAutomationAddInv2 Addin { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
+        public string PluginName
+        {
+            get { return _pluginName; }
+            set { _pluginName = value; }
+        }
+        public string PluginType
+        {
+            get { return _pluginType; }
+            set { _pluginType = value; }
+        }
+        public string PluginVersion
+        {
+            get { return _pluginVersion; }
+            set { _pluginVersion = value; }
+        }
+        public string LatestAvailableVersion
+        {
+            get { return _latestAvailableVersion; }
+            set { _latestAvailableVersion = value; }
+        }
+        public bool Enabled
+        {
+            get { return _enabled; }
+            set { _enabled = value; }
+        }
+        public AddInToken token
+        {
+            get { return _token; }
+            set { _token = value; }
+        }
+        public AddInProcess process
+        {
+            get { return _process; }
+            set { _process = value; }
+        }
+        public IOpenSourceAutomationAddInv2 addin
+        {
+            get { return _addin; }
+            set { _addin = value; }
+        }
         public string Status
         {
-            get { return osae.GetObjectStateValue(PluginName).Value; }
+            get { return osae.GetObjectStateValue(_pluginName).Value; }
         }
 
         #endregion
 
         public Plugin(AddInToken token)
         {
-            Token = token;
-            PluginName = osae.GetPluginName(token.Name, osae.ComputerName);
-            PluginType = token.Name;
-            PluginVersion = token.Version;
-            LatestAvailableVersion = "";
+            _token = token;
+            _pluginName = osae.GetPluginName(_token.Name, osae.ComputerName);
+            _pluginType = _token.Name;
+            _pluginVersion = _token.Version;
+            _latestAvailableVersion = "";
         }
 
         public Plugin()
         {
-            LatestAvailableVersion = "";
+            _latestAvailableVersion = "";
         }
 
-        /// <summary>
-        /// Sets up the requested plugin and gets it running.
-        /// </summary>
-        /// <returns>true if the plugin successfully loaded false otherwise</returns>
         public bool ActivatePlugin()
         {
             try
@@ -87,12 +88,8 @@ namespace OSAE.Service
                 osae.AddToLog("Activating Plugin: " + PluginName, true);
                 // Create application domain setup information.
                 AppDomainSetup domaininfo = new AppDomainSetup();
-                domaininfo.PrivateBinPathProbe = osae.APIpath;
                 domaininfo.ApplicationBase = osae.APIpath;
                 //domaininfo.ApplicationTrust = AddInSecurityLevel.Host;
-
-                // TODO Remove Log Message after testing
-                osae.AddToLog("Running New Service Code", true);
 
                 // Create the application domain.
                 AppDomain domain = AppDomain.CreateDomain(PluginName + "_Domain", null, domaininfo);
@@ -102,15 +99,15 @@ namespace OSAE.Service
                 osae.AddToLog("Application base is: " + domain.SetupInformation.ApplicationBase, true);
                 
                 //_addin = _token.Activate<IOpenSourceAutomationAddIn>(domain);
-                Process = new AddInProcess(Platform.AnyCpu);
-                Addin = Token.Activate<IOpenSourceAutomationAddInv2>(Process, AddInSecurityLevel.FullTrust);
-                Enabled = true;
+                _process = new AddInProcess(Platform.AnyCpu);
+                _addin = _token.Activate<IOpenSourceAutomationAddInv2>(process,AddInSecurityLevel.FullTrust);
+                _enabled = true;
                 return true;
             }
             catch(Exception ex)
             {
-                osae.AddToLog("Error activating plugin (" + PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
-                Enabled = false;
+                osae.AddToLog("Error activating plugin (" + _pluginName + "): " + ex.Message + " - " + ex.InnerException, true);
+                _enabled = false;
                 return false;
             }
             catch

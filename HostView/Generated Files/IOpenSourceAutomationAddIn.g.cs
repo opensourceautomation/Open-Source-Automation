@@ -9,7 +9,8 @@
 //------------------------------------------------------------------------------
 
 namespace OpenSourceAutomation
-{    
+{
+    
     public interface IOpenSourceAutomationAddInv2
     {
         void RunInterface(string pluginName);

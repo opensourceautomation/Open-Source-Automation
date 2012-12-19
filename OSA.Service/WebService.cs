@@ -7,14 +7,14 @@ using OSAE;
 
 namespace OSAERest
 {
-
+    
     [ServiceContract]
     public interface IRestService
     {
         [OperationContract]
         [WebGet(UriTemplate = "object/{name}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Object GetObject(string name);
-
+        
         [OperationContract]
         [WebGet(UriTemplate = "object/{name}/{method}?param1={param1}&param2={param2}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean ExecuteMethod(string name, string method, string param1, string param2);
@@ -52,7 +52,7 @@ namespace OSAERest
         [OperationContract]
         [WebGet(UriTemplate = "namedscript/update?name={name}&oldName={oldName}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean UpdateNamedScript(string name, string oldName, string script);
-
+        
         [OperationContract]
         [WebGet(UriTemplate = "script/add?obj={objName}&event={objEvent}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean AddScript(string objName, string objEvent, string script);
@@ -66,54 +66,15 @@ namespace OSAERest
         List<string> GetSystemStates();
 
         [OperationContract]
-        [WebGet(UriTemplate = "system/states/current", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        string GetCurrentSystemState();
-
-        [OperationContract]
-        [WebGet(UriTemplate = "system/states/set?state={state}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        void SetSystemState(string state);
-
-        [OperationContract]
         [WebGet(UriTemplate = "property/update?objName={objName}&propName={propName}&propVal={propVal}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean SetObjectProperty(string objName, string propName, string propVal);
 
-        [OperationContract]
-        [WebGet(UriTemplate = "speech/command?speechCommand={speechCommand}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean SpeechCommand(string speechCommand);
+        
     }
 
     public class api : IRestService
     {
         OSAE.OSAE osae = new OSAE.OSAE("WebService");
-
-        public bool SpeechCommand(string speechCommand)
-        {
-            bool result = true;
-
-            try
-            {
-                string sText = osae.MatchPattern(speechCommand);
-                osae.MethodQueueAdd("Script Processor", "NAMED SCRIPT", sText, "");
-                osae.AddToLog("Heard: " + speechCommand + ", Ran: " + sText, true);
-            }
-            catch (Exception ex)
-            {
-                osae.AddToLog("Error occurred processing speech details: \r\n\r\n" + ex.Message, true);
-            }
-
-            return true;
-        }
-
-        public string GetCurrentSystemState()
-        {
-            throw new NotImplementedException();
-            return "";
-        }
-
-        public void SetSystemState(string state)
-        {
-            throw new NotImplementedException();
-        }
 
         public Object GetObject(string name)
         {
@@ -154,7 +115,7 @@ namespace OSAERest
                 obj.State = oObj.State.Value;
 
                 obj.Properties = getProperties(obj.Name);
-
+                
                 objList.Add(obj);
             }
 
@@ -294,7 +255,7 @@ namespace OSAERest
 
             return list;
         }
-
+        
         private List<Property> getProperties(string objName)
         {
             OSAEObject oObj = osae.GetObjectByName(objName);
@@ -306,14 +267,14 @@ namespace OSAERest
                 p.Name = prop.Name;
                 p.Value = prop.Value;
                 p.DataType = prop.DataType;
-                p.LastUpdated = prop.LastUpdated;
+                p.LastUpdated = prop.LastUpdated; 
                 p.Id = prop.Id;
                 properties.Add(p);
             }
             return properties;
         }
 
-
+        
     }
 
     public class Object

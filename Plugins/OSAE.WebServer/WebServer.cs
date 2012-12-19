@@ -5,11 +5,10 @@ using HttpServer.HttpModules;
 using OpenSourceAutomation;
 
 namespace OSAE.WebServer
-{   
+{
     [AddIn("Web Server", Version = "0.3.8")]
     public class WebServer : IOpenSourceAutomationAddInv2
     {
-        
         HttpServer.HttpServer server = new HttpServer.HttpServer();
         OSAE osae = new OSAE("Web Server");
         AdvancedFileModule afm = null; 

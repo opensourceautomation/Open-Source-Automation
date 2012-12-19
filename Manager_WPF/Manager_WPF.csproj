@@ -207,7 +207,7 @@
     <Resource Include="Resources\logs.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UI\OSAE.UI.Controls\OSAE.UI.Controls.csproj">
+    <ProjectReference Include="..\OSAE.UI.Controls\OSAE.UI.Controls.csproj">
       <Project>{503092C1-23FE-4AD8-B855-CF1D24D632A9}</Project>
       <Name>OSAE.UI.Controls</Name>
     </ProjectReference>

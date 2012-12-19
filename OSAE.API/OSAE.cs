@@ -7,1528 +7,1528 @@ using MySql.Data.MySqlClient;
 
 namespace OSAE
 {
-	/// <summary>
-	/// API used to interact with the various components of OSA
-	/// </summary>
-	public partial class OSAE
-	{        
-		#region Properties
+    /// <summary>
+    /// API used to interact with the various components of OSA
+    /// </summary>
+    public partial class OSAE
+    {        
+        #region Properties
 
-		private object locker = new object();                        
-		private string _parentProcess;        
-		private API.Logging logging = null;
+        private object locker = new object();                        
+        private string _parentProcess;        
+        private API.Logging logging = null;
 
-		/// <summary>
-		/// The installation folder of OSA
-		/// </summary>                
-		public string APIpath  { get; set; }
-			  
-		/// <summary>
-		/// The location of the DB server
-		/// </summary>
-		public string DBConnection  { get; set; }
-			
-		/// <summary>
-		/// The port to connect to OSA on
-		/// </summary>
-		public string DBPort  { get; set; }
-			
-		/// <summary>
-		/// The name of the OSA database
-		/// </summary>
-		public string DBName  { get; set; }
-		
-		/// <summary>
-		/// The username to connect to the DB with
-		/// </summary>
-		public string DBUsername  { get; set; }
-	  
-		/// <summary>
-		/// The password to connect to the DB with
-		/// </summary>
-		public string DBPassword  { get; set; }
-	  
-		public string ComputerName  { get; set; }
-	  
-		#endregion
+        /// <summary>
+        /// The installation folder of OSA
+        /// </summary>                
+        public string APIpath  { get; set; }
+              
+        /// <summary>
+        /// The location of the DB server
+        /// </summary>
+        public string DBConnection  { get; set; }
+            
+        /// <summary>
+        /// The port to connect to OSA on
+        /// </summary>
+        public string DBPort  { get; set; }
+            
+        /// <summary>
+        /// The name of the OSA database
+        /// </summary>
+        public string DBName  { get; set; }
+        
+        /// <summary>
+        /// The username to connect to the DB with
+        /// </summary>
+        public string DBUsername  { get; set; }
+      
+        /// <summary>
+        /// The password to connect to the DB with
+        /// </summary>
+        public string DBPassword  { get; set; }
+      
+        public string ComputerName  { get; set; }
+      
+        #endregion
 
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		/// <param name="parentProcess">The parent process</param>
-		public OSAE(string parentProcess)
-		{
-			ModifyRegistry myRegistry = new ModifyRegistry();
-			myRegistry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
-			DBConnection = myRegistry.Read("DBCONNECTION");
-			DBPort = myRegistry.Read("DBPORT");
-			DBName = myRegistry.Read("DBNAME");
-			DBUsername = myRegistry.Read("DBUSERNAME");
-			DBPassword = myRegistry.Read("DBPASSWORD");            
-			_parentProcess = parentProcess;
-			logging = new API.Logging(parentProcess);
-			APIpath = myRegistry.Read("INSTALLDIR");
-		}        
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="parentProcess">The parent process</param>
+        public OSAE(string parentProcess)
+        {
+            ModifyRegistry myRegistry = new ModifyRegistry();
+            myRegistry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+            DBConnection = myRegistry.Read("DBCONNECTION");
+            DBPort = myRegistry.Read("DBPORT");
+            DBName = myRegistry.Read("DBNAME");
+            DBUsername = myRegistry.Read("DBUSERNAME");
+            DBPassword = myRegistry.Read("DBPASSWORD");            
+            _parentProcess = parentProcess;
+            logging = new API.Logging(parentProcess);
+            APIpath = myRegistry.Read("INSTALLDIR");
+        }        
 
-		/// <summary>
-		/// Adds a method to the queue
-		/// </summary>
-		/// <param name="objectName"></param>
-		/// <param name="method"></param>
-		/// <param name="param1"></param>
-		/// <param name="param2"></param>
-		public void MethodQueueAdd(string objectName, string method, string param1, string param2)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_method_queue_add (@Name, @Method, @Param1, @Param2, @FromObject, @DebugInfo)";
-				command.Parameters.AddWithValue("@Name", objectName);
-				command.Parameters.AddWithValue("@Method", method);
-				command.Parameters.AddWithValue("@Param1", param1);
-				command.Parameters.AddWithValue("@Param2", param2);
-				command.Parameters.AddWithValue("@FromObject", GetPluginName(_parentProcess, ComputerName));
-				command.Parameters.AddWithValue("@DebugInfo", null);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - MethodQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Adds a method to the queue
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="method"></param>
+        /// <param name="param1"></param>
+        /// <param name="param2"></param>
+        public void MethodQueueAdd(string objectName, string method, string param1, string param2)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_method_queue_add (@Name, @Method, @Param1, @Param2, @FromObject, @DebugInfo)";
+                command.Parameters.AddWithValue("@Name", objectName);
+                command.Parameters.AddWithValue("@Method", method);
+                command.Parameters.AddWithValue("@Param1", param1);
+                command.Parameters.AddWithValue("@Param2", param2);
+                command.Parameters.AddWithValue("@FromObject", GetPluginName(_parentProcess, ComputerName));
+                command.Parameters.AddWithValue("@DebugInfo", null);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - MethodQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Delete method from the queue
-		/// </summary>
-		/// <param name="methodID"></param>
-		public void MethodQueueDelete(int methodID)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_method_queue_delete (@ID)";
-				command.Parameters.AddWithValue("@ID", methodID);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - MethodQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Delete method from the queue
+        /// </summary>
+        /// <param name="methodID"></param>
+        public void MethodQueueDelete(int methodID)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_method_queue_delete (@ID)";
+                command.Parameters.AddWithValue("@ID", methodID);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - MethodQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Create a new object
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="description"></param>
-		/// <param name="objectType"></param>
-		/// <param name="address"></param>
-		/// <param name="container"></param>
-		public void ObjectAdd(string name, string description, string objectType, string address, string container, bool enabled)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "osae_sp_object_add";
-				command.CommandType = CommandType.StoredProcedure;
+        /// <summary>
+        /// Create a new object
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <param name="objectType"></param>
+        /// <param name="address"></param>
+        /// <param name="container"></param>
+        public void ObjectAdd(string name, string description, string objectType, string address, string container, bool enabled)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "osae_sp_object_add";
+                command.CommandType = CommandType.StoredProcedure;
 
-				command.Parameters.AddWithValue("?pname", name);
-				command.Parameters.AddWithValue("?pdescription", description);
-				command.Parameters.AddWithValue("?pobjecttype", objectType);
-				command.Parameters.AddWithValue("?paddress", address);
-				command.Parameters.AddWithValue("?pcontainer", container);
-				command.Parameters.AddWithValue("?penabled", enabled);
-				command.Parameters.Add(new MySqlParameter("?results", MySqlDbType.Int32));
-				command.Parameters["?results"].Direction = ParameterDirection.Output;
-				try
-				{
-					//RunQuery(command);
-					using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
-					{
-						command.Connection = connection;
-						command.Connection.Open();
-						command.ExecuteNonQuery();
-					}
+                command.Parameters.AddWithValue("?pname", name);
+                command.Parameters.AddWithValue("?pdescription", description);
+                command.Parameters.AddWithValue("?pobjecttype", objectType);
+                command.Parameters.AddWithValue("?paddress", address);
+                command.Parameters.AddWithValue("?pcontainer", container);
+                command.Parameters.AddWithValue("?penabled", enabled);
+                command.Parameters.Add(new MySqlParameter("?results", MySqlDbType.Int32));
+                command.Parameters["?results"].Direction = ParameterDirection.Output;
+                try
+                {
+                    //RunQuery(command);
+                    using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                    {
+                        command.Connection = connection;
+                        command.Connection.Open();
+                        command.ExecuteNonQuery();
+                    }
 
-					if (command.Parameters["?results"].Value.ToString() == "1")
-						logging.AddToLog("API - ObjectAdded successfully", true);
-					else if (command.Parameters["?results"].Value.ToString() == "2")
-						logging.AddToLog("API - ObjectAdd failed.  Object type doesn't exist.", true);
-					else if (command.Parameters["?results"].Value.ToString() == "3")
-						logging.AddToLog("API - ObjectAdd failed.  Object with same name or address already exists", true);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+                    if (command.Parameters["?results"].Value.ToString() == "1")
+                        logging.AddToLog("API - ObjectAdded successfully", true);
+                    else if (command.Parameters["?results"].Value.ToString() == "2")
+                        logging.AddToLog("API - ObjectAdd failed.  Object type doesn't exist.", true);
+                    else if (command.Parameters["?results"].Value.ToString() == "3")
+                        logging.AddToLog("API - ObjectAdd failed.  Object with same name or address already exists", true);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Delete an object
-		/// </summary>
-		/// <param name="Name"></param>
-		public void ObjectDelete(string Name)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_delete (@Name)";
-				command.Parameters.AddWithValue("@Name", Name);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Delete an object
+        /// </summary>
+        /// <param name="Name"></param>
+        public void ObjectDelete(string Name)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_delete (@Name)";
+                command.Parameters.AddWithValue("@Name", Name);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Delete an object
-		/// </summary>
-		/// <param name="Name"></param>
-		public void ObjectDeleteByAddress(string address)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_delete_by_address (@Address)";
-				command.Parameters.AddWithValue("@Address", address);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectDeleteByAddress error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Delete an object
+        /// </summary>
+        /// <param name="Name"></param>
+        public void ObjectDeleteByAddress(string address)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_delete_by_address (@Address)";
+                command.Parameters.AddWithValue("@Address", address);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectDeleteByAddress error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Update an existing object
-		/// </summary>
-		/// <param name="oldName"></param>
-		/// <param name="newName"></param>
-		/// <param name="description"></param>
-		/// <param name="objectType"></param>
-		/// <param name="Address"></param>
-		/// <param name="Container"></param>
-		/// <param name="Enabled"></param>
-		public void ObjectUpdate(string oldName, string newName, string description, string objectType, string address, string container, int enabled)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_update (@OldName, @NewName, @Description, @ObjectType, @Address, @Container, @Enabled)";
-				command.Parameters.AddWithValue("@OldName", oldName);
-				command.Parameters.AddWithValue("@NewName", newName);
-				command.Parameters.AddWithValue("@Description", description);
-				command.Parameters.AddWithValue("@ObjectType", objectType);
-				command.Parameters.AddWithValue("@Address", address);
-				command.Parameters.AddWithValue("@Container", container);
-				command.Parameters.AddWithValue("@Enabled", enabled);
-				
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Update an existing object
+        /// </summary>
+        /// <param name="oldName"></param>
+        /// <param name="newName"></param>
+        /// <param name="description"></param>
+        /// <param name="objectType"></param>
+        /// <param name="Address"></param>
+        /// <param name="Container"></param>
+        /// <param name="Enabled"></param>
+        public void ObjectUpdate(string oldName, string newName, string description, string objectType, string address, string container, int enabled)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_update (@OldName, @NewName, @Description, @ObjectType, @Address, @Container, @Enabled)";
+                command.Parameters.AddWithValue("@OldName", oldName);
+                command.Parameters.AddWithValue("@NewName", newName);
+                command.Parameters.AddWithValue("@Description", description);
+                command.Parameters.AddWithValue("@ObjectType", objectType);
+                command.Parameters.AddWithValue("@Address", address);
+                command.Parameters.AddWithValue("@Container", container);
+                command.Parameters.AddWithValue("@Enabled", enabled);
+                
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Add a new event script for an object
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="event"></param>
-		/// <param name="scriptText"></param>
-		public void ObjectEventScriptAdd(string name, string eventName, string scriptText)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_event_script_add (@Name, @Event, @ScriptText)";
-				command.Parameters.AddWithValue("@Name", name);
-				command.Parameters.AddWithValue("@Event", eventName);
-				command.Parameters.AddWithValue("@ScriptText", scriptText);
+        /// <summary>
+        /// Add a new event script for an object
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="event"></param>
+        /// <param name="scriptText"></param>
+        public void ObjectEventScriptAdd(string name, string eventName, string scriptText)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_event_script_add (@Name, @Event, @ScriptText)";
+                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@Event", eventName);
+                command.Parameters.AddWithValue("@ScriptText", scriptText);
 
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectEventScriptAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectEventScriptAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Update an event script
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="event"></param>
-		/// <param name="scriptText"></param>
-		public void ObjectEventScriptUpdate(string name, string eventName, string scriptText)
-		{
-			MySqlCommand command = new MySqlCommand();
-			command.CommandText = "CALL osae_sp_object_event_script_update (@Name, @Event, @ScriptText)";
-			command.Parameters.AddWithValue("@Name", name);
-			command.Parameters.AddWithValue("@Event", eventName);
-			command.Parameters.AddWithValue("@ScriptText", scriptText);
+        /// <summary>
+        /// Update an event script
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="event"></param>
+        /// <param name="scriptText"></param>
+        public void ObjectEventScriptUpdate(string name, string eventName, string scriptText)
+        {
+            MySqlCommand command = new MySqlCommand();
+            command.CommandText = "CALL osae_sp_object_event_script_update (@Name, @Event, @ScriptText)";
+            command.Parameters.AddWithValue("@Name", name);
+            command.Parameters.AddWithValue("@Event", eventName);
+            command.Parameters.AddWithValue("@ScriptText", scriptText);
 
-			try
-			{
-				RunQuery(command);
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - ObjectEventScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-			}
-		}
+            try
+            {
+                RunQuery(command);
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - ObjectEventScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+            }
+        }
 
-		/// <summary>
-		/// Set the value of a object's property
-		/// </summary>
-		/// <param name="objectName">The name of the object</param>
-		/// <param name="propertyName">The name of the property</param>
-		/// <param name="propertyValue">The value of the property</param>
-		public void ObjectPropertySet(string objectName, string propertyName, string propertyValue)
-		{
-			MySqlCommand command = new MySqlCommand();
-			command.CommandText = "CALL osae_sp_object_property_set (@ObjectName, @PropertyName, @PropertyValue, @FromObject, @DebugInfo)";
-			command.Parameters.AddWithValue("@ObjectName", objectName);
-			command.Parameters.AddWithValue("@PropertyName", propertyName);
-			command.Parameters.AddWithValue("@PropertyValue", propertyValue);
-			command.Parameters.AddWithValue("@FromObject", GetPluginName(_parentProcess, ComputerName));
-			command.Parameters.AddWithValue("@DebugInfo", null);
-			try
-			{
-				RunQuery(command);
-			}
-			catch (Exception ex)
-			{
+        /// <summary>
+        /// Set the value of a object's property
+        /// </summary>
+        /// <param name="objectName">The name of the object</param>
+        /// <param name="propertyName">The name of the property</param>
+        /// <param name="propertyValue">The value of the property</param>
+        public void ObjectPropertySet(string objectName, string propertyName, string propertyValue)
+        {
+            MySqlCommand command = new MySqlCommand();
+            command.CommandText = "CALL osae_sp_object_property_set (@ObjectName, @PropertyName, @PropertyValue, @FromObject, @DebugInfo)";
+            command.Parameters.AddWithValue("@ObjectName", objectName);
+            command.Parameters.AddWithValue("@PropertyName", propertyName);
+            command.Parameters.AddWithValue("@PropertyValue", propertyValue);
+            command.Parameters.AddWithValue("@FromObject", GetPluginName(_parentProcess, ComputerName));
+            command.Parameters.AddWithValue("@DebugInfo", null);
+            try
+            {
+                RunQuery(command);
+            }
+            catch (Exception ex)
+            {
 
-				logging.AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
-			}
-		}
+                logging.AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
+            }
+        }
 
-		/// <summary>
-		/// Set the state of an object
-		/// </summary>
-		/// <param name="ObjectName"></param>
-		/// <param name="State"></param>
-		public void ObjectStateSet(string ObjectName, string State)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_state_set(@ObjectName, @State, @FromObject, @DebugInfo)";
-				command.Parameters.AddWithValue("@ObjectName", ObjectName);
-				command.Parameters.AddWithValue("@State", State);
-				command.Parameters.AddWithValue("@FromObject", GetPluginName(_parentProcess, ComputerName));
-				command.Parameters.AddWithValue("@DebugInfo", null);
+        /// <summary>
+        /// Set the state of an object
+        /// </summary>
+        /// <param name="ObjectName"></param>
+        /// <param name="State"></param>
+        public void ObjectStateSet(string ObjectName, string State)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_state_set(@ObjectName, @State, @FromObject, @DebugInfo)";
+                command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                command.Parameters.AddWithValue("@State", State);
+                command.Parameters.AddWithValue("@FromObject", GetPluginName(_parentProcess, ComputerName));
+                command.Parameters.AddWithValue("@DebugInfo", null);
 
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("ObjectStateSet error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ObjectStateSet error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		#region Object Type Methods
-		/// <summary>
-		/// Create new object type
-		/// </summary>
-		/// <param name="Name"></param>
-		/// <param name="Description"></param>
-		/// <param name="OwnedBy"></param>
-		/// <param name="BaseType"></param>
-		/// <param name="TypeOwner"></param>
-		/// <param name="System"></param>
-		/// <param name="Container"></param>
-		public void ObjectTypeAdd(string Name, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_add (@Name, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents)";
-				command.Parameters.AddWithValue("@Name", Name);
-				command.Parameters.AddWithValue("@Description", Description);
-				command.Parameters.AddWithValue("@OwnedBy", OwnedBy);
-				command.Parameters.AddWithValue("@BaseType", OwnedBy);
-				command.Parameters.AddWithValue("@TypeOwner", TypeOwner);
-				command.Parameters.AddWithValue("@System", System);
-				command.Parameters.AddWithValue("@Container", Container);
-				command.Parameters.AddWithValue("@HideRedundantEvents", HideRedundantEvents);
+        #region Object Type Methods
+        /// <summary>
+        /// Create new object type
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="Description"></param>
+        /// <param name="OwnedBy"></param>
+        /// <param name="BaseType"></param>
+        /// <param name="TypeOwner"></param>
+        /// <param name="System"></param>
+        /// <param name="Container"></param>
+        public void ObjectTypeAdd(string Name, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_add (@Name, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents)";
+                command.Parameters.AddWithValue("@Name", Name);
+                command.Parameters.AddWithValue("@Description", Description);
+                command.Parameters.AddWithValue("@OwnedBy", OwnedBy);
+                command.Parameters.AddWithValue("@BaseType", OwnedBy);
+                command.Parameters.AddWithValue("@TypeOwner", TypeOwner);
+                command.Parameters.AddWithValue("@System", System);
+                command.Parameters.AddWithValue("@Container", Container);
+                command.Parameters.AddWithValue("@HideRedundantEvents", HideRedundantEvents);
 
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Delete an object type
-		/// </summary>
-		/// <param name="Name"></param>
-		public void ObjectTypeDelete(string Name)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_delete (@Name)";
-				command.Parameters.AddWithValue("@Name", Name);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Delete an object type
+        /// </summary>
+        /// <param name="Name"></param>
+        public void ObjectTypeDelete(string Name)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_delete (@Name)";
+                command.Parameters.AddWithValue("@Name", Name);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Update an existing object type
-		/// </summary>
-		/// <param name="oldName"></param>
-		/// <param name="newName"></param>
-		/// <param name="Description"></param>
-		/// <param name="OwnedBy"></param>
-		/// <param name="BaseType"></param>
-		/// <param name="TypeOwner"></param>
-		/// <param name="System"></param>
-		/// <param name="Container"></param>
-		public void ObjectTypeUpdate(string oldName, string newName, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_update (@oldName, @newName, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents)";
-				command.Parameters.AddWithValue("@oldName", oldName);
-				command.Parameters.AddWithValue("@newName", newName);
-				command.Parameters.AddWithValue("@Description", Description);
-				command.Parameters.AddWithValue("@OwnedBy", OwnedBy);
-				command.Parameters.AddWithValue("@BaseType", BaseType);
-				command.Parameters.AddWithValue("@TypeOwner", TypeOwner);
-				command.Parameters.AddWithValue("@System", System);
-				command.Parameters.AddWithValue("@Container", Container);
-				command.Parameters.AddWithValue("@HideRedundantEvents", HideRedundantEvents);
-				///AddToLog("@TypeOwner" + TypeOwner + "  @Container" + Container);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Update an existing object type
+        /// </summary>
+        /// <param name="oldName"></param>
+        /// <param name="newName"></param>
+        /// <param name="Description"></param>
+        /// <param name="OwnedBy"></param>
+        /// <param name="BaseType"></param>
+        /// <param name="TypeOwner"></param>
+        /// <param name="System"></param>
+        /// <param name="Container"></param>
+        public void ObjectTypeUpdate(string oldName, string newName, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_update (@oldName, @newName, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents)";
+                command.Parameters.AddWithValue("@oldName", oldName);
+                command.Parameters.AddWithValue("@newName", newName);
+                command.Parameters.AddWithValue("@Description", Description);
+                command.Parameters.AddWithValue("@OwnedBy", OwnedBy);
+                command.Parameters.AddWithValue("@BaseType", BaseType);
+                command.Parameters.AddWithValue("@TypeOwner", TypeOwner);
+                command.Parameters.AddWithValue("@System", System);
+                command.Parameters.AddWithValue("@Container", Container);
+                command.Parameters.AddWithValue("@HideRedundantEvents", HideRedundantEvents);
+                ///AddToLog("@TypeOwner" + TypeOwner + "  @Container" + Container);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Add an event top an existing object type
-		/// </summary>
-		/// <param name="Name"></param>
-		/// <param name="Label"></param>
-		/// <param name="ObjectType"></param>
-		public void ObjectTypeEventAdd(string Name, string Label, string ObjectType)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_event_add (@Name, @Label, @ObjectType)";
-				command.Parameters.AddWithValue("@Name", Name);
-				command.Parameters.AddWithValue("@Label", Label);
-				command.Parameters.AddWithValue("@ObjectType", ObjectType);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Add an event top an existing object type
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="Label"></param>
+        /// <param name="ObjectType"></param>
+        public void ObjectTypeEventAdd(string Name, string Label, string ObjectType)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_event_add (@Name, @Label, @ObjectType)";
+                command.Parameters.AddWithValue("@Name", Name);
+                command.Parameters.AddWithValue("@Label", Label);
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Delete an event from an object type
-		/// </summary>
-		/// <param name="Name"></param>
-		/// <param name="ObjectType"></param>
-		public void ObjectTypeEventDelete(string Name, string ObjectType)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_event_delete (@Name, @ObjectType)";
-				command.Parameters.AddWithValue("@Name", Name);
-				command.Parameters.AddWithValue("@ObjectType", ObjectType);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Delete an event from an object type
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="ObjectType"></param>
+        public void ObjectTypeEventDelete(string Name, string ObjectType)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_event_delete (@Name, @ObjectType)";
+                command.Parameters.AddWithValue("@Name", Name);
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Update an existing event on an object type
-		/// </summary>
-		/// <param name="oldName"></param>
-		/// <param name="newName"></param>
-		/// <param name="label"></param>
-		/// <param name="objectType"></param>
-		public void ObjectTypeEventUpdate(string oldName, string newName, string label, string objectType)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_event_update (@OldName, @NewName, @Label, @ObjectType)";
-				command.Parameters.AddWithValue("@OldName", oldName);
-				command.Parameters.AddWithValue("@NewName", newName);
-				command.Parameters.AddWithValue("@Label", label);
-				command.Parameters.AddWithValue("@ObjectType", objectType);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Update an existing event on an object type
+        /// </summary>
+        /// <param name="oldName"></param>
+        /// <param name="newName"></param>
+        /// <param name="label"></param>
+        /// <param name="objectType"></param>
+        public void ObjectTypeEventUpdate(string oldName, string newName, string label, string objectType)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_event_update (@OldName, @NewName, @Label, @ObjectType)";
+                command.Parameters.AddWithValue("@OldName", oldName);
+                command.Parameters.AddWithValue("@NewName", newName);
+                command.Parameters.AddWithValue("@Label", label);
+                command.Parameters.AddWithValue("@ObjectType", objectType);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Add a method to an object type
-		/// </summary>
-		/// <param name="Name"></param>
-		/// <param name="Label"></param>
-		/// <param name="ObjectType"></param>
-		public void ObjectTypeMethodAdd(string Name, string Label, string ObjectType, string ParamLabel1, string ParamLabel2, string ParamDefault1, string ParamDefault2)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_method_add (@Name, @Label, @ObjectType, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2)";
-				command.Parameters.AddWithValue("@Name", Name);
-				command.Parameters.AddWithValue("@Label", Label);
-				command.Parameters.AddWithValue("@ObjectType", ObjectType);
-				command.Parameters.AddWithValue("@ParamLabel1", ParamLabel1);
-				command.Parameters.AddWithValue("@ParamLabel2", ParamLabel2);
-				command.Parameters.AddWithValue("@ParamDefault1", ParamDefault1);
-				command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Add a method to an object type
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="Label"></param>
+        /// <param name="ObjectType"></param>
+        public void ObjectTypeMethodAdd(string Name, string Label, string ObjectType, string ParamLabel1, string ParamLabel2, string ParamDefault1, string ParamDefault2)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_method_add (@Name, @Label, @ObjectType, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2)";
+                command.Parameters.AddWithValue("@Name", Name);
+                command.Parameters.AddWithValue("@Label", Label);
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
+                command.Parameters.AddWithValue("@ParamLabel1", ParamLabel1);
+                command.Parameters.AddWithValue("@ParamLabel2", ParamLabel2);
+                command.Parameters.AddWithValue("@ParamDefault1", ParamDefault1);
+                command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Delete a method from an object type
-		/// </summary>
-		/// <param name="Name"></param>
-		/// <param name="ObjectType"></param>
-		public void ObjectTypeMethodDelete(string Name, string ObjectType)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_method_delete (@Name, @ObjectType)";
-				command.Parameters.AddWithValue("@Name", Name);
-				command.Parameters.AddWithValue("@ObjectType", ObjectType);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Delete a method from an object type
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="ObjectType"></param>
+        public void ObjectTypeMethodDelete(string Name, string ObjectType)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_method_delete (@Name, @ObjectType)";
+                command.Parameters.AddWithValue("@Name", Name);
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Update an existing method on an object type
-		/// </summary>
-		/// <param name="oldName"></param>
-		/// <param name="newName"></param>
-		/// <param name="label"></param>
-		/// <param name="objectType"></param>
-		/// <param name="ParamLabel1"></param>
-		/// <param name="ParamLabel2"></param>
-		public void ObjectTypeMethodUpdate(string oldName, string newName, string label, string objectType, string paramLabel1, string paramLabel2, string ParamDefault1, string ParamDefault2)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_method_update (@OldName, @NewName, @Label, @ObjectType, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2)";
-				command.Parameters.AddWithValue("@OldName", oldName);
-				command.Parameters.AddWithValue("@NewName", newName);
-				command.Parameters.AddWithValue("@Label", label);
-				command.Parameters.AddWithValue("@ObjectType", objectType);
-				command.Parameters.AddWithValue("@ParamLabel1", paramLabel1);
-				command.Parameters.AddWithValue("@ParamLabel2", paramLabel2);
-				command.Parameters.AddWithValue("@ParamDefault1", ParamDefault1);
-				command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-					logging.AddToLog("osae_sp_object_type_method_update (" + oldName + "," + newName + "," + label + "," + objectType + "," + paramLabel1 + "," + paramLabel2 + ")", true);
-				}
-			}
-		}
+        /// <summary>
+        /// Update an existing method on an object type
+        /// </summary>
+        /// <param name="oldName"></param>
+        /// <param name="newName"></param>
+        /// <param name="label"></param>
+        /// <param name="objectType"></param>
+        /// <param name="ParamLabel1"></param>
+        /// <param name="ParamLabel2"></param>
+        public void ObjectTypeMethodUpdate(string oldName, string newName, string label, string objectType, string paramLabel1, string paramLabel2, string ParamDefault1, string ParamDefault2)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_method_update (@OldName, @NewName, @Label, @ObjectType, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2)";
+                command.Parameters.AddWithValue("@OldName", oldName);
+                command.Parameters.AddWithValue("@NewName", newName);
+                command.Parameters.AddWithValue("@Label", label);
+                command.Parameters.AddWithValue("@ObjectType", objectType);
+                command.Parameters.AddWithValue("@ParamLabel1", paramLabel1);
+                command.Parameters.AddWithValue("@ParamLabel2", paramLabel2);
+                command.Parameters.AddWithValue("@ParamDefault1", ParamDefault1);
+                command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("osae_sp_object_type_method_update (" + oldName + "," + newName + "," + label + "," + objectType + "," + paramLabel1 + "," + paramLabel2 + ")", true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Add a property to an object type
-		/// </summary>
-		/// <param name="Name"></param>
-		/// <param name="ParameterType"></param>
-		/// <param name="ObjectType"></param>
-		public void ObjectTypePropertyAdd(string Name, string ParameterType, string ParameterDefault, string ObjectType, bool TrackHistory)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_property_add (@Name, @ParameterType, @ParameterDefault, @ObjectType, @TrackHistory)";
-				command.Parameters.AddWithValue("@Name", Name);
-				command.Parameters.AddWithValue("@ParameterType", ParameterType);
-				command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
-				command.Parameters.AddWithValue("@ObjectType", ObjectType);
-				command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypePropertyAAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Add a property to an object type
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="ParameterType"></param>
+        /// <param name="ObjectType"></param>
+        public void ObjectTypePropertyAdd(string Name, string ParameterType, string ParameterDefault, string ObjectType, bool TrackHistory)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_property_add (@Name, @ParameterType, @ParameterDefault, @ObjectType, @TrackHistory)";
+                command.Parameters.AddWithValue("@Name", Name);
+                command.Parameters.AddWithValue("@ParameterType", ParameterType);
+                command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
+                command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypePropertyAAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Delete a property from on object type
-		/// </summary>
-		/// <param name="Name"></param>
-		/// <param name="ObjectType"></param>
-		public void ObjectTypePropertyDelete(string Name, string ObjectType)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_property_delete (@Name, @ObjectType)";
-				command.Parameters.AddWithValue("@Name", Name);
-				command.Parameters.AddWithValue("@ObjectType", ObjectType);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Delete a property from on object type
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="ObjectType"></param>
+        public void ObjectTypePropertyDelete(string Name, string ObjectType)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_property_delete (@Name, @ObjectType)";
+                command.Parameters.AddWithValue("@Name", Name);
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Update an existing property on an object type
-		/// </summary>
-		/// <param name="oldName"></param>
-		/// <param name="newName"></param>
-		/// <param name="ParameterType"></param>
-		/// <param name="objectType"></param>
-		public void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterDefault, string objectType, bool TrackHistory)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_property_update (@OldName, @NewName, @ParameterType, @ParameterDefault, @ObjectType, @TrackHistory)";
-				command.Parameters.AddWithValue("@OldName", oldName);
-				command.Parameters.AddWithValue("@NewName", newName);
-				command.Parameters.AddWithValue("@ParameterType", ParameterType);
-				command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
-				command.Parameters.AddWithValue("@ObjectType", objectType);
-				command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Update an existing property on an object type
+        /// </summary>
+        /// <param name="oldName"></param>
+        /// <param name="newName"></param>
+        /// <param name="ParameterType"></param>
+        /// <param name="objectType"></param>
+        public void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterDefault, string objectType, bool TrackHistory)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_property_update (@OldName, @NewName, @ParameterType, @ParameterDefault, @ObjectType, @TrackHistory)";
+                command.Parameters.AddWithValue("@OldName", oldName);
+                command.Parameters.AddWithValue("@NewName", newName);
+                command.Parameters.AddWithValue("@ParameterType", ParameterType);
+                command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
+                command.Parameters.AddWithValue("@ObjectType", objectType);
+                command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		public void ObjectTypePropertyOptionAdd(string objectType, string propertyName, string option)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_property_option_add (@objectName, @propertyName, @option)";
-				command.Parameters.AddWithValue("@objectName", objectType);
-				command.Parameters.AddWithValue("@propertyName", propertyName);
-				command.Parameters.AddWithValue("@option", option);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        public void ObjectTypePropertyOptionAdd(string objectType, string propertyName, string option)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_property_option_add (@objectName, @propertyName, @option)";
+                command.Parameters.AddWithValue("@objectName", objectType);
+                command.Parameters.AddWithValue("@propertyName", propertyName);
+                command.Parameters.AddWithValue("@option", option);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		public void ObjectTypePropertyOptionDelete(string objectType, string propertyName, string option)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_property_option_delete (@objectName, @propertyName, @option)";
-				command.Parameters.AddWithValue("@objectName", objectType);
-				command.Parameters.AddWithValue("@propertyName", propertyName);
-				command.Parameters.AddWithValue("@option", option);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        public void ObjectTypePropertyOptionDelete(string objectType, string propertyName, string option)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_property_option_delete (@objectName, @propertyName, @option)";
+                command.Parameters.AddWithValue("@objectName", objectType);
+                command.Parameters.AddWithValue("@propertyName", propertyName);
+                command.Parameters.AddWithValue("@option", option);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		public void ObjectTypePropertyOptionUpdate(string objectType, string propertyName, string newoption, string oldoption)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_property_option_update (@objectName, @propertyName, @newoption, @oldoption)";
-				command.Parameters.AddWithValue("@objectName", objectType);
-				command.Parameters.AddWithValue("@propertyName", propertyName);
-				command.Parameters.AddWithValue("@newoption", newoption);
-				command.Parameters.AddWithValue("@oldoption", oldoption);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        public void ObjectTypePropertyOptionUpdate(string objectType, string propertyName, string newoption, string oldoption)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_property_option_update (@objectName, @propertyName, @newoption, @oldoption)";
+                command.Parameters.AddWithValue("@objectName", objectType);
+                command.Parameters.AddWithValue("@propertyName", propertyName);
+                command.Parameters.AddWithValue("@newoption", newoption);
+                command.Parameters.AddWithValue("@oldoption", oldoption);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Add a state to an object type
-		/// </summary>
-		/// <param name="Name"></param>
-		/// <param name="Label"></param>
-		/// <param name="ObjectType"></param>
-		public void ObjectTypeStateAdd(string Name, string Label, string ObjectType)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_state_add (@Name, @Label, @ObjectType)";
-				command.Parameters.AddWithValue("@Name", Name);
-				command.Parameters.AddWithValue("@Label", Label);
-				command.Parameters.AddWithValue("@ObjectType", ObjectType);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Add a state to an object type
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="Label"></param>
+        /// <param name="ObjectType"></param>
+        public void ObjectTypeStateAdd(string Name, string Label, string ObjectType)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_state_add (@Name, @Label, @ObjectType)";
+                command.Parameters.AddWithValue("@Name", Name);
+                command.Parameters.AddWithValue("@Label", Label);
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Delete a state from an object type
-		/// </summary>
-		/// <param name="Name"></param>
-		/// <param name="ObjectType"></param>
-		public void ObjectTypeStateDelete(string Name, string ObjectType)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_state_delete (@Name, @ObjectType)";
-				command.Parameters.AddWithValue("@Name", Name);
-				command.Parameters.AddWithValue("@ObjectType", ObjectType);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Delete a state from an object type
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="ObjectType"></param>
+        public void ObjectTypeStateDelete(string Name, string ObjectType)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_state_delete (@Name, @ObjectType)";
+                command.Parameters.AddWithValue("@Name", Name);
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Update an existing state from an object type
-		/// </summary>
-		/// <param name="oldName"></param>
-		/// <param name="newName"></param>
-		/// <param name="label"></param>
-		/// <param name="objectType"></param>
-		public void ObjectTypeStateUpdate(string oldName, string newName, string newLabel, string objectType)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_type_state_update (@OldName, @NewName, @Label, @ObjectType)";
-				command.Parameters.AddWithValue("@OldName", oldName);
-				command.Parameters.AddWithValue("@NewName", newName);
-				command.Parameters.AddWithValue("@Label", newLabel);
-				command.Parameters.AddWithValue("@ObjectType", objectType);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Update an existing state from an object type
+        /// </summary>
+        /// <param name="oldName"></param>
+        /// <param name="newName"></param>
+        /// <param name="label"></param>
+        /// <param name="objectType"></param>
+        public void ObjectTypeStateUpdate(string oldName, string newName, string newLabel, string objectType)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_state_update (@OldName, @NewName, @Label, @ObjectType)";
+                command.Parameters.AddWithValue("@OldName", oldName);
+                command.Parameters.AddWithValue("@NewName", newName);
+                command.Parameters.AddWithValue("@Label", newLabel);
+                command.Parameters.AddWithValue("@ObjectType", objectType);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="objType"></param>
-		/// <param name="propName"></param>
-		/// <returns></returns>
-		public DataSet GetObjectTypePropertyOptions(string objType, string propName)
-		{            
-			DataSet dataset = new DataSet();
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT option_name FROM osae_v_object_type_property_option WHERE object_type=@ObjectType AND property_name=@PropertyName";
-					command.Parameters.AddWithValue("@ObjectType", objType);
-					command.Parameters.AddWithValue("@PropertyName", propName);
-					dataset = RunQuery(command);
-				}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="objType"></param>
+        /// <param name="propName"></param>
+        /// <returns></returns>
+        public DataSet GetObjectTypePropertyOptions(string objType, string propName)
+        {            
+            DataSet dataset = new DataSet();
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT option_name FROM osae_v_object_type_property_option WHERE object_type=@ObjectType AND property_name=@PropertyName";
+                    command.Parameters.AddWithValue("@ObjectType", objType);
+                    command.Parameters.AddWithValue("@PropertyName", propName);
+                    dataset = RunQuery(command);
+                }
 
-				return dataset;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - GetObjectTypePropertyOptions error: " + ex.Message, true);
-				return dataset;
-			}
-		}
+                return dataset;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - GetObjectTypePropertyOptions error: " + ex.Message, true);
+                return dataset;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Property Array Methods
+        #region Property Array Methods
 
-		/// <summary>
+        /// <summary>
 		/// propertyLabel is usually left null
-		/// </summary>
-		/// <param name="objectName"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="propertyValue"></param>
-		/// <param name="propertyLabel"></param>
-		public void ObjectPropertyArrayAdd(string objectName, string propertyName, string propertyValue, string propertyLabel)
-		{
-			MySqlCommand command = new MySqlCommand();
-			command.CommandText = "CALL osae_sp_object_property_array_add (@ObjectName, @PropertyName, @PropertyValue, @PropertyLabel)";
-			command.Parameters.AddWithValue("@ObjectName", objectName);
-			command.Parameters.AddWithValue("@PropertyName", propertyName);
-			command.Parameters.AddWithValue("@PropertyValue", propertyValue);
-			command.Parameters.AddWithValue("@PropertyLabel", propertyLabel);
-			try
-			{
-				RunQuery(command);
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-			}
-		}
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="propertyValue"></param>
+        /// <param name="propertyLabel"></param>
+        public void ObjectPropertyArrayAdd(string objectName, string propertyName, string propertyValue, string propertyLabel)
+        {
+            MySqlCommand command = new MySqlCommand();
+            command.CommandText = "CALL osae_sp_object_property_array_add (@ObjectName, @PropertyName, @PropertyValue, @PropertyLabel)";
+            command.Parameters.AddWithValue("@ObjectName", objectName);
+            command.Parameters.AddWithValue("@PropertyName", propertyName);
+            command.Parameters.AddWithValue("@PropertyValue", propertyValue);
+            command.Parameters.AddWithValue("@PropertyLabel", propertyLabel);
+            try
+            {
+                RunQuery(command);
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+            }
+        }
 
-		/// <summary>
-		/// Get one random value from a property array
-		/// </summary>
-		/// <param name="objectName"></param>
-		/// <param name="propertyName"></param>
-		public string ObjectPropertyArrayGetRandom(string objectName, string propertyName)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				DataSet dataset = new DataSet();
-				command.CommandText = "CALL osae_sp_object_property_array_get_random (@ObjectName, @PropertyName)";
-				command.Parameters.AddWithValue("@ObjectName", objectName);
-				command.Parameters.AddWithValue("@PropertyName", propertyName);
-				try
-				{
-					dataset = RunQuery(command);
-					string Result = dataset.Tables[0].Rows[0][0].ToString();
-					return Result;
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectPropertyArrayGetRandom error: " + command.CommandText + " - error: " + ex.Message, true);
-					return string.Empty;
-				}
-			}
-		}
+        /// <summary>
+        /// Get one random value from a property array
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="propertyName"></param>
+        public string ObjectPropertyArrayGetRandom(string objectName, string propertyName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                DataSet dataset = new DataSet();
+                command.CommandText = "CALL osae_sp_object_property_array_get_random (@ObjectName, @PropertyName)";
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@PropertyName", propertyName);
+                try
+                {
+                    dataset = RunQuery(command);
+                    string Result = dataset.Tables[0].Rows[0][0].ToString();
+                    return Result;
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectPropertyArrayGetRandom error: " + command.CommandText + " - error: " + ex.Message, true);
+                    return string.Empty;
+                }
+            }
+        }
 
-		/// <summary>
-		/// Returns a Dataset of all the item in the property array
-		/// </summary>
-		/// <param name="objectName"></param>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
-		public DataSet ObjectPropertyArrayGetAll(string objectName, string propertyName)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				DataSet dataset = new DataSet();
-				try
-				{
-					command.CommandText = "CALL osae_sp_object_property_array_get_all (@ObjectName, @PropertyName)";
-					command.Parameters.AddWithValue("@ObjectName", objectName);
-					command.Parameters.AddWithValue("@PropertyName", propertyName);
-					dataset = RunQuery(command);
+        /// <summary>
+        /// Returns a Dataset of all the item in the property array
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        public DataSet ObjectPropertyArrayGetAll(string objectName, string propertyName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                DataSet dataset = new DataSet();
+                try
+                {
+                    command.CommandText = "CALL osae_sp_object_property_array_get_all (@ObjectName, @PropertyName)";
+                    command.Parameters.AddWithValue("@ObjectName", objectName);
+                    command.Parameters.AddWithValue("@PropertyName", propertyName);
+                    dataset = RunQuery(command);
 
-					return dataset;
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectPropertyArrayGetAll error: " + command.CommandText + " - error: " + ex.Message, true);
-					return dataset;
-				}
-			}
-		}
+                    return dataset;
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectPropertyArrayGetAll error: " + command.CommandText + " - error: " + ex.Message, true);
+                    return dataset;
+                }
+            }
+        }
 
-		/// <summary>
-		/// Deletes an item from a property array
-		/// </summary>
-		/// <param name="objectName"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="propertyValue"></param>
-		public void ObjectPropertyArrayDelete(string objectName, string propertyName, string propertyValue)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_property_array_delete (@ObjectName, @PropertyName, @PropertyValue)";
-				command.Parameters.AddWithValue("@ObjectName", objectName);
-				command.Parameters.AddWithValue("@PropertyName", propertyName);
-				command.Parameters.AddWithValue("@PropertyValue", propertyValue);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectPropertyArrayDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Deletes an item from a property array
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="propertyValue"></param>
+        public void ObjectPropertyArrayDelete(string objectName, string propertyName, string propertyValue)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_property_array_delete (@ObjectName, @PropertyName, @PropertyValue)";
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@PropertyName", propertyName);
+                command.Parameters.AddWithValue("@PropertyValue", propertyValue);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectPropertyArrayDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// Deletes all items from a property array
-		/// </summary>
-		/// <param name="objectName"></param>
-		/// <param name="propertyName"></param>
-		public void ObjectPropertyArrayDeleteAll(string objectName, string propertyName)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_object_property_array_delete_all (@ObjectName, @PropertyName)";
-				command.Parameters.AddWithValue("@ObjectName", objectName);
-				command.Parameters.AddWithValue("@PropertyName", propertyName);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ObjectPropertyArrayDeleteAll error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// Deletes all items from a property array
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="propertyName"></param>
+        public void ObjectPropertyArrayDeleteAll(string objectName, string propertyName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_property_array_delete_all (@ObjectName, @PropertyName)";
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@PropertyName", propertyName);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ObjectPropertyArrayDeleteAll error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Scheduling Methods
+        #region Scheduling Methods
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="scheduleDate"></param>
-		/// <param name="obj"></param>
-		/// <param name="method"></param>
-		/// <param name="parameter1"></param>
-		/// <param name="parameter2"></param>
-		/// <param name="pattern"></param>
-		/// <param name="recurringID"></param>
-		public void ScheduleQueueAdd(DateTime scheduleDate, string obj, string method, string parameter1, string parameter2, string pattern, int recurringID)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_schedule_queue_add(@ScheduleDate, @Object, @Method, @Parameter1, @Parameter2, @Pattern, @RecurringID)";
-				command.Parameters.AddWithValue("@ScheduleDate", scheduleDate);
-				command.Parameters.AddWithValue("@Object", obj);
-				command.Parameters.AddWithValue("@Method", method);
-				command.Parameters.AddWithValue("@Parameter1", parameter1);
-				command.Parameters.AddWithValue("@Parameter2", parameter2);
-				command.Parameters.AddWithValue("@Pattern", pattern);
-				command.Parameters.AddWithValue("@RecurringID", recurringID);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scheduleDate"></param>
+        /// <param name="obj"></param>
+        /// <param name="method"></param>
+        /// <param name="parameter1"></param>
+        /// <param name="parameter2"></param>
+        /// <param name="pattern"></param>
+        /// <param name="recurringID"></param>
+        public void ScheduleQueueAdd(DateTime scheduleDate, string obj, string method, string parameter1, string parameter2, string pattern, int recurringID)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_schedule_queue_add(@ScheduleDate, @Object, @Method, @Parameter1, @Parameter2, @Pattern, @RecurringID)";
+                command.Parameters.AddWithValue("@ScheduleDate", scheduleDate);
+                command.Parameters.AddWithValue("@Object", obj);
+                command.Parameters.AddWithValue("@Method", method);
+                command.Parameters.AddWithValue("@Parameter1", parameter1);
+                command.Parameters.AddWithValue("@Parameter2", parameter2);
+                command.Parameters.AddWithValue("@Pattern", pattern);
+                command.Parameters.AddWithValue("@RecurringID", recurringID);
 
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("ScheduleQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ScheduleQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="queueID"></param>
-		public void ScheduleQueueDelete(int queueID)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_schedule_queue_delete(@QueueID)";
-				command.Parameters.AddWithValue("@QueueID", queueID);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="queueID"></param>
+        public void ScheduleQueueDelete(int queueID)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_schedule_queue_delete(@QueueID)";
+                command.Parameters.AddWithValue("@QueueID", queueID);
 
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("ScheduleQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ScheduleQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="scheduleName"></param>
-		/// <param name="obj"></param>
-		/// <param name="method"></param>
-		/// <param name="parameter1"></param>
-		/// <param name="parameter2"></param>
-		/// <param name="pattern"></param>
-		/// <param name="recurringTime"></param>
-		/// <param name="sunday"></param>
-		/// <param name="monday"></param>
-		/// <param name="tuesday"></param>
-		/// <param name="wednesday"></param>
-		/// <param name="thursday"></param>
-		/// <param name="friday"></param>
-		/// <param name="saturday"></param>
-		/// <param name="interval"></param>
-		/// <param name="recurringDay"></param>
-		/// <param name="recurringDate"></param>
-		public void ScheduleRecurringAdd(string scheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
-			string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
-			string interval, int recurringMinutes, string recurringDay, string recurringDate)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_schedule_recurring_add(@ScheduleName, @Object, @Method, @Parameter1, @Parameter2, ";
-				command.CommandText = command.CommandText + "@Pattern, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
-				command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate)";
-				command.Parameters.AddWithValue("@ScheduleName", scheduleName);
-				command.Parameters.AddWithValue("@Object", obj);
-				command.Parameters.AddWithValue("@Method", method);
-				command.Parameters.AddWithValue("@Parameter1", parameter1);
-				command.Parameters.AddWithValue("@Parameter2", parameter2);
-				command.Parameters.AddWithValue("@Pattern", pattern);
-				command.Parameters.AddWithValue("@RecurringTime", recurringTime);
-				command.Parameters.AddWithValue("@Sunday", sunday);
-				command.Parameters.AddWithValue("@Monday", monday);
-				command.Parameters.AddWithValue("@Tuesday", tuesday);
-				command.Parameters.AddWithValue("@Wednesday", wednesday);
-				command.Parameters.AddWithValue("@Thursday", thursday);
-				command.Parameters.AddWithValue("@Friday", friday);
-				command.Parameters.AddWithValue("@Saturday", saturday);
-				command.Parameters.AddWithValue("@Interval", interval);
-				command.Parameters.AddWithValue("@RecurringMinutes", recurringMinutes);
-				command.Parameters.AddWithValue("@RecurringDay", recurringDay);
-				command.Parameters.AddWithValue("@RecurringDate", recurringDate);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scheduleName"></param>
+        /// <param name="obj"></param>
+        /// <param name="method"></param>
+        /// <param name="parameter1"></param>
+        /// <param name="parameter2"></param>
+        /// <param name="pattern"></param>
+        /// <param name="recurringTime"></param>
+        /// <param name="sunday"></param>
+        /// <param name="monday"></param>
+        /// <param name="tuesday"></param>
+        /// <param name="wednesday"></param>
+        /// <param name="thursday"></param>
+        /// <param name="friday"></param>
+        /// <param name="saturday"></param>
+        /// <param name="interval"></param>
+        /// <param name="recurringDay"></param>
+        /// <param name="recurringDate"></param>
+        public void ScheduleRecurringAdd(string scheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
+            string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
+            string interval, int recurringMinutes, string recurringDay, string recurringDate)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_schedule_recurring_add(@ScheduleName, @Object, @Method, @Parameter1, @Parameter2, ";
+                command.CommandText = command.CommandText + "@Pattern, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
+                command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate)";
+                command.Parameters.AddWithValue("@ScheduleName", scheduleName);
+                command.Parameters.AddWithValue("@Object", obj);
+                command.Parameters.AddWithValue("@Method", method);
+                command.Parameters.AddWithValue("@Parameter1", parameter1);
+                command.Parameters.AddWithValue("@Parameter2", parameter2);
+                command.Parameters.AddWithValue("@Pattern", pattern);
+                command.Parameters.AddWithValue("@RecurringTime", recurringTime);
+                command.Parameters.AddWithValue("@Sunday", sunday);
+                command.Parameters.AddWithValue("@Monday", monday);
+                command.Parameters.AddWithValue("@Tuesday", tuesday);
+                command.Parameters.AddWithValue("@Wednesday", wednesday);
+                command.Parameters.AddWithValue("@Thursday", thursday);
+                command.Parameters.AddWithValue("@Friday", friday);
+                command.Parameters.AddWithValue("@Saturday", saturday);
+                command.Parameters.AddWithValue("@Interval", interval);
+                command.Parameters.AddWithValue("@RecurringMinutes", recurringMinutes);
+                command.Parameters.AddWithValue("@RecurringDay", recurringDay);
+                command.Parameters.AddWithValue("@RecurringDate", recurringDate);
 
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("ScheduleRecurringAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ScheduleRecurringAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="scheduleName"></param>
-		public void ScheduleRecurringDelete(string scheduleName)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_schedule_recurring_delete(@ScheduleName)";
-				command.Parameters.AddWithValue("@ScheduleName", scheduleName);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scheduleName"></param>
+        public void ScheduleRecurringDelete(string scheduleName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_schedule_recurring_delete(@ScheduleName)";
+                command.Parameters.AddWithValue("@ScheduleName", scheduleName);
 
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("ScheduleRecurringDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ScheduleRecurringDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="oldScheduleName"></param>
-		/// <param name="newScheduleName"></param>
-		/// <param name="obj"></param>
-		/// <param name="method"></param>
-		/// <param name="parameter1"></param>
-		/// <param name="parameter2"></param>
-		/// <param name="pattern"></param>
-		/// <param name="recurringTime"></param>
-		/// <param name="sunday"></param>
-		/// <param name="monday"></param>
-		/// <param name="tuesday"></param>
-		/// <param name="wednesday"></param>
-		/// <param name="thursday"></param>
-		/// <param name="friday"></param>
-		/// <param name="saturday"></param>
-		/// <param name="interval"></param>
-		/// <param name="recurringDay"></param>
-		/// <param name="recurringDate"></param>
-		public void ScheduleRecurringUpdate(string oldScheduleName, string newScheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
-			string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
-			string interval, int recurringMinutes, string recurringDay, string recurringDate)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_schedule_recurring_update(@OldScheduleName, @NewScheduleName, @Object, @Method, @Parameter1, @Parameter2, ";
-				command.CommandText = command.CommandText + "@Pattern, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
-				command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate)";
-				command.Parameters.AddWithValue("@OldScheduleName", oldScheduleName);
-				command.Parameters.AddWithValue("@NewScheduleName", newScheduleName);
-				command.Parameters.AddWithValue("@Object", obj);
-				command.Parameters.AddWithValue("@Method", method);
-				command.Parameters.AddWithValue("@Parameter1", parameter1);
-				command.Parameters.AddWithValue("@Parameter2", parameter2);
-				command.Parameters.AddWithValue("@Pattern", pattern);
-				command.Parameters.AddWithValue("@RecurringTime", recurringTime);
-				command.Parameters.AddWithValue("@Sunday", sunday);
-				command.Parameters.AddWithValue("@Monday", monday);
-				command.Parameters.AddWithValue("@Tuesday", tuesday);
-				command.Parameters.AddWithValue("@Wednesday", wednesday);
-				command.Parameters.AddWithValue("@Thursday", thursday);
-				command.Parameters.AddWithValue("@Friday", friday);
-				command.Parameters.AddWithValue("@Saturday", saturday);
-				command.Parameters.AddWithValue("@Interval", interval);
-				command.Parameters.AddWithValue("@RecurringMinutes", recurringMinutes);
-				command.Parameters.AddWithValue("@RecurringDay", recurringDay);
-				command.Parameters.AddWithValue("@RecurringDate", recurringDate);
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("ScheduleRecurringUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="oldScheduleName"></param>
+        /// <param name="newScheduleName"></param>
+        /// <param name="obj"></param>
+        /// <param name="method"></param>
+        /// <param name="parameter1"></param>
+        /// <param name="parameter2"></param>
+        /// <param name="pattern"></param>
+        /// <param name="recurringTime"></param>
+        /// <param name="sunday"></param>
+        /// <param name="monday"></param>
+        /// <param name="tuesday"></param>
+        /// <param name="wednesday"></param>
+        /// <param name="thursday"></param>
+        /// <param name="friday"></param>
+        /// <param name="saturday"></param>
+        /// <param name="interval"></param>
+        /// <param name="recurringDay"></param>
+        /// <param name="recurringDate"></param>
+        public void ScheduleRecurringUpdate(string oldScheduleName, string newScheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
+            string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
+            string interval, int recurringMinutes, string recurringDay, string recurringDate)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_schedule_recurring_update(@OldScheduleName, @NewScheduleName, @Object, @Method, @Parameter1, @Parameter2, ";
+                command.CommandText = command.CommandText + "@Pattern, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
+                command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate)";
+                command.Parameters.AddWithValue("@OldScheduleName", oldScheduleName);
+                command.Parameters.AddWithValue("@NewScheduleName", newScheduleName);
+                command.Parameters.AddWithValue("@Object", obj);
+                command.Parameters.AddWithValue("@Method", method);
+                command.Parameters.AddWithValue("@Parameter1", parameter1);
+                command.Parameters.AddWithValue("@Parameter2", parameter2);
+                command.Parameters.AddWithValue("@Pattern", pattern);
+                command.Parameters.AddWithValue("@RecurringTime", recurringTime);
+                command.Parameters.AddWithValue("@Sunday", sunday);
+                command.Parameters.AddWithValue("@Monday", monday);
+                command.Parameters.AddWithValue("@Tuesday", tuesday);
+                command.Parameters.AddWithValue("@Wednesday", wednesday);
+                command.Parameters.AddWithValue("@Thursday", thursday);
+                command.Parameters.AddWithValue("@Friday", friday);
+                command.Parameters.AddWithValue("@Saturday", saturday);
+                command.Parameters.AddWithValue("@Interval", interval);
+                command.Parameters.AddWithValue("@RecurringMinutes", recurringMinutes);
+                command.Parameters.AddWithValue("@RecurringDay", recurringDay);
+                command.Parameters.AddWithValue("@RecurringDate", recurringDate);
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ScheduleRecurringUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void RunScheduledMethods()
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_run_scheduled_methods";
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - RunScheduledMethods error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public void RunScheduledMethods()
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_run_scheduled_methods";
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - RunScheduledMethods error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void ProcessRecurring()
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_process_recurring";
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - ProcessRecurring error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ProcessRecurring()
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_process_recurring";
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - ProcessRecurring error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		#endregion
+        #endregion
 
 		#region Object Getters
 		/// <summary>
-		/// Returns a Dataset of all objects of specified type
-		/// </summary>
-		/// <param name="ObjectType"></param>
-		/// <returns></returns>
-		public List<OSAEObject> GetObjectsByType(string ObjectType)
-		{
-			DataSet dataset = new DataSet();
-			OSAEObject obj = new OSAEObject();
-			List<OSAEObject> objects = new List<OSAEObject>();
+        /// Returns a Dataset of all objects of specified type
+        /// </summary>
+        /// <param name="ObjectType"></param>
+        /// <returns></returns>
+        public List<OSAEObject> GetObjectsByType(string ObjectType)
+        {
+            DataSet dataset = new DataSet();
+            OSAEObject obj = new OSAEObject();
+            List<OSAEObject> objects = new List<OSAEObject>();
 
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				try
-				{
-					command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_type=@ObjectType";
-					command.Parameters.AddWithValue("@ObjectType", ObjectType);
-					dataset = RunQuery(command);
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                try
+                {
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_type=@ObjectType";
+                    command.Parameters.AddWithValue("@ObjectType", ObjectType);
+                    dataset = RunQuery(command);
 
-					if (dataset.Tables[0].Rows.Count > 0)
-					{
-						foreach (DataRow dr in dataset.Tables[0].Rows)
-						{
-							obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-							obj.State.Value = dr["state_label"].ToString();
-							obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
-							obj.BaseType = dr["base_type"].ToString();
-							DataSet ds = GetObjectProperties(obj.Name);
-							List<ObjectProperty> props = new List<ObjectProperty>();
-							foreach (DataRow drp in ds.Tables[0].Rows)
-							{
-								ObjectProperty p = new ObjectProperty();
-								p.Name = drp["property_name"].ToString();
-								p.Value = drp["property_value"].ToString();
-								p.DataType = drp["property_datatype"].ToString();
-								p.LastUpdated = drp["last_updated"].ToString();
-								p.Id = drp["object_property_id"].ToString();
-								props.Add(p);
-							}
-							obj.Properties = props;
-							obj.Methods = GetObjectMethods(obj.Name);
-							objects.Add(obj);
-						}
-						return objects;
-					}
-					return objects;
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - GetObjectsByType error: " + ex.Message, true);
-					return objects;
-				}
-			}
-		}
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        foreach (DataRow dr in dataset.Tables[0].Rows)
+                        {
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
+                            obj.State.Value = dr["state_label"].ToString();
+                            obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
+                            obj.BaseType = dr["base_type"].ToString();
+                            DataSet ds = GetObjectProperties(obj.Name);
+                            List<ObjectProperty> props = new List<ObjectProperty>();
+                            foreach (DataRow drp in ds.Tables[0].Rows)
+                            {
+                                ObjectProperty p = new ObjectProperty();
+                                p.Name = drp["property_name"].ToString();
+                                p.Value = drp["property_value"].ToString();
+                                p.DataType = drp["property_datatype"].ToString();
+                                p.LastUpdated = drp["last_updated"].ToString();
+                                p.Id = drp["object_property_id"].ToString();
+                                props.Add(p);
+                            }
+                            obj.Properties = props;
+                            obj.Methods = GetObjectMethods(obj.Name);
+                            objects.Add(obj);
+                        }
+                        return objects;
+                    }
+                    return objects;
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - GetObjectsByType error: " + ex.Message, true);
+                    return objects;
+                }
+            }
+        }
 
-		/// <summary>
-		/// Returns all objects with the specified base type
-		/// </summary>
-		/// <param name="ObjectBaseType"></param>
-		/// <returns></returns>
-		public List<OSAEObject> GetObjectsByBaseType(string ObjectBaseType)
-		{
-			DataSet dataset = new DataSet();
-			OSAEObject obj = new OSAEObject();
-			List<OSAEObject> objects = new List<OSAEObject>();
+        /// <summary>
+        /// Returns all objects with the specified base type
+        /// </summary>
+        /// <param name="ObjectBaseType"></param>
+        /// <returns></returns>
+        public List<OSAEObject> GetObjectsByBaseType(string ObjectBaseType)
+        {
+            DataSet dataset = new DataSet();
+            OSAEObject obj = new OSAEObject();
+            List<OSAEObject> objects = new List<OSAEObject>();
 
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				try
-				{
-					command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE base_type=@ObjectType";
-					command.Parameters.AddWithValue("@ObjectType", ObjectBaseType);
-					dataset = RunQuery(command);
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                try
+                {
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE base_type=@ObjectType";
+                    command.Parameters.AddWithValue("@ObjectType", ObjectBaseType);
+                    dataset = RunQuery(command);
 
-					if (dataset.Tables[0].Rows.Count > 0)
-					{
-						foreach (DataRow dr in dataset.Tables[0].Rows)
-						{
-							obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-							obj.State.Value = dr["state_label"].ToString();
-							obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
-							obj.BaseType = dr["base_type"].ToString();
-							DataSet ds = GetObjectProperties(obj.Name);
-							List<ObjectProperty> props = new List<ObjectProperty>();
-							foreach (DataRow drp in ds.Tables[0].Rows)
-							{
-								ObjectProperty p = new ObjectProperty();
-								p.Name = drp["property_name"].ToString();
-								p.Value = drp["property_value"].ToString();
-								p.DataType = drp["property_datatype"].ToString();
-								p.LastUpdated = drp["last_updated"].ToString();
-								p.Id = drp["object_property_id"].ToString();
-								props.Add(p);
-							}
-							obj.Properties = props;
-							obj.Methods = GetObjectMethods(obj.Name);
-							objects.Add(obj);
-						}
-						return objects;
-					}
-					return objects;
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
-					return objects;
-				}
-			}        
-		}
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        foreach (DataRow dr in dataset.Tables[0].Rows)
+                        {
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
+                            obj.State.Value = dr["state_label"].ToString();
+                            obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
+                            obj.BaseType = dr["base_type"].ToString();
+                            DataSet ds = GetObjectProperties(obj.Name);
+                            List<ObjectProperty> props = new List<ObjectProperty>();
+                            foreach (DataRow drp in ds.Tables[0].Rows)
+                            {
+                                ObjectProperty p = new ObjectProperty();
+                                p.Name = drp["property_name"].ToString();
+                                p.Value = drp["property_value"].ToString();
+                                p.DataType = drp["property_datatype"].ToString();
+                                p.LastUpdated = drp["last_updated"].ToString();
+                                p.Id = drp["object_property_id"].ToString();
+                                props.Add(p);
+                            }
+                            obj.Properties = props;
+                            obj.Methods = GetObjectMethods(obj.Name);
+                            objects.Add(obj);
+                        }
+                        return objects;
+                    }
+                    return objects;
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                    return objects;
+                }
+            }        
+        }
 
-		public List<OSAEObject> GetObjectsByOwner(string ObjectOwner)
-		{
-			MySqlCommand command = new MySqlCommand();
-			DataSet dataset = new DataSet();
-			OSAEObject obj = new OSAEObject();
-			List<OSAEObject> objects = new List<OSAEObject>();
-			try
-			{
-				command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
-				command.Parameters.AddWithValue("@ObjectOwner", ObjectOwner);
-				dataset = RunQuery(command);
+        public List<OSAEObject> GetObjectsByOwner(string ObjectOwner)
+        {
+            MySqlCommand command = new MySqlCommand();
+            DataSet dataset = new DataSet();
+            OSAEObject obj = new OSAEObject();
+            List<OSAEObject> objects = new List<OSAEObject>();
+            try
+            {
+                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
+                command.Parameters.AddWithValue("@ObjectOwner", ObjectOwner);
+                dataset = RunQuery(command);
 
-				if (dataset.Tables[0].Rows.Count > 0)
-				{
-					foreach (DataRow dr in dataset.Tables[0].Rows)
-					{
-						obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-						obj.State.Value = dr["state_label"].ToString();
-						obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
-						obj.BaseType = dr["base_type"].ToString();
-						DataSet ds = GetObjectProperties(obj.Name);
-						List<ObjectProperty> props = new List<ObjectProperty>();
-						foreach (DataRow drp in ds.Tables[0].Rows)
-						{
-							ObjectProperty p = new ObjectProperty();
-							p.Name = drp["property_name"].ToString();
-							p.Value = drp["property_value"].ToString();
-							p.DataType = drp["property_datatype"].ToString();
-							p.LastUpdated = drp["last_updated"].ToString();
-							p.Id = drp["object_property_id"].ToString();
-							props.Add(p);
-						}
-						obj.Properties = props;
-						obj.Methods = GetObjectMethods(obj.Name);
-						objects.Add(obj);
-					}
-					return objects;
-				}
-				return objects;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
-				return objects;
-			}
-		}
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow dr in dataset.Tables[0].Rows)
+                    {
+                        obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
+                        obj.State.Value = dr["state_label"].ToString();
+                        obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
+                        obj.BaseType = dr["base_type"].ToString();
+                        DataSet ds = GetObjectProperties(obj.Name);
+                        List<ObjectProperty> props = new List<ObjectProperty>();
+                        foreach (DataRow drp in ds.Tables[0].Rows)
+                        {
+                            ObjectProperty p = new ObjectProperty();
+                            p.Name = drp["property_name"].ToString();
+                            p.Value = drp["property_value"].ToString();
+                            p.DataType = drp["property_datatype"].ToString();
+                            p.LastUpdated = drp["last_updated"].ToString();
+                            p.Id = drp["object_property_id"].ToString();
+                            props.Add(p);
+                        }
+                        obj.Properties = props;
+                        obj.Methods = GetObjectMethods(obj.Name);
+                        objects.Add(obj);
+                    }
+                    return objects;
+                }
+                return objects;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                return objects;
+            }
+        }
 
-		/// <summary>
-		/// Returns a Dataset of all objects in a specified container
-		/// </summary>
-		/// <param name="ContainerName"></param>
-		/// <returns></returns>
-		public List<OSAEObject> GetObjectsByContainer(string ContainerName)
-		{
-			MySqlCommand command = new MySqlCommand();
-			DataSet dataset = new DataSet();
-			OSAEObject obj = new OSAEObject();
-			List<OSAEObject> objects = new List<OSAEObject>();
-			try
-			{
-				if (ContainerName == string.Empty)
-					command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
-				else
-				{
-					command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
-					command.Parameters.AddWithValue("@ContainerName", ContainerName);
-				}
-				dataset = RunQuery(command);
-				if (dataset.Tables[0].Rows.Count > 0)
-				{
-					foreach (DataRow dr in dataset.Tables[0].Rows)
-					{
-						obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-						obj.State.Value = dr["state_label"].ToString();
-						obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
-						obj.BaseType = dr["base_type"].ToString();
-						DataSet ds = GetObjectProperties(obj.Name);
-						List<ObjectProperty> props = new List<ObjectProperty>();
-						foreach (DataRow drp in ds.Tables[0].Rows)
-						{
-							ObjectProperty p = new ObjectProperty();
-							p.Name = drp["property_name"].ToString();
-							p.Value = drp["property_value"].ToString();
-							p.DataType = drp["property_datatype"].ToString();
-							p.LastUpdated = drp["last_updated"].ToString();
-							p.Id = drp["object_property_id"].ToString();
-							props.Add(p);
-						}
-						obj.Properties = props;
-						obj.Methods = GetObjectMethods(obj.Name);
-						objects.Add(obj);
-					}
-					return objects;
-				}
-				return objects;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - GetObjectsByContainer error: " + ex.Message, true);
-				return objects;
-			}
-		}
+        /// <summary>
+        /// Returns a Dataset of all objects in a specified container
+        /// </summary>
+        /// <param name="ContainerName"></param>
+        /// <returns></returns>
+        public List<OSAEObject> GetObjectsByContainer(string ContainerName)
+        {
+            MySqlCommand command = new MySqlCommand();
+            DataSet dataset = new DataSet();
+            OSAEObject obj = new OSAEObject();
+            List<OSAEObject> objects = new List<OSAEObject>();
+            try
+            {
+                if (ContainerName == string.Empty)
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
+                else
+                {
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
+                    command.Parameters.AddWithValue("@ContainerName", ContainerName);
+                }
+                dataset = RunQuery(command);
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow dr in dataset.Tables[0].Rows)
+                    {
+                        obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
+                        obj.State.Value = dr["state_label"].ToString();
+                        obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
+                        obj.BaseType = dr["base_type"].ToString();
+                        DataSet ds = GetObjectProperties(obj.Name);
+                        List<ObjectProperty> props = new List<ObjectProperty>();
+                        foreach (DataRow drp in ds.Tables[0].Rows)
+                        {
+                            ObjectProperty p = new ObjectProperty();
+                            p.Name = drp["property_name"].ToString();
+                            p.Value = drp["property_value"].ToString();
+                            p.DataType = drp["property_datatype"].ToString();
+                            p.LastUpdated = drp["last_updated"].ToString();
+                            p.Id = drp["object_property_id"].ToString();
+                            props.Add(p);
+                        }
+                        obj.Properties = props;
+                        obj.Methods = GetObjectMethods(obj.Name);
+                        objects.Add(obj);
+                    }
+                    return objects;
+                }
+                return objects;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - GetObjectsByContainer error: " + ex.Message, true);
+                return objects;
+            }
+        }
 
-		/// <summary>
-		/// Returns an OSAEObject with the specified address
-		/// </summary>
-		/// <param name="address"></param>
-		/// <returns></returns>
-		public OSAEObject GetObjectByAddress(string address)
-		{            
-			DataSet dataset = new DataSet();
-			OSAEObject obj = null;
+        /// <summary>
+        /// Returns an OSAEObject with the specified address
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public OSAEObject GetObjectByAddress(string address)
+        {            
+            DataSet dataset = new DataSet();
+            OSAEObject obj = null;
 
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
-					command.Parameters.AddWithValue("@Address", address);
-					dataset = RunQuery(command);
-				}
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
+                    command.Parameters.AddWithValue("@Address", address);
+                    dataset = RunQuery(command);
+                }
 
-				if (dataset.Tables[0].Rows.Count > 0)
-				{
-					obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
-					obj.State.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
-					obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
-					obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
-					DataSet ds = GetObjectProperties(obj.Name);
-					List<ObjectProperty> props = new List<ObjectProperty>();
-					foreach (DataRow drp in ds.Tables[0].Rows)
-					{
-						ObjectProperty p = new ObjectProperty();
-						p.Name = drp["property_name"].ToString();
-						p.Value = drp["property_value"].ToString();
-						p.DataType = drp["property_datatype"].ToString();
-						p.LastUpdated = drp["last_updated"].ToString();
-						p.Id = drp["object_property_id"].ToString();
-						props.Add(p);
-					}
-					obj.Properties = props;
-					obj.Methods = GetObjectMethods(obj.Name);
-					return obj;
-				}
-				else
-					return null;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - GetObjectByAddress (" + address + ")error: " + ex.Message, true);
-				return obj;
-			}
-		}
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                    obj.State.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
+                    obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
+                    obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
+                    DataSet ds = GetObjectProperties(obj.Name);
+                    List<ObjectProperty> props = new List<ObjectProperty>();
+                    foreach (DataRow drp in ds.Tables[0].Rows)
+                    {
+                        ObjectProperty p = new ObjectProperty();
+                        p.Name = drp["property_name"].ToString();
+                        p.Value = drp["property_value"].ToString();
+                        p.DataType = drp["property_datatype"].ToString();
+                        p.LastUpdated = drp["last_updated"].ToString();
+                        p.Id = drp["object_property_id"].ToString();
+                        props.Add(p);
+                    }
+                    obj.Properties = props;
+                    obj.Methods = GetObjectMethods(obj.Name);
+                    return obj;
+                }
+                else
+                    return null;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - GetObjectByAddress (" + address + ")error: " + ex.Message, true);
+                return obj;
+            }
+        }
 
-		/// <summary>
-		/// Returns an OSAEObject with the specified name
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public OSAEObject GetObjectByName(string name)
-		{           
-			DataSet dataset = new DataSet();
+        /// <summary>
+        /// Returns an OSAEObject with the specified name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public OSAEObject GetObjectByName(string name)
+        {           
+            DataSet dataset = new DataSet();
 
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
-					command.Parameters.AddWithValue("@Name", name);
-					dataset = RunQuery(command);
-				}
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
+                    command.Parameters.AddWithValue("@Name", name);
+                    dataset = RunQuery(command);
+                }
 
-				if (dataset.Tables[0].Rows.Count > 0)
-				{
-					OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
-					obj.State.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
-					obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
-					obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
-					DataSet ds = GetObjectProperties(obj.Name);
-					List<ObjectProperty> props = new List<ObjectProperty>();
-					foreach (DataRow drp in ds.Tables[0].Rows)
-					{
-						ObjectProperty p = new ObjectProperty();
-						p.Name = drp["property_name"].ToString();
-						p.Value = drp["property_value"].ToString();
-						p.DataType = drp["property_datatype"].ToString();
-						p.LastUpdated = drp["last_updated"].ToString();
-						p.Id = drp["object_property_id"].ToString();
-						props.Add(p);
-					}
-					obj.Properties = props;
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                    obj.State.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
+                    obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
+                    obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
+                    DataSet ds = GetObjectProperties(obj.Name);
+                    List<ObjectProperty> props = new List<ObjectProperty>();
+                    foreach (DataRow drp in ds.Tables[0].Rows)
+                    {
+                        ObjectProperty p = new ObjectProperty();
+                        p.Name = drp["property_name"].ToString();
+                        p.Value = drp["property_value"].ToString();
+                        p.DataType = drp["property_datatype"].ToString();
+                        p.LastUpdated = drp["last_updated"].ToString();
+                        p.Id = drp["object_property_id"].ToString();
+                        props.Add(p);
+                    }
+                    obj.Properties = props;
 
-					obj.Methods = GetObjectMethods(obj.Name);
+                    obj.Methods = GetObjectMethods(obj.Name);
 
-					return obj;
-				}
-				else
-					return null;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - GetObjectByName (" + name + ")error: " + ex.Message, true);
-				return null;
-			}
-		}
+                    return obj;
+                }
+                else
+                    return null;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - GetObjectByName (" + name + ")error: " + ex.Message, true);
+                return null;
+            }
+        }
 		#endregion Object Getters
 
 		/// <summary>
@@ -1543,13 +1543,13 @@ namespace OSAE
 
 			try
 			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
-					command.Parameters.AddWithValue("@ObjectName", ObjectName);
-					command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
-					dataset = RunQuery(command);
-				}
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
+                    dataset = RunQuery(command);
+                }
 
 				if (dataset.Tables[0].Rows.Count > 0)
 				{
@@ -1576,7 +1576,7 @@ namespace OSAE
 			}
 			catch (Exception ex)
 			{
-				logging.AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
 				return null;
 			}
 		}
@@ -1608,13 +1608,13 @@ namespace OSAE
 				}
 				else
 				{
-					logging.AddToLog("API - GetObjectStateValue error: Object does not exist | ObjectName: " + ObjectName, true);
+                    logging.AddToLog("API - GetObjectStateValue error: Object does not exist | ObjectName: " + ObjectName, true);
 					return null;
 				}
 			}
 			catch (Exception ex)
 			{
-				logging.AddToLog("API - GetObjectStateValue error: " + ex.Message + " | ObjectName: " + ObjectName, true);
+                logging.AddToLog("API - GetObjectStateValue error: " + ex.Message + " | ObjectName: " + ObjectName, true);
 				return null;
 			}
 			finally
@@ -1623,49 +1623,49 @@ namespace OSAE
 			}
 		}
 
-		/// <summary>
-		/// Returns the name of the plugin object of the specified type on the scecified machine.
-		/// </summary>
-		/// <param name="objectType"></param>
-		/// <param name="machineName"></param>
-		/// <returns></returns>
-		public string GetPluginName(string objectType, string machineName)
-		{            
-			DataSet dataset = new DataSet();
+        /// <summary>
+        /// Returns the name of the plugin object of the specified type on the scecified machine.
+        /// </summary>
+        /// <param name="objectType"></param>
+        /// <param name="machineName"></param>
+        /// <returns></returns>
+        public string GetPluginName(string objectType, string machineName)
+        {            
+            DataSet dataset = new DataSet();
 
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_type=@ObjectType AND property_name='Computer Name' AND (property_value IS NULL OR property_value='' OR property_value=@MachineName) LIMIT 1";
-					command.Parameters.AddWithValue("@ObjectType", objectType);
-					command.Parameters.AddWithValue("@MachineName", machineName);
-					dataset = RunQuery(command);
-				}
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_type=@ObjectType AND property_name='Computer Name' AND (property_value IS NULL OR property_value='' OR property_value=@MachineName) LIMIT 1";
+                    command.Parameters.AddWithValue("@ObjectType", objectType);
+                    command.Parameters.AddWithValue("@MachineName", machineName);
+                    dataset = RunQuery(command);
+                }
 
-				if (dataset.Tables[0].Rows.Count > 0)
-					return dataset.Tables[0].Rows[0]["object_name"].ToString();
-				else
-				{
-					using (MySqlCommand command = new MySqlCommand())
-					{
-						command.CommandText = "SELECT * FROM osae_object WHERE object_name=@ObjectType2";
-						command.Parameters.AddWithValue("@ObjectType2", objectType);
-						dataset = RunQuery(command);
-					}
+                if (dataset.Tables[0].Rows.Count > 0)
+                    return dataset.Tables[0].Rows[0]["object_name"].ToString();
+                else
+                {
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.CommandText = "SELECT * FROM osae_object WHERE object_name=@ObjectType2";
+                        command.Parameters.AddWithValue("@ObjectType2", objectType);
+                        dataset = RunQuery(command);
+                    }
 
-					if (dataset.Tables[0].Rows.Count > 0)
-						return objectType;
-					else
-						return "";
-				}
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - GetPluginName error: " + ex.Message + " - objectType: " + objectType + " | machineName: " + machineName, true);
-				return string.Empty;
-			}
-		}
+                    if (dataset.Tables[0].Rows.Count > 0)
+                        return objectType;
+                    else
+                        return "";
+                }
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - GetPluginName error: " + ex.Message + " - objectType: " + objectType + " | machineName: " + machineName, true);
+                return string.Empty;
+            }
+        }
 
 		/// <summary>
 		/// Returns a Dataset with all of the properties and their values for a plugin object
@@ -1674,238 +1674,238 @@ namespace OSAE
 		/// <returns></returns>
 		public DataSet GetPluginSettings(string ObjectName)
 		{
-			DataSet dataset = new DataSet();
+            DataSet dataset = new DataSet();
 
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_name=@ObjectName";
-					command.Parameters.AddWithValue("@ObjectName", ObjectName);
-					dataset = RunQuery(command);
-				}
-				return dataset;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - GetPluginSettings error: " + ex.Message, true);
-				return dataset;
-			}		
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_name=@ObjectName";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    dataset = RunQuery(command);
+                }
+                return dataset;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - GetPluginSettings error: " + ex.Message, true);
+                return dataset;
+            }		
 		}
 
-		/// <summary>
-		/// Returns true or false whether the object with the specified address exists
-		/// </summary>
-		/// <param name="address"></param>
-		/// <returns></returns>
-		public bool ObjectExists(string address)
-		{            
-			DataSet dataset = new DataSet();
+        /// <summary>
+        /// Returns true or false whether the object with the specified address exists
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public bool ObjectExists(string address)
+        {            
+            DataSet dataset = new DataSet();
 
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT * FROM osae_v_object WHERE address=@Address";
-					command.Parameters.AddWithValue("@Address", address);
-					dataset = RunQuery(command);
-				}
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT * FROM osae_v_object WHERE address=@Address";
+                    command.Parameters.AddWithValue("@Address", address);
+                    dataset = RunQuery(command);
+                }
 
-				if (dataset.Tables[0].Rows.Count > 0)
-				{
-					return true;
-				}
-				else
-					return false;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - ObjectExists Error: " + ex.Message, true);
-				return false;
-			}
-		}
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - ObjectExists Error: " + ex.Message, true);
+                return false;
+            }
+        }
 
-		/// <summary>
-		/// Runs the passed in SQL query on the database and returns a dataset of the results
-		/// </summary>
-		/// <param name="SQL"></param>
-		/// <returns></returns>
-		public DataSet RunQuery(MySqlCommand command)
-		{           
-			DataSet dataset = new DataSet();
-			
-			if (API.Common.TestConnection())
-			{
-				lock (locker)
-				{
-					using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
-					{
-						MySqlDataAdapter adapter = new MySqlDataAdapter(command);
-						command.Connection = connection;                        
-						adapter.Fill(dataset);
-					}
-				}
-			}
-			return dataset;
-		}
+        /// <summary>
+        /// Runs the passed in SQL query on the database and returns a dataset of the results
+        /// </summary>
+        /// <param name="SQL"></param>
+        /// <returns></returns>
+        public DataSet RunQuery(MySqlCommand command)
+        {           
+            DataSet dataset = new DataSet();
+            
+            if (API.Common.TestConnection())
+            {
+                lock (locker)
+                {
+                    using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                    {
+                        MySqlDataAdapter adapter = new MySqlDataAdapter(command);
+                        command.Connection = connection;                        
+                        adapter.Fill(dataset);
+                    }
+                }
+            }
+            return dataset;
+        }
 
-		/// <summary>
-		/// Runs the passed in SQL query on the database and returns a dataset of the results
-		/// </summary>
-		/// <param name="SQL"></param>
-		/// <returns></returns>
-		public DataSet RunSQL(string sql)
-		{
-			DataSet dataset = new DataSet();
+        /// <summary>
+        /// Runs the passed in SQL query on the database and returns a dataset of the results
+        /// </summary>
+        /// <param name="SQL"></param>
+        /// <returns></returns>
+        public DataSet RunSQL(string sql)
+        {
+            DataSet dataset = new DataSet();
 
-			using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
-			{                
-				MySqlDataAdapter adapter;  
+            using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+            {                
+                MySqlDataAdapter adapter;  
 
-				if (API.Common.TestConnection())
-				{
-					lock (locker)
-					{
-						MySqlCommand command = new MySqlCommand(sql);
-						{
-							command.Connection = connection;
-							adapter = new MySqlDataAdapter(command);
-							adapter.Fill(dataset);
-						}
-					}
-				}
-			}
-			return dataset;
-		}
+                if (API.Common.TestConnection())
+                {
+                    lock (locker)
+                    {
+                        MySqlCommand command = new MySqlCommand(sql);
+                        {
+                            command.Connection = connection;
+                            adapter = new MySqlDataAdapter(command);
+                            adapter.Fill(dataset);
+                        }
+                    }
+                }
+            }
+            return dataset;
+        }
 
-		/// <summary>
+        /// <summary>
 		/// CALL osae_sp_pattern_parse(pattern) and returns result
-		/// </summary>
-		/// <param name="pattern"></param>
-		/// <returns></returns>
-		public string PatternParse(string pattern)
-		{            
-			DataSet dataset = new DataSet();
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "CALL osae_sp_pattern_parse(@Pattern)";
-					command.Parameters.AddWithValue("@Pattern", pattern);
-					dataset = RunQuery(command);
-				}
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        public string PatternParse(string pattern)
+        {            
+            DataSet dataset = new DataSet();
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "CALL osae_sp_pattern_parse(@Pattern)";
+                    command.Parameters.AddWithValue("@Pattern", pattern);
+                    dataset = RunQuery(command);
+                }
 
-				if (dataset.Tables[0].Rows.Count > 0)
-					return dataset.Tables[0].Rows[0]["vInput"].ToString();
-				else
-					return pattern;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - PatternParse error: " + ex.Message, true);
-				return "";
-			}
-		}
+                if (dataset.Tables[0].Rows.Count > 0)
+                    return dataset.Tables[0].Rows[0]["vInput"].ToString();
+                else
+                    return pattern;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - PatternParse error: " + ex.Message, true);
+                return "";
+            }
+        }
 
-		public string MatchPattern(string str)
-		{            
-			DataSet dataset = new DataSet();
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
-					command.Parameters.AddWithValue("@Name", str);
-					dataset = RunQuery(command);
-				}
+        public string MatchPattern(string str)
+        {            
+            DataSet dataset = new DataSet();
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
+                    command.Parameters.AddWithValue("@Name", str);
+                    dataset = RunQuery(command);
+                }
 
-				if (dataset.Tables[0].Rows.Count > 0)
-					return dataset.Tables[0].Rows[0]["pattern"].ToString();
-				else
-					return "";
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - MatchPattern error: " + ex.Message, true);
-				return string.Empty;
-			}
-		}
+                if (dataset.Tables[0].Rows.Count > 0)
+                    return dataset.Tables[0].Rows[0]["pattern"].ToString();
+                else
+                    return "";
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - MatchPattern error: " + ex.Message, true);
+                return string.Empty;
+            }
+        }
 
-		public void NamedScriptUpdate(string name, string oldName, string scriptText)
-		{
-			using (MySqlCommand command = new MySqlCommand())
-			{
-				command.CommandText = "CALL osae_sp_pattern_update (@poldpattern, @pnewpattern, @pscript)";
-				command.Parameters.AddWithValue("@poldpattern", oldName);
-				command.Parameters.AddWithValue("@pnewpattern", name);
-				command.Parameters.AddWithValue("@pscript", scriptText);
+        public void NamedScriptUpdate(string name, string oldName, string scriptText)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_update (@poldpattern, @pnewpattern, @pscript)";
+                command.Parameters.AddWithValue("@poldpattern", oldName);
+                command.Parameters.AddWithValue("@pnewpattern", name);
+                command.Parameters.AddWithValue("@pscript", scriptText);
 
-				try
-				{
-					RunQuery(command);
-				}
-				catch (Exception ex)
-				{
-					logging.AddToLog("API - NamedScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-				}
-			}
-		}
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("API - NamedScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
 
-		private DataSet GetObjectProperties(string ObjectName)
-		{            
-			DataSet dataset = new DataSet();
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName ORDER BY property_name";
-					command.Parameters.AddWithValue("@ObjectName", ObjectName);
-					dataset = RunQuery(command);
-				}
+        private DataSet GetObjectProperties(string ObjectName)
+        {            
+            DataSet dataset = new DataSet();
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName ORDER BY property_name";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    dataset = RunQuery(command);
+                }
 
-				return dataset;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - GetObjectProperty error: " + ex.Message, true);
-				return dataset;
-			}
-		}
+                return dataset;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - GetObjectProperty error: " + ex.Message, true);
+                return dataset;
+            }
+        }
 
-		private List<string> GetObjectMethods(string ObjectName)
-		{
-			DataSet dataset = new DataSet();
-			List<string> methods = new List<string>();
+        private List<string> GetObjectMethods(string ObjectName)
+        {
+            DataSet dataset = new DataSet();
+            List<string> methods = new List<string>();
 
-			try
-			{
-				using (MySqlCommand command = new MySqlCommand())
-				{
-					command.CommandText = "SELECT method_name FROM osae_v_object_method WHERE object_name=@ObjectName ORDER BY method_name";
-					command.Parameters.AddWithValue("@ObjectName", ObjectName);
-					dataset = RunQuery(command);
-				}
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT method_name FROM osae_v_object_method WHERE object_name=@ObjectName ORDER BY method_name";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    dataset = RunQuery(command);
+                }
 
-				foreach (DataRow drp in dataset.Tables[0].Rows)
-				{
-					methods.Add(drp["method_name"].ToString());
-				}
+                foreach (DataRow drp in dataset.Tables[0].Rows)
+                {
+                    methods.Add(drp["method_name"].ToString());
+                }
 
-				return methods;
-			}
-			catch (Exception ex)
-			{
-				logging.AddToLog("API - GetObjectMethods error: " + ex.Message, true);
-				return methods;
-			}
-		}
-	}
+                return methods;
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("API - GetObjectMethods error: " + ex.Message, true);
+                return methods;
+            }
+        }
+    }
 
    
 
-	
+    
 
-	
+    
 
   
 

@@ -6,8 +6,6 @@
     using System.Windows.Controls;
     using OSAE;
     using System.Threading;
-    using MySql.Data.MySqlClient;   
-    using System.Collections.Generic;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -19,15 +17,8 @@
         /// Standard event don't interfere with it if we don't have to
         /// </summary>
         public MainWindow()
-        {            
-            InitializeComponent();
-            uploadImages();
-
-        }
-
-        private void uploadImages()
         {
-           
+            InitializeComponent();                
         }
 
         /// <summary>
