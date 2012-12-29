@@ -5,24 +5,131 @@ namespace OSAE
     public class OSAEObject
     {
         #region Properties
+        private string _name;
+        private string _description;
+        private string _type;    
+        private string _baseType;
+        private string _address;             
+        private string _container;
+        private int _enabled;
+        private string _lastUpd;
+        private ObjectState _state;
 
-        public string Name { get ; set; }
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                osae.ObjectUpdate(_name, value, _description, _type, _address, _container, _enabled);
+                _name = value;
+            }
+        }
 
-        public string Description { get ; set; }
-       
-        public string Type { get ; set; }      
-       
-        public string BaseType { get ; set; }
-       
-        public string Address { get ; set; }
-               
-        public string Container  { get ; set; }
+        public string Description
+        {
+            get
+            {
+                return _description;
+            }
+            set
+            {
+                _description = value;
+                osae.ObjectUpdate(_name, _name, value, _type, _address, _container, _enabled);
+            }
+        }      
+
+        public string Type
+        {
+            get
+            {
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                osae.ObjectUpdate(_name, _name, _description, value, _address, _container, _enabled);
+            }
+        }      
+
+        public string BaseType
+        {
+            get
+            {
+                return _baseType;
+            }
+            set
+            {
+                _baseType = value;
+            }
+        }      
+
+        public string Address
+        {
+            get
+            {
+                return _address;
+            }
+            set
+            {
+                _address = value;
+                osae.ObjectUpdate(_name, _name, _description, _type, value, _container, _enabled);
+            }
+        }      
+
+        public string Container
+        {
+            get
+            {
+                return _container;
+            }
+            set
+            {
+                _container = value;
+                osae.ObjectUpdate(_name, _name, _description, _type, _address, value, _enabled);
+            }
+        }      
               
-        public int Enabled  { get ; set; }      
-       
-        public ObjectState State  { get ; set; }
-            
-        public string LastUpd { get ; set; }
+        public int Enabled  
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                _enabled = value;
+                osae.ObjectUpdate(_name, _name, _description, _type, _address, _container, value);
+            }
+        }
+
+        public ObjectState State
+        {
+            get
+            {
+                _state.Value = osae.GetObjectStateValue(_name).Value;
+                return _state;
+            }
+            set
+            {
+                _state = value;
+                osae.ObjectStateSet(_name, value.Value);
+            }
+        }      
+
+        public string LastUpd
+        {
+            get
+            {
+                return _lastUpd;
+            }
+            set
+            {
+                _lastUpd = value;
+            }
+        }
       
         public List<ObjectProperty> Properties  { get ; set; }
             

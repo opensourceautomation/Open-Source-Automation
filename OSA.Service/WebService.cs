@@ -161,8 +161,12 @@ namespace OSAERest
         {
             string patternName = osae.MatchPattern(match);
             if (patternName != "")
+            {
                 osae.MethodQueueAdd("Script Processor", "NAMED SCRIPT", patternName, "");
-            return true;
+                return true;
+            }
+            else
+                return false;
         }
 
         public Boolean AddObject(string name, string description, string type, string address, string container, string enabled)

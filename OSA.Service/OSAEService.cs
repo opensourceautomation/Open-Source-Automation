@@ -238,10 +238,7 @@ namespace OSAE.Service
                 {
                     if (p.Enabled)
                     {
-                        osae.AddToLog("Shutting down " + p.PluginName, true);
-                        p.addin.Shutdown();
-                        p.process.Shutdown();
-                        p.addin = null;
+                        p.Shutdown();
                     }
                 }
             }
@@ -262,10 +259,7 @@ namespace OSAE.Service
                 {
                     if (p.Enabled)
                     {
-                        osae.AddToLog("Shutting down " + p.PluginName, true);
-                        p.addin.Shutdown();
-                        p.process.Shutdown();
-                        p.addin = null;
+                        p.Shutdown();
                     }
                 }
             }
@@ -360,7 +354,7 @@ namespace OSAE.Service
                                     osae.AddToLog("Removing method from queue: " + command.CommandText, false);
                                     osae.RunQuery(command);
                                    
-                                    plugin.addin.ProcessCommand(method);
+                                    plugin.ExecuteCommand(method);
                                     processed = true;
                                     break;
                                 }
@@ -443,11 +437,11 @@ namespace OSAE.Service
                                 osae.AddToLog("Plugin Object found: " + obj.Name + " - Enabled: " + obj.Enabled.ToString(), true);
                                 if (obj.Enabled == 1)
                                 {
-                                    if (plugin.process == null)
+                                    if (plugin.addin == null)
                                     {
                                         enablePlugin(plugin);
                                     }
-                                    osae.AddToLog("ProcessID: " + plugin.process.ProcessId, true);
+                                    //osae.AddToLog("ProcessID: " + plugin.process.ProcessId, true);
                                 }
                                 else
                                     plugin.Enabled = false;
@@ -750,23 +744,23 @@ namespace OSAE.Service
 
         private void checkPlugins_tick(object source, EventArgs e)
         {
-            foreach (Plugin plugin in plugins)
-            {
-                try
-                {
-                    if (plugin.Enabled)
-                    {
-                        Process process = Process.GetProcessById(plugin.process.ProcessId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    osae.AddToLog(plugin.PluginName + " - Plugin has crashed. Attempting to restart.", true);
-                    enablePlugin(plugin);
-                    osae.AddToLog("New Process ID: " + plugin.process.ProcessId, true);
-                }
+            //foreach (Plugin plugin in plugins)
+            //{
+            //    try
+            //    {
+            //        if (plugin.Enabled)
+            //        {
+            //            Process process = Process.GetProcessById(plugin.process.ProcessId);
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        osae.AddToLog(plugin.PluginName + " - Plugin has crashed. Attempting to restart.", true);
+            //        enablePlugin(plugin);
+            //        osae.AddToLog("New Process ID: " + plugin.process.ProcessId, true);
+            //    }
             
-            }
+            //}
 
         }
 
@@ -803,13 +797,23 @@ namespace OSAE.Service
             osae.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
             try
             {
-                if (plugin.ActivatePlugin())
+                if (!System.IO.File.Exists(osae.APIpath + "\\AddIns\\" + plugin.PluginType + "\\unstable.txt"))
                 {
-                    plugin.addin.RunInterface(plugin.PluginName);
-                    osae.ObjectStateSet(plugin.PluginName, "ON");
-                    sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
-                    osae.AddToLog("Plugin enabled: " + plugin.PluginName, true);
-                    osae.AddToLog("Process ID: " + plugin.process.ProcessId.ToString(), true);
+                    if (plugin.ActivatePlugin())
+                    {
+                        plugin.RunInterface();
+                        osae.ObjectStateSet(plugin.PluginName, "ON");
+                        sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
+                        osae.AddToLog("Plugin enabled: " + plugin.PluginName, true);
+                        //osae.AddToLog("Process ID: " + plugin.process.ProcessId.ToString(), true);
+                    }
+                }
+                else
+                {
+                    osae.AddToLog("Plugin skipped because it is marked unstable: " + plugin.PluginType, true);
+                    sendMessageToClients("plugin", plugin.PluginName + " | False | " + plugin.PluginVersion + " | Unstable | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
+                    plugin.Enabled = false;
+                    obj.Enabled = 0;
                 }
             }
             catch (Exception ex)
@@ -832,7 +836,7 @@ namespace OSAE.Service
                 p.addin = null;
                 GC.Collect();
                 p.Enabled = false;
-                p.process.Shutdown();
+                //p.process.Shutdown();
                 sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName);
             }
             catch (Exception ex)

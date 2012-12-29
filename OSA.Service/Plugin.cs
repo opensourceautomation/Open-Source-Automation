@@ -5,6 +5,7 @@ using OpenSourceAutomation;
 
 namespace OSAE.Service
 {
+    [Serializable]
     public class Plugin
     {
         private string _pluginName;
@@ -14,8 +15,9 @@ namespace OSAE.Service
         private string _latestAvailableVersion;
         private AddInToken _token;
         private IOpenSourceAutomationAddInv2 _addin;
-        private AddInProcess _process;
+        //private AddInProcess _process;
         private OSAE osae = new OSAE("Plugin");
+        private AppDomain _domain;
 
         #region Properties
         public Assembly Assembly;
@@ -50,10 +52,15 @@ namespace OSAE.Service
             get { return _token; }
             set { _token = value; }
         }
-        public AddInProcess process
+        //public AddInProcess process
+        //{
+        //    get { return _process; }
+        //    set { _process = value; }
+        //}
+        public AppDomain Domain
         {
-            get { return _process; }
-            set { _process = value; }
+            get { return _domain; }
+            set { _domain = value; }
         }
         public IOpenSourceAutomationAddInv2 addin
         {
@@ -88,19 +95,40 @@ namespace OSAE.Service
                 osae.AddToLog("Activating Plugin: " + PluginName, true);
                 // Create application domain setup information.
                 AppDomainSetup domaininfo = new AppDomainSetup();
-                domaininfo.ApplicationBase = osae.APIpath;
-                //domaininfo.ApplicationTrust = AddInSecurityLevel.Host;
-
-                // Create the application domain.
-                AppDomain domain = AppDomain.CreateDomain(PluginName + "_Domain", null, domaininfo);
-                // Write application domain information to the console.
-                osae.AddToLog("Host domain: " + AppDomain.CurrentDomain.FriendlyName, true);
-                osae.AddToLog("child domain: " + domain.FriendlyName, true);
-                osae.AddToLog("Application base is: " + domain.SetupInformation.ApplicationBase, true);
                 
-                //_addin = _token.Activate<IOpenSourceAutomationAddIn>(domain);
-                _process = new AddInProcess(Platform.AnyCpu);
-                _addin = _token.Activate<IOpenSourceAutomationAddInv2>(process,AddInSecurityLevel.FullTrust);
+                // Configure
+                domaininfo.ApplicationName = PluginName;
+                domaininfo.ApplicationBase = osae.APIpath;
+                domaininfo.PrivateBinPath = osae.APIpath;
+                domaininfo.LoaderOptimization = LoaderOptimization.MultiDomain;
+                domaininfo.DisallowApplicationBaseProbing = false;
+                domaininfo.DisallowBindingRedirects = false;
+                domaininfo.DisallowCodeDownload = false;
+                domaininfo.DisallowPublisherPolicy = false;
+
+                //System.Security.Policy.Evidence adevidence = AppDomain.CurrentDomain.Evidence;
+                // Create the new application domain using setup information.
+
+                Domain = AppDomain.CreateDomain(PluginName + "_Domain", null, domaininfo);
+                Domain.UnhandledException += Domain_UnhandledException;
+
+                // Write application domain information to the log.
+                osae.AddToLog("Host domain: " + AppDomain.CurrentDomain.FriendlyName, true);
+                osae.AddToLog("child domain: " + _domain.FriendlyName, true);
+                osae.AddToLog("Application base is: " + _domain.SetupInformation.ApplicationBase, true);
+
+                _addin = _token.Activate<IOpenSourceAutomationAddInv2>(Domain);
+
+                //Domain.FirstChanceException += Domain_FirstChanceException;
+                //    (object source, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e) =>
+                //    {
+                //        osae.AddToLog("FirstChanceException event raised in "+AppDomain.CurrentDomain.FriendlyName+": " + e.Exception.Message,true);
+                //    };
+                
+                //_process = new AddInProcess(Platform.AnyCpu);
+                //_addin = _token.Activate<IOpenSourceAutomationAddInv2>(_process,AddInSecurityLevel.FullTrust);
+                
+
                 _enabled = true;
                 return true;
             }
@@ -117,6 +145,56 @@ namespace OSAE.Service
             }
         }
 
+        private void Domain_UnhandledException(object source, System.UnhandledExceptionEventArgs e)
+        {
+            osae.AddToLog(PluginName + " plugin has caused OSA to stop.  It has been flagged as unstable and disabled.  It will not be loaded anymore when OSA starts.  To start plugin again remove the 'unstable.txt' file in the plugin directory.  ERROR: " + e.ExceptionObject.ToString(), true);
+            osae.AddToLog("Creating unstable flag: " + osae.APIpath + "\\AddIns\\" + PluginType + "\\unstable.txt", true);
+            System.IO.StreamWriter sw = System.IO.File.AppendText(osae.APIpath + "\\AddIns\\" + PluginType + "\\unstable.txt");
+            sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - " + e.ExceptionObject.ToString());
+            sw.Close();
+        }
 
+        public bool Shutdown()
+        {
+            try
+            {
+                osae.AddToLog("Shutting down " + PluginName, true);
+                addin.Shutdown();
+                //p.process.Shutdown();
+                addin = null;
+                return true;
+            }
+            catch(Exception ex)
+            {
+
+                return false;
+            }
+        }
+
+        public void RunInterface()
+        {
+            osae.AddToLog(PluginName + " - Running interface.", false);
+            try
+            {
+                addin.RunInterface(PluginName);
+            }
+            catch (Exception ex)
+            {
+                osae.AddToLog(PluginName + " - Run Interface Error: " + ex.Message, true);
+            }
+            osae.AddToLog(PluginName + " - Moving on...", false);
+        }
+
+        public void ExecuteCommand(OSAEMethod method)
+        {
+            try
+            {
+                addin.ProcessCommand(method);
+            }
+            catch (Exception ex)
+            {
+                osae.AddToLog(PluginName + " - Process Command Error: " + ex.Message, true);
+            }
+        }
     }
 }

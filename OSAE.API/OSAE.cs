@@ -10,6 +10,7 @@ namespace OSAE
     /// <summary>
     /// API used to interact with the various components of OSA
     /// </summary>
+    [Serializable]
     public partial class OSAE
     {
         #region Properties

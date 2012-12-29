@@ -14,7 +14,7 @@
 
   ;Name and file
   Name "Open Source Automation"
-  OutFile "OSA Setup v0.3.9_x64.exe"
+  OutFile "OSA Setup v0.4.0_x64.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES64\OSA"
@@ -138,14 +138,9 @@ Section Server s1
   
   SetOutPath "$INSTDIR"  
   File "..\DB\osae.sql"
-  File "..\DB\0.3.3-0.3.4.sql"
-  File "..\DB\0.3.4-0.3.5.sql"
-  File "..\DB\0.3.5-0.3.6.sql"
-  File "..\DB\0.3.6-0.3.7.sql"
-  File "..\DB\0.3.7-0.3.8.sql"
-  File "..\DB\0.3.8-0.3.9.sql"
+  File "..\DB\0.3.9-0.4.0.sql"
 
-File "MySql.Data.dll"
+  File "MySql.Data.dll"
   File "DBInstall\DBInstall\bin\Debug\DBInstall.exe"
   ExecWait 'DBInstall.exe "$INSTDIR" "Server"'
   Goto endDBInstall
@@ -165,7 +160,8 @@ File "MySql.Data.dll"
   File "..\output\ICSharpCode.SharpZipLib.dll"
   File "..\output\OSAE.Manager.exe"
   File "..\output\OSAE.Manager.exe.config"
-  File "..\output\lib\OSAE.api.dll"
+  File "..\output\LogViewer.exe"
+  File "..\output\OSAE.api.dll"
   File "..\output\OSAE.GUI.exe"
   File "..\output\OSAEService.exe"
   File "..\output\OSAEService.exe.config"
@@ -181,11 +177,7 @@ File "MySql.Data.dll"
   CreateDirectory "AddInViews"
   CreateDirectory "contracts"
   CreateDirectory "HostSideAdapters"
-  CreateDirectory "lib"
   
-  SetOutPath "$INSTDIR\lib"
-  File "..\output\lib\OSAE.api.dll"
-  File "MySql.Data.dll"
   
   SetOutPath "$INSTDIR\AddInSideAdapters"
   File "..\output\AddInSideAdapters\AddInSideAdapter.dll"
@@ -338,10 +330,10 @@ File "MySql.Data.dll"
   AccessControl::GrantOnFile \
     "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   
-  SetOutPath $INSTDIR
-  File "DBInstall\GAC\bin\Debug\GAC.exe"
-  ExecWait "$INSTDIR\GAC.exe"
-  Delete "$INSTDIR\GAC.exe"
+  ;SetOutPath $INSTDIR
+  ;File "DBInstall\GAC\bin\Debug\GAC.exe"
+  ;ExecWait "$INSTDIR\GAC.exe"
+  ;Delete "$INSTDIR\GAC.exe"
     
   writeUninstaller $INSTDIR\uninstall.exe
   
@@ -371,7 +363,7 @@ Section Client s2
   File "MySql.Data.dll"
   File "..\output\OSAE.Manager.exe"
   File "..\output\OSAE.Manager.exe.config"
-  File "..\output\lib\OSAE.api.dll"
+  File "..\output\OSAE.api.dll"
   File "..\output\OSAE.GUI.exe"
   File "..\output\ClientService.exe"
   File "..\output\ClientService.exe.config"
@@ -386,11 +378,9 @@ Section Client s2
   CreateDirectory "AddInViews"
   CreateDirectory "contracts"
   CreateDirectory "HostSideAdapters"
-  CreateDirectory "lib"
   
-  SetOutPath "$INSTDIR\lib"
-  File "..\output\lib\OSAE.api.dll"
-  File "MySql.Data.dll"
+  
+  
   
   SetOutPath "$INSTDIR\AddInSideAdapters"
   File "..\output\AddInSideAdapters\AddInSideAdapter.dll"
@@ -452,10 +442,10 @@ Section Client s2
   AccessControl::GrantOnFile \
     "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   
-  SetOutPath $INSTDIR
-  File "DBInstall\GAC\bin\Debug\GAC.exe"
-  ExecWait "$INSTDIR\GAC.exe"
-  Delete "$INSTDIR\GAC.exe"
+  ;SetOutPath $INSTDIR
+  ;File "DBInstall\GAC\bin\Debug\GAC.exe"
+  ;ExecWait "$INSTDIR\GAC.exe"
+  ;Delete "$INSTDIR\GAC.exe"
     
   writeUninstaller $INSTDIR\uninstall.exe
   
