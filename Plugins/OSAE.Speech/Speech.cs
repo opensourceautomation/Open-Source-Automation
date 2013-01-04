@@ -1,19 +1,16 @@
 ﻿using System;
-using System.AddIn;
 using System.Speech.Synthesis;
-using OpenSourceAutomation;
 
 namespace OSAE.Speech
 {
-    [AddIn("SPEECH", Version = "0.3.6")]
-    public class SPEECH : IOpenSourceAutomationAddIn
+    public class SPEECH : OSAEPluginBase
     {
         OSAE OSAEApi = new OSAE("SPEECH");
         SpeechSynthesizer oSpeech = new SpeechSynthesizer();
         WMPLib.WindowsMediaPlayer wmPlayer = new WMPLib.WindowsMediaPlayer();
         String gAppName = "";
         String gSelectedVoice = "";
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             gAppName = pluginName;
             OSAEApi.AddToLog("Speech Client's Object Name: " + gAppName, true);
@@ -21,12 +18,11 @@ namespace OSAE.Speech
             oSpeech.Speak("speech client started");
         }
 
-        public void ProcessCommand(System.Data.DataTable table)
+        public override void ProcessCommand(OSAEMethod method)
         {
-            System.Data.DataRow row = table.Rows[0];
-            string sMethod = row["method_name"].ToString();
-            string sParam1 = row["parameter_1"].ToString();
-            string sParam2 = row["parameter_2"].ToString();
+            string sMethod = method.MethodName;
+            string sParam1 = method.Parameter1;
+            string sParam2 = method.Parameter2;
             OSAEApi.AddToLog("Received Command to: " + sMethod + " (" + sParam1 + ", " + sParam2 + ")", true);
             if (sMethod == "SPEAK")
             {
@@ -147,7 +143,7 @@ namespace OSAE.Speech
             }
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             AddToLog("Recieved Shutdown Order.   All I do is display this...", true);
         }

@@ -1,17 +1,14 @@
 ﻿using System;
-using System.AddIn;
 using System.Collections.Generic;
 using System.Threading;
 using System.Timers;
 using InTheHand.Net;
 using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
-using OpenSourceAutomation;
 
 namespace OSAE.Bluetooth
 {
-    [AddIn("Bluetooth", Version = "0.3.7")]
-    public class Bluetooth : IOpenSourceAutomationAddInv2
+    public class Bluetooth : OSAEPluginBase
     {
         #region OSAEPlugin Members
 
@@ -22,12 +19,12 @@ namespace OSAE.Bluetooth
         private Thread search_thread;
         string pName;
 
-        public void ProcessCommand(OSAEMethod method)
+        public override void ProcessCommand(OSAEMethod method)
         {
             //This plugin does not have commands
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             pName = pluginName;
             osae.AddToLog("Running Interface!", true);
@@ -39,12 +36,13 @@ namespace OSAE.Bluetooth
             this.search_thread = new Thread(new ThreadStart(search));
             this.search_thread.Start();
         }
-        
-        public void Shutdown()
+
+        public override void Shutdown()
         {
             Clock.Stop();
             osae.AddToLog("Shutting Down", true);
         }
+
 
         #endregion
 

@@ -39,7 +39,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Addin" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
@@ -60,6 +59,7 @@
     <Compile Include="ClientServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="PluginFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service References\WCFServiceReference\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -68,10 +68,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HostView\HostView.csproj">
-      <Project>{89A4B805-6920-44D8-816E-4D92BED338B5}</Project>
-      <Name>HostView</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OSAE.API\OSAE.API.csproj">
       <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
       <Name>OSAE.API</Name>

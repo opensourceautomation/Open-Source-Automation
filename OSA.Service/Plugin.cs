@@ -1,7 +1,8 @@
 ﻿using System;
-using System.AddIn.Hosting;
+using System.Xml;
+using System.IO;
+using System.Collections.Generic;
 using System.Reflection;
-using OpenSourceAutomation;
 
 namespace OSAE.Service
 {
@@ -11,16 +12,16 @@ namespace OSAE.Service
         private string _pluginName;
         private string _pluginType;
         private string _pluginVersion;
+        private string _assemblyName;
+        private string _assemblyType;
         private bool _enabled;
         private string _latestAvailableVersion;
-        private AddInToken _token;
-        private IOpenSourceAutomationAddInv2 _addin;
-        //private AddInProcess _process;
         private OSAE osae = new OSAE("Plugin");
         private AppDomain _domain;
+        private OSAEPluginBase _plugin;
 
         #region Properties
-        public Assembly Assembly;
+        //public Assembly Assembly;
 
         public string PluginName
         {
@@ -47,25 +48,10 @@ namespace OSAE.Service
             get { return _enabled; }
             set { _enabled = value; }
         }
-        public AddInToken token
-        {
-            get { return _token; }
-            set { _token = value; }
-        }
-        //public AddInProcess process
-        //{
-        //    get { return _process; }
-        //    set { _process = value; }
-        //}
         public AppDomain Domain
         {
             get { return _domain; }
             set { _domain = value; }
-        }
-        public IOpenSourceAutomationAddInv2 addin
-        {
-            get { return _addin; }
-            set { _addin = value; }
         }
         public string Status
         {
@@ -74,12 +60,30 @@ namespace OSAE.Service
 
         #endregion
 
-        public Plugin(AddInToken token)
+        public Plugin(string assemblyName, string assemblyType,  AppDomain domain, string location)
         {
-            _token = token;
-            _pluginName = osae.GetPluginName(_token.Name, osae.ComputerName);
-            _pluginType = _token.Name;
-            _pluginVersion = _token.Version;
+            _pluginType = assemblyType.Substring(assemblyType.LastIndexOf('.')+1);
+
+            _pluginName = osae.GetPluginName(_pluginType, osae.ComputerName);
+            _assemblyType = assemblyType;
+            _assemblyName = assemblyName;
+            _domain = domain;
+
+            List<string> osapdFiles = new List<string>();
+            string[] pluginFile = Directory.GetFiles(location, "*.osapd", SearchOption.AllDirectories);
+            osapdFiles.AddRange(pluginFile);
+
+            foreach (string path in osapdFiles)
+            {
+                if (!string.IsNullOrEmpty(path))
+                {
+                    PluginDescription desc = new PluginDescription();
+                    desc.Deserialize(path);
+                    _pluginVersion = desc.Version;
+                }
+            }
+
+            
             _latestAvailableVersion = "";
         }
 
@@ -93,48 +97,13 @@ namespace OSAE.Service
             try
             {
                 osae.AddToLog("Activating Plugin: " + PluginName, true);
-                // Create application domain setup information.
-                AppDomainSetup domaininfo = new AppDomainSetup();
-                
-                // Configure
-                domaininfo.ApplicationName = PluginName;
-                domaininfo.ApplicationBase = osae.APIpath;
-                domaininfo.PrivateBinPath = osae.APIpath;
-                domaininfo.LoaderOptimization = LoaderOptimization.MultiDomain;
-                domaininfo.DisallowApplicationBaseProbing = false;
-                domaininfo.DisallowBindingRedirects = false;
-                domaininfo.DisallowCodeDownload = false;
-                domaininfo.DisallowPublisherPolicy = false;
-
-                //System.Security.Policy.Evidence adevidence = AppDomain.CurrentDomain.Evidence;
-                // Create the new application domain using setup information.
-
-                Domain = AppDomain.CreateDomain(PluginName + "_Domain", null, domaininfo);
-                Domain.UnhandledException += Domain_UnhandledException;
-
-                // Write application domain information to the log.
-                osae.AddToLog("Host domain: " + AppDomain.CurrentDomain.FriendlyName, true);
-                osae.AddToLog("child domain: " + _domain.FriendlyName, true);
-                osae.AddToLog("Application base is: " + _domain.SetupInformation.ApplicationBase, true);
-
-                _addin = _token.Activate<IOpenSourceAutomationAddInv2>(Domain);
-
-                //Domain.FirstChanceException += Domain_FirstChanceException;
-                //    (object source, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e) =>
-                //    {
-                //        osae.AddToLog("FirstChanceException event raised in "+AppDomain.CurrentDomain.FriendlyName+": " + e.Exception.Message,true);
-                //    };
-                
-                //_process = new AddInProcess(Platform.AnyCpu);
-                //_addin = _token.Activate<IOpenSourceAutomationAddInv2>(_process,AddInSecurityLevel.FullTrust);
-                
-
-                _enabled = true;
+                _plugin = (OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
+                _domain.UnhandledException += Domain_UnhandledException;
                 return true;
             }
             catch(Exception ex)
             {
-                osae.AddToLog("Error activating plugin (" + _pluginName + "): " + ex.Message + " - " + ex.InnerException, true);
+                osae.AddToLog("Error activating plugin (" + PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
                 _enabled = false;
                 return false;
             }
@@ -147,11 +116,9 @@ namespace OSAE.Service
 
         private void Domain_UnhandledException(object source, System.UnhandledExceptionEventArgs e)
         {
-            osae.AddToLog(PluginName + " plugin has caused OSA to stop.  It has been flagged as unstable and disabled.  It will not be loaded anymore when OSA starts.  To start plugin again remove the 'unstable.txt' file in the plugin directory.  ERROR: " + e.ExceptionObject.ToString(), true);
-            osae.AddToLog("Creating unstable flag: " + osae.APIpath + "\\AddIns\\" + PluginType + "\\unstable.txt", true);
-            System.IO.StreamWriter sw = System.IO.File.AppendText(osae.APIpath + "\\AddIns\\" + PluginType + "\\unstable.txt");
-            sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - " + e.ExceptionObject.ToString());
-            sw.Close();
+            osae.AddToLog(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString(), true);
+            AppDomain.Unload(_domain);
+            
         }
 
         public bool Shutdown()
@@ -159,14 +126,13 @@ namespace OSAE.Service
             try
             {
                 osae.AddToLog("Shutting down " + PluginName, true);
-                addin.Shutdown();
-                //p.process.Shutdown();
-                addin = null;
+                _plugin.Shutdown();
+                AppDomain.Unload(_domain);
                 return true;
             }
             catch(Exception ex)
             {
-
+                osae.AddToLog(PluginName + " - Shutdown Error: " + ex.Message, true);
                 return false;
             }
         }
@@ -176,7 +142,7 @@ namespace OSAE.Service
             osae.AddToLog(PluginName + " - Running interface.", false);
             try
             {
-                addin.RunInterface(PluginName);
+                _plugin.RunInterface(PluginName);
             }
             catch (Exception ex)
             {
@@ -189,12 +155,324 @@ namespace OSAE.Service
         {
             try
             {
-                addin.ProcessCommand(method);
+                _plugin.ProcessCommand(method);
             }
             catch (Exception ex)
             {
                 osae.AddToLog(PluginName + " - Process Command Error: " + ex.Message, true);
             }
+        }
+    }
+
+    public class PluginDescription
+    {
+        /// <summary>
+        /// The name of the plugin
+        /// </summary>
+        private string _pluginName;
+
+        /// <summary>
+        /// Gets or sets the name of the plugin
+        /// </summary>
+        public string Name
+        {
+            set
+            {
+                if (value != this._pluginName)
+                {
+                    this._pluginName = value;
+                }
+            }
+            get { return _pluginName; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private string _pluginType;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Type
+        {
+            set
+            {
+                if (value != this._pluginType)
+                {
+                    this._pluginType = value;
+                }
+            }
+            get { return _pluginType; }
+        }
+
+        /// <summary>
+        /// The version of the plgun
+        /// </summary>
+        private string _pluginVersion;
+
+        /// <summary>
+        /// Gets or sets the author of the plgin
+        /// </summary>
+        public string Version
+        {
+            set
+            {
+                if (value != this._pluginVersion)
+                {
+                    this._pluginVersion = value;
+                }
+            }
+            get { return _pluginVersion; }
+        }
+
+        /// <summary>
+        /// The author of the plugin
+        /// </summary>
+        private string _pluginAuthor;
+
+        /// <summary>
+        /// Gets or sets the author of the plugin
+        /// </summary>
+        public string Author
+        {
+            set
+            {
+                if (value != this._pluginAuthor)
+                {
+                    this._pluginAuthor = value;
+                }
+            }
+            get { return _pluginAuthor; }
+        }
+
+        /// <summary>
+        /// The location of the help page on the wiki
+        /// </summary>
+        private string _wikiUrl;
+
+        /// <summary>
+        /// Gets or sets the location of the help page on the wiki
+        /// </summary>
+        public string WikiUrl
+        {
+            set
+            {
+                if (value != this._wikiUrl)
+                {
+                    this._wikiUrl = value;
+                }
+            }
+            get { return _wikiUrl; }
+        }
+
+        /// <summary>
+        /// A description of the plugin
+        /// </summary>
+        private string _description;
+
+        /// <summary>
+        /// Gets or sets a description of the plugin
+        /// </summary>
+        public string Description
+        {
+            set
+            {
+                if (value != this._description)
+                {
+                    this._description = value;
+                }
+            }
+            get { return _description; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private string _status;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Status
+        {
+            set
+            {
+                if (value != this._status)
+                {
+                    this._status = value;
+                }
+            }
+            get { return _status; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private bool _enabled;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool Enabled
+        {
+            set
+            {
+                if (value != this._enabled)
+                {
+                    this._enabled = value;
+                }
+            }
+            get { return _enabled; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private string _upgrade;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Upgrade
+        {
+            set
+            {
+                if (value != this._upgrade)
+                {
+                    this._upgrade = value;
+                }
+            }
+            get { return _upgrade; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private string _path;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Path
+        {
+            set
+            {
+                if (value != this._path)
+                {
+                    this._path = value;
+                }
+            }
+            get { return _path; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private string _id;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ID
+        {
+            set
+            {
+                if (value != this._id)
+                {
+                    this._id = value;
+                }
+            }
+            get { return _id; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private string _mainFile;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string MainFile
+        {
+            set { _mainFile = value; }
+            get { return _mainFile; }
+        }
+
+        /// <summary>
+        /// A list of additional assemblies used by the plugin
+        /// </summary>
+        private List<string> _additionalAssemblies = new List<string>();
+
+        /// <summary>
+        /// Gets or sets a list of assemblies used by the plugin
+        /// </summary>
+        public List<string> AdditionalAssemblies
+        {
+            set { _additionalAssemblies = value; }
+            get { return _additionalAssemblies; }
+        }
+
+        //jwelch -- added for the option of x64 bit specific assemblies
+        private List<string> _x64Assemblies = new List<string>();
+        public List<string> x64Assemblies
+        {
+            set { _x64Assemblies = value; }
+            get { return _x64Assemblies; }
+        }
+
+        /// <summary>
+        /// Loads a plugin from a file.
+        /// </summary>
+        /// <param name="file">The file to load the plugin from</param>
+        public void Deserialize(string file)
+        {
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(ReadFromFile(file));
+            //_pluginName = xml.SelectSingleNode("//plugin-name").InnerText;
+            _pluginType = xml.SelectSingleNode("//plugin-name").InnerText;
+            _id = xml.SelectSingleNode("//plugin-id").InnerText;
+            _pluginVersion = xml.SelectSingleNode("//plugin-version").InnerText;
+            _status = xml.SelectSingleNode("//plugin-state").InnerText;
+            _pluginAuthor = xml.SelectSingleNode("//author").InnerText;
+            _description = xml.SelectSingleNode("//short-description").InnerText;
+            _path = xml.SelectSingleNode("//destination-folder").InnerText;
+            _mainFile = xml.SelectSingleNode("//main-file").InnerText;
+            _wikiUrl = xml.SelectSingleNode("//wiki-url").InnerText;
+
+            XmlNode temp = xml.SelectSingleNode("//additional-assemblies");
+            XmlNodeList childNodes = temp.ChildNodes;
+
+            foreach (XmlNode t in childNodes)
+                _additionalAssemblies.Add(t.InnerText);
+
+            //Check if this plugin supports any x64 Specific Assemblies
+            if ((temp = xml.SelectSingleNode("//x64-additional-assemblies")) != null)
+            {
+                childNodes = temp.ChildNodes;
+
+                foreach (XmlNode t in childNodes)
+                    _x64Assemblies.Add(t.InnerText);
+            }
+
+        }
+
+        /// <summary>
+        /// Reads the content of a a file
+        /// </summary>
+        /// <param name="filename">The file to read the content from</param>
+        /// <returns>The content that was read from the file</returns>
+        static string ReadFromFile(string filename)
+        {
+            string S = string.Empty;
+
+            using (StreamReader SR = File.OpenText(filename))
+            {
+                S = SR.ReadToEnd();
+                SR.Close();
+            }
+            return S;
         }
     }
 }

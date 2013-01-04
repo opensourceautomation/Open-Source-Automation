@@ -1,43 +1,38 @@
 ﻿Option Strict Off
 Option Explicit On
-Imports System.AddIn
-Imports OpenSourceAutomation
 Imports System.Text.RegularExpressions
 
-<AddIn("Script Processor", Version:="1.0.0")>
 Public Class ScriptProcessor
-    Implements IOpenSourceAutomationAddIn
+    Inherits OSAEPluginBase
     Private OSAEApi As New OSAE("Script Processor")
     Private gAppName As String = ""
     Private scriptArray() As String
 
 
 
-    Public Sub ProcessCommand(ByVal table As System.Data.DataTable) Implements IOpenSourceAutomationAddIn.ProcessCommand
-        Dim row As DataRow
+    Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
         Dim sScript As String = "", sEvent As String = "", sObject As String = ""
-        row = table.Rows(0)
-        If row("method_name").ToString() = "EVENT SCRIPT" Then
+        If method.MethodName = "EVENT SCRIPT" Then
             Try
-                Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT event_script,object_name,event_name FROM osae_v_object_event_script WHERE event_script_id=" & row("parameter_1").ToString())
+                Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT event_script,object_name,event_name FROM osae_v_object_event_script WHERE event_script_id=" & method.Parameter1)
                 sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("event_script"))
                 sEvent = Convert.ToString(dsResults.Tables(0).Rows(0)("event_name"))
                 sObject = Convert.ToString(dsResults.Tables(0).Rows(0)("object_name"))
                 OSAEApi.AddToLog("Found Script for: " & sObject & " " & sEvent, True)
-                RunScript(sScript, row("parameter_2").ToString())
+                RunScript(sScript, method.Parameter2)
                 OSAEApi.AddToLog("Executed Script", True)
             Catch ex As Exception
                 OSAEApi.AddToLog("Error ProcessCommand - " & ex.Message, True)
             End Try
-        ElseIf row("method_name").ToString() = "NAMED SCRIPT" Then
+        ElseIf method.MethodName = "NAMED SCRIPT" Then
             OSAEApi.AddToLog("NAMED SCRIPT Found", True)
             Try
-                Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT pattern,script FROM osae_pattern WHERE pattern='" & row("parameter_1").ToString() & "'")
+                Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT pattern,script FROM osae_pattern WHERE pattern='" & method.Parameter1 & "'")
                 sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("script"))
                 sEvent = Convert.ToString(dsResults.Tables(0).Rows(0)("pattern"))
                 OSAEApi.AddToLog("Found Script for: " & sEvent, True)
                 OSAEApi.AddToLog(sScript, False)
-                RunScript(sScript, row("parameter_2").ToString())
+                RunScript(sScript, method.Parameter2)
                 OSAEApi.AddToLog("Executed Script", True)
             Catch ex As Exception
                 OSAEApi.AddToLog("Error ProcessCommand - " & ex.Message, True)
@@ -45,11 +40,11 @@ Public Class ScriptProcessor
         End If
     End Sub
 
-    Public Sub RunInterface(ByVal sName As String) Implements IOpenSourceAutomationAddIn.RunInterface
+    Public Overrides Sub RunInterface(ByVal sName As String)
         gAppName = sName
     End Sub
 
-    Public Sub Shutdown() Implements IOpenSourceAutomationAddIn.Shutdown
+    Public Overrides Sub Shutdown()
         OSAEApi.AddToLog("*** Received Shutdown", True)
     End Sub
 

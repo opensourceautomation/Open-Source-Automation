@@ -1,13 +1,10 @@
 ﻿using System;
-using System.AddIn;
 using System.Collections.Generic;
 using agsXMPP;
-using OpenSourceAutomation;
 
 namespace OSAE.Jabber
 {
-    [AddIn("Jabber", Version = "0.3.7")]
-    public class Jabber : IOpenSourceAutomationAddInv2
+    public class Jabber : OSAEPluginBase
     {
         OSAE osae = new OSAE("Jabber");
         XmppClientConnection xmppCon = new XmppClientConnection();
@@ -15,7 +12,7 @@ namespace OSAE.Jabber
         bool shuttingDown = false;
 
         #region OSAPlugin Methods
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             pName = pluginName;
             // Subscribe to Events
@@ -33,7 +30,7 @@ namespace OSAE.Jabber
             connect();
         }
 
-        public void ProcessCommand(OSAEMethod method)
+        public override void ProcessCommand(OSAEMethod method)
         {
             try
             {
@@ -71,7 +68,7 @@ namespace OSAE.Jabber
             }
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             shuttingDown = true;
             xmppCon.Close();

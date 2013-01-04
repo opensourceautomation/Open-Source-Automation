@@ -210,7 +210,7 @@ namespace Manager_WPF
                 else
                     imgUpdate.Visibility = System.Windows.Visibility.Hidden;
 
-                string pluginPath = osae.APIpath + "\\AddIns\\" + p.Path + "\\";
+                string pluginPath = osae.APIpath + "\\Plugins\\" + p.Path + "\\";
                 string[] paths = System.IO.Directory.GetFiles(pluginPath, "Screenshot*");
 
                 osae.AddToLog("Plugin path: " + pluginPath, true);
@@ -282,7 +282,7 @@ namespace Manager_WPF
         {
             pluginList = new BindingList<PluginDescription>();
             List<string> osapdFiles = new List<string>();
-            string[] pluginFile = Directory.GetFiles(osae.APIpath + "\\AddIns", "*.osapd", SearchOption.AllDirectories);
+            string[] pluginFile = Directory.GetFiles(osae.APIpath + "\\Plugins", "*.osapd", SearchOption.AllDirectories);
             osapdFiles.AddRange(pluginFile);
 
             foreach (string path in osapdFiles)

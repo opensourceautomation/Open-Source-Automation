@@ -1,18 +1,15 @@
 ﻿using System;
-using System.AddIn;
 using System.Net;
 using System.Net.Mail;
-using OpenSourceAutomation;
 
 namespace OSAE.Email
 {
-    [AddIn("Email", Version = "0.3.7")]
-    public class Email : IOpenSourceAutomationAddInv2
+    public class Email : OSAEPluginBase
     {
         string pName;
         OSAE osae = new OSAE("Email");
-        
-        public void ProcessCommand(OSAEMethod method)
+
+        public override void ProcessCommand(OSAEMethod method)
         {
             //process command
             try
@@ -109,17 +106,20 @@ namespace OSAE.Email
             }
         }
 
-        public void RunInterface(string pluginName)
-        {
-            pName = pluginName;
-            //No constant processing
-        }
-
         /// <summary>
         /// Interface implementation, this plugin does not perform any actions on shutdown
         /// </summary>
-        public void Shutdown()
+        public override void Shutdown()
         {
+            
+        }
+
+
+        public override void RunInterface(string pluginName)
+        {
+            osae.AddToLog("Starting...", true);
+            pName = pluginName;
+            //No constant processing
         }
     }
 }

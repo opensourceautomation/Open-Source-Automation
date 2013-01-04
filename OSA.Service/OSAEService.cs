@@ -1,5 +1,4 @@
 ﻿using System;
-using System.AddIn.Hosting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -14,7 +13,8 @@ using System.Threading;
 using System.Timers;
 using System.Xml.Linq;
 using MySql.Data.MySqlClient;
-using OpenSourceAutomation;
+using System.Security;
+using System.Security.Policy;
 
 namespace OSAE.Service
 {
@@ -90,9 +90,9 @@ namespace OSAE.Service
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
-            //#if (DEBUG)
-            //    Debugger.Launch(); //<-- Simple form to debug a web services 
-            //#endif
+//#if (DEBUG)
+//            Debugger.Launch(); //<-- Simple form to debug a web services 
+//#endif
 
             try
             {
@@ -390,17 +390,21 @@ namespace OSAE.Service
         /// </summary>
         public void LoadPlugins()
         {
-            osae.AddToLog("Entered LoadPlugins", true);
-            string path = osae.APIpath;
-            AddInStore.Update(path);
-            Collection<AddInToken> tokens = null;
-            tokens = AddInStore.FindAddIns(typeof(IOpenSourceAutomationAddInv2), path);
-            osae.AddToLog("Found " + tokens.Count.ToString() + " tokens", true);
-            foreach (AddInToken token in tokens)
+            var pluginAssemblies = new List<OSAEPluginBase>();
+            var types = PluginFinder.FindPlugins();
+
+            osae.AddToLog("Loading Plugins", true);
+
+            foreach (var type in types)
             {
-                if (!pluginExist(token.Name))
-                    plugins.Add(new Plugin(token));
+                osae.AddToLog("type.TypeName: " + type.TypeName, false);
+                osae.AddToLog("type.AssemblyName: " + type.AssemblyName, false);
+
+                var domain = CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet);
+
+                plugins.Add(new Plugin(type.AssemblyName, type.TypeName, domain, type.Location));
             }
+
             osae.AddToLog("Found " + plugins.Count.ToString() + " plugins", true);
             MySqlConnection connection = new MySqlConnection("SERVER=" + osae.DBConnection + ";" +
                             "DATABASE=" + osae.DBName + ";" +
@@ -412,7 +416,7 @@ namespace OSAE.Service
             {
                 try
                 {
-                    osae.AddToLog("---------------------------------------", true); 
+                    osae.AddToLog("---------------------------------------", true);
                     osae.AddToLog("Plugin name: " + plugin.PluginName, true);
                     osae.AddToLog("Testing connection", true);
                     if (!goodConnection)
@@ -437,24 +441,19 @@ namespace OSAE.Service
                                 osae.AddToLog("Plugin Object found: " + obj.Name + " - Enabled: " + obj.Enabled.ToString(), true);
                                 if (obj.Enabled == 1)
                                 {
-                                    if (plugin.addin == null)
-                                    {
-                                        enablePlugin(plugin);
-                                    }
-                                    //osae.AddToLog("ProcessID: " + plugin.process.ProcessId, true);
+                                    enablePlugin(plugin);
                                 }
                                 else
                                     plugin.Enabled = false;
 
                                 osae.AddToLog("Status: " + plugin.Enabled.ToString(), true);
                                 osae.AddToLog("PluginVersion: " + plugin.PluginVersion, true);
-                                
                             }
                         }
                         else
                         {
                             //add code to create the object.  We need the plugin to specify the type though
-                            
+
                             MySqlDataAdapter adapter;
                             DataSet dataset = new DataSet();
                             MySqlCommand command = new MySqlCommand();
@@ -474,12 +473,12 @@ namespace OSAE.Service
 
                             osae.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
                             sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
-                                            
+
                         }
                         masterPlugins.Add(plugin);
                     }
-                    
-                    
+
+
                 }
                 catch (Exception ex)
                 {
@@ -490,9 +489,8 @@ namespace OSAE.Service
                     osae.AddToLog("Error loading plugin", true);
                 }
             }
-        }
 
-        
+        }
 
         #region WCF Events and Methods
 
@@ -785,7 +783,7 @@ namespace OSAE.Service
         {
             foreach (Plugin p in plugins)
             {
-                if (p.token.Name == name)
+                if (p.PluginType == name)
                     return true;
             }
             return false;
@@ -797,23 +795,12 @@ namespace OSAE.Service
             osae.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
             try
             {
-                if (!System.IO.File.Exists(osae.APIpath + "\\AddIns\\" + plugin.PluginType + "\\unstable.txt"))
+                if (plugin.ActivatePlugin())
                 {
-                    if (plugin.ActivatePlugin())
-                    {
-                        plugin.RunInterface();
-                        osae.ObjectStateSet(plugin.PluginName, "ON");
-                        sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
-                        osae.AddToLog("Plugin enabled: " + plugin.PluginName, true);
-                        //osae.AddToLog("Process ID: " + plugin.process.ProcessId.ToString(), true);
-                    }
-                }
-                else
-                {
-                    osae.AddToLog("Plugin skipped because it is marked unstable: " + plugin.PluginType, true);
-                    sendMessageToClients("plugin", plugin.PluginName + " | False | " + plugin.PluginVersion + " | Unstable | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
-                    plugin.Enabled = false;
-                    obj.Enabled = 0;
+                    plugin.RunInterface();
+                    osae.ObjectStateSet(plugin.PluginName, "ON");
+                    sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
+                    osae.AddToLog("Plugin enabled: " + plugin.PluginName, true);
                 }
             }
             catch (Exception ex)
@@ -832,17 +819,27 @@ namespace OSAE.Service
             osae.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
             try
             {
-                p.addin.Shutdown();
-                p.addin = null;
-                GC.Collect();
+                p.Shutdown();
                 p.Enabled = false;
-                //p.process.Shutdown();
                 sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName);
             }
             catch (Exception ex)
             {
                 osae.AddToLog("Error stopping plugin (" + p.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
             }
+        }
+
+        public AppDomain CreateSandboxDomain(string name, string path, SecurityZone zone)
+        {
+            var setup = new AppDomainSetup { ApplicationBase = osae.APIpath, PrivateBinPath = Path.GetFullPath(path) };
+
+            var evidence = new Evidence();
+            evidence.AddHostEvidence(new Zone(zone));
+            var permissions = SecurityManager.GetStandardSandbox(evidence);
+
+            var strongName = typeof(OSAEService).Assembly.Evidence.GetHostEvidence<StrongName>();
+
+            return AppDomain.CreateDomain(name, null, setup);
         }
 
         #endregion
