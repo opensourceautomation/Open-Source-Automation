@@ -511,6 +511,8 @@ namespace ClientService
             {
                 p.Shutdown();
                 p.Enabled = false;
+                p.Domain = CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet);
+                
             }
             catch (Exception ex)
             {

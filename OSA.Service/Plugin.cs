@@ -14,6 +14,7 @@ namespace OSAE.Service
         private string _pluginVersion;
         private string _assemblyName;
         private string _assemblyType;
+        private string _location;
         private bool _enabled;
         private string _latestAvailableVersion;
         private OSAE osae = new OSAE("Plugin");
@@ -37,6 +38,11 @@ namespace OSAE.Service
         {
             get { return _pluginVersion; }
             set { _pluginVersion = value; }
+        }
+        public string Location
+        {
+            get { return _location; }
+            set { _location = value; }
         }
         public string LatestAvailableVersion
         {
@@ -62,13 +68,7 @@ namespace OSAE.Service
 
         public Plugin(string assemblyName, string assemblyType,  AppDomain domain, string location)
         {
-            _pluginType = assemblyType.Substring(assemblyType.LastIndexOf('.')+1);
-
-            _pluginName = osae.GetPluginName(_pluginType, osae.ComputerName);
-            _assemblyType = assemblyType;
-            _assemblyName = assemblyName;
-            _domain = domain;
-
+            PluginDescription desc = new PluginDescription();
             List<string> osapdFiles = new List<string>();
             string[] pluginFile = Directory.GetFiles(location, "*.osapd", SearchOption.AllDirectories);
             osapdFiles.AddRange(pluginFile);
@@ -77,13 +77,19 @@ namespace OSAE.Service
             {
                 if (!string.IsNullOrEmpty(path))
                 {
-                    PluginDescription desc = new PluginDescription();
+                    desc = new PluginDescription();
                     desc.Deserialize(path);
                     _pluginVersion = desc.Version;
                 }
             }
 
-            
+            _pluginType = desc.Type;
+            _pluginName = osae.GetPluginName(_pluginType, osae.ComputerName);
+            _assemblyType = assemblyType;
+            _assemblyName = assemblyName;
+            _domain = domain;
+            _location = location;
+
             _latestAvailableVersion = "";
         }
 

@@ -797,6 +797,7 @@ namespace OSAE.Service
             {
                 if (plugin.ActivatePlugin())
                 {
+                    plugin.Enabled = true;
                     plugin.RunInterface();
                     osae.ObjectStateSet(plugin.PluginName, "ON");
                     sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
@@ -815,12 +816,14 @@ namespace OSAE.Service
 
         public void disablePlugin(Plugin p)
         {
+            osae.AddToLog("Disabling Plugin: " + p.PluginName,true);
             OSAEObject obj = osae.GetObjectByName(p.PluginName);
             osae.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
             try
             {
                 p.Shutdown();
                 p.Enabled = false;
+                p.Domain = CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet);
                 sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName);
             }
             catch (Exception ex)
