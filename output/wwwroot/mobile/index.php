@@ -284,11 +284,17 @@
         var array =  obj.split(':=');
         $.getJSON('http://' + host + ':8732/api/object/'+array[0]+'?callback=?', null, function (data2) {
           var val = '';
-          $.each(data2.Properties,function(i,prop){
-            if(prop.Name = array[1]){
-              val = prop.Value;
-            }
-          });
+          if(array[1].toLowerCase() == 'state') {
+            val = data2.State;
+          }
+          else {
+          
+            $.each(data2.Properties,function(i,prop){
+              if(prop.Name.toLowerCase() == array[1].toLowerCase()){
+                val = prop.Value;
+              }
+            });
+          }
           $("#props").append('<div class="ui-block-a" ><strong>'+array[0]+'</strong></div><div class="ui-block-b" ><strong>'+val+'</strong></div><br /><br />');
         });
          
