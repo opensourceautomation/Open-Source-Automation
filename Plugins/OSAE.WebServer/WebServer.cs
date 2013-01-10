@@ -1,25 +1,22 @@
 ﻿using System;
-using System.AddIn;
 using System.Net;
 using HttpServer.HttpModules;
-using OpenSourceAutomation;
 
 namespace OSAE.WebServer
 {
-    [AddIn("Web Server", Version = "0.3.8")]
-    public class WebServer : IOpenSourceAutomationAddInv2
+    public class WebServer : OSAEPluginBase
     {
         HttpServer.HttpServer server = new HttpServer.HttpServer();
         OSAE osae = new OSAE("Web Server");
         AdvancedFileModule afm = null; 
         string pName;
 
-        public void ProcessCommand(OSAEMethod method)
+        public override void ProcessCommand(OSAEMethod method)
         {
             // No commands to process
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             try
             {
@@ -43,8 +40,8 @@ namespace OSAE.WebServer
                 osae.AddToLog("Error starting server: " + ex.Message, true);
             }
         }
-        
-        public void Shutdown()
+
+        public override void Shutdown()
         {
             server.Stop();
         }

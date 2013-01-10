@@ -54,10 +54,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Assemblies\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\output\lib\OSAE.API.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -207,6 +203,10 @@
     <Resource Include="Resources\logs.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OSAE.API\OSAE.API.csproj">
+      <Project>{022f45f1-c988-41a1-a203-39e97be928b6}</Project>
+      <Name>OSAE.API</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OSAE.UI.Controls\OSAE.UI.Controls.csproj">
       <Project>{503092C1-23FE-4AD8-B855-CF1D24D632A9}</Project>
       <Name>OSAE.UI.Controls</Name>

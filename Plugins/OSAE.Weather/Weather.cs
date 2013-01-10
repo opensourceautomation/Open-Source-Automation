@@ -1,5 +1,4 @@
 ﻿using System;
-using System.AddIn;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -8,13 +7,11 @@ using System.Net;
 using System.Threading;
 using System.Timers;
 using System.Xml;
-using OpenSourceAutomation;
 
 
 namespace OSAE.WeatherPlugin
 {
-    [AddIn("Weather Plugin", Version = "0.3.7")]
-    public class WeatherPlugin : IOpenSourceAutomationAddInv2
+    public class WeatherPlugin : OSAEPluginBase
     {
         Thread updateThread;
         Thread SunriseSunsetThread;
@@ -25,15 +22,15 @@ namespace OSAE.WeatherPlugin
         string feedUrl = "";
         string pName;
 
-        
-        public void ProcessCommand(OSAEMethod method)
+
+        public override void ProcessCommand(OSAEMethod method)
         {
             //This plugin does not process commands
             if (method.MethodName == "UPDATE")
                 update();
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             pName = pluginName;
             List<OSAEObject> objects = osae.GetObjectsByType("WEATHER");
@@ -62,7 +59,7 @@ namespace OSAE.WeatherPlugin
             this.updateThread.Start();
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             Clock.Stop();
             Clock2.Stop();

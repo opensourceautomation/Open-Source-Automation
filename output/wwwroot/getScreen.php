@@ -122,6 +122,7 @@
       $propQuery = 'select property_name, property_value from osae_v_object_property where object_id ='.$row[0];
       $propResults = mysql_query($propQuery)
       or die ('Error in query: $propQuery. ' . mysql_error());
+      $fontsize=''; $Prefix=''; $Suffix='';
       while($propRow = mysql_fetch_row($propResults))
       {
          switch ($propRow[0]) {
@@ -140,6 +141,15 @@
             case 'ZOrder':
                 $zOrder = $propRow[1];
                 break;
+            case 'Prefix':
+                $Prefix = $propRow[1];
+                break;
+            case 'Suffix':
+                $Suffix = $propRow[1];
+                break;
+           case 'Font Size':
+                $fontsize = 'font-size: '.$propRow[1].'px; ';
+                break;
         }
       }
       
@@ -148,8 +158,8 @@
       or die ('Error in query: $objQuery. ' . mysql_error());
       $objRow = mysql_fetch_row($objResults);
 
-      echo '<div id="'.$row[0].'" data-type="label" class="item" style="position:absolute; top:'.$y.'; left:'.($x+$offset).'; z-index:'.$zOrder.';">';
-      echo $objRow[0] . '</div>';
+      echo '<div id="'.$row[0].'" data-type="label" class="item" style="'.$fontsize.'position:absolute; top:'.$y.'; left:'.($x+$offset).'; z-index:'.$zOrder.';">';
+      echo '<b>'.$Prefix . $objRow[0] . $Suffix .'</b>'. '</div>';
       
     }
     

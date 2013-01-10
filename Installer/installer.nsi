@@ -14,7 +14,7 @@
 
   ;Name and file
   Name "Open Source Automation"
-  OutFile "OSA Setup v0.3.9_x86.exe"
+  OutFile "OSA Setup v0.4.0_x86.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\OSA"
@@ -81,11 +81,9 @@ Section -Prerequisites
     Delete "$INSTDIR\vcredist_x86.exe"
     Goto endVC  
   ${EndIf}
-
   endVC:
   
   Delete "$INSTDIR\dotNetFx40_Full_setup.exe"
-  
   
 SectionEnd
 
@@ -113,7 +111,6 @@ Section Server s1
     ExecWait '"$PROGRAMFILES\MySql\bin\mysqld.exe" --install MySQL --defaults-file="$PROGRAMFILES\MySql\my.ini"'
     ExecWait '"$PROGRAMFILES\MySql\bin\MySQLInstanceConfig.exe" -i -q "-lc:mysql_install_log.txt" ServerType=DEVELOPMENT DatabaseType=MIXED ConnectionUsage=DSS Port=3306 RootPassword=password'
     Delete "mysql-5.5.21-win32.msi"
-    
     File "my.ini"
     
     SimpleSC::RestartService "MySql" "" 30
@@ -138,12 +135,7 @@ Section Server s1
   
   SetOutPath "$INSTDIR"  
   File "..\DB\osae.sql"
-  File "..\DB\0.3.3-0.3.4.sql"
-  File "..\DB\0.3.4-0.3.5.sql"
-  File "..\DB\0.3.5-0.3.6.sql"
-  File "..\DB\0.3.6-0.3.7.sql"
-  File "..\DB\0.3.7-0.3.8.sql"
-  File "..\DB\0.3.8-0.3.9.sql"
+  File "..\DB\0.3.9-0.4.0.sql"
   File "MySql.Data.dll"
   File "DBInstall\DBInstall\bin\Debug\DBInstall.exe"
   ExecWait 'DBInstall.exe "$INSTDIR" "Server"'
@@ -160,41 +152,18 @@ Section Server s1
   File "..\output\ICSharpCode.SharpZipLib.dll"
   File "..\output\OSAE.Manager.exe"
   File "..\output\OSAE.Manager.exe.config"
-  File "..\output\lib\OSAE.api.dll"
+  File "..\output\LogViewer.exe"
+  File "..\output\OSAE.api.dll"
   File "..\output\OSAE.GUI.exe"
   File "..\output\OSAEService.exe"
   File "..\output\OSAEService.exe.config"
   File "..\output\PluginDescriptionEditor.exe"
-  File "..\output\HostView.dll"
   File "..\output\OSAE.VR.exe"
   CreateDirectory "Sounds"
   CreateDirectory "Logs"
   CreateDirectory "Images"
-  CreateDirectory "AddIns"
+  CreateDirectory "Plugins"
   CreateDirectory "wwwroot"
-  CreateDirectory "AddInSideAdapters"
-  CreateDirectory "AddInViews"
-  CreateDirectory "contracts"
-  CreateDirectory "HostSideAdapters"
-  CreateDirectory "lib"
-  
-  SetOutPath "$INSTDIR\lib"
-  File "..\output\lib\OSAE.api.dll"
-  File "MySql.Data.dll"
-  
-  SetOutPath "$INSTDIR\AddInSideAdapters"
-  File "..\output\AddInSideAdapters\AddInSideAdapter.dll"
-  File "..\output\AddInSideAdapters\AdInV1AdapterToV2.dll"
-  
-  SetOutPath "$INSTDIR\AddInViews"
-  File "..\output\AddInViews\AddInView.dll"
-  File "..\output\AddInViews\AddInView2.dll"
-  
-  SetOutPath "$INSTDIR\contracts"
-  File "..\output\contracts\OpenSourceAutomation.Contract.dll"
-  
-  SetOutPath "$INSTDIR\HostSideAdapters"
-  File "..\output\HostSideAdapters\Template.dll"
   
   SetOutPath "$INSTDIR\wwwroot"
   File "..\output\wwwroot\*.*"
@@ -240,7 +209,7 @@ Section Server s1
   File "..\output\Images\*.jpg"
   File "..\output\Images\*.png" 
   
-  SetOutPath "$INSTDIR\AddIns"
+  SetOutPath "$INSTDIR\Plugins"
   CreateDirectory "Bluetooth"
   CreateDirectory "Email"
   CreateDirectory "Jabber"
@@ -250,48 +219,48 @@ Section Server s1
   CreateDirectory "Weather"
   CreateDirectory "Web Server"
   
-  SetOutPath "$INSTDIR\AddIns\Bluetooth"
-  File "..\output\AddIns\Bluetooth\Bluetooth.osapd"
-  File "..\output\AddIns\Bluetooth\OSAE.Bluetooth.dll"
-  File "..\output\AddIns\Bluetooth\InTheHand.Net.Personal.dll"
-  File "..\output\AddIns\Bluetooth\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Bluetooth"
+  File "..\output\Plugins\Bluetooth\Bluetooth.osapd"
+  File "..\output\Plugins\Bluetooth\OSAE.Bluetooth.dll"
+  File "..\output\Plugins\Bluetooth\InTheHand.Net.Personal.dll"
+  File "..\output\Plugins\Bluetooth\Screenshot.jpg"
     
-  SetOutPath "$INSTDIR\AddIns\Email"
-  File "..\output\AddIns\Email\Email.osapd"
-  File "..\output\AddIns\Email\OSAE.Email.dll"
-  File "..\output\AddIns\Email\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Email"
+  File "..\output\Plugins\Email\Email.osapd"
+  File "..\output\Plugins\Email\OSAE.Email.dll"
+  File "..\output\Plugins\Email\Screenshot.jpg"
   
-  SetOutPath "$INSTDIR\AddIns\Jabber"
-  File "..\output\AddIns\Jabber\Jabber.osapd"
-  File "..\output\AddIns\Jabber\OSAE.Jabber.dll"
-  File "..\output\AddIns\Jabber\agsXMPP.dll"
-  File "..\output\AddIns\Jabber\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Jabber"
+  File "..\output\Plugins\Jabber\Jabber.osapd"
+  File "..\output\Plugins\Jabber\OSAE.Jabber.dll"
+  File "..\output\Plugins\Jabber\agsXMPP.dll"
+  File "..\output\Plugins\Jabber\Screenshot.jpg"
     
-  SetOutPath "$INSTDIR\AddIns\Network Monitor"
-  File "..\output\AddIns\Network Monitor\Network Monitor.osapd"
-  File "..\output\AddIns\Network Monitor\OSAE.NetworkMonitor.dll"
-  File "..\output\AddIns\Network Monitor\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Network Monitor"
+  File "..\output\Plugins\Network Monitor\Network Monitor.osapd"
+  File "..\output\Plugins\Network Monitor\OSAE.NetworkMonitor.dll"
+  File "..\output\Plugins\Network Monitor\Screenshot.jpg"
   
-  SetOutPath "$INSTDIR\AddIns\Script Processor"
-  File "..\output\AddIns\Script Processor\Script Processor.osapd"
-  File "..\output\AddIns\Script Processor\OSAE.ScriptProcessor.dll"
-  File "..\output\AddIns\Script Processor\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Script Processor"
+  File "..\output\Plugins\Script Processor\Script Processor.osapd"
+  File "..\output\Plugins\Script Processor\OSAE.ScriptProcessor.dll"
+  File "..\output\Plugins\Script Processor\Screenshot.jpg"
   
-  SetOutPath "$INSTDIR\AddIns\Speech"
-  File "..\output\AddIns\Speech\Speech.osapd"
-  File "..\output\AddIns\Speech\OSAE.Speech.dll"
-  File "..\output\AddIns\Speech\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Speech"
+  File "..\output\Plugins\Speech\Speech.osapd"
+  File "..\output\Plugins\Speech\OSAE.Speech.dll"
+  File "..\output\Plugins\Speech\Screenshot.jpg"
   
-  SetOutPath "$INSTDIR\AddIns\Weather"
-  File "..\output\AddIns\Weather\Weather.osapd"
-  File "..\output\AddIns\Weather\OSAE.Weather.dll"  
-  File "..\output\AddIns\Weather\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Weather"
+  File "..\output\Plugins\Weather\Weather.osapd"
+  File "..\output\Plugins\Weather\OSAE.Weather.dll"  
+  File "..\output\Plugins\Weather\Screenshot.jpg"
 
-  SetOutPath "$INSTDIR\AddIns\Web Server"
-  File "..\output\AddIns\Web Server\Web Server.osapd"
-  File "..\output\AddIns\Web Server\OSAE.WebServer.dll"  
-  File "..\output\AddIns\Web Server\HttpServer.dll"
-  File "..\output\AddIns\Web Server\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Web Server"
+  File "..\output\Plugins\Web Server\Web Server.osapd"
+  File "..\output\Plugins\Web Server\OSAE.WebServer.dll"  
+  File "..\output\Plugins\Web Server\HttpServer.dll"
+  File "..\output\Plugins\Web Server\Screenshot.jpg"
 
   SetOutPath "C:\"
   CreateDirectory "PHP"
@@ -333,10 +302,10 @@ Section Server s1
   AccessControl::GrantOnFile \
     "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   
-  SetOutPath $INSTDIR
-  File "DBInstall\GAC\bin\Debug\GAC.exe"
-  ExecWait "$INSTDIR\GAC.exe"
-  Delete "$INSTDIR\GAC.exe"
+  ;SetOutPath $INSTDIR
+  ;File "DBInstall\GAC\bin\Debug\GAC.exe"
+  ;ExecWait "$INSTDIR\GAC.exe"
+  ;Delete "$INSTDIR\GAC.exe"
     
   writeUninstaller $INSTDIR\uninstall.exe
   
@@ -364,58 +333,34 @@ Section Client s2
   File "MySql.Data.dll"
   File "..\output\OSAE.Manager.exe"
   File "..\output\OSAE.Manager.exe.config"
-  File "..\output\lib\OSAE.api.dll"
+  File "..\output\OSAE.api.dll"
   File "..\output\OSAE.GUI.exe"
   File "..\output\ClientService.exe"
   File "..\output\ClientService.exe.config"
   File "..\output\PluginDescriptionEditor.exe"
-  File "..\output\HostView.dll"
   File "..\output\OSAE.VR.exe"
   CreateDirectory "Sounds"
   CreateDirectory "Logs"
   CreateDirectory "Images"
-  CreateDirectory "AddIns"
-  CreateDirectory "AddInSideAdapters"
-  CreateDirectory "AddInViews"
-  CreateDirectory "contracts"
-  CreateDirectory "HostSideAdapters"
-  CreateDirectory "lib"
-  
-  SetOutPath "$INSTDIR\lib"
-  File "..\output\lib\OSAE.api.dll"
-  File "MySql.Data.dll"
-  
-  SetOutPath "$INSTDIR\AddInSideAdapters"
-  File "..\output\AddInSideAdapters\AddInSideAdapter.dll"
-  File "..\output\AddInSideAdapters\AdInV1AdapterToV2.dll"
-  
-  SetOutPath "$INSTDIR\AddInViews"
-  File "..\output\AddInViews\AddInView.dll"
-  File "..\output\AddInViews\AddInView2.dll"
-  
-  SetOutPath "$INSTDIR\contracts"
-  File "..\output\contracts\OpenSourceAutomation.Contract.dll"
-  
-  SetOutPath "$INSTDIR\HostSideAdapters"
-  File "..\output\HostSideAdapters\Template.dll"
+  CreateDirectory "Plugins"
   
   SetOutPath "$INSTDIR\Images"
   File "..\output\Images\*.jpg"
   File "..\output\Images\*.png" 
   
-  SetOutPath "$INSTDIR\AddIns"
+  SetOutPath "$INSTDIR\Plugins"
   CreateDirectory "Speech"
      
-  SetOutPath "$INSTDIR\AddIns\Speech"
-  File "..\output\AddIns\Speech\Speech.osapd"
-  File "..\output\AddIns\Speech\OSAE.Speech.dll"
-  File "..\output\AddIns\Speech\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Speech"
+  File "..\output\Plugins\Speech\Speech.osapd"
+  File "..\output\Plugins\Speech\OSAE.Speech.dll"
+  File "..\output\Plugins\Speech\Screenshot.jpg"
   
-  SetOutPath "$INSTDIR\AddIns\Bluetooth"
-  File "..\output\AddIns\Bluetooth\Bluetooth.osapd"
-  File "..\output\AddIns\Bluetooth\OSAE.Bluetooth.dll"
-  File "..\output\AddIns\Bluetooth\InTheHand.Net.Personal.dll"
-  File "..\output\AddIns\Bluetooth\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\Bluetooth"
+  File "..\output\Plugins\Bluetooth\Bluetooth.osapd"
+  File "..\output\Plugins\Bluetooth\OSAE.Bluetooth.dll"
+  File "..\output\Plugins\Bluetooth\InTheHand.Net.Personal.dll"
+  File "..\output\Plugins\Bluetooth\Screenshot.jpg"
 
   # Start Menu Shortcuts
   SetShellVarContext all
@@ -445,10 +390,10 @@ Section Client s2
   AccessControl::GrantOnFile \
     "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   
-  SetOutPath $INSTDIR
-  File "DBInstall\GAC\bin\Debug\GAC.exe"
-  ExecWait "$INSTDIR\GAC.exe"
-  Delete "$INSTDIR\GAC.exe"
+  ;SetOutPath $INSTDIR
+  ;File "DBInstall\GAC\bin\Debug\GAC.exe"
+  ;ExecWait "$INSTDIR\GAC.exe"
+  ;Delete "$INSTDIR\GAC.exe"
     
   writeUninstaller $INSTDIR\uninstall.exe
   

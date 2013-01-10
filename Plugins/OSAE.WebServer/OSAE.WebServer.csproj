@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\output\AddIns\Web Server\</OutputPath>
+    <OutputPath>..\..\output\Plugins\Web Server\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,7 +38,6 @@
       <HintPath>..\..\Assemblies\HttpServer.MVC.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.AddIn" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -51,13 +50,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AddInView2\AddInView2.csproj">
-      <Project>{B9A17F32-4FD9-4834-840D-99AA8DEF72F1}</Project>
-      <Name>AddInView2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
-      <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
+      <Project>{022f45f1-c988-41a1-a203-39e97be928b6}</Project>
       <Name>OSAE.API</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

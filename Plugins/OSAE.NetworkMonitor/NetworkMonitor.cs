@@ -1,15 +1,12 @@
 ﻿using System;
-using System.AddIn;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Timers;
-using OpenSourceAutomation;
 
 namespace OSAE.NetworkMonitor
 {
-    [AddIn("Network Monitor", Version = "0.3.7")]
-    public class NetworkMonitor : IOpenSourceAutomationAddInv2
+    public class NetworkMonitor : OSAEPluginBase
     {
         OSAE osae = new OSAE("Network Monitor");
         System.Timers.Timer Clock = new System.Timers.Timer();
@@ -18,12 +15,12 @@ namespace OSAE.NetworkMonitor
 
         #region OSAEPlugin Members
 
-        public void ProcessCommand(OSAEMethod method)
+        public override void ProcessCommand(OSAEMethod method)
         {
             //No commands to process
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             pName = pluginName;
             osae.AddToLog("Running Interface!", true);
@@ -41,7 +38,7 @@ namespace OSAE.NetworkMonitor
             this.updateThread.Start();
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             Clock.Stop();
         }

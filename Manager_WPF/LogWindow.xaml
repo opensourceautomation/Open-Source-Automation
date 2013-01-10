@@ -3,6 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="LogWindow" Height="616" Width="835" xmlns:controls="clr-namespace:OSAE.UI.Controls;assembly=OSAE.UI.Controls">
     <Grid>
-        <controls:Logs ></controls:Logs>
+        <controls:Logs></controls:Logs>
     </Grid>
 </Window>

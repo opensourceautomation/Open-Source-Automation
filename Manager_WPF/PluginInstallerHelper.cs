@@ -131,7 +131,7 @@ namespace Manager_WPF
                             }
                         }
 
-                        System.IO.Directory.Move(tempfolder, exePath + "/AddIns/" + pluginFolder);
+                        System.IO.Directory.Move(tempfolder, exePath + "/Plugins/" + pluginFolder);
 
                         //Check if we are running a x64 bit architecture (This is a silly way to do it since I am not sure if every 64 bit machine has this directory...)
                         bool is64bit = Environment.Is64BitOperatingSystem;
@@ -150,11 +150,11 @@ namespace Manager_WPF
                                 "Install 64bit Assemblies?", MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
                                 //Install the 64bit assemblies over the 32 bit ones...
-                                string[] x64files = System.IO.Directory.GetFiles(exePath + "/AddIns/" + pluginFolder, "*.x64");
+                                string[] x64files = System.IO.Directory.GetFiles(exePath + "/Plugins/" + pluginFolder, "*.x64");
 
                                 foreach (string str in x64files)
                                 {
-                                    string destFile = System.IO.Path.Combine(exePath + "/AddIns/" + pluginFolder + "/", System.IO.Path.GetFileNameWithoutExtension(str));
+                                    string destFile = System.IO.Path.Combine(exePath + "/Plugins/" + pluginFolder + "/", System.IO.Path.GetFileNameWithoutExtension(str));
                                     //Copy it to the new destination overwriting the old file if it exists
                                     System.IO.File.Copy(str, destFile, true);
                                 }
@@ -162,7 +162,7 @@ namespace Manager_WPF
                         }
                         
                         //Delete all the files with .x64 extensions since they aren't needed anymore
-                        string[] delfiles = System.IO.Directory.GetFiles(exePath + "/AddIns/" + pluginFolder, "*.x64");
+                        string[] delfiles = System.IO.Directory.GetFiles(exePath + "/Plugins/" + pluginFolder, "*.x64");
                         foreach (string str in delfiles)
                             System.IO.File.Delete(str);
 
@@ -214,7 +214,7 @@ namespace Manager_WPF
             bool returnValue = false;
 
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
-            string pluginFolder = exePath + "/AddIns/" + desc.Path;
+            string pluginFolder = exePath + "/Plugins/" + desc.Path;
             if (Directory.Exists(pluginFolder))
             {
                 deleteFolder(pluginFolder);

@@ -13,8 +13,9 @@ using System.Threading;
 using System.ServiceModel;
 using Microsoft.Win32;
 using OSAE;
-using System.AddIn.Hosting;
-using OpenSourceAutomation;
+using System.Xml;
+using System.Security;
+using System.Security.Policy;
 
 namespace ClientService
 {
@@ -159,9 +160,7 @@ namespace ClientService
                 {
                     if (p.Enabled)
                     {
-                        osae.AddToLog("Shutting down " + p.PluginName, true);
-                        p.addin.Shutdown();
-                        p.addin = null;
+                        p.Shutdown();
                     }
                 }
             }
@@ -173,14 +172,22 @@ namespace ClientService
             osae.AddToLog("Entered LoadPlugins", true);
             string path = osae.APIpath;
 
-            AddInStore.Update(path);
+            var pluginAssemblies = new List<OSAEPluginBase>();
+            var types = PluginFinder.FindPlugins();
 
-            Collection<AddInToken> tokens = null;
-            tokens = AddInStore.FindAddIns(typeof(IOpenSourceAutomationAddInv2), path);
-            foreach (AddInToken token in tokens)
+            osae.AddToLog("Loading Plugins", true);
+
+            foreach (var type in types)
             {
-                plugins.Add(new Plugin(token));
+                osae.AddToLog("type.TypeName: " + type.TypeName, false);
+                osae.AddToLog("type.AssemblyName: " + type.AssemblyName, false);
+
+                var domain = CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet);
+
+                plugins.Add(new Plugin(type.AssemblyName, type.TypeName, domain, type.Location));
             }
+
+            osae.AddToLog("Found " + plugins.Count.ToString() + " plugins", true);
 
             foreach (Plugin plugin in plugins)
             {
@@ -207,13 +214,11 @@ namespace ClientService
                         osae.AddToLog("isSystemPlugin?: " + isSystemPlugin.ToString(), true);
                         if (!isSystemPlugin)
                         {
-                            if (obj.Enabled.ToString() == "1")
+                            if (obj.Enabled == 1)
                             {
                                 try
                                 {
-                                    if (plugin.ActivatePlugin())
-                                        plugin.addin.RunInterface(plugin.PluginName);
-                                    osae.ObjectStateSet(plugin.PluginName, "ON");
+                                    enablePlugin(plugin);
                                 }
                                 catch (Exception ex)
                                 {
@@ -330,8 +335,7 @@ namespace ClientService
                                     osae.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
                                     try
                                     {
-                                        if (p.ActivatePlugin())
-                                            p.addin.RunInterface(p.PluginName);
+                                        enablePlugin(p);
                                         osae.AddToLog("Activated plugin: " + p.PluginName, false);
                                     }
                                     catch (Exception ex)
@@ -344,10 +348,7 @@ namespace ClientService
                                     osae.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
                                     try
                                     {
-                                        p.addin.Shutdown();
-                                        p.addin = null;
-                                        GC.Collect();
-                                        p.Enabled = false;
+                                        disablePlugin(p);
                                         osae.AddToLog("Deactivated plugin: " + p.PluginName, false);
                                     }
                                     catch (Exception ex)
@@ -419,7 +420,7 @@ namespace ClientService
 
                             if (plugin.Enabled == true && (row["object_owner"].ToString().ToLower() == plugin.PluginName.ToLower() || row["object_name"].ToString().ToLower() == plugin.PluginName.ToLower()))
                             {
-                                plugin.addin.ProcessCommand(method);
+                                plugin.ExecuteCommand(method);
                             }
                         }
                     }
@@ -487,8 +488,9 @@ namespace ClientService
             {
                 if (plugin.ActivatePlugin())
                 {
-                    plugin.addin.RunInterface(plugin.PluginName);
+                    plugin.RunInterface();
                     osae.ObjectStateSet(plugin.PluginName, "ON");
+                    osae.AddToLog("Plugin enabled: " + plugin.PluginName, true);
                 }
             }
             catch (Exception ex)
@@ -507,16 +509,28 @@ namespace ClientService
             osae.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
             try
             {
-                p.addin.Shutdown();
-                p.addin = null;
-                GC.Collect();
+                p.Shutdown();
                 p.Enabled = false;
-                p.process.Shutdown();
+                p.Domain = CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet);
+                
             }
             catch (Exception ex)
             {
                 osae.AddToLog("Error stopping plugin (" + p.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
             }
+        }
+
+        public AppDomain CreateSandboxDomain(string name, string path, SecurityZone zone)
+        {
+            var setup = new AppDomainSetup { ApplicationBase = osae.APIpath, PrivateBinPath = Path.GetFullPath(path) };
+
+            var evidence = new Evidence();
+            evidence.AddHostEvidence(new Zone(zone));
+            var permissions = SecurityManager.GetStandardSandbox(evidence);
+
+            var strongName = typeof(ClientService).Assembly.Evidence.GetHostEvidence<StrongName>();
+
+            return AppDomain.CreateDomain(name, null, setup);
         }
 
     }
