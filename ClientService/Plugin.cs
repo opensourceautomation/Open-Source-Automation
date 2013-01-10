@@ -104,6 +104,8 @@ namespace ClientService
             {
                 osae.AddToLog("Activating Plugin: " + PluginName, true);
                 _plugin = (OSAE.OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
+                _plugin.InitializeLifetimeService();
+
                 _domain.UnhandledException += Domain_UnhandledException;
                 return true;
             }

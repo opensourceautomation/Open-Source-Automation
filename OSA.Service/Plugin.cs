@@ -3,6 +3,7 @@ using System.Xml;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Remoting.Lifetime;
 
 namespace OSAE.Service
 {
@@ -104,6 +105,8 @@ namespace OSAE.Service
             {
                 osae.AddToLog("Activating Plugin: " + PluginName, true);
                 _plugin = (OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
+                _plugin.InitializeLifetimeService();
+
                 _domain.UnhandledException += Domain_UnhandledException;
                 return true;
             }

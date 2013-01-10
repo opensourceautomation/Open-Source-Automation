@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Remoting.Lifetime;
 
 namespace OSAE
 {
@@ -15,7 +16,12 @@ namespace OSAE
         public abstract void ProcessCommand(OSAEMethod method);
 
         public abstract void Shutdown();
-        
+
+        public override Object InitializeLifetimeService()
+        {
+            
+            return null;
+        }
     }
 
 }
