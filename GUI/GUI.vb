@@ -230,7 +230,7 @@ Public Class GUI
         iOldHeight = Me.Height
         gCurrentScreen = sScreen
         OSAEApi.ObjectPropertySet(gAppName, "Current Screen", sScreen)
-        sPath = OSAEApi.GetObjectProperty(sScreen, "Background Image")
+        sPath = OSAEApi.GetObjectPropertyValue(sScreen, "Background Image").Value
 
         'sPath = sPath.Replace(".\", OSAEApi.APIpath & "\")
         sPath = OSAEApi.APIpath + sPath
@@ -401,31 +401,31 @@ Public Class GUI
                     OSAEApi.ObjectPropertySet(sControlName, sStateMatch & " X", sender.Location.X)
                     OSAEApi.ObjectPropertySet(sControlName, sStateMatch & " Y", sender.Location.Y)
                     If sStateMatch <> "State 1" Then
-                        sState1 = Val(OSAEApi.GetObjectProperty(sControlName, "State 1 X"))
+                        sState1 = Val(OSAEApi.GetObjectPropertyValue(sControlName, "State 1 X").Value)
                         If (sState1 + 200) < sender.Location.X Or (sState1 - 200) > sender.Location.X Then
                             OSAEApi.ObjectPropertySet(sControlName, "State 1 X", sender.Location.X)
                         End If
-                        sState1 = Val(OSAEApi.GetObjectProperty(sControlName, "State 1 Y"))
+                        sState1 = Val(OSAEApi.GetObjectPropertyValue(sControlName, "State 1 Y").Value)
                         If (sState1 + 200) < sender.Location.Y Or (sState1 - 200) > sender.Location.Y Then
                             OSAEApi.ObjectPropertySet(sControlName, "State 1 Y", sender.Location.Y)
                         End If
                     End If
                     If sStateMatch <> "State 2" Then
-                        sState2 = Val(OSAEApi.GetObjectProperty(sControlName, "State 2 X"))
+                        sState2 = Val(OSAEApi.GetObjectPropertyValue(sControlName, "State 2 X").Value)
                         If (sState2 + 200) < sender.Location.X Or (sState2 - 200) > sender.Location.X Then
                             OSAEApi.ObjectPropertySet(sControlName, "State 2 X", sender.Location.X)
                         End If
-                        sState2 = Val(OSAEApi.GetObjectProperty(sControlName, "State 2 Y"))
+                        sState2 = Val(OSAEApi.GetObjectPropertyValue(sControlName, "State 2 Y").Value)
                         If (sState2 + 200) < sender.Location.Y Or (sState2 - 200) > sender.Location.Y Then
                             OSAEApi.ObjectPropertySet(sControlName, "State 2 Y", sender.Location.Y)
                         End If
                     End If
                     If sStateMatch <> "State 3" Then
-                        sState3 = Val(OSAEApi.GetObjectProperty(sControlName, "State 3 X"))
+                        sState3 = Val(OSAEApi.GetObjectPropertyValue(sControlName, "State 3 X").Value)
                         If (sState3 + 200) < sender.Location.X Or (sState3 - 200) > sender.Location.X Then
                             OSAEApi.ObjectPropertySet(sControlName, "State 3 X", sender.Location.X)
                         End If
-                        sState3 = Val(OSAEApi.GetObjectProperty(sControlName, "State 3 Y"))
+                        sState3 = Val(OSAEApi.GetObjectPropertyValue(sControlName, "State 3 Y").Value)
                         If (sState3 + 200) < sender.Location.Y Or (sState3 - 200) > sender.Location.Y Then
                             OSAEApi.ObjectPropertySet(sControlName, "State 3 Y", sender.Location.Y)
                         End If
@@ -558,7 +558,7 @@ Public Class GUI
         End If
     End Sub
     Private Sub ControlMethodImageUp(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
-        Dim sControlName As String = "", sState As String, sStateMatch As String, sTemp As String
+        Dim sControlName As String = ""
         Dim CMD As New MySqlCommand
         ' Find out if it is in Drag and Drop mode
         If mnuEditMode.Checked = True Then
@@ -821,12 +821,12 @@ Public Class GUI
         CMD.Parameters.Clear()
         For iLoop = 1 To iObjectCount
             If aScreenObject(iLoop).Control_Type = "CONTROL STATE IMAGE" Then
-                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Object Name")
+                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Object Name").Value
                 iStateImageCount = iStateImageCount + 1
                 iStateImageList = iStateImageList & "'" & aScreenObject(iLoop).Object_Name & "',"
                 aScreenObject(iLoop).Control_Index = iStateImageCount
                 aControlStateImage(iStateImageCount).Tag = iLoop
-                sState = OSAEApi.GetObjectState(aScreenObject(iLoop).Object_Name)
+                sState = OSAEApi.GetObjectStateValue(aScreenObject(iLoop).Object_Name).Value
                 CMD.Parameters.Clear()
                 CMD.CommandText = "SELECT COALESCE(last_state_change,NOW()) FROM osae_v_object WHERE object_name=?ObjectName"
                 CMD.Parameters.AddWithValue("?ObjectName", aScreenObject(iLoop).Object_Name)
@@ -849,12 +849,12 @@ Public Class GUI
                     If sStateMatch <> "" Then
                         sStateMatch = sStateMatch.Substring(0, 7)
                     End If
-                    sImage = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, sStateMatch & " Image")
+                    sImage = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, sStateMatch & " Image").Value
                     'sImage = sImage.Replace(".\", "\")
                     If File.Exists(gAppPath & sImage) Then sImage = gAppPath & sImage
-                    iZOrder = Val(OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "ZOrder"))
-                    iX = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, sStateMatch & " X"))
-                    iY = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, sStateMatch & " Y"))
+                    iZOrder = Val(OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "ZOrder").Value)
+                    iX = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, sStateMatch & " X").Value)
+                    iY = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, sStateMatch & " Y").Value)
                     aScreenObject(iLoop).Object_State = sState
                     If File.Exists(sImage) Then
                         Dim tImage As Image = Image.FromFile(sImage)
@@ -879,23 +879,23 @@ Public Class GUI
                 End Try
             ElseIf aScreenObject(iLoop).Control_Type = "CONTROL PROPERTY LABEL" Then
                 iPropertyLabelCount = iPropertyLabelCount + 1
-                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Object Name")
+                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Object Name").Value
                 aScreenObject(iLoop).Control_Index = iPropertyLabelCount
-                sPropertyName = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Property Name")
+                sPropertyName = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Property Name").Value
                 aScreenObject(iLoop).Property_Name = sPropertyName
-                sPropertyValue = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Object_Name, sPropertyName)
-                sBackColor = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Back Color")
-                sForeColor = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Fore Color")
-                sPrefix = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Prefix")
-                sSuffix = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Suffix")
-                iFontSize = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Font Size")
-                sFontName = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Font Name")
+                sPropertyValue = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Object_Name, sPropertyName).Value
+                sBackColor = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Back Color").Value
+                sForeColor = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Fore Color").Value
+                sPrefix = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Prefix").Value
+                sSuffix = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Suffix").Value
+                iFontSize = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Font Size").Value
+                sFontName = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Font Name").Value
                 aControlPropertyLabel(iPropertyLabelCount).Tag = iLoop
                 aControlPropertyLabel(iPropertyLabelCount).ReadOnly = True
                 aControlPropertyLabel(aScreenObject(iLoop).Control_Index).Font = New Font(sFontName, iFontSize, FontStyle.Regular, GraphicsUnit.Point)
                 g_toolTip.SetToolTip(aControlPropertyLabel(iPropertyLabelCount), aScreenObject(iLoop).Object_Name & " " & sPropertyName & " = " & sPropertyValue)
-                iX = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X"))
-                iY = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y"))
+                iX = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "X").Value)
+                iY = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Y").Value)
                 If sPropertyValue <> "" Then
                     If sBackColor <> "" Then
                         Try
@@ -927,13 +927,13 @@ Public Class GUI
                 iStaticLabelCount = iStaticLabelCount + 1
                 aScreenObject(iLoop).Object_Name = ""
                 aScreenObject(iLoop).Control_Index = iStaticLabelCount
-                sPropertyValue = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Object_Name, "Value")
-                sBackColor = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Back Color")
-                sForeColor = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Fore Color")
+                sPropertyValue = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Object_Name, "Value").Value
+                sBackColor = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Back Color").Value
+                sForeColor = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Fore Color").Value
                 aControlStaticLabel(iStaticLabelCount).Tag = iLoop
                 g_toolTip.SetToolTip(aControlStaticLabel(iStaticLabelCount), "")
-                iX = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X"))
-                iY = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y"))
+                iX = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "X").Value)
+                iY = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Y").Value)
                 If sPropertyValue <> "" Then
                     If sBackColor <> "" Then
                         Try
@@ -960,15 +960,15 @@ Public Class GUI
             ElseIf aScreenObject(iLoop).Control_Type = "CONTROL TIMER LABEL" Then
                 iTimerLabelCount = iTimerLabelCount + 1
                 aScreenObject(iLoop).Control_Index = iTimerLabelCount
-                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Object Name")
-                sPropertyName = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Type")
+                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Object Name").Value
+                sPropertyName = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Type").Value
                 aScreenObject(iLoop).Property_Name = sPropertyName
-                sPropertyValue = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Object_Name, "OFF Timer")
+                sPropertyValue = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Object_Name, "OFF Timer").Value
                 aScreenObject(iLoop).Property_Value = sPropertyValue
-                sBackColor = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Back Color")
-                sForeColor = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Fore Color")
+                sBackColor = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Back Color").Value
+                sForeColor = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Fore Color").Value
                 aControlTimerLabel(iTimerLabelCount).Tag = iLoop
-                sState = OSAEApi.GetObjectState(aScreenObject(iLoop).Object_Name)
+                sState = OSAEApi.GetObjectStateValue(aScreenObject(iLoop).Object_Name).Value
                 aScreenObject(iLoop).Object_State = sState
                 CMD.Parameters.Clear()
 
@@ -993,8 +993,8 @@ Public Class GUI
                     MessageBox.Show("GUI Error Load_Objects 666: " & myerror.Message)
                     CN.Close()
                 End Try
-                iX = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X"))
-                iY = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y"))
+                iX = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "X").Value)
+                iY = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Y").Value)
                 If sBackColor <> "" Then
                     Try
                         aControlTimerLabel(aScreenObject(iLoop).Control_Index).BackColor = Color.FromName(sBackColor)
@@ -1015,19 +1015,19 @@ Public Class GUI
                 aControlTimerLabel(aScreenObject(iLoop).Control_Index).Visible = True
             ElseIf aScreenObject(iLoop).Control_Type = "CONTROL METHOD IMAGE" Then
                 iMethodImageCount = iMethodImageCount + 1
-                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Object Name")
+                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Object Name").Value
 
                 aScreenObject(iLoop).Control_Index = iMethodImageCount
                 aControlMethodImage(aScreenObject(iLoop).Control_Index).Tag = iLoop
                 g_toolTip.SetToolTip(aControlMethodImage(iMethodImageCount), aScreenObject(iLoop).Object_Name)
                 CMD.Parameters.Clear()
                 Try
-                    sImage = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Image")
+                    sImage = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Image").Value
                     sImage = sImage.Replace(".\", "\")
                     If File.Exists(gAppPath & sImage) Then sImage = gAppPath & sImage
-                    iZOrder = Val(OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "ZOrder"))
-                    iX = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X"))
-                    iY = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y"))
+                    iZOrder = Val(OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "ZOrder").Value)
+                    iX = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "X").Value)
+                    iY = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Y").Value)
                     If File.Exists(sImage) Then
                         aControlMethodImage(aScreenObject(iLoop).Control_Index).Image = Image.FromFile(sImage)
                         aScreenObject(iLoop).Object_State = ""
@@ -1044,18 +1044,18 @@ Public Class GUI
                 End Try
             ElseIf aScreenObject(iLoop).Control_Type = "CONTROL NAVIGATION IMAGE" Then
                 iNavImageCount = iNavImageCount + 1
-                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Screen")
+                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Screen").Value
                 aScreenObject(iLoop).Control_Index = iNavImageCount
                 aScreenObject(iLoop).Object_State = ""
                 aControlNavImage(iNavImageCount).Tag = iLoop
                 g_toolTip.SetToolTip(aControlNavImage(iNavImageCount), aScreenObject(iLoop).Object_Name)
                 CMD.Parameters.Clear()
                 Try
-                    sImage = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Image")
+                    sImage = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Image").Value
                     sImage = sImage.Replace(".\", "\")
                     If File.Exists(gAppPath & sImage) Then sImage = gAppPath & sImage
-                    iX = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X"))
-                    iY = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y"))
+                    iX = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "X").Value)
+                    iY = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Y").Value)
                     If File.Exists(sImage) Then
                         Dim tImage As Image = Image.FromFile(sImage)
                         aControlNavImage(aScreenObject(iLoop).Control_Index).Image = Image.FromFile(sImage)
@@ -1076,12 +1076,12 @@ Public Class GUI
                     CN.Close()
                 End Try
             ElseIf aScreenObject(iLoop).Control_Type = "CONTROL CAMERA VIEWER" Then
-                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Object Name")
+                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Object Name").Value
                 Try
                     Me.Controls.Add(New ucCameraViewer(OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Object_Name, "Stream Address").Value))
                     aScreenObject(iLoop).Control_Index = Me.Controls.Count - 1
-                    Me.Controls(aScreenObject(iLoop).Control_Index).Top = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y")
-                    Me.Controls(aScreenObject(iLoop).Control_Index).Left = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X")
+                    Me.Controls(aScreenObject(iLoop).Control_Index).Top = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Y").Value
+                    Me.Controls(aScreenObject(iLoop).Control_Index).Left = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "X").Value
                     Me.Controls(aScreenObject(iLoop).Control_Index).BringToFront()
 
                 Catch myerror As MySqlException
@@ -1090,47 +1090,22 @@ Public Class GUI
                 End Try
             ElseIf aScreenObject(iLoop).Control_Type = "USER CONTROL" Then
                 iUserControlCount += 1
-                'aScreenObject(iLoop).Control_Index = iObjectCount
-                'aScreenObject(iLoop).Control_Name = Convert.ToString(myReader.Item("object_name"))
-                '        aScreenObject(iObjectCount).Control_Type = Convert.ToString(myReader.Item("control_base_type"))
-                Dim sUCType As String = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Control Type")
-                'aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Control Type")
+                Dim sUCType As String = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Control Type").Value
                 If sUCType = "USER CONTROL WEATHER" Then
-                    Me.Controls.Add(New ucWeather)
-                    aScreenObject(iLoop).Control_Index = Me.Controls.Count - 1
-                    Me.Controls(aScreenObject(iLoop).Control_Index).Top = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y")
-                    Me.Controls(aScreenObject(iLoop).Control_Index).Left = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X")
-                    Me.Controls(aScreenObject(iLoop).Control_Index).BringToFront()
+                    Dim tempControl As New ucWeather
+                    aScreenObject(iLoop).Control_Index = iUserControlCount
+                    If aControlUserControl(aScreenObject(iLoop).Control_Index).Controls.Count = 0 Then
+                        aControlUserControl(aScreenObject(iLoop).Control_Index).Controls.Add(tempControl)
+                    End If
+                    aControlUserControl(aScreenObject(iLoop).Control_Index).Top = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Y").Value
+                    aControlUserControl(aScreenObject(iLoop).Control_Index).Left = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "X").Value
+                    aControlUserControl(aScreenObject(iLoop).Control_Index).Width = tempControl.Width
+                    aControlUserControl(aScreenObject(iLoop).Control_Index).Height = tempControl.Height
+                    Application.DoEvents()
+                    aControlUserControl(aScreenObject(iLoop).Control_Index).Visible = True
 
-                    '
                 End If
-                ' OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X")
-                'aScreenObject(iLoop).Object_State = ""
-                'aControlNavImage(iNavImageCount).Tag = iLoop
-                'g_toolTip.SetToolTip(aControlNavImage(iNavImageCount), aScreenObject(iLoop).Object_Name)
-                'CMD.Parameters.Clear()
-                'Try
-                '    sImage = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Image")
-                '    sImage = sImage.Replace(".\", "\")
-                '    If File.Exists(gAppPath & sImage) Then sImage = gAppPath & sImage
-                '    iX = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X"))
-                '    iY = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y"))
-                '    If File.Exists(sImage) Then
-                '        aControlNavImage(aScreenObject(iLoop).Control_Index).Image = Image.FromFile(sImage)
-                '        aControlNavImage(aScreenObject(iLoop).Control_Index).Left = iX
-                '        aControlNavImage(aScreenObject(iLoop).Control_Index).Top = iY
-                '        aControlNavImage(aScreenObject(iLoop).Control_Index).Visible = True
-                '    Else
-                '        aControlNavImage(aScreenObject(iLoop).Control_Index).Visible = False
-                '        aControlNavImage(aScreenObject(iLoop).Control_Index).Image = Nothing
-                '        aControlNavImage(aScreenObject(iLoop).Control_Index).Left = 0
-                '        aControlNavImage(aScreenObject(iLoop).Control_Index).Top = 0
 
-                '    End If
-                'Catch myerror As MySqlException
-                '    MessageBox.Show("GUI Error Load_Objects 5: " & myerror.Message)
-                '    CN.Close()
-                'End Try
             End If
         Next iLoop
         If iStateImageList.EndsWith(",") Then iStateImageList = iStateImageList.Substring(0, iStateImageList.Length - 1)
@@ -1150,7 +1125,6 @@ Public Class GUI
         Dim iLoop As Integer
         Dim iX As Integer, iY As Integer ', sForeColor As String
         Dim sState As String = ""
-        Dim sProperty As String = ""
         'Dim iSecondsSinceRefresh As Double
         If gCurrentScreen = "" Then Exit Sub
         'Try
@@ -1196,12 +1170,12 @@ Public Class GUI
                                 If sStateMatch <> "" Then
                                     sStateMatch = sStateMatch.Substring(0, 7)
                                 End If
-                                sImage = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, sStateMatch & " Image")
+                                sImage = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, sStateMatch & " Image").Value
                                 'sImage = sImage.Replace(".\", "\")
                                 If File.Exists(gAppPath & sImage) Then sImage = gAppPath & sImage
-                                iZOrder = Val(OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "ZOrder"))
-                                iX = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, sStateMatch & " X"))
-                                iY = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, sStateMatch & " Y"))
+                                iZOrder = Val(OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "ZOrder").Value)
+                                iX = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, sStateMatch & " X").Value)
+                                iY = Val("" & OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, sStateMatch & " Y").Value)
 
                                 If File.Exists(sImage) Then
                                     Dim tImage As Image = Image.FromFile(sImage)
@@ -1252,7 +1226,7 @@ Public Class GUI
 
                             End If
                         ElseIf aScreenObject(iLoop).Control_Type = "CONTROL TIMER LABEL" Then
-                            sState = OSAEApi.GetObjectState(aScreenObject(iLoop).Object_Name)
+                            sState = OSAEApi.GetObjectStateValue(aScreenObject(iLoop).Object_Name).Value
                             aScreenObject(iLoop).Object_State = sState
                             CMD.Parameters.Clear()
 
