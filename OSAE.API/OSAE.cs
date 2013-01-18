@@ -1501,10 +1501,10 @@ namespace OSAE
             try
             {
                 if (ContainerName == "")
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
                 else
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
                     command.Parameters.AddWithValue("@ContainerName", ContainerName);
                 }
                 dataset = RunQuery(command);
@@ -1516,6 +1516,7 @@ namespace OSAE
                         obj.State.Value = dr["state_label"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
+                        obj.LastUpd = dr["last_updated"].ToString();
                         DataSet ds = GetObjectProperties(obj.Name);
                         List<ObjectProperty> props = new List<ObjectProperty>();
                         foreach (DataRow drp in ds.Tables[0].Rows)

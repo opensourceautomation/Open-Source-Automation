@@ -32,7 +32,7 @@ namespace GUI2
         //ScreenObject aScreenObject(100) = new ScreenObject;
         List<ScreenObject> aScreenObject = new List<ScreenObject>();
         List<Image> aControlStateImage = new List<Image>();
-     DispatcherTimer timer = new DispatcherTimer();
+        DispatcherTimer timer = new DispatcherTimer();
 
         public MainWindow()
         {
@@ -501,20 +501,45 @@ namespace GUI2
                         CN.Close();
                     }
             }
-            
-            //    ElseIf aScreenObject(iLoop).Control_Type = "USER CONTROL" Then
-            //        iUserControlCount += 1
-            //        Dim sUCType As String = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Control Type")
-            //                 If sUCType = "USER CONTROL WEATHER" Then
-            //            Me.Controls.Add(New ucWeather)
-            //            aScreenObject(iLoop).Control_Index = Me.Controls.Count - 1
-            //            Me.Controls(aScreenObject(iLoop).Control_Index).Top = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y")
-            //            Me.Controls(aScreenObject(iLoop).Control_Index).Left = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X")
-            //            Me.Controls(aScreenObject(iLoop).Control_Index).BringToFront()
+            else if(dso.Control_Type == "CONTROL CAMERA VIEWER")
+            {
+                try {
+                    string stream = OSAEApi.GetObjectPropertyValue(OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Object Name").Value, "Stream Address").Value;
+	                OSAE.UI.Controls.VideoStreamViewer vsv = new OSAE.UI.Controls.VideoStreamViewer(stream);
+                    canGUI.Children.Add(vsv);
+                    OSAE.ObjectProperty pZOrder = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "ZOrder");
+                    OSAE.ObjectProperty pX = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "X");
+                    OSAE.ObjectProperty pY = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Y");
+                    Double dX = Convert.ToDouble(pX.Value);
+                    Canvas.SetLeft(vsv, dX);
+                    Double dY = Convert.ToDouble(pY.Value);
+                    Canvas.SetTop(vsv, dY);
+                    int dZ = Convert.ToInt32(pZOrder.Value);
+                    Canvas.SetZIndex(vsv, dZ);
 
-            //            '
-            //        End If
-            //    End If
+                } catch (MySqlException myerror) {
+	                MessageBox.Show("GUI Error Load Camera Viewer: " + myerror.Message);
+	                CN.Close();
+                }
+            }
+            else if (dso.Control_Type == "USER CONTROL")
+            {
+                string sUCType = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Control Type").Value;
+                if (sUCType == "USER CONTROL WEATHER")
+                {
+                    OSAE.UI.Controls.Weather wc = new OSAE.UI.Controls.Weather();
+                    canGUI.Children.Add(wc);
+                    OSAE.ObjectProperty pZOrder = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "ZOrder");
+                    OSAE.ObjectProperty pX = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "X");
+                    OSAE.ObjectProperty pY = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Y");
+                    Double dX = Convert.ToDouble(pX.Value);
+                    Canvas.SetLeft(wc, dX);
+                    Double dY = Convert.ToDouble(pY.Value);
+                    Canvas.SetTop(wc, dY);
+                    int dZ = Convert.ToInt32(pZOrder.Value);
+                    Canvas.SetZIndex(wc, dZ);
+                }
+            }
             //If iStateImageList.EndsWith(",") Then iStateImageList = iStateImageList.Substring(0, iStateImageList.Length - 1)
             //Timer1.Enabled = True
         }

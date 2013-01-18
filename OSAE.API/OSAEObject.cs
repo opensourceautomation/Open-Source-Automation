@@ -178,5 +178,15 @@ namespace OSAE
                 }
             }
         }
+
+        public ObjectProperty Property(string prop)
+        {
+            foreach (ObjectProperty p in Properties)
+            {
+                if (p.Name == prop)
+                    return p;
+            }
+            return null;
+        }
     }
 }
