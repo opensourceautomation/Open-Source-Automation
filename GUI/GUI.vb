@@ -1075,19 +1075,6 @@ Public Class GUI
                     MessageBox.Show("GUI Error Load_Objects 5: " & myerror.Message)
                     CN.Close()
                 End Try
-            ElseIf aScreenObject(iLoop).Control_Type = "CONTROL CAMERA VIEWER" Then
-                aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Object Name").Value
-                Try
-                    Me.Controls.Add(New ucCameraViewer(OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Object_Name, "Stream Address").Value))
-                    aScreenObject(iLoop).Control_Index = Me.Controls.Count - 1
-                    Me.Controls(aScreenObject(iLoop).Control_Index).Top = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Y").Value
-                    Me.Controls(aScreenObject(iLoop).Control_Index).Left = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "X").Value
-                    Me.Controls(aScreenObject(iLoop).Control_Index).BringToFront()
-
-                Catch myerror As MySqlException
-                    MessageBox.Show("GUI Error Load Camera Viewer: " & myerror.Message)
-                    CN.Close()
-                End Try
             ElseIf aScreenObject(iLoop).Control_Type = "USER CONTROL" Then
                 iUserControlCount += 1
                 Dim sUCType As String = OSAEApi.GetObjectPropertyValue(aScreenObject(iLoop).Control_Name, "Control Type").Value

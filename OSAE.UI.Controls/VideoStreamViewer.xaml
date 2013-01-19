@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="500" BorderThickness="2" BorderBrush="Black" Background="Black">
     <Grid>
         
-        <Label Content="Unable to show stream" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Background="Black" Foreground="White"/>
+        <Label Content="Unable to open stream" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Background="Black" Foreground="White"/>
         <Image Name="image" HorizontalAlignment="Left" Height="296" VerticalAlignment="Top" Width="496"/>
     </Grid>
 </UserControl>

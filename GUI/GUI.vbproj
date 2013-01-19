@@ -62,18 +62,6 @@
     <ApplicationIcon>mainIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AForge, Version=2.2.0.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\AForge.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Controls, Version=2.2.2.0, Culture=neutral, PublicKeyToken=a8ac264d1dc6b9d9, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\AForge.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Video, Version=2.2.0.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\AForge.Video.dll</HintPath>
-    </Reference>
     <Reference Include="MySql.Data, Version=5.2.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Debugging\MySql.Data.dll</HintPath>
@@ -274,12 +262,6 @@
     <Compile Include="frmScreens.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ucCameraViewer.Designer.vb">
-      <DependentUpon>ucCameraViewer.vb</DependentUpon>
-    </Compile>
-    <Compile Include="ucCameraViewer.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="ucSlider1.Designer.vb">
       <DependentUpon>ucSlider1.vb</DependentUpon>
     </Compile>
@@ -380,9 +362,6 @@
     <EmbeddedResource Include="frmScreens.resx">
       <DependentUpon>frmScreens.vb</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ucCameraViewer.resx">
-      <DependentUpon>ucCameraViewer.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ucSlider1.resx">
       <DependentUpon>ucSlider1.vb</DependentUpon>

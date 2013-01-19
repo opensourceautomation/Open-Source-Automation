@@ -10,6 +10,5 @@
                 </ContextMenu>
             </Canvas.ContextMenu>
         </Canvas>
-        <Menu Height="23" HorizontalAlignment="Left" Margin="158,356,0,0" Name="menu1" VerticalAlignment="Top" Width="200" />
     </Grid>
 </Window>
