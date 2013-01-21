@@ -1,12 +1,10 @@
-﻿using System;
-using System.Xml;
-using System.IO;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.Remoting.Lifetime;
-
-namespace OSAE.Service
+﻿namespace OSAE.Service
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Xml;
+
     [Serializable]
     public class Plugin
     {

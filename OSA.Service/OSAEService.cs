@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.ServiceProcess;
-using System.Threading;
-using System.Timers;
-using System.Xml.Linq;
-using MySql.Data.MySqlClient;
-using System.Security;
-using System.Security.Policy;
-
-namespace OSAE.Service
+﻿namespace OSAE.Service
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Security;
+    using System.Security.Policy;
+    using System.ServiceModel;
+    using System.ServiceModel.Web;
+    using System.ServiceProcess;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Timers;
+    using System.Xml.Linq;
+    using MySql.Data.MySqlClient;
+
     class OSAEService : ServiceBase
     {
         private ServiceHost sHost;
@@ -224,21 +224,32 @@ namespace OSAE.Service
             osae.AddToLog("stopping...", true);
             try
             {
-                checkPlugins.Enabled = false;
-                running = false;
-                if (sHost.State == CommunicationState.Opened)
-                    sHost.Close();
-                serviceHost.Close();
-                osae.AddToLog("shutting down plugins", true);
-                foreach (Plugin p in plugins)
+                // run the shutdown as a task so that the plugins don't prevent us from closing
+                // as we can't guarantee the quality of a third party plugin
+                var taskA = new Task(() =>
                 {
-                    if (p.Enabled)
+                    checkPlugins.Enabled = false;
+                    running = false;
+                    if (sHost.State == CommunicationState.Opened)
+                        sHost.Close();
+                    serviceHost.Close();
+                    osae.AddToLog("shutting down plugins", true);
+                    foreach (Plugin p in plugins)
                     {
-                        p.Shutdown();
+                        if (p.Enabled)
+                        {
+                            p.Shutdown();
+                        }
                     }
+                });
+
+                if (!taskA.Wait(15000))
+                {
+                    osae.AddToLog("Failed to shutdown plugins after: 15 seconds shutting down anyway", true);
                 }
             }
             catch { }
+
         }
 
         protected override void OnShutdown() 
@@ -246,17 +257,29 @@ namespace OSAE.Service
             osae.AddToLog("stopping...", true);
             try
             {
-                running = false;
-                if (sHost.State == CommunicationState.Opened)
-                    sHost.Close();
-                serviceHost.Close();
-                osae.AddToLog("shutting down plugins", true);
-                foreach (Plugin p in plugins)
+                // run the shutdown as a task so that the plugins don't prevent us from closing
+                // as we can't guarantee the quality of a third party plugin
+                var taskA = new Task(() =>
                 {
-                    if (p.Enabled)
+                    running = false;
+                    if (sHost.State == CommunicationState.Opened)
                     {
-                        p.Shutdown();
+                        sHost.Close();
                     }
+                    serviceHost.Close();
+                    osae.AddToLog("shutting down plugins", true);
+                    foreach (Plugin p in plugins)
+                    {
+                        if (p.Enabled)
+                        {
+                            p.Shutdown();
+                        }
+                    }
+                });
+
+                if (!taskA.Wait(15000))
+                {
+                    osae.AddToLog("Failed to shutdown plugins after: 15 seconds shutting down anyway", true);
                 }
             }
             catch { }
