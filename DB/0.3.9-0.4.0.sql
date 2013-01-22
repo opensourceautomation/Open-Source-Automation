@@ -104,7 +104,39 @@ BEGIN
 END$$
 
 delimiter $$
+DROP VIEW IF EXISTS osae_v_screen_object CASCADE$$
+CREATE OR REPLACE DEFINER = 'osae'@'%' VIEW osae_v_screen_object
+AS
+SELECT `so`.`screen_object_id` AS `screen_object_id`
+     , `so`.`screen_id` AS `screen_id`
+     , `so`.`object_id` AS `object_id`
+     , `so`.`control_id` AS `control_id`
+     , `screen`.`object_name` AS `screen_name`
+     , `control`.`object_name` AS `control_name`
+     , `o`.`object_name` AS `object_name`
+     , `controltype`.`object_type` AS `control_type`
+     , `controlbasetype`.`object_type` AS `control_base_type`
+     , `o`.`last_updated` AS `last_updated`
+     , `o`.`last_state_change` AS `last_state_change`
+     , timestampdiff(MINUTE, `o`.`last_state_change`, now()) AS `time_in_state`
+     , `state`.`state_name`
+FROM
+  (((((`osae_screen_object` `so`
+JOIN `osae_object` `screen`
+ON ((`screen`.`object_id` = `so`.`screen_id`)))
+JOIN `osae_object` `control`
+ON ((`control`.`object_id` = `so`.`control_id`)))
+JOIN `osae_object_type` `controltype`
+ON ((`controltype`.`object_type_id` = `control`.`object_type_id`)))
+JOIN `osae_object_type` `controlbasetype`
+ON ((`controlbasetype`.`object_type_id` = `controltype`.`base_type_id`)))
+JOIN `osae_object` `o`
+ON ((`o`.`object_id` = `so`.`object_id`))
+JOIN `osae_object_type_state` `state`
+ON ((`o`.`state_id` = `state`.`state_id`)))
+$$
 
+delimiter $$
 CREATE DEFINER = 'osae'@'%'
 PROCEDURE `osae_sp_image_delete`(
 IN pimage_id INT
@@ -130,7 +162,12 @@ CALL osae_sp_object_type_property_add ('X','Integer','','CONTROL CAMERA VIEWER',
 CALL osae_sp_object_type_property_add ('Y','Integer','','CONTROL CAMERA VIEWER',1);
 CALL osae_sp_object_type_property_add ('ZOrder','Integer','','CONTROL CAMERA VIEWER',1);
 CALL osae_sp_object_type_property_add ('Object Name','String','','CONTROL CAMERA VIEWER',0);
-
+CALL osae_sp_object_type_add ('IP CAMERA','IP Camera','','IP CAMERA',0,0,0,1);
+CALL osae_sp_object_type_state_add ('ON','Motion','IP CAMERA');
+CALL osae_sp_object_type_state_add ('OFF','Still','IP CAMERA');
+CALL osae_sp_object_type_event_add ('ON','Motion','IP CAMERA');
+CALL osae_sp_object_type_event_add ('OFF','Still','IP CAMERA');
+CALL osae_sp_object_type_property_add ('Stream Address','String','','IP CAMERA',0);
 
 -- Set DB version 
 CALL osae_sp_object_property_set('SYSTEM', 'DB Version', '0.4.0', '', '');

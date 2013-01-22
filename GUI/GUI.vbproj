@@ -277,9 +277,7 @@
     <Compile Include="ucCameraViewer.Designer.vb">
       <DependentUpon>ucCameraViewer.vb</DependentUpon>
     </Compile>
-    <Compile Include="ucCameraViewer.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="ucCameraViewer.vb" />
     <Compile Include="ucSlider1.Designer.vb">
       <DependentUpon>ucSlider1.vb</DependentUpon>
     </Compile>

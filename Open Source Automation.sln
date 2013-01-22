@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.Jabber", "Plugins\OSAE.Jabber\OSAE.Jabber.csproj", "{589EDA2C-421D-40F1-9682-D4360E02897A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.API", "OSAE.API\OSAE.API.csproj", "{022F45F1-C988-41A1-A203-39E97BE928B6}"
@@ -39,8 +39,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginDescriptionEditor", "PluginDescriptionEditor\PluginDescriptionEditor.csproj", "{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.UI.Controls", "OSAE.UI.Controls\OSAE.UI.Controls.csproj", "{503092C1-23FE-4AD8-B855-CF1D24D632A9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginTestHarness", "PluginTestHarness\PluginTestHarness.csproj", "{E66D3023-26DD-4328-954B-91BB52D9CACD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogViewer", "LogViewer\LogViewer.csproj", "{66385FF8-1FF8-4495-B1BF-81A963855517}"
 EndProject
@@ -230,16 +228,6 @@ Global
 		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{503092C1-23FE-4AD8-B855-CF1D24D632A9}.Release|x86.ActiveCfg = Release|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{E66D3023-26DD-4328-954B-91BB52D9CACD}.Release|x86.ActiveCfg = Release|Any CPU
 		{66385FF8-1FF8-4495-B1BF-81A963855517}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{66385FF8-1FF8-4495-B1BF-81A963855517}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{66385FF8-1FF8-4495-B1BF-81A963855517}.Debug|Mixed Platforms.Build.0 = Debug|x86
