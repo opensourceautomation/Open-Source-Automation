@@ -1,11 +1,12 @@
-﻿using System;
-using System.Xml;
-using System.IO;
-using System.Collections.Generic;
-using System.Reflection;
-
-namespace ClientService
+﻿namespace ClientService
 {
+    using System;
+    using System.Xml;
+    using System.IO;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using OSAE;
+
     [Serializable]
     public class Plugin
     {
@@ -17,9 +18,9 @@ namespace ClientService
         private string _location;
         private bool _enabled;
         private string _latestAvailableVersion;
-        private OSAE.OSAE osae = new OSAE.OSAE("Plugin");
+        private OSAE osae = new OSAE("Plugin");
         private AppDomain _domain;
-        private OSAE.OSAEPluginBase _plugin;
+        private OSAEPluginBase _plugin;
 
         #region Properties
         //public Assembly Assembly;
@@ -103,7 +104,7 @@ namespace ClientService
             try
             {
                 osae.AddToLog("Activating Plugin: " + PluginName, true);
-                _plugin = (OSAE.OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
+                _plugin = (OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
                 _plugin.InitializeLifetimeService();
 
                 _domain.UnhandledException += Domain_UnhandledException;
@@ -159,7 +160,7 @@ namespace ClientService
             osae.AddToLog(PluginName + " - Moving on...", false);
         }
 
-        public void ExecuteCommand(OSAE.OSAEMethod method)
+        public void ExecuteCommand(OSAEMethod method)
         {
             try
             {

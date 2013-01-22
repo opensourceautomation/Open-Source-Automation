@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.ServiceModel;
-using MySql.Data.MySqlClient;
-using OSAE;
-
-namespace WCF
+﻿namespace WCF
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.ServiceModel;
+    using MySql.Data.MySqlClient;
+    using OSAE;
+
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "WCFService" in both code and config file together.
     [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single)]
     public class WCFService : IWCFService
     {
-        OSAE.OSAE osae = new OSAE.OSAE("WCF Service");
+        OSAE osae = new OSAE("WCF Service");
 
         public event EventHandler<CustomEventArgs> MessageReceived;
 

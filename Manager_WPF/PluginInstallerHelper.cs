@@ -5,6 +5,7 @@
     using System.IO;
     using System.Windows.Forms;
     using ICSharpCode.SharpZipLib.Zip;
+    using OSAE;
 
     /// <summary>
     /// Helper class used to install new plugins
@@ -40,7 +41,7 @@
 
         public static bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
-            OSAE.OSAE osae = new OSAE.OSAE("Plugin Installer");
+            OSAE osae = new OSAE("Plugin Installer");
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
             if (Directory.Exists(exePath + "/tempDir/"))
             {
