@@ -30,9 +30,9 @@
         private OSAE osae = new OSAE("OSAE Service");
         private bool running = true;
         
-        System.Timers.Timer timer = new System.Timers.Timer();
-        System.Timers.Timer updates = new System.Timers.Timer();
-        System.Timers.Timer checkPlugins = new System.Timers.Timer();
+        private System.Timers.Timer timer = new System.Timers.Timer();
+        private System.Timers.Timer updates = new System.Timers.Timer();
+        private System.Timers.Timer checkPlugins = new System.Timers.Timer();
 
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
@@ -221,6 +221,12 @@
         /// </summary>
         protected override void OnStop()
         {
+            ShutDownSystems();
+        }
+
+        private void ShutDownSystems()
+        {
+            int waitPeriod = 15000; // Milliseconds
             osae.AddToLog("stopping...", true);
             try
             {
@@ -245,44 +251,15 @@
 
                 if (!taskA.Wait(15000))
                 {
-                    osae.AddToLog("Failed to shutdown plugins after: 15 seconds shutting down anyway", true);
+                    osae.AddToLog("Failed to shutdown plugins after: " + (waitPeriod / 1000) + " seconds shutting down anyway", true);
                 }
             }
             catch { }
-
         }
 
         protected override void OnShutdown() 
         {
-            osae.AddToLog("stopping...", true);
-            try
-            {
-                // run the shutdown as a task so that the plugins don't prevent us from closing
-                // as we can't guarantee the quality of a third party plugin
-                var taskA = new Task(() =>
-                {
-                    running = false;
-                    if (sHost.State == CommunicationState.Opened)
-                    {
-                        sHost.Close();
-                    }
-                    serviceHost.Close();
-                    osae.AddToLog("shutting down plugins", true);
-                    foreach (Plugin p in plugins)
-                    {
-                        if (p.Enabled)
-                        {
-                            p.Shutdown();
-                        }
-                    }
-                });
-
-                if (!taskA.Wait(15000))
-                {
-                    osae.AddToLog("Failed to shutdown plugins after: 15 seconds shutting down anyway", true);
-                }
-            }
-            catch { }
+            ShutDownSystems();
         }
         #endregion
 
@@ -306,10 +283,8 @@
 
                     foreach (DataRow row in dataset.Tables[0].Rows)
                     {
-
                         OSAEMethod method = new OSAEMethod(row["method_name"].ToString(), row["object_name"].ToString(), row["parameter_1"].ToString(), row["parameter_2"].ToString(), row["address"].ToString(), row["object_owner"].ToString());
-
-
+                        
                         sendMessageToClients("log", "found method in queue: " + method.ObjectName +
                             "(" + method.MethodName + ")   p1: " + method.Parameter1 +
                             "  p2: " + method.Parameter2);
