@@ -91,9 +91,7 @@
             catch
             {
                 connectionStatus = false;
-
-                OSAE osae = new OSAE("OSAE.API");
-                osae.AddToLog("API - Cannot run query - bad connection: ", true);
+                new Logging("OSAE.API").AddToLog("API - Cannot run query - bad connection: ", true);
             }             
 
             return connectionStatus;

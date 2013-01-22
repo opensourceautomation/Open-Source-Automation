@@ -9,6 +9,12 @@ namespace OSAE.NetworkMonitor
     public class NetworkMonitor : OSAEPluginBase
     {
         OSAE osae = new OSAE("Network Monitor");
+
+        /// <summary>
+        /// Provides access to logging
+        /// </summary>
+        Logging logging = new Logging("Network Monitor");
+
         System.Timers.Timer Clock = new System.Timers.Timer();
         Thread updateThread;
         string pName;
@@ -23,7 +29,7 @@ namespace OSAE.NetworkMonitor
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-            osae.AddToLog("Running Interface!", true);
+            logging.AddToLog("Running Interface!", true);
             int interval;
             bool isNum = Int32.TryParse(osae.GetObjectPropertyValue(pName, "Poll Interval").Value, out interval);
             Clock = new System.Timers.Timer();
@@ -63,11 +69,11 @@ namespace OSAE.NetworkMonitor
             try
             {
                 List<OSAEObject> objects = osae.GetObjectsByType("NETWORK DEVICE");
-                osae.AddToLog("# NETWORK DEVICE: " + objects.Count.ToString(), false);
+                logging.AddToLog("# NETWORK DEVICE: " + objects.Count.ToString(), false);
                 
                 foreach (OSAEObject obj in objects)
                 {
-                    osae.AddToLog("Pinging: " + obj.Address, false);
+                    logging.AddToLog("Pinging: " + obj.Address, false);
                     if (CanPing(obj.Address.ToString()))
                         osae.ObjectStateSet(obj.Name, "ON");
                     else
@@ -75,11 +81,11 @@ namespace OSAE.NetworkMonitor
                 }
 
                 objects = osae.GetObjectsByType("COMPUTER");
-                osae.AddToLog("# COMPUTERS: " + objects.Count.ToString(), false);
+                logging.AddToLog("# COMPUTERS: " + objects.Count.ToString(), false);
                 
                 foreach (OSAEObject obj in objects)
                 {
-                    osae.AddToLog("Pinging: " + obj.Address, false);
+                    logging.AddToLog("Pinging: " + obj.Address, false);
                     if (CanPing(obj.Address))
                         osae.ObjectStateSet(obj.Name, "ON");
                     else
@@ -89,7 +95,7 @@ namespace OSAE.NetworkMonitor
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error pinging: " + ex.Message, true);
+                logging.AddToLog("Error pinging: " + ex.Message, true);
             }
         }
 
@@ -104,18 +110,18 @@ namespace OSAE.NetworkMonitor
 
                 if (reply.Status == IPStatus.Success)
                 {
-                    osae.AddToLog("On-Line!", false);
+                    logging.AddToLog("On-Line!", false);
                     return true;
                 }
                 else
                 {
-                    osae.AddToLog("Off-Line", false);
+                    logging.AddToLog("Off-Line", false);
                     return false;
                 }
             }
             catch (PingException e)
             {
-                osae.AddToLog("Off-Line", false);
+                logging.AddToLog("Off-Line", false);
                 return false;
             }
 

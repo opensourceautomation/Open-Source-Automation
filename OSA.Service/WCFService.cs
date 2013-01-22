@@ -11,6 +11,11 @@
     [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single)]
     public class WCFService : IWCFService
     {
+        /// <summary>
+        /// Provides access to logging
+        /// </summary>
+        Logging logging = new Logging("WCF Service");
+
         OSAE osae = new OSAE("WCF Service");
 
         public event EventHandler<CustomEventArgs> MessageReceived;
@@ -30,16 +35,16 @@
                         try
                         {
                             callback.OnMessageReceived(msgType, message, from, DateTime.Now);
-                            osae.AddToLog("Message sent to client: " + message, false);
+                            logging.AddToLog("Message sent to client: " + message, false);
                         }
                         catch (TimeoutException ex)
                         {
-                            osae.AddToLog("Timeout error when sending message to client: " + ex.Message, true);
+                            logging.AddToLog("Timeout error when sending message to client: " + ex.Message, true);
                             subscribers.Remove(callback);
                         }
                         catch (Exception ex)
                         {
-                            osae.AddToLog("Error when sending message to client: " + ex.Message, true);
+                            logging.AddToLog("Error when sending message to client: " + ex.Message, true);
                         }
                     }
                     else
@@ -50,24 +55,24 @@
             }
             catch (TimeoutException ex)
             {
-                osae.AddToLog("Timeout Exception Error in SendMessageToClients: " + ex.Message, true);
+                logging.AddToLog("Timeout Exception Error in SendMessageToClients: " + ex.Message, true);
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error in SendMessageToClients: " + ex.Message, true);
+                logging.AddToLog("Error in SendMessageToClients: " + ex.Message, true);
             }
         }
 
         public bool Subscribe()
         {
-            osae.AddToLog("Attempting to add a subscriber", true);
+            logging.AddToLog("Attempting to add a subscriber", true);
             try
             {
                 IMessageCallback callback = OperationContext.Current.GetCallbackChannel<IMessageCallback>();
                 if (!subscribers.Contains(callback))
                 {
                     subscribers.Add(callback);
-                    osae.AddToLog("New subscriber: " + callback.ToString(), true);
+                    logging.AddToLog("New subscriber: " + callback.ToString(), true);
                 }
                 return true;
             }

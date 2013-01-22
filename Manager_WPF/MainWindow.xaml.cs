@@ -26,6 +26,12 @@
         ServiceController myService = new ServiceController();
         WCFServiceReference.WCFServiceClient wcfObj;
         OSAE osae = new OSAE("Manager_WPF");
+
+        /// <summary>
+        /// Used to get access to the logging facility
+        /// </summary>
+        private Logging logging = new Logging("Manager_WPF");
+
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
         private bool clicked = true;
@@ -147,13 +153,13 @@
                 InstanceContext context = new InstanceContext(this);
                 wcfObj = new WCFServiceReference.WCFServiceClient(context, "NetTcpBindingEndpoint", ep);
                 wcfObj.Subscribe();
-                osae.AddToLog("Connected to Service", true);
+                logging.AddToLog("Connected to Service", true);
                 //reloadPlugins();
                 return true;
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
+                logging.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
                 return false;
             }
         }
@@ -172,7 +178,7 @@
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error messaging host: " + ex.Message, true);
+                logging.AddToLog("Error messaging host: " + ex.Message, true);
             }
         }
 
@@ -209,8 +215,8 @@
                 string pluginPath = Common.ApiPath + "\\Plugins\\" + p.Path + "\\";
                 string[] paths = System.IO.Directory.GetFiles(pluginPath, "Screenshot*");
 
-                osae.AddToLog("Plugin path: " + pluginPath, true);
-                osae.AddToLog("paths length: " + paths.Length.ToString(), true);
+                logging.AddToLog("Plugin path: " + pluginPath, true);
+                logging.AddToLog("paths length: " + paths.Length.ToString(), true);
                 if (paths.Length > 0)
                 {
                     // load the image, specify CacheOption so the file is not locked
@@ -230,7 +236,7 @@
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error loading details: " + ex.Message, true);
+                logging.AddToLog("Error loading details: " + ex.Message, true);
             }
         }
 
@@ -264,7 +270,7 @@
                 setButton("Start", true);
                 if (!clicked)
                 {
-                    osae.AddToLog("Service died.  Attempting to restart.", true);
+                    logging.AddToLog("Service died.  Attempting to restart.", true);
                     clicked = false;
                     System.Threading.Thread.Sleep(5000);
                     Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
@@ -318,7 +324,7 @@
             catch (Exception ex)
             {
                 MessageBox.Show("Error stopping service.  Make sure you are running Manager as Administrator");
-                osae.AddToLog("Error starting service: " + ex.Message, true);
+                logging.AddToLog("Error starting service: " + ex.Message, true);
                 starting = false;
             }
         }
@@ -335,7 +341,7 @@
             catch (Exception ex)
             {
                 MessageBox.Show("Error stopping service.  Make sure you are running Manager as Administrator");
-                osae.AddToLog("Error stopping service: " + ex.Message, true);
+                logging.AddToLog("Error stopping service: " + ex.Message, true);
             }
         }
 
@@ -374,7 +380,7 @@
         //            }
         //            catch (Exception ex)
         //            {
-        //                osae.AddToLog("Error stopping service: " + ex.Message, true);
+        //                logging.AddToLog("Error stopping service: " + ex.Message, true);
         //            }
         //        }
         //        else if (btnService.Content.ToString() == "Start")
@@ -388,7 +394,7 @@
         //            }
         //            catch (Exception ex)
         //            {
-        //                osae.AddToLog("Error starting service: " + ex.Message, true);
+        //                logging.AddToLog("Error starting service: " + ex.Message, true);
         //            }
         //        }
         //    }));
@@ -402,7 +408,7 @@
 
         public void OnMessageReceived(string msgType, string message, string from, DateTime timestamp)
         {
-            osae.AddToLog("Message received: " + msgType + " - " + message, false);
+            logging.AddToLog("Message received: " + msgType + " - " + message, false);
             //this.Invoke((MethodInvoker)delegate
             //{
                 switch (msgType)
@@ -423,7 +429,7 @@
                                     plugin.Upgrade = split[4].Trim();
                                 else
                                     plugin.Upgrade = "";
-                                osae.AddToLog("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString(), true);
+                                logging.AddToLog("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString(), true);
                                 break;
                             }
                         }
@@ -491,10 +497,10 @@
         {
             try
             {
-                osae.AddToLog("Closing", true);
+                logging.AddToLog("Closing", true);
                 Clock.Stop();
                 Clock = null;
-                osae.AddToLog("Timer stopped", true);
+                logging.AddToLog("Timer stopped", true);
                 wcfObj.Unsubscribe();
             }
             catch
@@ -554,13 +560,13 @@
             {
                 PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
 
-                osae.AddToLog("checked: " + pd.Name, true);
+                logging.AddToLog("checked: " + pd.Name, true);
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
                     Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|True"));
                     thread.Start();
-                    osae.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
+                    logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
                     if (myService.Status == ServiceControllerStatus.Running)
                     {
                         foreach (PluginDescription plugin in pluginList)
@@ -579,7 +585,7 @@
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error enabling plugin: " + ex.Message, true);
+                logging.AddToLog("Error enabling plugin: " + ex.Message, true);
             }
         }
 
@@ -588,13 +594,13 @@
             try
             {
                 PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
-                osae.AddToLog("unchecked: " + pd.Name, true);
+                logging.AddToLog("unchecked: " + pd.Name, true);
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
                     Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|False"));
                     thread.Start();
-                    osae.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
+                    logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
 
                     if (myService.Status == ServiceControllerStatus.Running)
                     {
@@ -614,7 +620,7 @@
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error disabling plugin: " + ex.Message, true);
+                logging.AddToLog("Error disabling plugin: " + ex.Message, true);
             }
         }
 

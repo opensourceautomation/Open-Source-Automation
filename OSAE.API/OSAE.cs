@@ -102,7 +102,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - MethodQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - MethodQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -123,7 +123,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - MethodQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - MethodQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -165,15 +165,15 @@
                     command.ExecuteNonQuery();
 
                     if (command.Parameters["?results"].Value.ToString() == "1")
-                        AddToLog("API - ObjectAdded successfully", true);
+                        logging.AddToLog("API - ObjectAdded successfully", true);
                     else if (command.Parameters["?results"].Value.ToString() == "2")
-                        AddToLog("API - ObjectAdd failed.  Object type doesn't exist.", true);
+                        logging.AddToLog("API - ObjectAdd failed.  Object type doesn't exist.", true);
                     else if (command.Parameters["?results"].Value.ToString() == "3")
-                        AddToLog("API - ObjectAdd failed.  Object with same name or address already exists", true);
+                        logging.AddToLog("API - ObjectAdd failed.  Object with same name or address already exists", true);
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -194,7 +194,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -215,7 +215,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectDeleteByAddress error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectDeleteByAddress error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -249,7 +249,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -275,7 +275,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectEventScriptAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectEventScriptAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -300,7 +300,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - ObjectEventScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                logging.AddToLog("API - ObjectEventScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
 
@@ -325,7 +325,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
+                logging.AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
 
@@ -350,7 +350,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ObjectStateSet error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ObjectStateSet error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -386,7 +386,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -407,7 +407,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -437,14 +437,14 @@
                 command.Parameters.AddWithValue("@System", System);
                 command.Parameters.AddWithValue("@Container", Container);
                 command.Parameters.AddWithValue("@HideRedundantEvents", HideRedundantEvents);
-                ///AddToLog("@TypeOwner" + TypeOwner + "  @Container" + Container);
+                ///logging.AddToLog("@TypeOwner" + TypeOwner + "  @Container" + Container);
                 try
                 {
                     RunQuery(command);
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -469,7 +469,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -492,7 +492,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -519,7 +519,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -548,7 +548,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -571,7 +571,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -604,8 +604,8 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                    AddToLog("osae_sp_object_type_method_update (" + oldName + "," + newName + "," + label + "," + objectType + "," + paramLabel1 + "," + paramLabel2 + ")", true);
+                    logging.AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("osae_sp_object_type_method_update (" + oldName + "," + newName + "," + label + "," + objectType + "," + paramLabel1 + "," + paramLabel2 + ")", true);
                 }
             }
         }
@@ -632,7 +632,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyAAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyAAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -655,7 +655,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -684,7 +684,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -703,7 +703,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -722,7 +722,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -742,7 +742,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -767,7 +767,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -790,7 +790,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -817,7 +817,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -845,7 +845,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectTypePropertyOptions error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectTypePropertyOptions error: " + ex.Message, true);
                 return dataset;
             }
         }
@@ -875,7 +875,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                logging.AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
 
@@ -900,7 +900,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectPropertyArrayGetRandom error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectPropertyArrayGetRandom error: " + command.CommandText + " - error: " + ex.Message, true);
                     return "";
                 }
             }
@@ -928,7 +928,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectPropertyArrayGetAll error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectPropertyArrayGetAll error: " + command.CommandText + " - error: " + ex.Message, true);
                     return dataset;
                 }
             }
@@ -954,7 +954,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectPropertyArrayDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectPropertyArrayDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -977,7 +977,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectPropertyArrayDeleteAll error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectPropertyArrayDeleteAll error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1015,7 +1015,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1037,7 +1037,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1096,7 +1096,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleRecurringAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleRecurringAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1118,7 +1118,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleRecurringDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleRecurringDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1178,7 +1178,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleRecurringUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleRecurringUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1197,7 +1197,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - RunScheduledMethods error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - RunScheduledMethods error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1216,7 +1216,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ProcessRecurring error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ProcessRecurring error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1273,7 +1273,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - GetObjectsByType error: " + ex.Message, true);
+                    logging.AddToLog("API - GetObjectsByType error: " + ex.Message, true);
                     return objects;
                 }
             }
@@ -1328,7 +1328,7 @@
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                    logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
                     return objects;
                 }
             }        
@@ -1376,7 +1376,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
                 return objects;
             }
         }
@@ -1433,7 +1433,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectsByContainer error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectsByContainer error: " + ex.Message, true);
                 return objects;
             }
         }
@@ -1482,7 +1482,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectByAddress (" + address + ")error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectByAddress (" + address + ")error: " + ex.Message, true);
                 return obj;
             }
         }
@@ -1532,7 +1532,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectByName (" + name + ")error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectByName (" + name + ")error: " + ex.Message, true);
                 return null;
             }
         }
@@ -1569,7 +1569,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
                 return controls;
             }
         }
@@ -1617,7 +1617,7 @@
 			}
 			catch (Exception ex)
 			{
-				AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
+				logging.AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
 				return null;
 			}
 		}
@@ -1649,13 +1649,13 @@
 				}
 				else
 				{
-					AddToLog("API - GetObjectStateValue error: Object does not exist | ObjectName: " + ObjectName, true);
+					logging.AddToLog("API - GetObjectStateValue error: Object does not exist | ObjectName: " + ObjectName, true);
 					return null;
 				}
 			}
 			catch (Exception ex)
 			{
-				AddToLog("API - GetObjectStateValue error: " + ex.Message + " | ObjectName: " + ObjectName, true);
+				logging.AddToLog("API - GetObjectStateValue error: " + ex.Message + " | ObjectName: " + ObjectName, true);
 				return null;
 			}
 			finally
@@ -1698,7 +1698,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetPluginName error: " + ex.Message + " - objectType: " + objectType + " | machineName: " + machineName, true);
+                logging.AddToLog("API - GetPluginName error: " + ex.Message + " - objectType: " + objectType + " | machineName: " + machineName, true);
                 return string.Empty;
             }
         }
@@ -1723,7 +1723,7 @@
 				}
 				catch (Exception ex)
 				{
-					AddToLog("API - GetPluginSettings error: " + ex.Message, true);
+					logging.AddToLog("API - GetPluginSettings error: " + ex.Message, true);
 					return dataset;
 				}
 			}
@@ -1754,7 +1754,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - ObjectExists Error: " + ex.Message, true);
+                logging.AddToLog("API - ObjectExists Error: " + ex.Message, true);
                 return false;
             }
         }
@@ -1832,7 +1832,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - PatternParse error: " + ex.Message, true);
+                logging.AddToLog("API - PatternParse error: " + ex.Message, true);
                 return "";
             }
         }
@@ -1854,7 +1854,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - MatchPattern error: " + ex.Message, true);
+                logging.AddToLog("API - MatchPattern error: " + ex.Message, true);
                 return "";
             }
         }
@@ -1873,7 +1873,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - NamedScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                logging.AddToLog("API - NamedScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
 
@@ -1891,7 +1891,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectProperty error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectProperty error: " + ex.Message, true);
                 return dataset;
             }
         }
@@ -1919,7 +1919,7 @@
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectMethods error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectMethods error: " + ex.Message, true);
                 return methods;
             }
         }

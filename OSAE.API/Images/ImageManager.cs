@@ -11,6 +11,11 @@
         OSAE osae = new OSAE("OSAE.API");
 
         /// <summary>
+        /// Used to get access to the logging facility
+        /// </summary>
+        private Logging logging = new Logging("OSAE.API");
+
+        /// <summary>
         /// Adds an image to the DB
         /// </summary>
         /// <param name="osaeImage">The image information to add</param>
@@ -77,7 +82,7 @@
                     }
                     else
                     {
-                        osae.AddToLog("API - Failed to get requested image from DB: ", true);
+                        logging.AddToLog("API - Failed to get requested image from DB: ", true);
                     }
                 }
             }
@@ -115,7 +120,7 @@
                     }
                     catch (Exception e)
                     {
-                        osae.AddToLog("API - GetImageList - Failed \r\n\r\n" + e.Message, true);
+                        logging.AddToLog("API - GetImageList - Failed \r\n\r\n" + e.Message, true);
                     }
                 }
             }
@@ -155,7 +160,7 @@
                     }
                     catch (Exception e)
                     {
-                        osae.AddToLog("API - GetImages - Failed \r\n\r\n" + e.Message, true);
+                        logging.AddToLog("API - GetImages - Failed \r\n\r\n" + e.Message, true);
                     }
                 }
             }

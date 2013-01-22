@@ -6,7 +6,6 @@
     using System.Reflection;
     using HttpServer.HttpModules;
     using ICSharpCode.SharpZipLib.Zip;
-    using API;
 
     public class WebServer : OSAEPluginBase
     {
@@ -19,6 +18,11 @@
         /// Gives access OSA API functionality
         /// </summary>
         OSAE osae = new OSAE("Web Server");
+
+        /// <summary>
+        /// Provides access to logging
+        /// </summary>
+        Logging logging = new Logging("Web Server");
 
         /// <summary>
         /// Used as part of the host site
@@ -58,15 +62,14 @@
                 afm.AddVirtualDirectory("Images", Common.ApiPath + @"\Images");
                 afm.AddVirtualDirectory("/Images", Common.ApiPath + @"\Images");
                 
-                server.Add(afm);
-                
-                osae.AddToLog("starting server...", true);
+                server.Add(afm);                
+                logging.AddToLog("starting server...", true);
                 server.Start(IPAddress.Any, Int32.Parse(osae.GetObjectPropertyValue(pName, "Port").Value));
 
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error starting server: " + ex.Message, true);
+                logging.AddToLog("Error starting server: " + ex.Message, true);
             }
         }
 
@@ -97,7 +100,7 @@
                 // TODO consider using OSAP file to determine version
                 //if (!File.Exists(zipFileName))
                 {
-                    //osae.AddToLog("Did not find a Zip with Version: " + assemName.Version.ToString() + " Performing upgrade", true);
+                    //logging.AddToLog("Did not find a Zip with Version: " + assemName.Version.ToString() + " Performing upgrade", true);
 
                     ExtractZipFromResource(zipFileName);
 
@@ -111,18 +114,18 @@
                         null,
                         null,
                         true);
-                    osae.AddToLog("Extracting file to : " + outputFolder, true);
-                    osae.AddToLog("Upgrade Complete", true);
+                    logging.AddToLog("Extracting file to : " + outputFolder, true);
+                    logging.AddToLog("Upgrade Complete", true);
 
                 }
                 // else
                 {
-                   // osae.AddToLog("File with verison: " + zipFileName + " upgrade not required", true);
+                   // logging.AddToLog("File with verison: " + zipFileName + " upgrade not required", true);
                 }
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Upgrade failed: " + ex.Message, true);
+                logging.AddToLog("Upgrade failed: " + ex.Message, true);
             }
         }
 

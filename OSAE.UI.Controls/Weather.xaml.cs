@@ -14,6 +14,12 @@
     public partial class Weather : UserControl
     {
         OSAE osae = new OSAE("GUI");
+
+        /// <summary>
+        /// Provides access to logging
+        /// </summary>
+        Logging logging = new Logging("GUI");
+
         OSAEObject weatherObj;
         string sMode = "Max";
 
@@ -111,6 +117,7 @@
 		    LoadImages("Night4 Image", imgDay4Night);
 		    LoadImages("Night5 Image", imgDay5Night);
 	    }
+
 	    private void LoadImages(string key, System.Windows.Controls.Image imageBox)
 	    {
 		    dynamic imageName = weatherObj.Property(key).Value;
@@ -131,7 +138,7 @@
                 imageBox.Source = imageSource;
 
 			    } catch (Exception ex) {
-				    osae.AddToLog("Unable to download weather image " + url.OriginalString, true);
+				    logging.AddToLog("Unable to download weather image " + url.OriginalString, true);
 			    }
 		    }
 	    }

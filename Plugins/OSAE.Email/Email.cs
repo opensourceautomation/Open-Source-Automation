@@ -1,14 +1,19 @@
-﻿using System;
-using System.Net;
-using System.Net.Mail;
-
-namespace OSAE.Email
+﻿namespace OSAE.Email
 {
+    using System;
+    using System.Net;
+    using System.Net.Mail;
+
     public class Email : OSAEPluginBase
     {
         string pName;
         OSAE osae = new OSAE("Email");
 
+        /// <summary>
+        /// Provides access to logging
+        /// </summary>
+        Logging logging = new Logging("Email");
+        
         public override void ProcessCommand(OSAEMethod method)
         {
             //process command
@@ -88,21 +93,21 @@ namespace OSAE.Email
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential(osae.GetObjectPropertyValue(pName, "Username").Value, osae.GetObjectPropertyValue(pName, "Password").Value);
                 
-                osae.AddToLog("to: " + mailMsg.To, true);
-                osae.AddToLog("from: " + mailMsg.From, true);
-                osae.AddToLog("subject: " + mailMsg.Subject, true);
-                osae.AddToLog("body: " + mailMsg.Body, true);
-                osae.AddToLog("smtpServer: " + osae.GetObjectPropertyValue(pName, "SMTP Server").Value, true);
-                osae.AddToLog("smtpPort: " + osae.GetObjectPropertyValue(pName, "SMTP Port").Value, true);
-                osae.AddToLog("username: " + osae.GetObjectPropertyValue(pName, "Username").Value, true);
-                osae.AddToLog("password: " + osae.GetObjectPropertyValue(pName, "Password").Value, true);
-                osae.AddToLog("ssl: " + osae.GetObjectPropertyValue(pName, "ssl").Value, true);
+                logging.AddToLog("to: " + mailMsg.To, true);
+                logging.AddToLog("from: " + mailMsg.From, true);
+                logging.AddToLog("subject: " + mailMsg.Subject, true);
+                logging.AddToLog("body: " + mailMsg.Body, true);
+                logging.AddToLog("smtpServer: " + osae.GetObjectPropertyValue(pName, "SMTP Server").Value, true);
+                logging.AddToLog("smtpPort: " + osae.GetObjectPropertyValue(pName, "SMTP Port").Value, true);
+                logging.AddToLog("username: " + osae.GetObjectPropertyValue(pName, "Username").Value, true);
+                logging.AddToLog("password: " + osae.GetObjectPropertyValue(pName, "Password").Value, true);
+                logging.AddToLog("ssl: " + osae.GetObjectPropertyValue(pName, "ssl").Value, true);
 
                 smtpClient.Send(mailMsg);
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error Sending email - " + ex.Message + " -" + ex.InnerException, true);
+                logging.AddToLog("Error Sending email - " + ex.Message + " -" + ex.InnerException, true);
             }
         }
 
@@ -117,7 +122,7 @@ namespace OSAE.Email
 
         public override void RunInterface(string pluginName)
         {
-            osae.AddToLog("Starting...", true);
+            logging.AddToLog("Starting...", true);
             pName = pluginName;
             //No constant processing
         }
