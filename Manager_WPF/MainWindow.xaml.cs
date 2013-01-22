@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.ServiceModel;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.ServiceProcess;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-namespace Manager_WPF
+﻿namespace Manager_WPF
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.ServiceModel;
+    using System.ServiceProcess;
+    using System.Threading;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Documents;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using System.Windows.Navigation;
+    using OSAE;
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -29,7 +25,7 @@ namespace Manager_WPF
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
         ServiceController myService = new ServiceController();
         WCFServiceReference.WCFServiceClient wcfObj;
-        OSAE.OSAE osae = new OSAE.OSAE("Manager_WPF");
+        OSAE osae = new OSAE("Manager_WPF");
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
         private bool clicked = true;
@@ -147,7 +143,7 @@ namespace Manager_WPF
         {
             try
             {
-                EndpointAddress ep = new EndpointAddress("net.tcp://" + osae.DBConnection + ":8731/WCFService/");
+                EndpointAddress ep = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
                 InstanceContext context = new InstanceContext(this);
                 wcfObj = new WCFServiceReference.WCFServiceClient(context, "NetTcpBindingEndpoint", ep);
                 wcfObj.Subscribe();
@@ -210,7 +206,7 @@ namespace Manager_WPF
                 else
                     imgUpdate.Visibility = System.Windows.Visibility.Hidden;
 
-                string pluginPath = osae.APIpath + "\\Plugins\\" + p.Path + "\\";
+                string pluginPath = Common.ApiPath + "\\Plugins\\" + p.Path + "\\";
                 string[] paths = System.IO.Directory.GetFiles(pluginPath, "Screenshot*");
 
                 osae.AddToLog("Plugin path: " + pluginPath, true);
@@ -282,7 +278,7 @@ namespace Manager_WPF
         {
             pluginList = new BindingList<PluginDescription>();
             List<string> osapdFiles = new List<string>();
-            string[] pluginFile = Directory.GetFiles(osae.APIpath + "\\Plugins", "*.osapd", SearchOption.AllDirectories);
+            string[] pluginFile = Directory.GetFiles(Common.ApiPath + "\\Plugins", "*.osapd", SearchOption.AllDirectories);
             osapdFiles.AddRange(pluginFile);
 
             foreach (string path in osapdFiles)
@@ -293,10 +289,10 @@ namespace Manager_WPF
                     desc.Deserialize(path);
                     desc.Status = "Stopped";
                     desc.Enabled = false;
-                    List<OSAE.OSAEObject> objs = osae.GetObjectsByType(desc.Type);
-                    foreach (OSAE.OSAEObject o in objs)
+                    List<OSAEObject> objs = osae.GetObjectsByType(desc.Type);
+                    foreach (OSAEObject o in objs)
                     {
-                        if (osae.GetObjectPropertyValue(o.Name, "Computer Name").Value == osae.ComputerName || desc.Type == o.Name)
+                        if (osae.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
                         {
                             desc.Name = o.Name;
                             if (o.Enabled == 1)
@@ -418,7 +414,7 @@ namespace Manager_WPF
                             enabled = true;
                         foreach (PluginDescription plugin in pluginList)
                         {
-                            if ((plugin.Type == split[5].Trim() && osae.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
+                            if ((plugin.Type == split[5].Trim() && Common.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
                             {
                                 plugin.Status = split[3].Trim();
                                 plugin.Enabled = enabled;
@@ -434,7 +430,7 @@ namespace Manager_WPF
                         break;
                     case "command":
                         string[] param = message.Split('|');
-                        if (param[2].Trim() == osae.ComputerName)
+                        if (param[2].Trim() == Common.ComputerName)
                         {
                             Process pr = new Process();
                             pr.StartInfo.FileName = param[0].Trim();
@@ -538,7 +534,7 @@ namespace Manager_WPF
 
         private void Menu_GUI(object sender, RoutedEventArgs e)
         {
-            Process.Start(osae.APIpath + "\\OSAE.GUI.exe");
+            Process.Start(Common.ApiPath + "\\OSAE.GUI.exe");
         }
 
         private void hypSettings_Click(object sender, RoutedEventArgs e)
@@ -549,7 +545,7 @@ namespace Manager_WPF
 
         private void hypGUI_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(osae.APIpath + "\\OSAE.GUI.exe");
+            Process.Start(Common.ApiPath + "\\OSAE.GUI.exe");
         }
 
         void OnChecked(object sender, RoutedEventArgs e)
@@ -576,7 +572,7 @@ namespace Manager_WPF
                         }
                     }
                 }
-                OSAE.OSAEObject obj = osae.GetObjectByName(pd.Name);
+                OSAEObject obj = osae.GetObjectByName(pd.Name);
                 osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
 
                 
@@ -611,7 +607,7 @@ namespace Manager_WPF
                         }
                     }
                 }
-                OSAE.OSAEObject obj = osae.GetObjectByName(pd.Name);
+                OSAEObject obj = osae.GetObjectByName(pd.Name);
                 osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);
 
                 

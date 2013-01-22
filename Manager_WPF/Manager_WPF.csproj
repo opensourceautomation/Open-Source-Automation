@@ -204,7 +204,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSAE.API\OSAE.API.csproj">
-      <Project>{022f45f1-c988-41a1-a203-39e97be928b6}</Project>
+      <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
       <Name>OSAE.API</Name>
     </ProjectReference>
     <ProjectReference Include="..\OSAE.UI.Controls\OSAE.UI.Controls.csproj">

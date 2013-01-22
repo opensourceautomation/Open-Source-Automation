@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
-using System.IO;
-using System.Net;
-using System.Threading;
-using System.ServiceModel;
-using Microsoft.Win32;
-using OSAE;
-using System.Xml;
-using System.Security;
-using System.Security.Policy;
-
-namespace ClientService
+﻿namespace ClientService
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Net;
+    using System.Security;
+    using System.Security.Policy;
+    using System.ServiceModel;
+    using System.ServiceProcess;
+    using System.Threading;
+    using Microsoft.Win32;
+    using OSAE;    
+
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
     public partial class ClientService : ServiceBase, WCFServiceReference.IWCFServiceCallback, IDisposable
     {
@@ -26,14 +21,14 @@ namespace ClientService
         private List<Plugin> plugins = new List<Plugin>();
         private string _computerIP;
         private ModifyRegistry myRegistry = new ModifyRegistry();
-        private OSAE.OSAE osae = new OSAE.OSAE("Client Service");
+        private OSAE osae = new OSAE("Client Service");
         System.Timers.Timer Clock = new System.Timers.Timer();
 
         static void Main(string[] args)
         {
             if (args.Length > 0)
             {
-                OSAE.OSAE osacl = new OSAE.OSAE("OSACL");
+                OSAE osacl = new OSAE("OSACL");
                 string pattern = osacl.MatchPattern(args[0]);
                 osacl.AddToLog("Processing command: " + args[0] + ", Pattern: " + pattern, true);
                 if (pattern != "")
@@ -78,11 +73,11 @@ namespace ClientService
                 IPAddress[] addr = ipEntry.AddressList;
                 _computerIP = addr[0].ToString();
 
-                System.IO.FileInfo file = new System.IO.FileInfo(osae.APIpath + "/Logs/");
+                System.IO.FileInfo file = new System.IO.FileInfo(Common.ApiPath + "/Logs/");
                 file.Directory.Create();
                 if (osae.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
                 {
-                    string[] files = Directory.GetFiles(osae.APIpath + "/Logs/");
+                    string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
                     foreach (string f in files)
                         File.Delete(f);
                 }
@@ -170,7 +165,7 @@ namespace ClientService
         public void LoadPlugins()
         {
             osae.AddToLog("Entered LoadPlugins", true);
-            string path = osae.APIpath;
+            string path = Common.ApiPath;
 
             var pluginAssemblies = new List<OSAEPluginBase>();
             var types = PluginFinder.FindPlugins();
@@ -199,7 +194,7 @@ namespace ClientService
 
                     if (plugin.PluginName != "")
                     {
-                        OSAE.OSAEObject obj = osae.GetObjectByName(plugin.PluginName);
+                        OSAEObject obj = osae.GetObjectByName(plugin.PluginName);
                         osae.AddToLog("setting found: " + obj.Name + " - " + obj.Enabled.ToString(), true);
                         bool isSystemPlugin = false;
                         foreach (ObjectProperty p in obj.Properties)
@@ -284,7 +279,7 @@ namespace ClientService
         {
             try
             {
-                EndpointAddress ep = new EndpointAddress("net.tcp://" + osae.DBConnection + ":8731/WCFService/");
+                EndpointAddress ep = new EndpointAddress("net.tcp://" + Common.ConnectionString + ":8731/WCFService/");
                 InstanceContext context = new InstanceContext(this);
                 wcfObj = new WCFServiceReference.WCFServiceClient(context, "NetTcpBindingEndpoint", ep);
                 wcfObj.Subscribe();
@@ -522,7 +517,7 @@ namespace ClientService
 
         public AppDomain CreateSandboxDomain(string name, string path, SecurityZone zone)
         {
-            var setup = new AppDomainSetup { ApplicationBase = osae.APIpath, PrivateBinPath = Path.GetFullPath(path) };
+            var setup = new AppDomainSetup { ApplicationBase = Common.ApiPath, PrivateBinPath = Path.GetFullPath(path) };
 
             var evidence = new Evidence();
             evidence.AddHostEvidence(new Zone(zone));

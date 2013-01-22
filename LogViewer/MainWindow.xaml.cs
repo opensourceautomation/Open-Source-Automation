@@ -5,7 +5,7 @@
     using System.Windows;
     using System.Windows.Controls;
     using OSAE;
-    using System.Threading;
+    using System.Threading;    
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -33,11 +33,11 @@
                 previouslySelected = this.logsListBox.SelectedItem;
             }
 
-            this.logsListBox.Items.Clear();            
+            this.logsListBox.Items.Clear();
 
-            if (Directory.Exists(this.osae.APIpath + @"\Logs"))
+            if (Directory.Exists(Common.ApiPath + @"\Logs"))
             {
-                string[] fileList = Directory.GetFiles(this.osae.APIpath + @"\Logs");
+                string[] fileList = Directory.GetFiles(Common.ApiPath + @"\Logs");
 
                 foreach (string file in fileList)
                 {
@@ -46,7 +46,7 @@
             }
             else
             {
-               this.fileContentTextBox.Text = "Log directory doesn't exist - looking for logs in: " + osae.APIpath + @"\Logs";
+                this.fileContentTextBox.Text = "Log directory doesn't exist - looking for logs in: " + Common.ApiPath + @"\Logs";
             }
 
             if (previouslySelected != null)
@@ -81,7 +81,7 @@
             this.fileContentTextBox.Text = string.Empty;
             try
             {
-                this.fileContentTextBox.Text = File.ReadAllText(this.osae.APIpath + @"\Logs\" + this.logsListBox.SelectedItem.ToString() + ".log");
+                this.fileContentTextBox.Text = File.ReadAllText(Common.ApiPath + @"\Logs\" + this.logsListBox.SelectedItem.ToString() + ".log");
 
                 // TODO Set scroll position to end of log content
 

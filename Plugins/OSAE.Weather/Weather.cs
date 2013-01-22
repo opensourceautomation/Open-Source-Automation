@@ -36,9 +36,9 @@ namespace OSAE.WeatherPlugin
             List<OSAEObject> objects = osae.GetObjectsByType("WEATHER");
             if (objects.Count == 0)
                 osae.ObjectAdd("Weather Data", "Weather Data", "WEATHER", "", "SYSTEM",true);
-            if (!Directory.Exists(osae.APIpath + "/Images/Weather"))
+            if (!Directory.Exists(Common.ApiPath + "/Images/Weather"))
             {
-                DirectoryInfo di = Directory.CreateDirectory(osae.APIpath + "/Images/Weather");
+                DirectoryInfo di = Directory.CreateDirectory(Common.ApiPath + "/Images/Weather");
             }
 
             osae.AddToLog("Running Interface!", true);
@@ -223,13 +223,13 @@ namespace OSAE.WeatherPlugin
                             try
                             {
                                 string curpath = @"\Images\Weather\" + xml.SelectSingleNode("//icon_url_name").InnerText;
-                                if (!File.Exists(osae.APIpath + @"\Images\Weather\" + xml.SelectSingleNode("//icon_url_name").InnerText))
+                                if (!File.Exists(Common.ApiPath + @"\Images\Weather\" + xml.SelectSingleNode("//icon_url_name").InnerText))
                                     {
                                         DownloadImage di = new DownloadImage(xml.SelectSingleNode("//icon_url_base").InnerText + xml.SelectSingleNode("//icon_url_name").InnerText);
                                         
                                         osae.AddToLog("Saving image: " + curpath, false);
                                         di.Download();
-                                        di.SaveImage(osae.APIpath + curpath, ImageFormat.Jpeg);
+                                        di.SaveImage(Common.ApiPath + curpath, ImageFormat.Jpeg);
                                     }
 
                                 osae.ObjectPropertySet("Weather Data", "Image", curpath);
@@ -475,14 +475,14 @@ namespace OSAE.WeatherPlugin
                                     if (xn.Name == "icon-link")
                                     {
                                         path = @"\Images\Weather\" + xn.SelectSingleNode("//icon_url_name").InnerText;
-                                        if (!File.Exists(osae.APIpath + @"\Images\Weather\" + xn.SelectSingleNode("//icon_url_name").InnerText))
+                                        if (!File.Exists(Common.ApiPath + @"\Images\Weather\" + xn.SelectSingleNode("//icon_url_name").InnerText))
                                         {
 
                                             DownloadImage di = new DownloadImage(xn.InnerText);
 
                                             osae.AddToLog("Saving image: " + path, false);
                                             di.Download();
-                                            di.SaveImage(osae.APIpath + path, ImageFormat.Jpeg);
+                                            di.SaveImage(Common.ApiPath + path, ImageFormat.Jpeg);
                                         }
                                         if (day % 2 == today)
                                         {

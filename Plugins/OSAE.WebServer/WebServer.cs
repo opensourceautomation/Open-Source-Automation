@@ -6,6 +6,7 @@
     using System.Reflection;
     using HttpServer.HttpModules;
     using ICSharpCode.SharpZipLib.Zip;
+    using API;
 
     public class WebServer : OSAEPluginBase
     {
@@ -49,13 +50,13 @@
                 PerformUpgradeIfRequired();
 
                 pName = pluginName;
-                afm = new AdvancedFileModule("/", osae.APIpath + @"\wwwroot");
+                afm = new AdvancedFileModule("/", Common.ApiPath + @"\wwwroot");
                 afm.ServeUnknownTypes(true, "php");
                 afm.AddCgiApplication("php", @"C:\php\php-cgi.exe");
 
                 //Need both as Image path is not consistant in DB.
-                afm.AddVirtualDirectory("Images", osae.APIpath + @"\Images");
-                afm.AddVirtualDirectory("/Images", osae.APIpath + @"\Images");
+                afm.AddVirtualDirectory("Images", Common.ApiPath + @"\Images");
+                afm.AddVirtualDirectory("/Images", Common.ApiPath + @"\Images");
                 
                 server.Add(afm);
                 
@@ -90,7 +91,7 @@
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 AssemblyName assemName = assembly.GetName();
                 string zipFileName = System.IO.Path.GetTempPath() + @"OSA_Web_" + assemName.Version.ToString() + ".zip";
-                string outputFolder = API.Common.ApiPath + @"\wwwroot\";
+                string outputFolder = Common.ApiPath + @"\wwwroot\";
                                
 
                 // TODO consider using OSAP file to determine version

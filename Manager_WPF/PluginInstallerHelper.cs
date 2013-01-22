@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
-using ICSharpCode.SharpZipLib.Zip;
-
-namespace Manager_WPF
+﻿namespace Manager_WPF
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Windows.Forms;
+    using ICSharpCode.SharpZipLib.Zip;
+
     /// <summary>
     /// Helper class used to install new plugins
     /// </summary>

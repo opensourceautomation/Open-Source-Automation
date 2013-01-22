@@ -1,4 +1,4 @@
-﻿namespace OSAE.API
+﻿namespace OSAE
 {
     using System.Net;
     using MySql.Data.MySqlClient;
@@ -55,6 +55,21 @@
                     "PASSWORD=" + registry.Read("DBPASSWORD") + ";";
 
                 return connectionString;
+            }
+        }
+
+        public static string DBConnection
+        {
+            get
+            {
+                string databaseConnection = string.Empty;
+
+                ModifyRegistry registry = new ModifyRegistry();
+                registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+
+                databaseConnection = registry.Read("DBCONNECTION");
+
+                return databaseConnection;
             }
         }
 

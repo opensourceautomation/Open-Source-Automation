@@ -1,22 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Drawing;
-using System.Net;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-namespace OSAE.UI.Controls
+﻿namespace OSAE.UI.Controls
 {
+    using System;
+    using System.IO;
+    using System.Net;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+
     /// <summary>
     /// Interaction logic for Weather.xaml
     /// </summary>
@@ -127,7 +118,7 @@ namespace OSAE.UI.Controls
 			    return;
 
 		    Uri url = new Uri(imageName);
-            string path = string.Format("{0}\\images\\Weather\\{1}", osae.APIpath, System.IO.Path.GetFileName(url.LocalPath));
+            string path = string.Format("{0}\\images\\Weather\\{1}", Common.ApiPath, System.IO.Path.GetFileName(url.LocalPath));
 		    Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
 		    if (File.Exists(path)) {
 			    ImageSource imageSource = new BitmapImage(new Uri(path));

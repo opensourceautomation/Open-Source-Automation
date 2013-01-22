@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Net;
-using MySql.Data.MySqlClient;
-
-namespace OSAE
+﻿namespace OSAE
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.IO;
+    using System.Net;
+    using MySql.Data.MySqlClient;
+
     /// <summary>
     /// API used to interact with the various components of OSA
     /// </summary>
@@ -19,6 +19,11 @@ namespace OSAE
         private object logLocker = new object();
         private string _parentProcess;
         private string connectionString = string.Empty;
+
+        /// <summary>
+        /// Used to get access to the logging facility
+        /// </summary>
+        private Logging logging;
 
         /// <summary>
         /// The installation folder of OSA
@@ -60,6 +65,7 @@ namespace OSAE
         /// <param name="parentProcess">The parent process</param>
         public OSAE(string parentProcess)
         {
+            logging = new Logging(parentProcess);
             ModifyRegistry myRegistry = new ModifyRegistry();
             myRegistry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
             DBConnection = myRegistry.Read("DBCONNECTION");
@@ -1762,11 +1768,11 @@ namespace OSAE
         {           
             DataSet dataset = new DataSet();
             
-            if (API.Common.TestConnection())
+            if (Common.TestConnection())
             {
                 lock (locker)
                 {
-                    using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                    using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                     {
                         MySqlDataAdapter adapter = new MySqlDataAdapter(command);
                         command.Connection = connection;                        
@@ -1786,12 +1792,12 @@ namespace OSAE
         {
             DataSet dataset = new DataSet();
 
-            using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
             {
                 MySqlCommand command = new MySqlCommand(sql);
                 MySqlDataAdapter adapter;  
 
-                if (API.Common.TestConnection())
+                if (Common.TestConnection())
                 {
                     lock (locker)
                     {                        

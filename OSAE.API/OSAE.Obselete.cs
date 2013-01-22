@@ -6,8 +6,7 @@
     using System.IO;
 
     public partial class OSAE
-	{
-        API.Logging logging;
+	{        
         [System.Obsolete("Use ObjectPropertyArrayGetRandom")]
         public string GetListItem(string objName, string PropertyName)
         {

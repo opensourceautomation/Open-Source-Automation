@@ -8,7 +8,7 @@
     <ProjectGuid>{022F45F1-C988-41A1-A203-39E97BE928B6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OSAE.API</RootNamespace>
+    <RootNamespace>OSAE</RootNamespace>
     <AssemblyName>OSAE.API</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

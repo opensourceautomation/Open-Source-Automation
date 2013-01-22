@@ -59,9 +59,9 @@
         public OSAEImage GetImage(int imageId)
         {
             OSAEImage osaeImage = new OSAEImage();
-            if (API.Common.TestConnection())
+            if (Common.TestConnection())
             {
-                using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
                     MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images WHERE image_id = " + imageId, connection);
                     connection.Open();
@@ -93,9 +93,9 @@
         {
             List<OSAEImage> imageList = new List<OSAEImage>();
             
-            if (API.Common.TestConnection())
+            if (Common.TestConnection())
             {
-                using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
                     try
                     {
@@ -131,9 +131,9 @@
         {
             List<OSAEImage> imageList = new List<OSAEImage>();
 
-            if (API.Common.TestConnection())
+            if (Common.TestConnection())
             {
-                using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
                     try
                     {

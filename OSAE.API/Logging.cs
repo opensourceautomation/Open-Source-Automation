@@ -1,4 +1,4 @@
-﻿namespace OSAE.API
+﻿namespace OSAE
 {
     using System;
     using MySql.Data.MySqlClient;

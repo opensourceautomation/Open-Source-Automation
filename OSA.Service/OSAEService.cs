@@ -17,6 +17,7 @@
     using System.Timers;
     using System.Xml.Linq;
     using MySql.Data.MySqlClient;
+    using API;
 
     class OSAEService : ServiceBase
     {
@@ -97,19 +98,19 @@
             try
             {
                 osae.APIpath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName);
-                IPHostEntry ipEntry = Dns.GetHostByName(API.Common.ComputerName);
+                IPHostEntry ipEntry = Dns.GetHostByName(Common.ComputerName);
                 IPAddress[] addr = ipEntry.AddressList;
                 _computerIP = addr[0].ToString();
 
-                System.IO.FileInfo file = new System.IO.FileInfo(osae.APIpath + "/Logs/");
+                System.IO.FileInfo file = new System.IO.FileInfo(Common.ApiPath + "/Logs/");
                 file.Directory.Create();
                 if (osae.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
                 {
-                    string[] files = Directory.GetFiles(osae.APIpath + "/Logs/");
+                    string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
                     foreach (string f in files)
                         File.Delete(f);
                 }
-                string[] stores = Directory.GetFiles(osae.APIpath, "*.store", SearchOption.AllDirectories);
+                string[] stores = Directory.GetFiles(Common.ApiPath, "*.store", SearchOption.AllDirectories);
                 foreach (string f in stores)
                     File.Delete(f);
             }
@@ -123,7 +124,7 @@
 
             try
             {
-                MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString);
+                MySqlConnection connection = new MySqlConnection(Common.ConnectionString);
                 connection.Open();
                 MySqlCommand command = new MySqlCommand();
                 command.Connection = connection;
@@ -400,7 +401,7 @@
             }
 
             osae.AddToLog("Found " + plugins.Count.ToString() + " plugins", true);
-            MySqlConnection connection = new MySqlConnection("SERVER=" + osae.DBConnection + ";" +
+            MySqlConnection connection = new MySqlConnection("SERVER=" + Common.DBConnection + ";" +
                             "DATABASE=" + osae.DBName + ";" +
                             "PORT=" + osae.DBPort + ";" +
                             "UID=" + osae.DBUsername + ";" +
@@ -828,7 +829,7 @@
 
         public AppDomain CreateSandboxDomain(string name, string path, SecurityZone zone)
         {
-            var setup = new AppDomainSetup { ApplicationBase = osae.APIpath, PrivateBinPath = Path.GetFullPath(path) };
+            var setup = new AppDomainSetup { ApplicationBase = Common.ApiPath, PrivateBinPath = Path.GetFullPath(path) };
 
             var evidence = new Evidence();
             evidence.AddHostEvidence(new Zone(zone));

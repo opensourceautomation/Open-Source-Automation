@@ -60,7 +60,7 @@ namespace OSAE.Service
         {
             var result = new List<TypeLocator>();
 
-            foreach (var file in Directory.GetFiles(osae.APIpath + "\\" + PluginPath, "*.dll", SearchOption.AllDirectories))
+            foreach (var file in Directory.GetFiles(Common.ApiPath + "\\" + PluginPath, "*.dll", SearchOption.AllDirectories))
             {
                 try
                 {

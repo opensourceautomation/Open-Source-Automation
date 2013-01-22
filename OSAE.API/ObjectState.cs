@@ -1,5 +1,8 @@
 ﻿namespace OSAE
 {
+    /// <summary>
+    /// This class is used to hold information about the state of an object.
+    /// </summary>
     public class ObjectState
     {
         /// <summary>
