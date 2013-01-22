@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace OSAE
+﻿namespace OSAE
 {
+    using System;
+    using System.Collections.Generic;
+
     [Serializable]
     public class OSAEObject
     {
         #region Properties
+
         private string _name;
         private string _description;
         private string _type;    
