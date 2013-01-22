@@ -4,6 +4,7 @@
     using MySql.Data.MySqlClient;
     using System.IO;
     
+    [Serializable]
     public class Logging
     {
         /// <summary>
