@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\output\AddIns\Twitter\</OutputPath>
+    <OutputPath>..\..\..\output\Plugins\Twitter\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,16 +31,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AddInView2">
-      <HintPath>..\..\..\AddInView2\obj\Debug\AddInView2.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Hammock">
+      <HintPath>..\packages\Hammock.1.3.0\lib\net40\Hammock.dll</HintPath>
+    </Reference>
+    <Reference Include="Hammock.ClientProfile">
+      <HintPath>..\packages\TweetSharp.2.2.1\lib\4.0\Hammock.ClientProfile.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\TweetSharp.2.2.1\lib\4.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\output\lib\OSAE.API.dll</HintPath>
+      <HintPath>..\..\..\output\OSAE.API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.AddIn" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -48,6 +52,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="TweetSharp">
+      <HintPath>..\packages\TweetSharp.2.2.1\lib\4.0\TweetSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="oAuth.cs" />
@@ -56,6 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Twitter.osapd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>

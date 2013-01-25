@@ -2,53 +2,49 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.AddIn;
 using System.Timers;
-using OpenSourceAutomation;
 
 namespace OSAE.RadioThermostat
 {
-    [AddIn("Radio Thermostat", Version = "0.1.0")]
-    public class RadioThermostat : IOpenSourceAutomationAddIn
+    public class RadioThermostat : OSAEPluginBase
     {
         OSAE osae = new OSAE("Radio Thermostat");
         string pName;
         System.Timers.Timer Clock;
 
-        public void ProcessCommand(System.Data.DataTable table)
+        public override void ProcessCommand(OSAEMethod method)
         {
-            System.Data.DataRow row = table.Rows[0];
-            osae.AddToLog("Process command: " + row["method_name"], false);
+            osae.AddToLog("Process command: " + method.MethodName, false);
 
-            switch (row["method_name"].ToString())
+            switch (method.MethodName)
             {
                 case "SET TEMPORARY COOL":
-                    ThermostatLib.ThermostatInfo.SetTemporaryCool(row["address"].ToString(), Double.Parse(row["parameter_1"].ToString()));
+                    ThermostatLib.ThermostatInfo.SetTemporaryCool(method.Address, Double.Parse(method.Parameter1));
                     break;
 
                 case "SET TEMPORARY HEAT":
-                    ThermostatLib.ThermostatInfo.SetTemporaryHeat(row["address"].ToString(), Double.Parse(row["parameter_1"].ToString()));
+                    ThermostatLib.ThermostatInfo.SetTemporaryHeat(method.Address, Double.Parse(method.Parameter1));
                     break;
 
                 case "SET HOLD":
-                    ThermostatLib.ThermostatInfo.SetHold(row["address"].ToString(), true);
+                    ThermostatLib.ThermostatInfo.SetHold(method.Address, true);
                     break;
 
                 case "REMOVE HOLD":
-                    ThermostatLib.ThermostatInfo.SetHold(row["address"].ToString(), false);
+                    ThermostatLib.ThermostatInfo.SetHold(method.Address, false);
                     break;
 
                 case "REBOOT":
-                    ThermostatLib.SystemInfo.Reboot(row["address"].ToString());
+                    ThermostatLib.SystemInfo.Reboot(method.Address);
                     break;
 
                 case "SET LED":
-                    ThermostatLib.SystemInfo.SetLED(row["address"].ToString(), row["parameter_1"].ToString());
+                    ThermostatLib.SystemInfo.SetLED(method.Address, method.Parameter1);
                     break;
             }
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             osae.AddToLog("Running Interface!", true);
             pName = pluginName;
@@ -92,7 +88,7 @@ namespace OSAE.RadioThermostat
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick); 
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             
         }

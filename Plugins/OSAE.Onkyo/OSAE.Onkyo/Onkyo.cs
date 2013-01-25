@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.AddIn;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Data;
 using System.Threading;
-using OpenSourceAutomation;
 
 namespace OSAE.Onkyo
 {
-    [AddIn("Onkyo", Version = "0.2.2")]
-    public class Onkyo : IOpenSourceAutomationAddIn
+    public class Onkyo : OSAEPluginBase
     {
         public delegate void AddDeviceDelegate(Device ODevDele);
         
@@ -24,27 +21,26 @@ namespace OSAE.Onkyo
         UDPListen _UDPListen;
         UDPSend _UDPSend;
 
-        public void ProcessCommand(System.Data.DataTable table)
+        public override void ProcessCommand(OSAEMethod method)
         {
-            System.Data.DataRow row = table.Rows[0];
-            osae.AddToLog("Found Command: " + row["method_name"].ToString() + " | param1: " + row["parameter_1"].ToString() + " | param2: " + row["parameter_1"].ToString(), false);
+            osae.AddToLog("Found Command: " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2, false);
             
-            if(row["object_name"].ToString() == pName)
+            if(method.ObjectName == pName)
             {
-                if(row["method_name"].ToString() == "SCAN")
+                if(method.MethodName == "SCAN")
                 {
                     _UDPSend.Send();
                 }
             }
             else
             {                
-                Receiver r = getReceiver(row["object_name"].ToString());
+                Receiver r = getReceiver(method.ObjectName);
                 if(r != null)
                 {
                     #region Network
                     if (r.Type == "Network")
                     {
-                        switch (row["method_name"].ToString())
+                        switch (method.MethodName)
                         {
                             case "ON":
                                 SendCommand_Network(r, "!1PWR01");
@@ -67,7 +63,7 @@ namespace OSAE.Onkyo
                                 SendCommand_Network(r, "!1MVLDOWN");
                                 break;
                             case "SET VOLUME":
-                                SendCommand_Network(r, "!1MVL" + Int32.Parse(row["parameter_1"].ToString()).ToString("X"));
+                                SendCommand_Network(r, "!1MVL" + Int32.Parse(method.Parameter1).ToString("X"));
                                 break;
                             case "VCR/DVR":
                                 SendCommand_Network(r, "!1SLI00");
@@ -160,7 +156,7 @@ namespace OSAE.Onkyo
             }
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             osae.AddToLog("Running interface", false);
             pName = pluginName;
@@ -248,7 +244,7 @@ namespace OSAE.Onkyo
             osae.AddToLog("Run Interface Complete", false);
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             foreach(Receiver r in receivers)
             {

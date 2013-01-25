@@ -2,21 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.AddIn;
-using OpenSourceAutomation;
 using System.Net;
 using System.Web;
 
 namespace OSAE.Twitter
 {
-    [AddIn("Twitter", Version = "0.1.2")]
-    public class Twitter : IOpenSourceAutomationAddInv2
+    public class Twitter : OSAEPluginBase
     {
         OSAE osae = new OSAE("Twitter");
         private oAuthTwitter _oAuth = new oAuthTwitter();
         private string _pname = "";
 
-        public void ProcessCommand(OSAEMethod method)
+        public override void ProcessCommand(OSAEMethod method)
         {
             osae.AddToLog("Received command: " + method.MethodName, false);
             if (method.MethodName == "TWEET")
@@ -52,7 +49,7 @@ namespace OSAE.Twitter
             }
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             _pname = pluginName;
 
@@ -87,7 +84,7 @@ namespace OSAE.Twitter
             }
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             //nothing to do
         }
@@ -115,7 +112,7 @@ namespace OSAE.Twitter
                     // And send it off...
                     string xml = _oAuth.oAuthWebRequest(
                         oAuthTwitter.Method.POST,
-                        "http://twitter.com/statuses/update.xml",
+                        "http://api.twitter.com/1/statuses/update.xml",
                         "status=" + tweetEnc);
                     osae.AddToLog("Tweet posted successfully: " + tweet, true);
                 }

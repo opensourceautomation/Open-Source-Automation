@@ -2,49 +2,51 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.AddIn;
 using System.Timers;
-using OpenSourceAutomation;
-using xbmc_json_async.Media;
-using xbmc_json_async.System;
+using XBMCRPC;
+using All = XBMCRPC.List.Fields.All;
+using Player = XBMCRPC.Methods.Player;
 
 namespace OSAE.XBMC
 {
-    [AddIn("XBMC", Version = "0.1.1")]
-    public class XBMC : IOpenSourceAutomationAddIn
+    public class XBMC : OSAEPluginBase
     {
         private OSAE osae = new OSAE("XBMC");
         private List<XBMCSystem> Systems = new List<XBMCSystem>();
         private string pName;
-        private System.Timers.Timer Clock;
-        public void ProcessCommand(System.Data.DataTable table)
-        {
-            System.Data.DataRow row = table.Rows[0];
-            osae.AddToLog("Found Command: " + row["method_name"].ToString() + " | param1: " + row["parameter_1"].ToString() + " | param2: " + row["parameter_1"].ToString(), false);
+        //private System.Timers.Timer Clock;
 
-            XBMCSystem s = getXBMCSystem(row["object_name"].ToString());
-            if (s != null)
-            {
-                switch (row["method_name"].ToString())
-                {
-                    case "VPLAYPAUSE":
-                        s.Connection.Player.PlayPause();
-                        break;
-                    case "VSTOP":
-                        s.Connection.Player.Stop();
-                        break;
-                    case "VBIGSKIPFORWARD":
-                        s.Connection.Player.BigSkipForward();
-                        break;
-                    case "VBIGSKIPBACK":
-                        s.Connection.Player.BigSkipBackward();
-                        break;
-                }
-            }
+
+
+
+        public override void ProcessCommand(OSAEMethod method)
+        {
+            //System.Data.DataRow row = table.Rows[0];
+            //osae.AddToLog("Found Command: " + row["method_name"].ToString() + " | param1: " + row["parameter_1"].ToString() + " | param2: " + row["parameter_1"].ToString(), false);
+
+            //XBMCSystem s = getXBMCSystem(row["object_name"].ToString());
+            //if (s != null)
+            //{
+            //    switch (row["method_name"].ToString())
+            //    {
+            //        case "VPLAYPAUSE":
+            //            s.Connection.Player.PlayPause();
+            //            break;
+            //        case "VSTOP":
+            //            s.Connection.Player.Stop();
+            //            break;
+            //        case "VBIGSKIPFORWARD":
+            //            s.Connection.Player.BigSkipForward();
+            //            break;
+            //        case "VBIGSKIPBACK":
+            //            s.Connection.Player.BigSkipBackward();
+            //            break;
+            //    }
+            //}
 
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             osae.AddToLog("Running interface", false);
             pName = pluginName;
@@ -81,13 +83,13 @@ namespace OSAE.XBMC
                 Systems.Add(system);
             }
 
-            Clock = new System.Timers.Timer();
-            Clock.Interval = 10000;
-            Clock.Start();
-            Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
+            //Clock = new System.Timers.Timer();
+            //Clock.Interval = 5000;
+            //Clock.Start();
+            //Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             
         }
@@ -108,18 +110,25 @@ namespace OSAE.XBMC
             {
                 foreach (XBMCSystem r in Systems)
                 {
-                    osae.AddToLog("Checking " + r.Name + " - " + r.isConnected().ToString(), false);
 
 
-                    if (!r.isConnected())
-                    {
-                        osae.AddToLog("Trying to reconnect", false);
-                        r.Connect();
-                    }
-                    //if (r.isPlaying())
+                    //if (!r.isConnected())
                     //{
-                    //    osae.ObjectStateSet(r.Name, "Playing");
+                    //    osae.AddToLog("Trying to reconnect", false);
+                    //    r.Connect();
                     //}
+                    r.getStatus();
+
+                    if (r.Playing)
+                    {
+                        osae.AddToLog("Checking " + r.Name + " - Playing", false);
+                        osae.ObjectStateSet(r.Name, "Playing");
+                    }
+                    else
+                    {
+                        osae.AddToLog("Checking " + r.Name + " - Stopped", false);
+                        osae.ObjectStateSet(r.Name, "Stopped");
+                    }
                 }
             }
             catch (Exception ex)
@@ -132,15 +141,16 @@ namespace OSAE.XBMC
 
     public class XBMCSystem
     {
+        private System.Timers.Timer Clock;
         private string _name;
         private string _username;
         private string _password;
         private string _ip;
         private int _port = 0;
         private bool _connected;
-        private XConnection _connection;
+        private bool _playing;
+        private Client _xbmcSystem;
         private OSAE osae = new OSAE("XBMC");
-        private XEventListener _eventListener;
 
         public string Name
         {
@@ -152,10 +162,15 @@ namespace OSAE.XBMC
             get { return _connected; }
             set { _connected = value; }
         }
-        public XConnection Connection
+        public bool Playing
         {
-            get { return _connection; }
-            set { _connection = value; }
+            get { return _playing; }
+            set { _playing = value; }
+        }
+        public Client xbmcSystem
+        {
+            get { return _xbmcSystem; }
+            set { _xbmcSystem = value; }
         }
 
         public XBMCSystem(string name, string ip, int port, string username, string password)
@@ -165,84 +180,127 @@ namespace OSAE.XBMC
             _port = port;
             _username = username;
             _password = password;
+
         }
 
         public void Connect()
         {
-            _connection = new XConnection(_ip, _port, _username, _password);
-            _eventListener = new XEventListener(_ip, 9090);
-            _eventListener.OnXEventReceived += new XEventReceivedEventHandler(eventListener_OnXEventReceived);
-            _eventListener.Connect();
+            _xbmcSystem = new Client(_ip, _port, _username, _password);
+            osae.AddToLog("Client connected", false);
+
+            _xbmcSystem.Player.OnPlay += Player_OnPlay;
+            _xbmcSystem.Player.OnStop += Player_OnStop;
+            _xbmcSystem.Player.OnPause += Player_OnPause;
+
+            _xbmcSystem.StartNotificationListener();
+            osae.AddToLog("Events wired up", false);
         }
 
 
-        private void eventListener_OnXEventReceived(object sender, XEventType type, Dictionary<string, string> parameters)
-        {
-            try
-            {
-                osae.AddToLog("EventListener captured event : " + type.ToString() + " - " + sender.ToString() + " - " + _ip, false);
+        //private void eventListener_OnXEventReceived(object sender, XEventType type, Dictionary<string, string> parameters)
+        //{
+        //    try
+        //    {
+        //        osae.AddToLog("EventListener captured event : " + type.ToString() + " - " + sender.ToString() + " - " + _ip, false);
 
-                switch (type)
-                {
-                    case XEventType.PlaybackPaused:
-                        osae.ObjectStateSet(Name, "PAUSED");
-                        break;
-                    case XEventType.PlaybackResumed:
-                    case XEventType.PlaybackStarted:
-                        //if (_connection.System.GetActivePlayers() == xbmc_json_async.Player.XPlayerType.VideoPlayer)
-                        //    osae.ObjectPropertySet(Name, "Current Player", "Video");
-                        //else if (_connection.System.GetActivePlayers() == xbmc_json_async.Player.XPlayerType.AudioPlayer)
-                        //    osae.ObjectPropertySet(Name, "Current Player", "Audio");
+        //        switch (type)
+        //        {
+        //            case XEventType.PlaybackPaused:
+        //                osae.ObjectStateSet(Name, "PAUSED");
+        //                break;
+        //            case XEventType.PlaybackResumed:
+        //            case XEventType.PlaybackStarted:
+        //                //if (_connection.System.GetActivePlayers() == xbmc_json_async.Player.XPlayerType.VideoPlayer)
+        //                //    osae.ObjectPropertySet(Name, "Current Player", "Video");
+        //                //else if (_connection.System.GetActivePlayers() == xbmc_json_async.Player.XPlayerType.AudioPlayer)
+        //                //    osae.ObjectPropertySet(Name, "Current Player", "Audio");
+        //                //else
+        //                //    osae.ObjectPropertySet(Name, "Current Player", "Picture");
+
+        //                osae.ObjectStateSet(Name, "PLAYING");
+        //                break;
+        //            case XEventType.PlaybackStopped:
+        //            case XEventType.PlaybackEnded:
+        //                osae.ObjectStateSet(Name, "STOPPED");
+        //                break;
+        //            case XEventType.ConnectionSuccessful:
+        //                _connected = true;
+        //                break;
+        //            case XEventType.ConnectionFailed:
+        //                _connected = false;
+        //                break;
+        //            //case XEventType.ApplicationStop:
+        //            //    _connected = false;
+        //                break;
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        osae.AddToLog("Error receiving message: " + ex.Message, true);
+        //    }
+        //}
+
+        //public async void checkConnection()
+        //{
+        //    if (_connected)
+        //        try
+        //        {
+        //            var players = await _xbmcSystem.Player.GetActivePlayers();
+        //            int x = players[0];
+
+        //            if (players.Count() > 0)
+        //                return true;
+        //            else
+        //                return false;
+        //        }
+        //        catch(Exception ex)
+        //        {
+        //            osae.AddToLog("Error checking if connected: " + ex.Message, true);
+        //            return false;
+        //        }
                         //else
-                        //    osae.ObjectPropertySet(Name, "Current Player", "Picture");
+        //        return false;
+        //}
 
-                        osae.ObjectStateSet(Name, "PLAYING");
-                        break;
-                    case XEventType.PlaybackStopped:
-                    case XEventType.PlaybackEnded:
-                        osae.ObjectStateSet(Name, "STOPPED");
-                        break;
-                    case XEventType.ConnectionSuccessful:
-                        _connected = true;
-                        break;
-                    case XEventType.ConnectionFailed:
-                        _connected = false;
-                        break;
-                    //case XEventType.ApplicationStop:
-                    //    _connected = false;
-                        break;
-                }
+        //public bool isPlaying()
+        //{
+        //    XSystem xs = _connection.System;
+        //    xbmc_json_async.Player.XPlayerType xpt = xs.GetActivePlayers();
+        //    if (xpt == xbmc_json_async.Player.XPlayerType.Audio || xpt == xbmc_json_async.Player.XPlayerType.Video || xpt == xbmc_json_async.Player.XPlayerType.Picture)
+        //        return true;
+        //    return false;
+        //}
 
-            }
-            catch (Exception ex)
+        public async void getStatus()
             {
-                osae.AddToLog("Error receiving message: " + ex.Message, true);
-            }
-        }
+            var players = await _xbmcSystem.Player.GetActivePlayers();
+            int c = players.Count();
 
-        public bool isConnected()
-        {
-            if (_connected)
-                try
-                {
-                    return _eventListener.isConnected();
-                }
-                catch(Exception ex)
-                {
-                    osae.AddToLog("Error checking if connected: " + ex.Message, true);
-                    return false;
-                }
+            if (c > 0)
+                _playing = true;
             else
-                return false;
+                _playing = false;
+
+            osae.AddToLog(" --- " + _playing.ToString(), false);
         }
 
-        public bool isPlaying()
+        void Player_OnPlay(string sender = null, XBMCRPC.Player.Notifications.Data data = null)
         {
-            XSystem xs = _connection.System;
-            xbmc_json_async.Player.XPlayerType xpt = xs.GetActivePlayers();
-            if (xpt == xbmc_json_async.Player.XPlayerType.Audio || xpt == xbmc_json_async.Player.XPlayerType.Video || xpt == xbmc_json_async.Player.XPlayerType.Picture)
-                return true;
-            return false;
+            osae.AddToLog(Name + " started playing", false);
+            osae.ObjectStateSet(Name, "Playing");
+                }
+
+        void Player_OnStop(string sender = null, Player.OnStopdataType data = null)
+                {
+            osae.AddToLog(Name + " stopped playing", false); 
+            osae.ObjectStateSet(Name, "Stopped");
+        }
+
+        void Player_OnPause(string sender = null, XBMCRPC.Player.Notifications.Data data = null)
+        {
+            osae.AddToLog(Name + " paused", false);
+            osae.ObjectStateSet(Name, "Stopped");
         }
     }
 }

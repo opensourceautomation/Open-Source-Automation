@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\output\AddIns\RFXCOM\</OutputPath>
+    <OutputPath>..\..\output\Plugins\RFXCOM\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,16 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AddInView2">
-      <HintPath>..\..\AddInView2\obj\Debug\AddInView2.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\output\lib\OSAE.API.dll</HintPath>
+      <HintPath>..\..\output\OSAE.API.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.AddIn" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />

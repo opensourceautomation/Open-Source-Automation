@@ -5,13 +5,10 @@ using System.Text;
 using System.Data;
 using OpenZWaveDotNet;
 using System.Threading;
-using System.AddIn;
-using OpenSourceAutomation;
 
 namespace OSAE.Zwave
 {
-    [AddIn("ZWave", Version = "0.3.23")]
-    public class Zwave : IOpenSourceAutomationAddInv2
+    public class Zwave : OSAEPluginBase
     {
         static private OSAE osae = new OSAE("ZWave");
         static private ManagedControllerStateChangedHandler m_controllerStateChangedHandler = new ManagedControllerStateChangedHandler(Zwave.MyControllerStateChangedHandler);
@@ -22,7 +19,7 @@ namespace OSAE.Zwave
         List<Node> m_nodeList = new List<Node>();
         string pName;
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             pName = pluginName;
             int poll = 60;
@@ -38,7 +35,7 @@ namespace OSAE.Zwave
                 {
                     // Create the Options
                     m_options = new ZWOptions();
-                    m_options.Create(osae.APIpath + @"\AddIns\ZWave\config\", osae.APIpath + @"\AddIns\ZWave\", @"");
+                    m_options.Create(osae.APIpath + @"\Plugins\ZWave\config\", osae.APIpath + @"\Plugins\ZWave\", @"");
 
                     // Add any app specific options here...
                     m_options.AddOptionBool("ConsoleOutput", false);
@@ -59,7 +56,7 @@ namespace OSAE.Zwave
 
                     //osae.AddToLog("Setting poll interval: " + poll.ToString(), true);
                     //m_manager.SetPollInterval(poll);
-                    osae.AddToLog(osae.APIpath + @"\AddIns\ZWave\Config", true);
+                    osae.AddToLog(osae.APIpath + @"\Plugins\ZWave\Config", true);
                     osae.AddToLog("Zwave plugin initialized", true);
                 }
 
@@ -84,7 +81,7 @@ namespace OSAE.Zwave
             }
         }
 
-        public void ProcessCommand(OSAEMethod method)
+        public override void ProcessCommand(OSAEMethod method)
         {
             osae.AddToLog("Found Command: " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2 + " | obj: " + method.ObjectName, false);
             //process command
@@ -437,7 +434,7 @@ namespace OSAE.Zwave
 
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             m_manager.RemoveDriver(@"\\.\COM" + osae.GetObjectPropertyValue(pName, "Port").Value);
             m_manager = null;

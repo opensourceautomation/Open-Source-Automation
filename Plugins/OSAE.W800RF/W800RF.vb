@@ -1,11 +1,9 @@
 ﻿Option Strict Off
 Option Explicit On
-Imports System.AddIn
-Imports OpenSourceAutomation
 Imports System.IO.Ports
-<AddIn("W800RF", Version:="1.0.4")>
+
 Public Class W800RF
-    Implements IOpenSourceAutomationAddIn
+    Inherits OSAEPluginBase
     Private OSAEApi As New OSAE("W800RF")
     Private gAppName As String = ""
 
@@ -20,7 +18,7 @@ Public Class W800RF
     Private gNewTime As DateTime
     Dim ByteDetail(4) As ByteDetails
 
-    Public Sub RunInterface(ByVal pluginName As String) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.RunInterface
+    Public Overrides Sub RunInterface(ByVal pluginName As String)
         gAppName = pluginName
         OSAEApi.AddToLog("Found my Object Name: " & gAppName, True)
         Load_App_Name()
@@ -31,7 +29,7 @@ Public Class W800RF
         OSAEApi.AddToLog("Finished Loading: " & gAppName, True)
     End Sub
 
-    Public Sub Shutdown() Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.Shutdown
+    Public Overrides Sub Shutdown()
         OSAEApi.AddToLog("*** Received Shut-Down.", True)
     End Sub
 
@@ -244,7 +242,7 @@ DropOut:
         Return y
     End Function
 
-    Public Sub ProcessCommand(ByVal table As System.Data.DataTable) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.ProcessCommand
+    Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
 
     End Sub
 

@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 using System.IO.Ports;
 using System.Collections.Generic;
-using System.AddIn;
-using OpenSourceAutomation;
 
 namespace OSAE.KillAWatt
 {
-    [AddIn("KillAWatt", Version = "0.3.7")]
-    public class KillAWatt : IOpenSourceAutomationAddIn
+    public class KillAWatt : OSAEPluginBase
     {
         OSAE osae = new OSAE("KillAWatt");
         int portNumber = 0;
@@ -24,12 +21,12 @@ namespace OSAE.KillAWatt
         Object thisLock = new Object();
 
 
-        public void ProcessCommand(System.Data.DataTable row)
+        public override void ProcessCommand(OSAEMethod method)
         {
             // No commands
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             pName = pluginName;
             osae.ObjectTypeUpdate("KILLAWATT MODULE", "KILLAWATT MODULE", "Kill-A-Watt Module", pName, "KILLAWATT MODULE", 0, 0, 0, 1);
@@ -38,7 +35,7 @@ namespace OSAE.KillAWatt
             xb.xbeePacketReceived += new xbee.xbeePacketReceivedEventHandler(xb_xbeePacketReceived);
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             // Nothing to clean up
         }

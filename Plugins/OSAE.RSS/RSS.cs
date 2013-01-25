@@ -8,13 +8,10 @@ using System.Net;
 using System.Xml;
 using System.Data;
 using System.Text.RegularExpressions;
-using System.AddIn;
-using OpenSourceAutomation;
 
 namespace OSAE.RSS
 {
-    [AddIn("RSS", Version = "0.3.1")]
-    public class RSS : IOpenSourceAutomationAddIn
+    public class RSS : OSAEPluginBase
     {
         string pName;
         OSAE osae = new OSAE("RSS");
@@ -22,14 +19,13 @@ namespace OSAE.RSS
         Thread updateThread;
         int updateInterval=60;
 
-        public void ProcessCommand(System.Data.DataTable table)
+        public override void ProcessCommand(OSAEMethod method)
         {
-            System.Data.DataRow row = table.Rows[0];
-            if (row["method_name"].ToString() == "UPDATE")
+            if (method.MethodName == "UPDATE")
                 updateFeeds();
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         { 
             pName = pluginName;
             osae.AddToLog("Running Interface!", true);
@@ -45,7 +41,7 @@ namespace OSAE.RSS
             this.updateThread.Start();
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             updateThread.Abort();
             Clock.Stop();

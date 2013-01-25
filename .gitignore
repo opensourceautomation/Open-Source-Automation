@@ -19,6 +19,7 @@ AddInViews/
 AddInSideAdapters/
 HostSideAdapters/
 OSAE.API.dll
+output/
 
 # Custom for Visual Studio
 *.cs     diff=csharp

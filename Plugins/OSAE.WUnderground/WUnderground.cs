@@ -5,14 +5,11 @@ using System.Text;
 using System.Timers;
 using System.Threading;
 using System.Net;
-using OpenSourceAutomation;
 using System.Xml;
-using System.AddIn;
 
 namespace OSAE.WUnderground
 {
-    [AddIn("WUnderground", Version = "0.3.5")]
-    public class WUnderground : IOpenSourceAutomationAddInv2
+    public class WUnderground : OSAEPluginBase
     {
         string pName;
         OSAE osae = new OSAE("WUnderground");
@@ -28,7 +25,7 @@ namespace OSAE.WUnderground
         Boolean Metric;
 
         
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             try
             {
@@ -108,14 +105,14 @@ namespace OSAE.WUnderground
         }
 
         
-        public void ProcessCommand(OSAEMethod method)
+        public override void ProcessCommand(OSAEMethod method)
         {
             if (method.MethodName == "UPDATE")
                 update();
         }
 
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             osae.AddToLog("Shutting down", true);
             if (Forecastupdatetime > 0)
