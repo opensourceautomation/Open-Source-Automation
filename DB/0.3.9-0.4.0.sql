@@ -147,36 +147,12 @@ BEGIN
 END$$
 
 
-delimiter ;
-
-alter table osae_object_property modify property_value VARCHAR(4000) DEFAULT NULL ; 
-
--- Update Images to have consistant Path, Removeing "." from ".\"
-update osae_object_property set property_value = replace(property_value, '.\\', '\\') where property_value like '.\\\\%';
-
-CALL osae_sp_object_type_property_add ('Script Processor','String','','SYSTEM',0);
-CALL osae_sp_object_property_set('SYSTEM','Script Processor','Script Processor', '', '');
-
-CALL osae_sp_object_type_add ('CONTROL CAMERA VIEWER','Control - IP Camera Viewer','','CONTROL',0,1,0,1);
-CALL osae_sp_object_type_property_add ('X','Integer','','CONTROL CAMERA VIEWER',1);
-CALL osae_sp_object_type_property_add ('Y','Integer','','CONTROL CAMERA VIEWER',1);
-CALL osae_sp_object_type_property_add ('ZOrder','Integer','','CONTROL CAMERA VIEWER',1);
-CALL osae_sp_object_type_property_add ('Object Name','String','','CONTROL CAMERA VIEWER',0);
-CALL osae_sp_object_type_add ('IP CAMERA','IP Camera','','IP CAMERA',0,0,0,1);
-CALL osae_sp_object_type_state_add ('ON','Motion','IP CAMERA');
-CALL osae_sp_object_type_state_add ('OFF','Still','IP CAMERA');
-CALL osae_sp_object_type_event_add ('ON','Motion','IP CAMERA');
-CALL osae_sp_object_type_event_add ('OFF','Still','IP CAMERA');
-CALL osae_sp_object_type_property_add ('Stream Address','String','','IP CAMERA',0);
-
-
-
---Fix for scheduler running named scripts
+-- Fix for scheduler running named scripts
 DELIMITER $$
 DROP PROCEDURE IF EXISTS osae_sp_process_recurring$$
 
 CREATE DEFINER = 'osae'@'%'
-PROCEDURE osae.osae_sp_process_recurring()
+PROCEDURE osae_sp_process_recurring()
 BEGIN
 DECLARE iRECURRINGID INT;
 DECLARE vOBJECTNAME VARCHAR(400) DEFAULT '';
@@ -322,6 +298,27 @@ $$
 
 
 
+delimiter ;
+
+alter table osae_object_property modify property_value VARCHAR(4000) DEFAULT NULL ; 
+
+-- Update Images to have consistant Path, Removeing "." from ".\"
+update osae_object_property set property_value = replace(property_value, '.\\', '\\') where property_value like '.\\\\%';
+
+CALL osae_sp_object_type_property_add ('Script Processor','String','','SYSTEM',0);
+CALL osae_sp_object_property_set('SYSTEM','Script Processor','Script Processor', '', '');
+
+CALL osae_sp_object_type_add ('CONTROL CAMERA VIEWER','Control - IP Camera Viewer','','CONTROL',0,1,0,1);
+CALL osae_sp_object_type_property_add ('X','Integer','','CONTROL CAMERA VIEWER',1);
+CALL osae_sp_object_type_property_add ('Y','Integer','','CONTROL CAMERA VIEWER',1);
+CALL osae_sp_object_type_property_add ('ZOrder','Integer','','CONTROL CAMERA VIEWER',1);
+CALL osae_sp_object_type_property_add ('Object Name','String','','CONTROL CAMERA VIEWER',0);
+CALL osae_sp_object_type_add ('IP CAMERA','IP Camera','','IP CAMERA',0,0,0,1);
+CALL osae_sp_object_type_state_add ('ON','Motion','IP CAMERA');
+CALL osae_sp_object_type_state_add ('OFF','Still','IP CAMERA');
+CALL osae_sp_object_type_event_add ('ON','Motion','IP CAMERA');
+CALL osae_sp_object_type_event_add ('OFF','Still','IP CAMERA');
+CALL osae_sp_object_type_property_add ('Stream Address','String','','IP CAMERA',0);
 
 
 -- Set DB version 
