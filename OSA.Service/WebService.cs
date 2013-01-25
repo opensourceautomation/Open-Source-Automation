@@ -16,6 +16,10 @@ namespace OSAERest
         Object GetObject(string name);
         
         [OperationContract]
+        [WebGet(UriTemplate = "object/{name}/state", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        ObjectState GetObjectState(string name);
+
+        [OperationContract]
         [WebGet(UriTemplate = "object/{name}/{method}?param1={param1}&param2={param2}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean ExecuteMethod(string name, string method, string param1, string param2);
 
@@ -89,9 +93,15 @@ namespace OSAERest
             obj.Enabled = OSAEobj.Enabled;
             obj.Description = OSAEobj.Description;
             obj.Methods = OSAEobj.Methods;
-            obj.State = OSAEobj.State.Value;
+            obj.State = OSAEobj.State;
             obj.Properties = getProperties(obj.Name);
             return obj;
+        }
+
+        public ObjectState GetObjectState(string name)
+        {
+            ObjectState state = osae.GetObjectStateValue(name);
+            return state;
         }
 
         public List<Object> GetObjectsByType(string type)
@@ -110,9 +120,8 @@ namespace OSAERest
                 obj.Container = oObj.Container;
                 obj.Enabled = oObj.Enabled;
                 obj.Description = oObj.Description;
-                obj.State = oObj.State.Value;
+                obj.State = oObj.State;
                 obj.Methods = oObj.Methods;
-                obj.State = oObj.State.Value;
 
                 obj.Properties = getProperties(obj.Name);
                 
@@ -138,9 +147,8 @@ namespace OSAERest
                 obj.Container = oObj.Container;
                 obj.Enabled = oObj.Enabled;
                 obj.Description = oObj.Description;
-                obj.State = oObj.State.Value;
+                obj.State = oObj.State;
                 obj.Methods = oObj.Methods;
-                obj.State = oObj.State.Value;
 
                 obj.Properties = getProperties(obj.Name);
 
@@ -216,9 +224,8 @@ namespace OSAERest
                 obj.Container = oObj.Container;
                 obj.Enabled = oObj.Enabled;
                 obj.Description = oObj.Description;
-                obj.State = oObj.State.Value;
+                obj.State = oObj.State;
                 obj.Methods = oObj.Methods;
-                obj.State = oObj.State.Value;
 
                 obj.Properties = getProperties(obj.Name);
 
@@ -290,7 +297,7 @@ namespace OSAERest
         public string Container { get; set; }
         public int Enabled { get; set; }
         public string Description { get; set; }
-        public string State { get; set; }
+        public ObjectState State { get; set; }
         public List<Property> Properties { get; set; }
         public List<string> Methods { get; set; }
     }

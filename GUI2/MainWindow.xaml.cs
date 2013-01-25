@@ -371,6 +371,7 @@ namespace GUI2
                     sObj.Object_State = "";
                     Image dni = new Image();
                     dni.Tag = sObj.Object_Name;
+                    dni.MouseLeftButtonUp += new MouseButtonEventHandler(Navigaton_Image_MouseLeftButtonUp);
                     try
                     {
                         sImage = obj.Property("Image").Value;
@@ -527,16 +528,16 @@ namespace GUI2
                 #region CONTROL PROPERTY LABEL
                 else if (dso.Control_Type == "CONTROL PROPERTY LABEL")
                 {
-                    dso.Object_Name = OSAEApi.GetObjectProperty(dso.Control_Name, "Object Name");
-                    String sPropertyName = OSAEApi.GetObjectProperty(dso.Control_Name, "Property Name");
+                    dso.Object_Name = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Object Name").Value;
+                    String sPropertyName = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Property Name").Value;
                     dso.Property_Name = sPropertyName;
-                    String sPropertyValue = OSAEApi.GetObjectProperty(dso.Object_Name, sPropertyName);
-                    String sBackColor = OSAEApi.GetObjectProperty(dso.Control_Name, "Back Color");
-                    String sForeColor = OSAEApi.GetObjectProperty(dso.Control_Name, "Fore Color");
-                    String sPrefix = OSAEApi.GetObjectProperty(dso.Control_Name, "Prefix");
-                    String sSuffix = OSAEApi.GetObjectProperty(dso.Control_Name, "Suffix");
-                    String iFontSize = OSAEApi.GetObjectProperty(dso.Control_Name, "Font Size");
-                    String sFontName = OSAEApi.GetObjectProperty(dso.Control_Name, "Font Name");
+                    String sPropertyValue = OSAEApi.GetObjectPropertyValue(dso.Object_Name, sPropertyName).Value;
+                    String sBackColor = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Back Color").Value;
+                    String sForeColor = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Fore Color").Value;
+                    String sPrefix = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Prefix").Value;
+                    String sSuffix = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Suffix").Value;
+                    String iFontSize = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Font Size").Value;
+                    String sFontName = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Font Name").Value;
                     OSAE.ObjectProperty pX = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "X");
                     OSAE.ObjectProperty pY = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Y");
                     Double dX = Convert.ToDouble(pX.Value);
@@ -661,6 +662,15 @@ namespace GUI2
                     }
                 }
             }
+        }
+
+        private void Navigaton_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
+        {
+            Image iImage = (Image)sender;
+            gCurrentScreen = iImage.Tag.ToString();
+            aScreenObject.Clear();
+            canGUI.Children.Clear();
+            Load_Screen(iImage.Tag.ToString());
         }
 
     }
