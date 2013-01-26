@@ -305,6 +305,11 @@ alter table osae_object_property modify property_value VARCHAR(4000) DEFAULT NUL
 -- Update Images to have consistant Path, Removeing "." from ".\"
 update osae_object_property set property_value = replace(property_value, '.\\', '\\') where property_value like '.\\\\%';
 
+CALL osae_sp_object_type_state_update('OPENED','ON','Opened','X10 DS10A');
+CALL osae_sp_object_type_state_update('CLOSED','OFF','Closed','X10 DS10A');
+CALL osae_sp_object_type_event_update('OPENED','ON','Opened','X10 DS10A');
+CALL osae_sp_object_type_event_update('CLOSED','OFF','Closed','X10 DS10A');
+
 CALL osae_sp_object_type_property_add ('Script Processor','String','','SYSTEM',0);
 CALL osae_sp_object_property_set('SYSTEM','Script Processor','Script Processor', '', '');
 

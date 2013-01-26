@@ -70,7 +70,13 @@
     <Compile Include="Logs.xaml.cs">
       <DependentUpon>Logs.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NavigationImage.xaml.cs">
+      <DependentUpon>NavigationImage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StateImage.xaml.cs">
+      <DependentUpon>StateImage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VideoStreamViewer.xaml.cs">
       <DependentUpon>VideoStreamViewer.xaml</DependentUpon>
     </Compile>
@@ -90,6 +96,14 @@
     <Page Include="Logs.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="NavigationImage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StateImage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="VideoStreamViewer.xaml">
       <SubType>Designer</SubType>

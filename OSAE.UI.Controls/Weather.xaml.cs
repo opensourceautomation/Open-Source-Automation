@@ -25,10 +25,14 @@ namespace OSAE.UI.Controls
         OSAE osae = new OSAE("GUI");
         OSAEObject weatherObj;
         string sMode = "Max";
+        public System.Windows.Point Location;
+        public OSAEObject screenObject { get; set; }
 
-        public Weather()
+        public Weather(OSAEObject sObj)
         {
             InitializeComponent();
+
+            screenObject = sObj;
 
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(timMain_Tick);

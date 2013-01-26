@@ -21,10 +21,13 @@ namespace OSAE.UI.Controls
     public partial class VideoStreamViewer : UserControl
     {
         MjpegDecoder _mjpeg;
+        public Point Location;
+        public OSAEObject screenObject { get; set; }
 
-        public VideoStreamViewer(string url)
+        public VideoStreamViewer(string url, OSAEObject sObj)
         {
             InitializeComponent();
+            screenObject = sObj;
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
             _mjpeg.ParseStream(new Uri(url));

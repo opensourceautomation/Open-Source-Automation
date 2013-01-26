@@ -1345,7 +1345,7 @@ namespace OSAE
             {
                 try
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_type=@ObjectType";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectType);
                     dataset = RunQuery(command);
 
@@ -1354,7 +1354,7 @@ namespace OSAE
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
                             obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-                            obj.State.Value = dr["state_label"].ToString();
+                            obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
                             
@@ -1389,7 +1389,7 @@ namespace OSAE
             {
                 try
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE base_type=@ObjectType";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE base_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectBaseType);
                     dataset = RunQuery(command);
 
@@ -1398,7 +1398,7 @@ namespace OSAE
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
                             obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-                            obj.State.Value = dr["state_label"].ToString();
+                            obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
                             
@@ -1426,7 +1426,7 @@ namespace OSAE
             List<OSAEObject> objects = new List<OSAEObject>();
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
+                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
                 command.Parameters.AddWithValue("@ObjectOwner", ObjectOwner);
                 dataset = RunQuery(command);
 
@@ -1435,7 +1435,7 @@ namespace OSAE
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
                         obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-                        obj.State.Value = dr["state_label"].ToString();
+                        obj.State.Value = dr["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
                         
@@ -1468,10 +1468,10 @@ namespace OSAE
             try
             {
                 if (ContainerName == "")
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
                 else
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
                     command.Parameters.AddWithValue("@ContainerName", ContainerName);
                 }
                 dataset = RunQuery(command);
@@ -1480,7 +1480,7 @@ namespace OSAE
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
                         obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-                        obj.State.Value = dr["state_label"].ToString();
+                        obj.State.Value = dr["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
                         obj.LastUpd = dr["last_updated"].ToString();
@@ -1513,14 +1513,14 @@ namespace OSAE
 
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
+                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
                 command.Parameters.AddWithValue("@Address", address);
                 dataset = RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
                     obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
-                    obj.State.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
+                    obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
 
@@ -1550,14 +1550,14 @@ namespace OSAE
 
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
+                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
                 command.Parameters.AddWithValue("@Name", name);
                 dataset = RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
                     OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
-                    obj.State.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
+                    obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
 
@@ -1675,14 +1675,14 @@ namespace OSAE
 			{
 				using (MySqlCommand command = new MySqlCommand())
 				{
-					command.CommandText = "SELECT state_label, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@ObjectName";
+					command.CommandText = "SELECT state_name, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@ObjectName";
 					command.Parameters.AddWithValue("@ObjectName", ObjectName);
 					dataset = RunQuery(command);
 				}
 
 				if (dataset.Tables[0].Rows.Count > 0)
 				{
-					state.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
+					state.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
 					state.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
 
 					return state;
