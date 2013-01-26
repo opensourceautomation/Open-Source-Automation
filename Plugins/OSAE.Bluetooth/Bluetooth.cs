@@ -184,11 +184,7 @@
 
             }
         }
-
-       
-
-       
-
+            
         #endregion
     }
 
@@ -200,6 +196,7 @@
             // TODO: Add constructor logic here
             //
         }
+
         public static int GetByteCount(string hexString)
         {
             int numHexChars = 0;
@@ -218,6 +215,7 @@
             }
             return numHexChars / 2; // 2 characters per byte
         }
+
         /// <summary>
         /// Creates a byte array from the hexadecimal string. Each two characters are combined
         /// to create one byte. First two hexadecimal characters become first byte in returned array.
@@ -259,6 +257,7 @@
             }
             return bytes;
         }
+
         public static string ToString(byte[] bytes)
         {
             string hexString = "";
@@ -268,6 +267,7 @@
             }
             return hexString;
         }
+
         /// <summary>
         /// Determines if given string is in proper hexadecimal string format
         /// </summary>
@@ -306,6 +306,7 @@
                 return true;
             return false;
         }
+
         /// <summary>
         /// Converts 1 or 2 character string into equivalant byte value
         /// </summary>
@@ -318,7 +319,5 @@
             byte newByte = byte.Parse(hex, System.Globalization.NumberStyles.HexNumber);
             return newByte;
         }
-
-
     }
 }
