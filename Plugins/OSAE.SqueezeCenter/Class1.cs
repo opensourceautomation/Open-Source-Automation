@@ -7,13 +7,10 @@ using System.Data;
 using System.IO;
 using System.Speech.Synthesis;
 using System.Speech.AudioFormat;
-using System.AddIn;
-using OpenSourceAutomation;
 
 namespace OSAE.SqueezeboxServer
 {
-    [AddIn("Squeezebox Server", Version = "0.3.4")]
-    public class SqueezeboxServer : IOpenSourceAutomationAddIn
+    public class SqueezeboxServer : OSAEPluginBase
     {
         private string sbsAddress = "localhost";
         private int sbsPort = 9090;
@@ -22,54 +19,53 @@ namespace OSAE.SqueezeboxServer
         private SqueezeboxServerAPI sbs = new SqueezeboxServerAPI();
         OSAE osae = new OSAE("Squeezebox Server");
                
-        public void ProcessCommand(System.Data.DataTable table)
+        public override void ProcessCommand(OSAEMethod method)
         {
-            System.Data.DataRow row = table.Rows[0];
             //Process incomming command
-            osae.AddToLog("Process command: " + row["method_name"], false);
-            osae.AddToLog("Process parameter1: " + row["parameter_1"], false);
-            osae.AddToLog("Process parameter2: " + row["parameter_2"], false);
-            osae.AddToLog("Address: " + row["address"], false);
+            osae.AddToLog("Process command: " + method.MethodName, false);
+            osae.AddToLog("Process parameter1: " + method.Parameter1, false);
+            osae.AddToLog("Process parameter2: " + method.Parameter2, false);
+            osae.AddToLog("Address: " + method.Address, false);
 
-            switch (row["method_name"].ToString())
+            switch (method.MethodName)
             {
                 case "PLAY":
-                    if (row["parameter_1"].ToString().Trim() == string.Empty)
-                        sbs.Play(row["address"].ToString());
+                    if (method.Parameter1.Trim() == string.Empty)
+                        sbs.Play(method.Address);
                     else
-                        sbs.PlaylistPlay(row["address"].ToString(), row["parameter_1"].ToString());
-                    osae.ObjectStateSet(osae.GetObjectByAddress(row["address"].ToString()).Name, "PLAYING");
+                        sbs.PlaylistPlay(method.Address, method.Parameter1);
+                    osae.ObjectStateSet(osae.GetObjectByAddress(method.Address).Name, "PLAYING");
                     break;
 
                 case "STOP":
-                    sbs.StopPlayer(row["address"].ToString());
-                    osae.ObjectStateSet(osae.GetObjectByAddress(row["address"].ToString()).Name, "STOPPED");
+                    sbs.StopPlayer(method.Address);
+                    osae.ObjectStateSet(osae.GetObjectByAddress(method.Address).Name, "STOPPED");
                     break;
 
                 case "NEXT":
-                    sbs.Next(row["address"].ToString());
+                    sbs.Next(method.Address);
                     break;
 
                 case "PREV":
-                    sbs.Previous(row["address"].ToString());
+                    sbs.Previous(method.Address);
                     break;
 
                 case "SHOW":
-                    sbs.ShowMessage(row["address"].ToString(), row["parameter_1"].ToString(), Int32.Parse(row["parameter_2"].ToString()));
+                    sbs.ShowMessage(method.Address, method.Parameter1, Int32.Parse(method.Parameter2));
                     break;
 
                 case "PAUSE":
-                    sbs.PausePlayer(row["address"].ToString());
-                    osae.ObjectStateSet(osae.GetObjectByAddress(row["address"].ToString()).Name, "PAUSED");
+                    sbs.PausePlayer(method.Address);
+                    osae.ObjectStateSet(osae.GetObjectByAddress(method.Address).Name, "PAUSED");
                     break;
 
                 case "TTS":
-                    TextToSpeech(row["parameter_1"].ToString());
-                    sbs.PlaylistPlay(row["address"].ToString(), ttsPlay);
+                    TextToSpeech(method.Parameter1);
+                    sbs.PlaylistPlay(method.Address, ttsPlay);
                     break;
                 
                 case "TTSLIST":
-                    DataSet list = osae.ObjectPropertyArrayGetAll(row["parameter_1"].ToString(), row["parameter_2"].ToString());
+                    DataSet list = osae.ObjectPropertyArrayGetAll(method.Parameter1, method.Parameter2);
                     string tts = "";
                     int count = 1;
                     foreach(DataRow item in list.Tables[0].Rows)
@@ -78,18 +74,18 @@ namespace OSAE.SqueezeboxServer
                         count++;
                     }
                     TextToSpeech(tts);
-                    sbs.PlaylistPlay(row["address"].ToString(), ttsPlay);
+                    sbs.PlaylistPlay(method.Address, ttsPlay);
                     break;
                 
                 case "TTSLISTRAND":
-                    string listItem = osae.ObjectPropertyArrayGetRandom(row["parameter_1"].ToString(), row["parameter_2"].ToString());
+                    string listItem = osae.ObjectPropertyArrayGetRandom(method.Parameter1, method.Parameter2);
                     TextToSpeech(listItem);
-                    sbs.PlaylistPlay(row["address"].ToString(), ttsPlay);
+                    sbs.PlaylistPlay(method.Address, ttsPlay);
                     break;
             }
         }
 
-        public void RunInterface(string pName)
+        public override void RunInterface(string pName)
         {
 
             osae.AddToLog("Initializing Plugin", true);
@@ -130,7 +126,7 @@ namespace OSAE.SqueezeboxServer
             }
         }
         
-        public void Shutdown()
+        public override void Shutdown()
         {
             //Nothing to clean up...
         }

@@ -27,9 +27,32 @@ namespace GUI2
         OSAE.OSAE OSAEApi = new OSAE.OSAE("GUI");
         String gAppName = "";
         String gCurrentScreen = "";
-        //ScreenObject aScreenObject(100) = new ScreenObject;
         List<ScreenObject> aScreenObject = new List<ScreenObject>();
-        List<Image> aControlStateImage = new List<Image>();
+
+        List<OSAE.UI.Controls.StateImage> stateImages = new List<OSAE.UI.Controls.StateImage>();
+        List<OSAE.UI.Controls.NavigationImage> navImages = new List<OSAE.UI.Controls.NavigationImage>();
+        List<OSAE.UI.Controls.VideoStreamViewer> cameraViewers = new List<OSAE.UI.Controls.VideoStreamViewer>();
+
+        private Point _startPoint;
+        DragAdorner _adorner = null;
+        AdornerLayer _layer;
+        private bool _dragHasLeftScope = false;
+
+        private bool _isDragging;
+        public bool IsDragging
+        {
+            get { return _isDragging; }
+            set { _isDragging = value; }
+        }
+
+        FrameworkElement _dragScope;
+        public FrameworkElement DragScope
+        {
+            get { return _dragScope; }
+            set { _dragScope = value; }
+        }
+        private dynamic beingDragged;
+        private List<Type> controlTypes = new List<Type>();
 
         public MainWindow()
         {
@@ -50,6 +73,9 @@ namespace GUI2
             dispatcherTimer.Tick += new EventHandler(timer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 2);
             dispatcherTimer.Start();
+
+            this.canGUI.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(DragSource_PreviewMouseLeftButtonDown);
+            this.canGUI.Drop += new DragEventHandler(DragSource_Drop);
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -103,16 +129,9 @@ namespace GUI2
                 #region CONTROL STATE IMAGE
                 if (obj.Type == "CONTROL STATE IMAGE")
                 {
-                    sObj.Object_Name = obj.Property("Object Name").Value;
-                    sObj.Control_Name = obj.Name;
-                    sObj.Control_Type = obj.Type;
-                    OSAE.OSAEObject osaObject = OSAEApi.GetObjectByName(sObj.Object_Name);
-                    Image dsi = new Image();
-                    dsi.Tag = sObj.Object_Name;
-                    dsi.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
-
-                    sObj.Object_State_Time = obj.LastUpd;
-
+                    OSAE.OSAEObject osaObject = OSAEApi.GetObjectByName(obj.Property("Object Name").Value);
+                    OSAE.UI.Controls.StateImage stateImageControl = new OSAE.UI.Controls.StateImage(obj, osaObject);
+                    
                     foreach (OSAE.ObjectProperty p in obj.Properties)
                     {
                         if (p.Value.ToLower() == osaObject.State.Value.ToLower())
@@ -120,45 +139,24 @@ namespace GUI2
                             sStateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
                         }
                     }
-
-                    sImage = OSAEApi.APIpath + obj.Property(sStateMatch + " Image").Value;
-
-
                     OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
                     OSAE.ObjectProperty pX = obj.Property(sStateMatch + " X");
                     OSAE.ObjectProperty pY = obj.Property(sStateMatch + " Y");
-                    sObj.Object_State = osaObject.State.Value;
-                    sObj.ScreenImage = dsi;
-                    aScreenObject.Add(sObj);
-                    if (File.Exists(sImage))
-                    {
-                        canGUI.Children.Add(dsi);
 
-                        Double dX = Convert.ToDouble(pX.Value);
-                        Canvas.SetLeft(dsi, dX);
-                        Double dY = Convert.ToDouble(pY.Value);
-                        Canvas.SetTop(dsi, dY);
-                        int dZ = Convert.ToInt32(pZOrder.Value);
-                        Canvas.SetZIndex(dsi, dZ);
+                    canGUI.Children.Add(stateImageControl);
 
-                        byte[] byteArray = File.ReadAllBytes(sImage);
-                        var imageStream = new MemoryStream(byteArray);
-                        var bitmapImage = new BitmapImage();
+                    Double dX = Convert.ToDouble(pX.Value);
+                    Canvas.SetLeft(stateImageControl, dX);
+                    Double dY = Convert.ToDouble(pY.Value);
+                    Canvas.SetTop(stateImageControl, dY);
+                    int dZ = Convert.ToInt32(pZOrder.Value);
+                    Canvas.SetZIndex(stateImageControl, dZ);
 
-                        bitmapImage.BeginInit();
-                        bitmapImage.StreamSource = imageStream;
-                        bitmapImage.EndInit();
-
-                        dsi.Source = bitmapImage;
-
-                        dsi.Visibility = System.Windows.Visibility.Visible;
-                    }
-                    else
-                    {
-                        dsi.Source = null;
-                        dsi.Visibility = System.Windows.Visibility.Hidden;
-                    }
-                    aScreenObject.Add(sObj);
+                    stateImageControl.Location.X = dX;
+                    stateImageControl.Location.Y = dY;
+                    stateImages.Add(stateImageControl);
+                    controlTypes.Add(typeof(OSAE.UI.Controls.StateImage));
+                    stateImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
                 #endregion
 
@@ -367,43 +365,30 @@ namespace GUI2
                 #region CONTROL NAVIGATION IMAGE
                 else if (obj.Type == "CONTROL NAVIGATION IMAGE")
                 {
-                    sObj.Object_Name = obj.Property("Screen").Value;
-                    sObj.Object_State = "";
-                    Image dni = new Image();
-                    dni.Tag = sObj.Object_Name;
                     try
                     {
-                        sImage = obj.Property("Image").Value;
-                        if (File.Exists(OSAEApi.APIpath + sImage))
-                        {
-                            sImage = OSAEApi.APIpath + sImage;
-                        }
+                        OSAE.UI.Controls.NavigationImage navImageControl = new OSAE.UI.Controls.NavigationImage(obj.Property("Screen").Value, obj.Property("Image").Value, obj);
+                        navImageControl.MouseLeftButtonUp += new MouseButtonEventHandler(Navigaton_Image_MouseLeftButtonUp); 
+                        canGUI.Children.Add(navImageControl);
+                        
                         OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
                         OSAE.ObjectProperty pX = obj.Property("X");
                         OSAE.ObjectProperty pY = obj.Property("Y");
-                        if (File.Exists(sImage))
-                        {
-                            canGUI.Children.Add(dni);
-                            Double dX = Convert.ToDouble(pX.Value);
-                            Canvas.SetLeft(dni, dX);
-                            Double dY = Convert.ToDouble(pY.Value);
-                            Canvas.SetTop(dni, dY);
-                            int dZ = Convert.ToInt32(pZOrder.Value);
-                            Canvas.SetZIndex(dni, dZ);
-
-                            byte[] byteArray = File.ReadAllBytes(sImage);
-                            var imageStream = new MemoryStream(byteArray);
-                            var bitmapImage = new BitmapImage();
-
-                            bitmapImage.BeginInit();
-                            bitmapImage.StreamSource = imageStream;
-                            bitmapImage.EndInit();
-                            dni.Source = bitmapImage;
-                        }
+                        Double dX = Convert.ToDouble(pX.Value);
+                        Canvas.SetLeft(navImageControl, dX);
+                        Double dY = Convert.ToDouble(pY.Value);
+                        Canvas.SetTop(navImageControl, dY);
+                        int dZ = Convert.ToInt32(pZOrder.Value);
+                        Canvas.SetZIndex(navImageControl, dZ);
+                        navImageControl.Location.X = dX;
+                        navImageControl.Location.Y = dY;
+                        navImages.Add(navImageControl);
+                        controlTypes.Add(typeof(OSAE.UI.Controls.NavigationImage));
+                        navImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
                     catch (MySqlException myerror)
                     {
-                        MessageBox.Show("GUI Error Load_Objects 5: " + myerror.Message);
+                        MessageBox.Show("GUI Error Load Navigation Image: " + myerror.Message);
                     }
                 }
                 #endregion
@@ -414,7 +399,7 @@ namespace GUI2
                     try
                     {
                         string stream = OSAEApi.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
-                        OSAE.UI.Controls.VideoStreamViewer vsv = new OSAE.UI.Controls.VideoStreamViewer(stream);
+                        OSAE.UI.Controls.VideoStreamViewer vsv = new OSAE.UI.Controls.VideoStreamViewer(stream, obj);
                         canGUI.Children.Add(vsv);
                         OSAE.ObjectProperty pZOrder =obj.Property("ZOrder");
                         OSAE.ObjectProperty pX = obj.Property("X");
@@ -425,7 +410,11 @@ namespace GUI2
                         Canvas.SetTop(vsv, dY);
                         int dZ = Convert.ToInt32(pZOrder.Value);
                         Canvas.SetZIndex(vsv, dZ);
-
+                        vsv.Location.X = dX;
+                        vsv.Location.Y = dY;
+                        cameraViewers.Add(vsv);
+                        controlTypes.Add(typeof(OSAE.UI.Controls.VideoStreamViewer));
+                        vsv.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
                     catch (MySqlException myerror)
                     {
@@ -440,7 +429,7 @@ namespace GUI2
                     string sUCType = obj.Property("Control Type").Value;
                     if (sUCType == "USER CONTROL WEATHER")
                     {
-                        OSAE.UI.Controls.Weather wc = new OSAE.UI.Controls.Weather();
+                        OSAE.UI.Controls.Weather wc = new OSAE.UI.Controls.Weather(obj);
                         canGUI.Children.Add(wc);
                         OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
                         OSAE.ObjectProperty pX = obj.Property("X");
@@ -451,6 +440,11 @@ namespace GUI2
                         Canvas.SetTop(wc, dY);
                         int dZ = Convert.ToInt32(pZOrder.Value);
                         Canvas.SetZIndex(wc, dZ);
+
+                        wc.Location.X = dX;
+                        wc.Location.Y = dY;
+                        controlTypes.Add(typeof(OSAE.UI.Controls.Weather));
+                        wc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
                 }
                 #endregion
@@ -465,120 +459,108 @@ namespace GUI2
         {
             //List<OSAE.OSAEScreenControl> controls = OSAEApi.GetScreenControls(sScreen);
 
-            foreach (ScreenObject dso in aScreenObject)
+            foreach (OSAE.OSAEScreenControl ctrl in controls)
             {
                 #region CONTROL STATE IMAGE
-                if (dso.Control_Type == "CONTROL STATE IMAGE")
-                {   
-                    foreach (OSAE.OSAEScreenControl ctrl in controls)
+                if (ctrl.Control_Type == "CONTROL STATE IMAGE")
+                {
+                    foreach (OSAE.UI.Controls.StateImage sImage in stateImages)
                     {
-                        if (ctrl.Object_Name == dso.Object_Name)
+                        if (ctrl.Object_Name == sImage.ObjectName)
                         {
-                            dso.Object_Last_Updated = ctrl.Object_Last_Updated;
-
-                            if (ctrl.Object_State.ToLower() != dso.Object_State.ToLower())
+                            if (ctrl.Object_State.ToLower() != sImage.ObjectState.ToLower())
                             {
-                                dso.Object_State = ctrl.Object_State;
-                                string sStateMatch = "";
-                                OSAE.OSAEObject screenObject = OSAEApi.GetObjectByName(dso.Control_Name);
-                                foreach (OSAE.ObjectProperty p in screenObject.Properties)
+                                sImage.ObjectState = ctrl.Object_State;
+                                sImage.Update();
+                                String sStateMatch = "";
+
+                                foreach (OSAE.ObjectProperty p in sImage.screenObject.Properties)
                                 {
                                     if (p.Value.ToLower() == ctrl.Object_State.ToLower())
                                     {
                                         sStateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
                                     }
                                 }
-                                String sImage = screenObject.Property(sStateMatch + " Image").Value;
-                                if (File.Exists(OSAEApi.APIpath + sImage))
-                                {
-                                    sImage = OSAEApi.APIpath + sImage;
-                                }
-                                OSAE.ObjectProperty pZOrder = screenObject.Property("ZOrder");
-                                OSAE.ObjectProperty pX = screenObject.Property(sStateMatch + " X");
-                                OSAE.ObjectProperty pY = screenObject.Property(sStateMatch + " Y");
+                                OSAE.ObjectProperty pZOrder = sImage.screenObject.Property("ZOrder");
+                                OSAE.ObjectProperty pX = sImage.screenObject.Property(sStateMatch + " X");
+                                OSAE.ObjectProperty pY = sImage.screenObject.Property(sStateMatch + " Y");
 
-                                if (File.Exists(sImage))
+                                this.Dispatcher.Invoke((Action)(() =>
                                 {
                                     Double dX = Convert.ToDouble(pX.Value);
+                                    Canvas.SetLeft(sImage, dX);
                                     Double dY = Convert.ToDouble(pY.Value);
+                                    Canvas.SetTop(sImage, dY);
                                     int dZ = Convert.ToInt32(pZOrder.Value);
-                                    byte[] byteArray = File.ReadAllBytes(sImage);
-                                    var imageStream = new MemoryStream(byteArray);
-
-
-                                    this.Dispatcher.Invoke((Action)(() =>
-                                    {
-                                        Canvas.SetLeft(dso.ScreenImage, dX);
-                                        Canvas.SetTop(dso.ScreenImage, dY);
-                                        Canvas.SetZIndex(dso.ScreenImage, dZ);
-                                        var bitmapImage = new BitmapImage();
-                                        bitmapImage.BeginInit();
-                                        bitmapImage.StreamSource = imageStream;
-                                        bitmapImage.EndInit();
-                                        dso.ScreenImage.Source = bitmapImage;
-                                    }));
-                                }
+                                    Canvas.SetZIndex(sImage, dZ);
+                                    sImage.Location.X = dX;
+                                    sImage.Location.Y = dY;
+                                }));
                             }
                         }
-                    }
-                }
-                #endregion
-
-                #region CONTROL PROPERTY LABEL
-                else if (dso.Control_Type == "CONTROL PROPERTY LABEL")
-                {
-                    dso.Object_Name = OSAEApi.GetObjectProperty(dso.Control_Name, "Object Name");
-                    String sPropertyName = OSAEApi.GetObjectProperty(dso.Control_Name, "Property Name");
-                    dso.Property_Name = sPropertyName;
-                    String sPropertyValue = OSAEApi.GetObjectProperty(dso.Object_Name, sPropertyName);
-                    String sBackColor = OSAEApi.GetObjectProperty(dso.Control_Name, "Back Color");
-                    String sForeColor = OSAEApi.GetObjectProperty(dso.Control_Name, "Fore Color");
-                    String sPrefix = OSAEApi.GetObjectProperty(dso.Control_Name, "Prefix");
-                    String sSuffix = OSAEApi.GetObjectProperty(dso.Control_Name, "Suffix");
-                    String iFontSize = OSAEApi.GetObjectProperty(dso.Control_Name, "Font Size");
-                    String sFontName = OSAEApi.GetObjectProperty(dso.Control_Name, "Font Name");
-                    OSAE.ObjectProperty pX = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "X");
-                    OSAE.ObjectProperty pY = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Y");
-                    Double dX = Convert.ToDouble(pX.Value);
-                    Canvas.SetLeft(dso.ScreenLabel, dX);
-                    Double dY = Convert.ToDouble(pY.Value);
-                    Canvas.SetTop(dso.ScreenLabel, dY);
-                    try
-                    {
-                        if (sPropertyValue != "")
-                        {
-                            if (sBackColor != "")
-                            {
-                                BrushConverter conv = new BrushConverter();
-                                SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
-                                dso.ScreenLabel.Background = brush;
-                            }
-                            if (sForeColor != "")
-                            {
-                                BrushConverter conv = new BrushConverter();
-                                SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
-                                dso.ScreenLabel.Foreground = brush;
-                            }
-                            if (iFontSize != "")
-                            {
-                                dso.ScreenLabel.FontSize = Convert.ToDouble(iFontSize);
-                            }
-                            dso.ScreenLabel.Content = sPrefix + sPropertyValue + sSuffix;
-                            dso.Object_State = "";
-                        }
-                        else
-                        {
-                            dso.ScreenLabel.Content = "";
-                        }
-                    }
-                    catch (Exception myerror)
-                    {
                     }
                 }
                 #endregion
 
 
             }
+            
+
+                //#region CONTROL PROPERTY LABEL
+                //else if (dso.Control_Type == "CONTROL PROPERTY LABEL")
+                //{
+                //    dso.Object_Name = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Object Name").Value;
+                //    String sPropertyName = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Property Name").Value;
+                //    dso.Property_Name = sPropertyName;
+                //    String sPropertyValue = OSAEApi.GetObjectPropertyValue(dso.Object_Name, sPropertyName).Value;
+                //    String sBackColor = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Back Color").Value;
+                //    String sForeColor = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Fore Color").Value;
+                //    String sPrefix = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Prefix").Value;
+                //    String sSuffix = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Suffix").Value;
+                //    String iFontSize = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Font Size").Value;
+                //    String sFontName = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Font Name").Value;
+                //    OSAE.ObjectProperty pX = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "X");
+                //    OSAE.ObjectProperty pY = OSAEApi.GetObjectPropertyValue(dso.Control_Name, "Y");
+                //    Double dX = Convert.ToDouble(pX.Value);
+                //    Canvas.SetLeft(dso.ScreenLabel, dX);
+                //    Double dY = Convert.ToDouble(pY.Value);
+                //    Canvas.SetTop(dso.ScreenLabel, dY);
+                //    try
+                //    {
+                //        if (sPropertyValue != "")
+                //        {
+                //            if (sBackColor != "")
+                //            {
+                //                BrushConverter conv = new BrushConverter();
+                //                SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
+                //                dso.ScreenLabel.Background = brush;
+                //            }
+                //            if (sForeColor != "")
+                //            {
+                //                BrushConverter conv = new BrushConverter();
+                //                SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
+                //                dso.ScreenLabel.Foreground = brush;
+                //            }
+                //            if (iFontSize != "")
+                //            {
+                //                dso.ScreenLabel.FontSize = Convert.ToDouble(iFontSize);
+                //            }
+                //            dso.ScreenLabel.Content = sPrefix + sPropertyValue + sSuffix;
+                //            dso.Object_State = "";
+                //        }
+                //        else
+                //        {
+                //            dso.ScreenLabel.Content = "";
+                //        }
+                //    }
+                //    catch (Exception myerror)
+                //    {
+                //    }
+                //}
+                //#endregion
+
+
+            
             
         }
 
@@ -610,59 +592,194 @@ namespace GUI2
             }
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void canvas1_MouseDown(object sender, RoutedEventArgs e)
-        {
-        }
-
         private void canvas1_RightButtonDown(object sender, RoutedEventArgs e)
         {
             //mnuMain. = true;
         }
 
-        private void State_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
+        private void Navigaton_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
         {
-            Image iImage = (Image)sender;
-            bool iResults = false;
+            OSAE.UI.Controls.NavigationImage navCtrl = (OSAE.UI.Controls.NavigationImage)sender;
+            gCurrentScreen = navCtrl.screenName;
+            aScreenObject.Clear();
+            canGUI.Children.Clear();
+            Load_Screen(gCurrentScreen);
+        }
 
-            foreach (ScreenObject dso in aScreenObject)
+        #region Drag Events
+        void DragSource_Drop(dynamic sender, DragEventArgs e)
+        {
+            IDataObject data = e.Data;
+
+            if (data.GetDataPresent(DataFormats.Text))
             {
-                if (dso.Object_Name == iImage.Tag)
+                int newX = Convert.ToInt32(e.GetPosition(DragScope).X - (beingDragged.ActualWidth / 2));
+                int newY = Convert.ToInt32(e.GetPosition(DragScope).Y - (beingDragged.ActualHeight / 2));
+
+                Canvas.SetLeft(beingDragged, newX);
+                Canvas.SetTop(beingDragged, newY);
+
+                beingDragged.Location = new Point(newX, newY);
+                
+                if(beingDragged.GetType() == typeof(OSAE.UI.Controls.StateImage))
                 {
-                    if (dso.Object_State.ToUpper() == "ON")
+                    string stateMatch = "";
+
+                    foreach (OSAE.ObjectProperty p in beingDragged.screenObject.Properties)
                     {
-                        List<string> methods = OSAEApi.GetObjectByName(dso.Object_Name).Methods;
-                        foreach(string m in methods)
+                        if (p.Value.ToLower() == beingDragged.ObjectState.ToLower())
                         {
-                            if(m == "ON")
-                                iResults = true;
+                            stateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
                         }
-                        if (iResults)
-                            OSAEApi.MethodQueueAdd(dso.Object_Name, "OFF", "", "");
-                        else
-                            OSAEApi.ObjectStateSet(dso.Object_Name, "OFF");
+                        double a;
+
+                        OSAEApi.ObjectPropertySet(beingDragged.screenObject.Name, stateMatch + " X", newX.ToString());
+                        OSAEApi.ObjectPropertySet(beingDragged.screenObject.Name, stateMatch + " Y", newY.ToString());
                     }
-                    else
+                }
+                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.NavigationImage))
+                {
+                    OSAEApi.ObjectPropertySet(beingDragged.screenObject.Name, "X", newX.ToString());
+                    OSAEApi.ObjectPropertySet(beingDragged.screenObject.Name, "Y", newY.ToString());
+                }
+                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.VideoStreamViewer))
+                {
+                    OSAEApi.ObjectPropertySet(beingDragged.screenObject.Name, "X", newX.ToString());
+                    OSAEApi.ObjectPropertySet(beingDragged.screenObject.Name, "Y", newY.ToString());
+                }
+                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.Weather))
+                {
+                    OSAEApi.ObjectPropertySet(beingDragged.screenObject.Name, "X", newX.ToString());
+                    OSAEApi.ObjectPropertySet(beingDragged.screenObject.Name, "Y", newY.ToString());
+                }
+            }
+        }
+
+        void DragSource_PreviewMouseMove(dynamic sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && !IsDragging)
+            {
+                foreach (Type t in controlTypes)
+                {
+                    if (t == sender.GetType())
                     {
-                        List<string> methods = OSAEApi.GetObjectByName(dso.Object_Name).Methods;
-                        foreach (string m in methods)
+                        Point position = e.GetPosition(null);
+
+                        double width = sender.ActualWidth;
+                        double height = sender.ActualHeight;
+                        double x = sender.Location.X;
+                        double y = sender.Location.Y;
+                        
+                        if (
+                                (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) 
+                            &&
+                                (sender.Location.X < _startPoint.X && _startPoint.X < (sender.Location.X + sender.ActualWidth)) 
+                            &&
+                                (sender.Location.Y < _startPoint.Y && _startPoint.Y < (sender.Location.Y + sender.ActualHeight))
+                           )
                         {
-                            if (m == "OFF")
-                                iResults = true;
+                            beingDragged = (UIElement)sender;
+                            StartDragInProcAdorner(e, sender);
                         }
-                        if (iResults)
-                            OSAEApi.MethodQueueAdd(dso.Object_Name, "ON", "", "");
-                        else
-                            OSAEApi.ObjectStateSet(dso.Object_Name, "ON");
                     }
                 }
             }
         }
 
+        void DragSource_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _startPoint = e.GetPosition(DragScope);
+        }
+
+        private void StartDragInProcAdorner(MouseEventArgs e, dynamic sender)
+        {
+
+            // Let's define our DragScope .. In this case it is every thing inside our main window .. 
+            DragScope = this.canGUI as FrameworkElement;
+            System.Diagnostics.Debug.Assert(DragScope != null);
+
+            // We enable Drag & Drop in our scope ...  We are not implementing Drop, so it is OK, but this allows us to get DragOver 
+            bool previousDrop = DragScope.AllowDrop;
+            DragScope.AllowDrop = true;
+
+            // Let's wire our usual events.. 
+            // GiveFeedback just tells it to use no standard cursors..  
+
+            //GiveFeedbackEventHandler feedbackhandler = new GiveFeedbackEventHandler(DragSource_GiveFeedback);
+            //this.DragSource.GiveFeedback += feedbackhandler;
+
+            // The DragOver event ... 
+            DragEventHandler draghandler = new DragEventHandler(Window1_DragOver);
+            DragScope.DragOver += draghandler;
+
+            // Drag Leave is optional, but write up explains why I like it .. 
+            DragEventHandler dragleavehandler = new DragEventHandler(DragScope_DragLeave);
+            DragScope.DragLeave += dragleavehandler;
+
+            // QueryContinue Drag goes with drag leave... 
+            QueryContinueDragEventHandler queryhandler = new QueryContinueDragEventHandler(DragScope_QueryContinueDrag);
+            DragScope.QueryContinueDrag += queryhandler;
+
+            //Here we create our adorner.. 
+            _adorner = new DragAdorner(DragScope, (UIElement)sender, true, 0.5);
+            _layer = AdornerLayer.GetAdornerLayer(DragScope as Visual);
+            _layer.Add(_adorner);
+
+
+            IsDragging = true;
+            _dragHasLeftScope = false;
+            //Finally lets drag drop 
+            DataObject data = new DataObject(System.Windows.DataFormats.Text.ToString(), "abcd");
+            DragDropEffects de = DragDrop.DoDragDrop(this.canGUI, data, DragDropEffects.Move);
+
+            // Clean up our mess :) 
+            DragScope.AllowDrop = previousDrop;
+            AdornerLayer.GetAdornerLayer(DragScope).Remove(_adorner);
+            _adorner = null;
+
+            //DragSource.GiveFeedback -= feedbackhandler;
+            DragScope.DragLeave -= dragleavehandler;
+            DragScope.QueryContinueDrag -= queryhandler;
+
+
+            IsDragging = false;
+        }
+
+        void Window1_DragOver(object sender, DragEventArgs args)
+        {
+            if (_adorner != null)
+            {
+                _adorner.LeftOffset = args.GetPosition(DragScope).X /* - _startPoint.X */ ;
+                _adorner.TopOffset = args.GetPosition(DragScope).Y /* - _startPoint.Y */ ;
+            }
+        }
+
+        void DragScope_DragLeave(object sender, DragEventArgs e)
+        {
+            if (e.OriginalSource == DragScope)
+            {
+                Point p = e.GetPosition(DragScope);
+                Rect r = VisualTreeHelper.GetContentBounds(DragScope);
+                if (!r.Contains(p))
+                {
+                    this._dragHasLeftScope = true;
+                    e.Handled = true;
+                }
+            }
+
+        }
+
+        void DragScope_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
+        {
+            if (this._dragHasLeftScope)
+            {
+                e.Action = DragAction.Cancel;
+                e.Handled = true;
+            }
+
+        }
+
+        #endregion
     }
 
     public class ScreenObject

@@ -18,3 +18,13 @@ D:\OSA SVN\Plugins\OSAE.Phidget-RFID\obj\Debug\GenerateResource.write.1.tlog
 D:\OSA SVN\Plugins\OSAE.Phidget-RFID\obj\Debug\OSAE.Phidget-RFID.dll
 D:\OSA SVN\Plugins\OSAE.Phidget-RFID\obj\Debug\OSAE.Phidget-RFID.xml
 D:\OSA SVN\Plugins\OSAE.Phidget-RFID\obj\Debug\OSAE.Phidget-RFID.pdb
+D:\GIT\Open-Source-Automation\output\AddIns\Phidget-RFID\Phidget-RFID.osapd
+D:\GIT\Open-Source-Automation\output\AddIns\Phidget-RFID\OSAE.Phidget-RFID.dll
+D:\GIT\Open-Source-Automation\output\AddIns\Phidget-RFID\OSAE.Phidget-RFID.pdb
+D:\GIT\Open-Source-Automation\output\AddIns\Phidget-RFID\OSAE.Phidget-RFID.xml
+D:\GIT\Open-Source-Automation\Plugins\OSAE.Phidget-RFID\obj\Debug\OSAE.Phidget-RFID.vbprojResolveAssemblyReference.cache
+D:\GIT\Open-Source-Automation\Plugins\OSAE.Phidget-RFID\obj\Debug\OSAE.Phidget_RFID.Resources.resources
+D:\GIT\Open-Source-Automation\Plugins\OSAE.Phidget-RFID\obj\Debug\OSAE.Phidget-RFID.vbproj.GenerateResource.Cache
+D:\GIT\Open-Source-Automation\Plugins\OSAE.Phidget-RFID\obj\Debug\OSAE.Phidget-RFID.dll
+D:\GIT\Open-Source-Automation\Plugins\OSAE.Phidget-RFID\obj\Debug\OSAE.Phidget-RFID.xml
+D:\GIT\Open-Source-Automation\Plugins\OSAE.Phidget-RFID\obj\Debug\OSAE.Phidget-RFID.pdb

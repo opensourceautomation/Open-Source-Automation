@@ -4,15 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using OSAE;
 
 
 namespace OSAE.Service
 {
+    
     /// <summary>
     /// Safely identifies assemblies within a designated plugin directory that contain qualifying plugin types.
     /// </summary>
     internal class PluginFinder : MarshalByRefObject
     {
+        Logging2 log = Logging2.GetLogger("PluginFinder");
         OSAE osae = new OSAE("Service");
         internal const string PluginPath = "Plugins";
 

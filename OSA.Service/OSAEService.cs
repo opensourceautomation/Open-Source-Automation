@@ -45,9 +45,11 @@
         /// The Main Thread: This is where your Service is Run.
         /// </summary>
         static void Main(string[] args) 
-        {
+        {          
             if (args.Length > 0)
             {
+                
+
                 OSAE osacl = new OSAE("OSACL");
                 Logging commandLineLogging = new Logging("OSACL");
 
@@ -70,6 +72,7 @@
         public OSAEService()
         {
             logging.AddToLog("Service Starting", true);
+           
 
             try
             {
@@ -104,7 +107,9 @@
 //#endif
 
             try
-            {                
+            {
+                
+
                 IPHostEntry ipEntry = Dns.GetHostByName(Common.ComputerName);
                 IPAddress[] addr = ipEntry.AddressList;
                 _computerIP = addr[0].ToString();
@@ -127,21 +132,26 @@
             }
 
             logging.AddToLog("OnStart", true);
+            
+            Logging2 log = Logging2.GetLogger("test3");
+            log.AddToLog("just in", true);
+
             logging.AddToLog("Removing orphaned methods", true);
 
             try
             {
-                MySqlConnection connection = new MySqlConnection(Common.ConnectionString);
-                connection.Open();
-                MySqlCommand command = new MySqlCommand();
-                command.Connection = connection;
-                command.CommandText = "SET sql_safe_updates=0; DELETE FROM osae_method_queue;";
-                osae.RunQuery(command);
-                connection.Close();
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+                {
+                    connection.Open();
+                    MySqlCommand command = new MySqlCommand();
+                    command.Connection = connection;
+                    command.CommandText = "SET sql_safe_updates=0; DELETE FROM osae_method_queue;";
+                    osae.RunQuery(command);
+                }
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error clearing method queue", true);
+                logging.AddToLog("Error clearing method queue details: \r\n" + ex.Message, true);
             }
 
             logging.AddToLog("Creating Computer object", true);

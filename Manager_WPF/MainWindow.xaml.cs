@@ -25,7 +25,7 @@
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
         ServiceController myService = new ServiceController();
         WCFServiceReference.WCFServiceClient wcfObj;
-        OSAE osae = new OSAE("Manager_WPF");
+        OSAE osae = null;
 
         /// <summary>
         /// Used to get access to the logging facility
@@ -51,7 +51,6 @@
                     {
                         filename = System.IO.Path.GetFileName(System.IO.Path.GetFullPath(args[0]));
 
-
                         if (filename.EndsWith("osapp", StringComparison.Ordinal))
                         {
                             // its a plugin package
@@ -66,8 +65,6 @@
                     application.InitializeComponent();
                     application.Run();
                 }
-
-
 
                 // Allow single instance code to perform cleanup operations
                 SingleInstance<App>.Cleanup();
@@ -88,6 +85,17 @@
         {
             //imgUpdate.Source = (ImageSource)FindResource("upgrade.png");
 
+            // Test the connection to the DB is valid before we start else the UI will
+            // hang when it tries to connect
+            if (!Common.TestConnection())
+            {
+                MessageBox.Show("The OSA DB could not be contacted, Please ensure the correct address is specified and the DB is available");
+                return;
+            }
+
+            // don't initialise this until we know we can get a connection
+            osae = new OSAE("Manager_WPF");
+
             loadPlugins();
 
             if (connectToService())
@@ -95,8 +103,6 @@
                 Thread thread = new Thread(() => messageHost("info", "connected"));
                 thread.Start();
             }
-
-            
             
             try
             {
@@ -241,8 +247,7 @@
         }
 
         private void CheckService(object sender, EventArgs e)
-        {
-            
+        {            
             string svcStatus = myService.Status.ToString();
 
             if (svcStatus == "Running")
@@ -363,43 +368,6 @@
                 }));
         }
 
-        //private void StartStopService()
-        //{
-        //    btnService.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
-        //    {
-        //        //setButton(btnService.Content.ToString(), false);
-        //        this.btnService.IsEnabled = false;
-        //        if (btnService.Content.ToString() == "Stop")
-        //        {
-        //            //client.Close();
-        //            setLabel(Brushes.Red, "STOPPING...");
-        //            try
-        //            {
-        //                myService.Stop();
-        //                myService.WaitForStatus(ServiceControllerStatus.Stopped);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                logging.AddToLog("Error stopping service: " + ex.Message, true);
-        //            }
-        //        }
-        //        else if (btnService.Content.ToString() == "Start")
-        //        {
-        //            setLabel(Brushes.Green, "STARTING...");
-        //            System.TimeSpan ts = new TimeSpan(0, 0, 30);
-        //            try
-        //            {
-        //                myService.Start();
-        //                myService.WaitForStatus(ServiceControllerStatus.Running, ts);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                logging.AddToLog("Error starting service: " + ex.Message, true);
-        //            }
-        //        }
-        //    }));
-        //}
-
         void HandleRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(e.Uri.ToString());
@@ -455,8 +423,7 @@
                 }
             //});
         }
-
-
+        
         private void btnService_Click(object sender, RoutedEventArgs e)
         {
             if (btnService.Content.ToString() == "Stop")
@@ -488,9 +455,7 @@
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
                 m_WorkerThreadStart.Start(); 
-            }
-
-
+            }            
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -579,9 +544,7 @@
                     }
                 }
                 OSAEObject obj = osae.GetObjectByName(pd.Name);
-                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
-
-                
+                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);                
             }
             catch (Exception ex)
             {
@@ -614,9 +577,7 @@
                     }
                 }
                 OSAEObject obj = osae.GetObjectByName(pd.Name);
-                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);
-
-                
+                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);                
             }
             catch (Exception ex)
             {
@@ -674,8 +635,5 @@
             LogWindow l = new LogWindow();
             l.ShowDialog();
         }
-
     }
-
-
 }

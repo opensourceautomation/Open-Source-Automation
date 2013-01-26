@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
     <Grid>
-        <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FFFFFFFE" Focusable="True" MouseDown="canvas1_MouseDown" MouseLeftButtonDown ="canvas1_RightButtonDown">
+        <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FFFFFFFE" Focusable="True" MouseRightButtonDown="canvas1_RightButtonDown">
             <Canvas.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Add"/>

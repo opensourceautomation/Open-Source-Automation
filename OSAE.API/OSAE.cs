@@ -1,4 +1,5 @@
-﻿namespace OSAE
+﻿using System;
+namespace OSAE
 {
     using System;
     using System.Collections.Generic;
@@ -1238,7 +1239,7 @@
             {
                 try
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_type=@ObjectType";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectType);
                     dataset = RunQuery(command);
 
@@ -1247,22 +1248,11 @@
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
                             obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-                            obj.State.Value = dr["state_label"].ToString();
+                            obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
-                            DataSet ds = GetObjectProperties(obj.Name);
-                            List<ObjectProperty> props = new List<ObjectProperty>();
-                            foreach (DataRow drp in ds.Tables[0].Rows)
-                            {
-                                ObjectProperty p = new ObjectProperty();
-                                p.Name = drp["property_name"].ToString();
-                                p.Value = drp["property_value"].ToString();
-                                p.DataType = drp["property_datatype"].ToString();
-                                p.LastUpdated = drp["last_updated"].ToString();
-                                p.Id = drp["object_property_id"].ToString();
-                                props.Add(p);
-                            }
-                            obj.Properties = props;
+                            
+                            obj.Properties = GetObjectProperties(obj.Name);
                             obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
@@ -1293,7 +1283,7 @@
             {
                 try
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE base_type=@ObjectType";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE base_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectBaseType);
                     dataset = RunQuery(command);
 
@@ -1302,22 +1292,11 @@
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
                             obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-                            obj.State.Value = dr["state_label"].ToString();
+                            obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
-                            DataSet ds = GetObjectProperties(obj.Name);
-                            List<ObjectProperty> props = new List<ObjectProperty>();
-                            foreach (DataRow drp in ds.Tables[0].Rows)
-                            {
-                                ObjectProperty p = new ObjectProperty();
-                                p.Name = drp["property_name"].ToString();
-                                p.Value = drp["property_value"].ToString();
-                                p.DataType = drp["property_datatype"].ToString();
-                                p.LastUpdated = drp["last_updated"].ToString();
-                                p.Id = drp["object_property_id"].ToString();
-                                props.Add(p);
-                            }
-                            obj.Properties = props;
+                            
+                            obj.Properties = GetObjectProperties(obj.Name);
                             obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
@@ -1341,7 +1320,7 @@
             List<OSAEObject> objects = new List<OSAEObject>();
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
+                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
                 command.Parameters.AddWithValue("@ObjectOwner", ObjectOwner);
                 dataset = RunQuery(command);
 
@@ -1350,22 +1329,11 @@
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
                         obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-                        obj.State.Value = dr["state_label"].ToString();
+                        obj.State.Value = dr["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
-                        DataSet ds = GetObjectProperties(obj.Name);
-                        List<ObjectProperty> props = new List<ObjectProperty>();
-                        foreach (DataRow drp in ds.Tables[0].Rows)
-                        {
-                            ObjectProperty p = new ObjectProperty();
-                            p.Name = drp["property_name"].ToString();
-                            p.Value = drp["property_value"].ToString();
-                            p.DataType = drp["property_datatype"].ToString();
-                            p.LastUpdated = drp["last_updated"].ToString();
-                            p.Id = drp["object_property_id"].ToString();
-                            props.Add(p);
-                        }
-                        obj.Properties = props;
+                        
+                        obj.Properties = GetObjectProperties(obj.Name);
                         obj.Methods = GetObjectMethods(obj.Name);
                         objects.Add(obj);
                     }
@@ -1394,10 +1362,10 @@
             try
             {
                 if (ContainerName == "")
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
                 else
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
                     command.Parameters.AddWithValue("@ContainerName", ContainerName);
                 }
                 dataset = RunQuery(command);
@@ -1406,23 +1374,12 @@
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
                         obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-                        obj.State.Value = dr["state_label"].ToString();
+                        obj.State.Value = dr["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
                         obj.LastUpd = dr["last_updated"].ToString();
-                        DataSet ds = GetObjectProperties(obj.Name);
-                        List<ObjectProperty> props = new List<ObjectProperty>();
-                        foreach (DataRow drp in ds.Tables[0].Rows)
-                        {
-                            ObjectProperty p = new ObjectProperty();
-                            p.Name = drp["property_name"].ToString();
-                            p.Value = drp["property_value"].ToString();
-                            p.DataType = drp["property_datatype"].ToString();
-                            p.LastUpdated = drp["last_updated"].ToString();
-                            p.Id = drp["object_property_id"].ToString();
-                            props.Add(p);
-                        }
-                        obj.Properties = props;
+
+                        obj.Properties = GetObjectProperties(obj.Name);
                         obj.Methods = GetObjectMethods(obj.Name);
                         objects.Add(obj);
                     }
@@ -1450,29 +1407,18 @@
 
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
+                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
                 command.Parameters.AddWithValue("@Address", address);
                 dataset = RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
                     obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
-                    obj.State.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
+                    obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
-                    DataSet ds = GetObjectProperties(obj.Name);
-                    List<ObjectProperty> props = new List<ObjectProperty>();
-                    foreach (DataRow drp in ds.Tables[0].Rows)
-                    {
-                        ObjectProperty p = new ObjectProperty();
-                        p.Name = drp["property_name"].ToString();
-                        p.Value = drp["property_value"].ToString();
-                        p.DataType = drp["property_datatype"].ToString();
-                        p.LastUpdated = drp["last_updated"].ToString();
-                        p.Id = drp["object_property_id"].ToString();
-                        props.Add(p);
-                    }
-                    obj.Properties = props;
+
+                    obj.Properties = GetObjectProperties(obj.Name);
                     obj.Methods = GetObjectMethods(obj.Name);
                     return obj;
                 }
@@ -1498,29 +1444,18 @@
 
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_label, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
+                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
                 command.Parameters.AddWithValue("@Name", name);
                 dataset = RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
                     OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
-                    obj.State.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
+                    obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
-                    DataSet ds = GetObjectProperties(obj.Name);
-                    List<ObjectProperty> props = new List<ObjectProperty>();
-                    foreach (DataRow drp in ds.Tables[0].Rows)
-                    {
-                        ObjectProperty p = new ObjectProperty();
-                        p.Name = drp["property_name"].ToString();
-                        p.Value = drp["property_value"].ToString();
-                        p.DataType = drp["property_datatype"].ToString();
-                        p.LastUpdated = drp["last_updated"].ToString();
-                        p.Id = drp["object_property_id"].ToString();
-                        props.Add(p);
-                    }
-                    obj.Properties = props;
+
+                    obj.Properties = GetObjectProperties(obj.Name);
 
                     obj.Methods = GetObjectMethods(obj.Name);
 
@@ -1634,14 +1569,14 @@
 			{
 				using (MySqlCommand command = new MySqlCommand())
 				{
-					command.CommandText = "SELECT state_label, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@ObjectName";
+					command.CommandText = "SELECT state_name, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@ObjectName";
 					command.Parameters.AddWithValue("@ObjectName", ObjectName);
 					dataset = RunQuery(command);
 				}
 
 				if (dataset.Tables[0].Rows.Count > 0)
 				{
-					state.Value = dataset.Tables[0].Rows[0]["state_label"].ToString();
+					state.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
 					state.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
 
 					return state;
@@ -1662,7 +1597,7 @@
 				dataset.Dispose();
 			}
 		}
-
+        
         /// <summary>
         /// Returns the name of the plugin object of the specified type on the scecified machine.
         /// </summary>
@@ -1876,8 +1811,10 @@
             }
         }
 
-        private DataSet GetObjectProperties(string ObjectName)
+        private List<ObjectProperty> GetObjectProperties(string ObjectName)
         {
+            List<ObjectProperty> props = new List<ObjectProperty>();
+
             MySqlCommand command = new MySqlCommand();
             DataSet dataset = new DataSet();
             try
@@ -1886,12 +1823,22 @@
                 command.Parameters.AddWithValue("@ObjectName", ObjectName);
                 dataset = RunQuery(command);
 
-                return dataset;
+                foreach (DataRow drp in dataset.Tables[0].Rows)
+                {
+                    ObjectProperty p = new ObjectProperty();
+                    p.Name = drp["property_name"].ToString();
+                    p.Value = drp["property_value"].ToString();
+                    p.DataType = drp["property_datatype"].ToString();
+                    p.LastUpdated = drp["last_updated"].ToString();
+                    p.Id = drp["object_property_id"].ToString();
+                    props.Add(p);
+                }
+                return props;
             }
             catch (Exception ex)
             {
                 logging.AddToLog("API - GetObjectProperty error: " + ex.Message, true);
-                return dataset;
+                return props;
             }
         }
 

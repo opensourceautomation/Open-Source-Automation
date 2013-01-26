@@ -14,7 +14,7 @@ Imports System.Text
 
 <AddIn("AprilaireThermostat", Version:="0.3.1")>
 Public Class AprilaireThermostat
-    Implements IOpenSourceAutomationAddIn
+    Inherits OSAEPluginBase
     Private Shared OSAEApi As New OSAE("AprilaireThermostat")
     Private Shared AddInName As String
 
@@ -54,7 +54,7 @@ Public Class AprilaireThermostat
     Private Shared IPAddress As String
     Dim ThermostatObjects As List(Of OSAEObject)
 
-    Public Sub RunInterface(ByVal pluginName As String) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.RunInterface
+    Public Sub Overrides RunInterface(ByVal pluginName As String)
 
         Try
 
@@ -130,7 +130,7 @@ Public Class AprilaireThermostat
 
     End Sub
 
-    Public Sub ProcessCommand(ByVal CommandTable As System.Data.DataTable) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.ProcessCommand
+    Public Sub Overrides ProcessCommand(ByVal CommandTable As System.Data.DataTable)
         Dim CommandRow As DataRow
         Dim Command, Parameter1 As String
         CommandRow = CommandTable.Rows(0)

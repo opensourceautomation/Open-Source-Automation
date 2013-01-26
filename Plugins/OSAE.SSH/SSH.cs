@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.AddIn;
-using OpenSourceAutomation;
 using Tamir.SharpSsh;
 
 namespace OSAE.SSH
 {
-    [AddIn("SSH", Version="0.3.1")]
-    public class SSH : IOpenSourceAutomationAddIn
+    public class SSH : OSAEPluginBase
     {
         OSAE osae = new OSAE("SSH");
         string pName;
@@ -17,17 +14,15 @@ namespace OSAE.SSH
         string username = "";
         string password = "";
 
-        public void ProcessCommand(System.Data.DataTable table)
+        public override void ProcessCommand(OSAEMethod method)
         {
-            System.Data.DataRow row = table.Rows[0];
-            //process command
             try
             {
-                string[] tmp = row["parameter_1"].ToString().Split('/');
+                string[] tmp = method.Parameter1.Split('/');
                 server = tmp[0];
                 username = tmp[1];
                 password = tmp[2];
-                string command = row["parameter_2"].ToString();
+                string command = method.Parameter2;
                 osae.AddToLog("Sending command: " + command + " | " + server + " | " + username + " | " + password, false);
                 SshExec ssh = new SshExec(server, username, password);
                 ssh.Connect();
@@ -42,12 +37,12 @@ namespace OSAE.SSH
             }
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             pName = pluginName;
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             
         }

@@ -58,6 +58,8 @@
                 afm.ServeUnknownTypes(true, "php");
                 afm.AddCgiApplication("php", @"C:\php\php-cgi.exe");
 
+                
+
                 //Need both as Image path is not consistant in DB.
                 afm.AddVirtualDirectory("Images", Common.ApiPath + @"\Images");
                 afm.AddVirtualDirectory("/Images", Common.ApiPath + @"\Images");

@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\output\AddIns\OneWire\</OutputPath>
+    <OutputPath>..\..\output\Plugins\OneWire\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,18 +31,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AddInView">
-      <HintPath>..\..\output\AddInViews\AddInView.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="OneWireAPI.NET">
       <HintPath>.\OneWireAPI.NET.dll</HintPath>
     </Reference>
-    <Reference Include="OSAE.API">
-      <HintPath>..\..\output\lib\OSAE.API.dll</HintPath>
+    <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\output\OSAE.API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.AddIn" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />

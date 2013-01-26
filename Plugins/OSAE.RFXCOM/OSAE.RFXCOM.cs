@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO.Ports;
-using System.AddIn;
 using System.Globalization;
-using OpenSourceAutomation;
 
 namespace OSAE.RFXCOM
 {
-    [AddIn("RFXCOM", Version = "0.2.8")]
-    public class RFXCOM : IOpenSourceAutomationAddInv2
+    public class RFXCOM : OSAEPluginBase
     {
         OSAE osae = new OSAE("RFXCOM");
 
@@ -35,7 +32,7 @@ namespace OSAE.RFXCOM
         private bool LogActive = false;
         private byte[] TCPData = new byte[1025];
 
-        public void ProcessCommand(OSAEMethod method)
+        public override void ProcessCommand(OSAEMethod method)
         {
             osae.AddToLog("--------------Processing Command---------------", false);
             osae.AddToLog("Command: " + method.MethodName, false);
@@ -319,7 +316,7 @@ namespace OSAE.RFXCOM
             osae.AddToLog("-----------------------------------------------", false);
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             osae.AddToLog("Plugin version: 0.2.8", true);
             pName = pluginName;
@@ -337,7 +334,7 @@ namespace OSAE.RFXCOM
 
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
 
         }
@@ -2731,7 +2728,7 @@ namespace OSAE.RFXCOM
             double temp = Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2);
             string strTemp = "";
 
-            if (osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "Farenheit")
+            if (osae.GetObjectPropertyValue(pName, "Temp Units").Value.Trim() == "Farenheit")
             {
                 temp = (temp * 9 / 5) + 32;
                 strTemp = temp.ToString() + " °F";

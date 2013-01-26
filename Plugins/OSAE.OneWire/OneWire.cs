@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.AddIn;
 using System.Timers;
 using System.IO;
 using System.Runtime.InteropServices;
-using OpenSourceAutomation;
 
 using com.dalsemi.onewire;
 using com.dalsemi.onewire.adapter;
@@ -15,8 +13,7 @@ using com.dalsemi.onewire.utils;
 
 namespace OSAE.OneWire
 {
-    [AddIn("1Wire", Version = "0.2.4")]
-    public class OneWire : IOpenSourceAutomationAddIn
+    public class OneWire : OSAEPluginBase
     {
         [DllImport("kernel32", SetLastError = true)]
         static extern IntPtr LoadLibrary(string lpFileName);
@@ -32,12 +29,12 @@ namespace OSAE.OneWire
         Boolean restarting = false;
 
 
-        public void ProcessCommand(System.Data.DataTable table)
+        public override void ProcessCommand(OSAEMethod method)
         {
             //throw new NotImplementedException();
         }
 
-        public void RunInterface(string pluginName)
+        public override void RunInterface(string pluginName)
         {
             osae.AddToLog("Loading (0.2.4)...", true);
             osae.AddToLog("Current Environment Version: " + Environment.Version.Major.ToString(), true);
@@ -79,11 +76,6 @@ namespace OSAE.OneWire
                     restarting = false;
                 }
             }
-
-
-
-
-
             else
                 osae.AddToLog("Adapter(" + adapterProp + ") not found on port " + port, true);
 
@@ -97,9 +89,6 @@ namespace OSAE.OneWire
             {
                 lock (thisLock)
                 {
-
-
-
                     try
                     {
                         adapter.beginExclusive(true);
@@ -250,7 +239,7 @@ namespace OSAE.OneWire
             return Math.Round(temp, 1);
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             osae.AddToLog("Running shutdown logic", true);
             adapter.freePort();
