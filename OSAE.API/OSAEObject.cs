@@ -134,9 +134,9 @@
             }
         }
       
-        public List<ObjectProperty> Properties  { get ; set; }
+        public List<ObjectProperty> Properties  { get; set; }
             
-        public List<string> Methods  { get ; set; }
+        public List<string> Methods  { get; set; }
        
         private OSAE osae = new OSAE("API");
         #endregion

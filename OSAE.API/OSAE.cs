@@ -65,6 +65,9 @@
         /// <param name="parentProcess">The parent process</param>
         public OSAE(string parentProcess)
         {
+            Logging2 log = Logging2.GetLogger();
+            log.AddToLog("in API call", true);
+
             logging = new Logging(parentProcess);
             ModifyRegistry myRegistry = new ModifyRegistry();
             myRegistry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
@@ -155,11 +158,7 @@
                 try
                 {
                     //RunQuery(command);
-                    MySqlConnection connection = new MySqlConnection(connectionString = "SERVER=" + DBConnection + ";" +
-                        "DATABASE=" + DBName + ";" +
-                        "PORT=" + DBPort + ";" +
-                        "UID=" + DBUsername + ";" +
-                        "PASSWORD=" + DBPassword + ";");
+                    MySqlConnection connection = new MySqlConnection(Common.ConnectionString);
                     command.Connection = connection;
                     command.Connection.Open();
                     command.ExecuteNonQuery();
@@ -437,7 +436,7 @@
                 command.Parameters.AddWithValue("@System", System);
                 command.Parameters.AddWithValue("@Container", Container);
                 command.Parameters.AddWithValue("@HideRedundantEvents", HideRedundantEvents);
-                ///logging.AddToLog("@TypeOwner" + TypeOwner + "  @Container" + Container);
+
                 try
                 {
                     RunQuery(command);

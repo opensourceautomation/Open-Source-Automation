@@ -36,7 +36,7 @@
         {
             try
             {
-                OSAE osae = new OSAE("");
+                OSAE osae = new OSAE(string.Empty);
 
                 if (osae.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE" || alwaysLog)
                 {
@@ -83,7 +83,7 @@
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    OSAE osae = new OSAE("");
+                    OSAE osae = new OSAE(string.Empty);
                     command.CommandText = "CALL osae_sp_debug_log_add (@Entry,@Process)";
                     command.Parameters.AddWithValue("@Entry", entry);
                     command.Parameters.AddWithValue("@Process", callingProcess);
@@ -105,7 +105,7 @@
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                OSAE osae = new OSAE("");
+                OSAE osae = new OSAE(string.Empty);
                 command.CommandText = "CALL osae_sp_event_log_add (@ObjectName, @EventName, @FromObject, @DebugInfo, @Param1, @Param2)";
                 command.Parameters.AddWithValue("@ObjectName", objectName);
                 command.Parameters.AddWithValue("@EventName", eventName);
@@ -134,7 +134,7 @@
                 command.CommandText = "CALL osae_sp_event_log_clear";
                 try
                 {
-                    OSAE osae = new OSAE("");
+                    OSAE osae = new OSAE(string.Empty);
                     osae.RunQuery(command);
                 }
                 catch (Exception ex)

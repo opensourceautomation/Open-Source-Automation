@@ -85,17 +85,6 @@
         }
 
         /// <summary>
-        /// Adds a message to the log
-        /// </summary>
-        /// <param name="audit"></param>
-        /// <param name="alwaysLog"></param>
-        [System.Obsolete("use Logging class")]
-        public void AddToLog(string audit, bool alwaysLog)
-        {
-            logging.AddToLog(audit, alwaysLog);
-        }
-
-        /// <summary>
         /// Add an entry to the degug table
         /// </summary>
         /// <param name="entry">String to add to the debug table</param>

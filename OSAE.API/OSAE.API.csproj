@@ -50,7 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="Enums\DaysOfWeek.cs" />
     <Compile Include="Images\ImageManager.cs" />
     <Compile Include="Images\OSAEImage.cs" />
     <Compile Include="Logging.cs">
@@ -60,7 +62,8 @@
     <Compile Include="ObjectState.cs" />
     <Compile Include="OSAE.cs" />
     <Compile Include="OSAE.Obselete.cs" />
-    <Compile Include="OSAEMethod.cs" />
+    <Compile Include="OSAEMethods\OSAEMethod.cs" />
+    <Compile Include="OSAEMethods\OSAEMethodManager.cs" />
     <Compile Include="OSAEObject.cs" />
     <Compile Include="OSAEPluginBase.cs" />
     <Compile Include="OSAEScreenControl.cs" />
