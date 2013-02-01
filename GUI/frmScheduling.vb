@@ -18,7 +18,7 @@ Public Class frmScheduling
             CN.Open()
             CN.Close()
         Catch myerror As MySqlException
-            OSAEApi.AddToLog("Error Connecting to Database: " & myerror.Message, True)
+            logging.AddToLog("Error Connecting to Database: " & myerror.Message, True)
         End Try
     End Sub
 
@@ -203,7 +203,7 @@ Public Class frmScheduling
         ElseIf optMonthly.Checked = True Then
             OSAEApi.ScheduleRecurringAdd(txtName.Text, cboObject.Text, cboMethod.Text, txtParam1.Text, txtParam2.Text, cboPattern.Text, dtpTime.Value.ToString("HH:mm:ss"), Math.Abs(CInt(chkSunday.Checked)), Math.Abs(CInt(chkMonday.Checked)), Math.Abs(CInt(chkTuesday.Checked)), Math.Abs(CInt(chkWednesday.Checked)), Math.Abs(CInt(chkThursday.Checked)), Math.Abs(CInt(chkFriday.Checked)), Math.Abs(CInt(chkSaturday.Checked)), "M", 0, cboDay.Text, dtpSingle.Value.ToString("yyyy-MM-dd"))
         ElseIf optAnnual.Checked = True Then
-            ' OSAEApi.AddToLog("ScheduleRecurringAdd(" & txtName.Text & "," & cboObject.Text & "," & cboMethod.Text & "," & txtParam1.Text & "," & txtParam2.Text & "," & cboPattern.Text & "," & dtpTime.Value.ToString("HH:mm:ss") & "," & Math.Abs(CInt(chkSunday.Checked)) & "," & Math.Abs(CInt(chkMonday.Checked)) & "," & Math.Abs(CInt(chkTuesday.Checked)) & "," & Math.Abs(CInt(chkWednesday.Checked)) & "," & Math.Abs(CInt(chkThursday.Checked)) & "," & Math.Abs(CInt(chkFriday.Checked)) & "," & Math.Abs(CInt(chkSaturday.Checked)) & ",Y,0,0," & dtpAnnual.Value.ToString("yyyy-MM-dd") & "))", False)
+            ' logging.AddToLog("ScheduleRecurringAdd(" & txtName.Text & "," & cboObject.Text & "," & cboMethod.Text & "," & txtParam1.Text & "," & txtParam2.Text & "," & cboPattern.Text & "," & dtpTime.Value.ToString("HH:mm:ss") & "," & Math.Abs(CInt(chkSunday.Checked)) & "," & Math.Abs(CInt(chkMonday.Checked)) & "," & Math.Abs(CInt(chkTuesday.Checked)) & "," & Math.Abs(CInt(chkWednesday.Checked)) & "," & Math.Abs(CInt(chkThursday.Checked)) & "," & Math.Abs(CInt(chkFriday.Checked)) & "," & Math.Abs(CInt(chkSaturday.Checked)) & ",Y,0,0," & dtpAnnual.Value.ToString("yyyy-MM-dd") & "))", False)
             OSAEApi.ScheduleRecurringAdd(txtName.Text, cboObject.Text, cboMethod.Text, txtParam1.Text, txtParam2.Text, cboPattern.Text, dtpTime.Value.ToString("HH:mm:ss"), Math.Abs(CInt(chkSunday.Checked)), Math.Abs(CInt(chkMonday.Checked)), Math.Abs(CInt(chkTuesday.Checked)), Math.Abs(CInt(chkWednesday.Checked)), Math.Abs(CInt(chkThursday.Checked)), Math.Abs(CInt(chkFriday.Checked)), Math.Abs(CInt(chkSaturday.Checked)), "Y", 0, 0, dtpAnnual.Value.ToString("yyyy-MM-dd"))
         End If
         Load_Queue()

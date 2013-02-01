@@ -101,7 +101,7 @@ Public Class ucWeather
                 imageBox.Image.Save(path)
 
             Catch ex As Exception
-                OSAEApi.AddToLog("Unable to download weather image " & url.OriginalString, True)
+                logging.AddToLog("Unable to download weather image " & url.OriginalString, True)
             End Try
         End If
     End Sub

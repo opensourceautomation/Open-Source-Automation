@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
+using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
-using System.IO;
-using System.Threading;
-using System.Windows.Threading;
-//using System.Drawing;
+
 namespace GUI2
 {
     /// <summary>
@@ -459,51 +452,51 @@ namespace GUI2
         {
             //List<OSAE.OSAEScreenControl> controls = OSAEApi.GetScreenControls(sScreen);
 
-            foreach (OSAE.OSAEScreenControl ctrl in controls)
-            {
-                #region CONTROL STATE IMAGE
-                if (ctrl.Control_Type == "CONTROL STATE IMAGE")
-                {
-                    foreach (OSAE.UI.Controls.StateImage sImage in stateImages)
-                    {
-                        if (ctrl.Object_Name == sImage.ObjectName)
-                        {
-                            if (ctrl.Object_State.ToLower() != sImage.ObjectState.ToLower())
-                            {
-                                sImage.ObjectState = ctrl.Object_State;
-                                sImage.Update();
-                                String sStateMatch = "";
+            //foreach (OSAE.OSAEScreenControl ctrl in controls)
+            //{
+            //    #region CONTROL STATE IMAGE
+            //    if (ctrl.Control_Type == "CONTROL STATE IMAGE")
+            //    {
+            //        foreach (OSAE.UI.Controls.StateImage sImage in stateImages)
+            //        {
+            //            if (ctrl.Object_Name == sImage.ObjectName)
+            //            {
+            //                if (ctrl.Object_State.ToLower() != sImage.ObjectState.ToLower())
+            //                {
+            //                    sImage.ObjectState = ctrl.Object_State;
+            //                    sImage.Update();
+            //                    String sStateMatch = "";
 
-                                foreach (OSAE.ObjectProperty p in sImage.screenObject.Properties)
-                                {
-                                    if (p.Value.ToLower() == ctrl.Object_State.ToLower())
-                                    {
-                                        sStateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
-                                    }
-                                }
-                                OSAE.ObjectProperty pZOrder = sImage.screenObject.Property("ZOrder");
-                                OSAE.ObjectProperty pX = sImage.screenObject.Property(sStateMatch + " X");
-                                OSAE.ObjectProperty pY = sImage.screenObject.Property(sStateMatch + " Y");
+            //                    foreach (OSAE.ObjectProperty p in sImage.screenObject.Properties)
+            //                    {
+            //                        if (p.Value.ToLower() == ctrl.Object_State.ToLower())
+            //                        {
+            //                            sStateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
+            //                        }
+            //                    }
+            //                    OSAE.ObjectProperty pZOrder = sImage.screenObject.Property("ZOrder");
+            //                    OSAE.ObjectProperty pX = sImage.screenObject.Property(sStateMatch + " X");
+            //                    OSAE.ObjectProperty pY = sImage.screenObject.Property(sStateMatch + " Y");
 
-                                this.Dispatcher.Invoke((Action)(() =>
-                                {
-                                    Double dX = Convert.ToDouble(pX.Value);
-                                    Canvas.SetLeft(sImage, dX);
-                                    Double dY = Convert.ToDouble(pY.Value);
-                                    Canvas.SetTop(sImage, dY);
-                                    int dZ = Convert.ToInt32(pZOrder.Value);
-                                    Canvas.SetZIndex(sImage, dZ);
-                                    sImage.Location.X = dX;
-                                    sImage.Location.Y = dY;
-                                }));
-                            }
-                        }
-                    }
-                }
-                #endregion
+            //                    this.Dispatcher.Invoke((Action)(() =>
+            //                    {
+            //                        Double dX = Convert.ToDouble(pX.Value);
+            //                        Canvas.SetLeft(sImage, dX);
+            //                        Double dY = Convert.ToDouble(pY.Value);
+            //                        Canvas.SetTop(sImage, dY);
+            //                        int dZ = Convert.ToInt32(pZOrder.Value);
+            //                        Canvas.SetZIndex(sImage, dZ);
+            //                        sImage.Location.X = dX;
+            //                        sImage.Location.Y = dY;
+            //                    }));
+            //                }
+            //            }
+            //        }
+            //    }
+            //    #endregion
 
 
-            }
+            //}
             
 
                 //#region CONTROL PROPERTY LABEL
