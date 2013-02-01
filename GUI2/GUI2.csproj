@@ -11,7 +11,8 @@
     <RootNamespace>GUI2</RootNamespace>
     <AssemblyName>GUI2</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -74,10 +75,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\output\lib\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\output\OSAE.API.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -129,6 +126,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -136,8 +134,12 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OSAE.API\OSAE.API.csproj">
+      <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
+      <Name>OSAE.API</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OSAE.UI.Controls\OSAE.UI.Controls.csproj">
-      <Project>{503092c1-23fe-4ad8-b855-cf1d24d632a9}</Project>
+      <Project>{503092C1-23FE-4AD8-B855-CF1D24D632A9}</Project>
       <Name>OSAE.UI.Controls</Name>
     </ProjectReference>
   </ItemGroup>

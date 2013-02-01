@@ -107,33 +107,24 @@ delimiter $$
 DROP VIEW IF EXISTS osae_v_screen_object CASCADE$$
 CREATE OR REPLACE DEFINER = 'osae'@'%' VIEW osae_v_screen_object
 AS
-SELECT `so`.`screen_object_id` AS `screen_object_id`
-     , `so`.`screen_id` AS `screen_id`
-     , `so`.`object_id` AS `object_id`
-     , `so`.`control_id` AS `control_id`
-     , `screen`.`object_name` AS `screen_name`
-     , `control`.`object_name` AS `control_name`
-     , `o`.`object_name` AS `object_name`
-     , `controltype`.`object_type` AS `control_type`
-     , `controlbasetype`.`object_type` AS `control_base_type`
-     , `o`.`last_updated` AS `last_updated`
-     , `o`.`last_state_change` AS `last_state_change`
-     , timestampdiff(MINUTE, `o`.`last_state_change`, now()) AS `time_in_state`
-     , `state`.`state_name`
-FROM
-  (((((`osae_screen_object` `so`
-JOIN `osae_object` `screen`
-ON ((`screen`.`object_id` = `so`.`screen_id`)))
-JOIN `osae_object` `control`
-ON ((`control`.`object_id` = `so`.`control_id`)))
-JOIN `osae_object_type` `controltype`
-ON ((`controltype`.`object_type_id` = `control`.`object_type_id`)))
-JOIN `osae_object_type` `controlbasetype`
-ON ((`controlbasetype`.`object_type_id` = `controltype`.`base_type_id`)))
-JOIN `osae_object` `o`
-ON ((`o`.`object_id` = `so`.`object_id`))
-JOIN `osae_object_type_state` `state`
-ON ((`o`.`state_id` = `state`.`state_id`)))
+select so.screen_object_id AS screen_object_id
+     , so.screen_id AS screen_id
+     , so.object_id AS object_id
+     , so.control_id AS control_id
+     , screen.object_name AS screen_name
+     , co.object_name AS control_name
+     , oo.object_name AS object_name
+     , ot.object_type AS control_type
+     , oo.last_updated AS last_updated
+     , oo.last_state_change AS last_state_change
+     , timestampdiff(MINUTE, oo.last_state_change, now()) AS time_in_state
+     , ots.state_name AS state_name 
+  from osae_screen_object so
+  inner join osae_object screen on screen.object_id = so.screen_id
+  inner join osae_object oo on so.object_id = oo.object_id
+  inner join osae_object co on so.control_id = co.object_id
+  inner join osae_object_type ot on ot.object_type_id = co.object_type_id
+  left join osae_object_type_state ots on ots.state_id = oo.state_id
 $$
 
 delimiter $$

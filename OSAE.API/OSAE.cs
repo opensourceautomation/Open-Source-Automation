@@ -1488,12 +1488,14 @@ namespace OSAE
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
                         ctrl = new OSAEScreenControl();
-                        ctrl.Object_State = dr["state_name"].ToString();
-                        ctrl.Object_State_Time = Convert.ToInt64(dr["time_in_state"]).ToString();
-                        ctrl.Control_Name = dr["control_name"].ToString();
-                        ctrl.Control_Type = dr["control_type"].ToString();
-                        ctrl.Object_Last_Updated = dr["last_updated"].ToString();
-                        ctrl.Object_Name = dr["object_name"].ToString();
+                        ctrl.ObjectState = dr["state_name"].ToString();
+
+
+                        ctrl.TimeInState = Convert.ToInt64(dr["time_in_state"]).ToString();
+                        ctrl.ControlName = dr["control_name"].ToString();
+                        ctrl.ControlType = dr["control_type"].ToString();
+                        ctrl.LastUpdated = DateTime.Parse(dr["last_updated"].ToString());
+                        ctrl.ObjectName = dr["object_name"].ToString();
 
                         controls.Add(ctrl);
                     }

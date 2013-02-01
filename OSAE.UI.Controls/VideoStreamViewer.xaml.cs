@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MjpegProcessor;
 
 namespace OSAE.UI.Controls
@@ -22,12 +12,10 @@ namespace OSAE.UI.Controls
     {
         MjpegDecoder _mjpeg;
         public Point Location;
-        public OSAEObject screenObject { get; set; }
 
-        public VideoStreamViewer(string url, OSAEObject sObj)
+        public VideoStreamViewer(string url)
         {
             InitializeComponent();
-            screenObject = sObj;
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
             _mjpeg.ParseStream(new Uri(url));

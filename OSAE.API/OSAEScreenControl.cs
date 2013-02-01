@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace OSAE
+﻿namespace OSAE
 {
+    using System;
+
     public class OSAEScreenControl
     {
-        public string Control_Name { get; set; }
-        public string Control_Type { get; set; }
-        public string Object_Name { get; set; }
-        public string Object_State { get; set; }
-        public string Object_State_Time { get; set; }
-        public string Object_Last_Updated { get; set; }
+        public string ControlName { get; set; }
+        public string ControlType { get; set; }
+        public string ObjectName { get; set; }
+        public string ObjectState { get; set; }
+        public DateTime LastUpdated { get; set; }
+        public string TimeInState { get; set; }
     }
 }
