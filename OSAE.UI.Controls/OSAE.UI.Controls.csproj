@@ -74,6 +74,9 @@
       <DependentUpon>NavigationImage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyLabel.xaml.cs">
+      <DependentUpon>PropertyLabel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StateImage.xaml.cs">
       <DependentUpon>StateImage.xaml</DependentUpon>
     </Compile>
@@ -100,6 +103,10 @@
     <Page Include="NavigationImage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PropertyLabel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="StateImage.xaml">
       <SubType>Designer</SubType>

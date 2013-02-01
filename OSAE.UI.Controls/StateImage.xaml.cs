@@ -21,39 +21,40 @@ namespace OSAE.UI.Controls
     public partial class StateImage : UserControl
     {
         OSAE osae = new OSAE("GUI");
-
-        public string ObjectName { get; set; }
-        public string ObjectState { get; set; }
-        public string ObjectStateTime { get; set; }
         public OSAEObject screenObject { get; set; }
         public Point Location;
+        public DateTime LastUpdated;
 
-        private OSAEObject representedObject;
+        public string StateMatch;
+        public string CurState;
 
-        public StateImage(OSAEObject sObject, OSAEObject osaObject)
+        private string ObjectName;
+        private string ObjectStateTime;
+        
+        
+        public StateImage(OSAEObject sObject)
         {
             InitializeComponent();
 
             screenObject = sObject;
-            ObjectName = osaObject.Name;
-            representedObject = osaObject;
+            ObjectName = screenObject.Property("Object Name").Value;
+            CurState = osae.GetObjectStateValue(ObjectName).Value;
+
             Image.Tag = ObjectName;
             Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
 
-            ObjectStateTime = osaObject.LastUpd;
-            ObjectState = osaObject.State.Value;
+            //ObjectStateTime = stateObject.LastUpd;
 
-            string stateMatch = "";
             string imgPath;
             foreach (ObjectProperty p in screenObject.Properties)
             {
-                if (p.Value.ToLower() == representedObject.State.Value.ToLower())
+                if (p.Value.ToLower() == CurState.ToLower())
                 {
-                    stateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
+                    StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
                 }
             }
 
-            imgPath = osae.APIpath + screenObject.Property(stateMatch + " Image").Value;
+            imgPath = osae.APIpath + screenObject.Property(StateMatch + " Image").Value;
 
             if (File.Exists(imgPath))
             {
@@ -76,16 +77,20 @@ namespace OSAE.UI.Controls
 
         public void Update()
         {
-            string sStateMatch = "";
+            CurState = osae.GetObjectStateValue(ObjectName).Value;
 
             foreach (ObjectProperty p in screenObject.Properties)
             {
-                if (p.Value.ToLower() == ObjectState.ToLower())
+                if (p.Value.ToLower() == CurState.ToLower())
                 {
-                    sStateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
+                    StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
                 }
             }
-            String imagePath = screenObject.Property(sStateMatch + " Image").Value;
+            
+            Location.X = Double.Parse(screenObject.Property(StateMatch + " X").Value);
+            Location.Y = Double.Parse(screenObject.Property(StateMatch + " Y").Value);
+
+            String imagePath = screenObject.Property(StateMatch + " Image").Value;
             if (File.Exists(osae.APIpath + imagePath))
             {
                 imagePath = osae.APIpath + imagePath;
@@ -113,31 +118,15 @@ namespace OSAE.UI.Controls
         {
             bool iResults = false;
 
-            if (ObjectState == "ON")
+            if (CurState == "ON")
             {
-                List<string> methods = representedObject.Methods;
-                foreach (string m in methods)
-                {
-                    if (m == "ON")
-                        iResults = true;
-                }
-                if (iResults)
-                    osae.MethodQueueAdd(ObjectName, "OFF", "", "");
-                else
-                    osae.ObjectStateSet(ObjectName, "OFF");
+                osae.MethodQueueAdd(ObjectName, "OFF", "", "");
+                osae.ObjectStateSet(ObjectName, "OFF");
             }
             else
             {
-                List<string> methods = representedObject.Methods;
-                foreach (string m in methods)
-                {
-                    if (m == "OFF")
-                        iResults = true;
-                }
-                if (iResults)
-                    osae.MethodQueueAdd(ObjectName, "ON", "", "");
-                else
-                    osae.ObjectStateSet(ObjectName, "ON");
+                osae.MethodQueueAdd(ObjectName, "ON", "", "");
+                osae.ObjectStateSet(ObjectName, "ON");
             }
             
         }
