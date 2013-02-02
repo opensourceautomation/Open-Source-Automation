@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
-
-namespace Manager_WPF
+﻿namespace Manager_WPF
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Documents;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using System.Windows.Shapes;
+    using System.IO;
+    using ICSharpCode.SharpZipLib.Zip;
+    using OSAE;
+
     /// <summary>
     /// Interaction logic for InstallPlugin.xaml
     /// </summary>
@@ -26,7 +27,7 @@ namespace Manager_WPF
         private PluginDescription desc = new PluginDescription();
         private Image MyPluginImage = null;
         public bool install = false;
-        OSAE.OSAE osae = new OSAE.OSAE("Manager_WPF");
+        OSAE osae = new OSAE("Manager_WPF");
         #endregion
 
         public InstallPlugin(string Sendfilename)

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Xml;
-using System.IO;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.Remoting.Lifetime;
-
-namespace OSAE.Service
+﻿namespace OSAE.Service
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Xml;
+
     [Serializable]
     public class Plugin
     {
+        Logging2 log = Logging2.GetLogger("Plugin");
+
         private string _pluginName;
         private string _pluginType;
         private string _pluginVersion;
@@ -22,6 +22,11 @@ namespace OSAE.Service
         private AppDomain _domain;
         private OSAEPluginBase _plugin;
 
+        /// <summary>
+        /// Provides access to logging
+        /// </summary>
+        Logging logging = new Logging("Plugin");
+        
         #region Properties
         //public Assembly Assembly;
 
@@ -103,7 +108,7 @@ namespace OSAE.Service
         {
             try
             {
-                osae.AddToLog("Activating Plugin: " + PluginName, true);
+                logging.AddToLog("Activating Plugin: " + PluginName, true);
                 _plugin = (OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
                 _plugin.InitializeLifetimeService();
 
@@ -112,20 +117,20 @@ namespace OSAE.Service
             }
             catch(Exception ex)
             {
-                osae.AddToLog("Error activating plugin (" + PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
+                logging.AddToLog("Error activating plugin (" + PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
                 _enabled = false;
                 return false;
             }
             catch
             {
-                osae.AddToLog("Error activating plugin", true);
+                logging.AddToLog("Error activating plugin", true);
                 return false;
             }
         }
 
         private void Domain_UnhandledException(object source, System.UnhandledExceptionEventArgs e)
         {
-            osae.AddToLog(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString(), true);
+            logging.AddToLog(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString(), true);
             AppDomain.Unload(_domain);
             
         }
@@ -134,30 +139,30 @@ namespace OSAE.Service
         {
             try
             {
-                osae.AddToLog("Shutting down " + PluginName, true);
+                logging.AddToLog("Shutting down " + PluginName, true);
                 _plugin.Shutdown();
                 AppDomain.Unload(_domain);
                 return true;
             }
             catch(Exception ex)
             {
-                osae.AddToLog(PluginName + " - Shutdown Error: " + ex.Message, true);
+                logging.AddToLog(PluginName + " - Shutdown Error: " + ex.Message, true);
                 return false;
             }
         }
 
         public void RunInterface()
         {
-            osae.AddToLog(PluginName + " - Running interface.", false);
+            logging.AddToLog(PluginName + " - Running interface.", false);
             try
             {
                 _plugin.RunInterface(PluginName);
             }
             catch (Exception ex)
             {
-                osae.AddToLog(PluginName + " - Run Interface Error: " + ex.Message, true);
+                logging.AddToLog(PluginName + " - Run Interface Error: " + ex.Message, true);
             }
-            osae.AddToLog(PluginName + " - Moving on...", false);
+            logging.AddToLog(PluginName + " - Moving on...", false);
         }
 
         public void ExecuteCommand(OSAEMethod method)
@@ -168,7 +173,7 @@ namespace OSAE.Service
             }
             catch (Exception ex)
             {
-                osae.AddToLog(PluginName + " - Process Command Error: " + ex.Message, true);
+                logging.AddToLog(PluginName + " - Process Command Error: " + ex.Message, true);
             }
         }
     }

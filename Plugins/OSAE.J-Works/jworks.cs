@@ -11,12 +11,11 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Timers;
-using OpenSourceAutomation;
 
 namespace OSAE.JWorks
 {
     [AddIn("JWorks", Version="1.0")]
-    public class jworks : IOpenSourceAutomationAddIn
+    public class jworks : OSAEPluginBase
     {
         // Sadly, we have to use classic Interop to access the J-Works DLLs.  They have managed DLLs, but they are
         // mixed-mode .Net 2.0 that won't load in OSA, even with the activation policy hack.

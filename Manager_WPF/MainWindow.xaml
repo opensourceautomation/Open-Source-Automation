@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Manager_WPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Open Source Automation - Manager" Height="663" Width="702" Loaded="Window_Loaded" Closing="Window_Closing" StateChanged="Window_StateChanged">
+        Title="Open Source Automation - Manager" Height="663" Width="702" Loaded="Window_Loaded" Closing="Window_Closing" StateChanged="Window_StateChanged" Icon="/OSAE.Manager;component/Resources/icon_3_32x32x32.png">
     <DockPanel Width="Auto" 
             Height="Auto" LastChildFill="True">
         <Menu Width="Auto" Height="20" 

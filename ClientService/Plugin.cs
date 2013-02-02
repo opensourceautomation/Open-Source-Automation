@@ -1,11 +1,12 @@
-﻿using System;
-using System.Xml;
-using System.IO;
-using System.Collections.Generic;
-using System.Reflection;
-
-namespace ClientService
+﻿namespace ClientService
 {
+    using System;
+    using System.Xml;
+    using System.IO;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using OSAE;
+
     [Serializable]
     public class Plugin
     {
@@ -17,9 +18,15 @@ namespace ClientService
         private string _location;
         private bool _enabled;
         private string _latestAvailableVersion;
-        private OSAE.OSAE osae = new OSAE.OSAE("Plugin");
+        private OSAE osae = new OSAE("Plugin");
+
+        /// <summary>
+        /// Provides access to logging
+        /// </summary>
+        Logging logging = new Logging("Plugin");
+
         private AppDomain _domain;
-        private OSAE.OSAEPluginBase _plugin;
+        private OSAEPluginBase _plugin;
 
         #region Properties
         //public Assembly Assembly;
@@ -102,8 +109,8 @@ namespace ClientService
         {
             try
             {
-                osae.AddToLog("Activating Plugin: " + PluginName, true);
-                _plugin = (OSAE.OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
+                logging.AddToLog("Activating Plugin: " + PluginName, true);
+                _plugin = (OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
                 _plugin.InitializeLifetimeService();
 
                 _domain.UnhandledException += Domain_UnhandledException;
@@ -111,20 +118,20 @@ namespace ClientService
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error activating plugin (" + PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
+                logging.AddToLog("Error activating plugin (" + PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
                 _enabled = false;
                 return false;
             }
             catch
             {
-                osae.AddToLog("Error activating plugin", true);
+                logging.AddToLog("Error activating plugin", true);
                 return false;
             }
         }
 
         private void Domain_UnhandledException(object source, System.UnhandledExceptionEventArgs e)
         {
-            osae.AddToLog(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString(), true);
+            logging.AddToLog(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString(), true);
             AppDomain.Unload(_domain);
 
         }
@@ -133,33 +140,33 @@ namespace ClientService
         {
             try
             {
-                osae.AddToLog("Shutting down " + PluginName, true);
+                logging.AddToLog("Shutting down " + PluginName, true);
                 _plugin.Shutdown();
                 AppDomain.Unload(_domain);
                 return true;
             }
             catch (Exception ex)
             {
-                osae.AddToLog(PluginName + " - Shutdown Error: " + ex.Message, true);
+                logging.AddToLog(PluginName + " - Shutdown Error: " + ex.Message, true);
                 return false;
             }
         }
 
         public void RunInterface()
         {
-            osae.AddToLog(PluginName + " - Running interface.", false);
+            logging.AddToLog(PluginName + " - Running interface.", false);
             try
             {
                 _plugin.RunInterface(PluginName);
             }
             catch (Exception ex)
             {
-                osae.AddToLog(PluginName + " - Run Interface Error: " + ex.Message, true);
+                logging.AddToLog(PluginName + " - Run Interface Error: " + ex.Message, true);
             }
-            osae.AddToLog(PluginName + " - Moving on...", false);
+            logging.AddToLog(PluginName + " - Moving on...", false);
         }
 
-        public void ExecuteCommand(OSAE.OSAEMethod method)
+        public void ExecuteCommand(OSAEMethod method)
         {
             try
             {
@@ -167,7 +174,7 @@ namespace ClientService
             }
             catch (Exception ex)
             {
-                osae.AddToLog(PluginName + " - Process Command Error: " + ex.Message, true);
+                logging.AddToLog(PluginName + " - Process Command Error: " + ex.Message, true);
             }
         }
     }

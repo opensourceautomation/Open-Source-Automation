@@ -13,9 +13,9 @@ Public Class frmScreens
         Try
             CN.Open()
             CN.Close()
-            OSAEApi.AddToLog("Connected to Database: " & OSAEApi.DBName & " @ " & OSAEApi.DBConnection & ":" & OSAEApi.DBPort, True)
+            logging.AddToLog("Connected to Database: " & OSAEApi.DBName & " @ " & OSAEApi.DBConnection & ":" & OSAEApi.DBPort, True)
         Catch myerror As MySqlException
-            OSAEApi.AddToLog("Error Connecting to Database: " & myerror.Message, True)
+            logging.AddToLog("Error Connecting to Database: " & myerror.Message, True)
         End Try
     End Sub
     Public Sub Load_Screens()

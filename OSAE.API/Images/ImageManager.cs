@@ -11,6 +11,11 @@
         OSAE osae = new OSAE("OSAE.API");
 
         /// <summary>
+        /// Used to get access to the logging facility
+        /// </summary>
+        private Logging logging = new Logging("OSAE.API");
+
+        /// <summary>
         /// Adds an image to the DB
         /// </summary>
         /// <param name="osaeImage">The image information to add</param>
@@ -59,9 +64,9 @@
         public OSAEImage GetImage(int imageId)
         {
             OSAEImage osaeImage = new OSAEImage();
-            if (API.Common.TestConnection())
+            if (Common.TestConnection())
             {
-                using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
                     MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images WHERE image_id = " + imageId, connection);
                     connection.Open();
@@ -77,7 +82,7 @@
                     }
                     else
                     {
-                        osae.AddToLog("API.Images - Failed to get requested image from DB: ", true);
+                        logging.AddToLog("API - Failed to get requested image from DB: ", true);
                     }
                 }
             }
@@ -93,9 +98,9 @@
         {
             List<OSAEImage> imageList = new List<OSAEImage>();
             
-            if (API.Common.TestConnection())
+            if (Common.TestConnection())
             {
-                using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
                     try
                     {
@@ -115,8 +120,7 @@
                     }
                     catch (Exception e)
                     {
-                        osae.AddToLog("API.Images - GetImageList - Failed \r\n\r\n" + e.Message, true);
-
+                        logging.AddToLog("API - GetImageList - Failed \r\n\r\n" + e.Message, true);
                     }
                 }
             }
@@ -132,9 +136,9 @@
         {
             List<OSAEImage> imageList = new List<OSAEImage>();
 
-            if (API.Common.TestConnection())
+            if (Common.TestConnection())
             {
-                using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
                     try
                     {
@@ -156,8 +160,7 @@
                     }
                     catch (Exception e)
                     {
-                        osae.AddToLog("API.Images - GetImages - Failed \r\n\r\n" + e.Message, true);
-
+                        logging.AddToLog("API - GetImages - Failed \r\n\r\n" + e.Message, true);
                     }
                 }
             }

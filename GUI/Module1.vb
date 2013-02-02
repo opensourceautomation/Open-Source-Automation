@@ -3,6 +3,7 @@ Module Module1
     Public CN As MySqlConnection
     Public CN2 As MySqlConnection
     Public OSAEApi As OSAE
+    Public logging As Logging
     Public aScreenObject() As ScreenObject
     Public iObjectCount As Integer, iStateImageCount As Integer, iPropertyLabelCount As Integer
     Public iStaticLabelCount As Integer, iMethodImageCount As Integer, iNavImageCount As Integer

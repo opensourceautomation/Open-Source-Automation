@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
-using ICSharpCode.SharpZipLib.Zip;
-
-namespace Manager_WPF
+﻿namespace Manager_WPF
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Windows.Forms;
+    using ICSharpCode.SharpZipLib.Zip;
+    using OSAE;
+
     /// <summary>
     /// Helper class used to install new plugins
     /// </summary>
     internal class PluginInstallerHelper
-    {
+    {         
         public static void InstallPlugin(string filepath)
         {
             string ErrorText = string.Empty;
@@ -40,7 +41,9 @@ namespace Manager_WPF
 
         public static bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
-            OSAE.OSAE osae = new OSAE.OSAE("Plugin Installer");
+            OSAE osae = new OSAE("Plugin Installer");
+            Logging logging = new Logging("Plugin Installer");
+
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
             if (Directory.Exists(exePath + "/tempDir/"))
             {
@@ -127,7 +130,7 @@ namespace Manager_WPF
                             }
                             catch (Exception ex)
                             {
-                                osae.AddToLog("Error running sql script: " + s + " | " + ex.Message, true);
+                                logging.AddToLog("Error running sql script: " + s + " | " + ex.Message, true);
                             }
                         }
 
@@ -166,7 +169,7 @@ namespace Manager_WPF
                         foreach (string str in delfiles)
                             System.IO.File.Delete(str);
 
-                        osae.AddToLog("Sending message to service to load plugin.", true);
+                        logging.AddToLog("Sending message to service to load plugin.", true);
                         using (MySql.Data.MySqlClient.MySqlCommand command = new MySql.Data.MySqlClient.MySqlCommand())
                         {
                             command.CommandText = "CALL osae_sp_method_queue_add (@pobject,@pmethod,@pparameter1,@pparameter2,@pfromobject,@pdebuginfo);";
@@ -182,7 +185,7 @@ namespace Manager_WPF
                             }
                             catch (Exception ex)
                             {
-                                osae.AddToLog("Error adding LOAD PLUGIN method: " + command.CommandText + " - error: " + ex.Message, true);
+                                logging.AddToLog("Error adding LOAD PLUGIN method: " + command.CommandText + " - error: " + ex.Message, true);
                             }
                         }
 

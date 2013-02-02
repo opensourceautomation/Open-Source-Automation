@@ -7,7 +7,7 @@ Imports MySql.Data.MySqlClient
 
 <AddIn("RCS Thermostat", Version:="0.1.2")>
 Public Class RCSThermostatManager
-    Implements IOpenSourceAutomationAddIn
+    Implements OSAEPluginBase
 
     Structure Thermostat
         Dim OutsideAir As Integer

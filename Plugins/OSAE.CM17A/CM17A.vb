@@ -9,7 +9,7 @@ Imports System.Threading.Thread
 
 <AddIn("CM17A", Version:="0.3.1")>
 Public Class CM17A
-    Implements IOpenSourceAutomationAddInv2
+    Inherits OSAEPluginBase
     Private OSAEApi As New OSAE("CM17A")
     'Private ComputerName As String
     Private COMPort As String
@@ -18,7 +18,7 @@ Public Class CM17A
     Dim ByteArray(4) As Byte
     Dim UnitByte(16) As Byte
 
-    Public Sub RunInterface(ByVal pluginName As String) Implements IOpenSourceAutomationAddInv2.RunInterface
+    Public Sub Overrides RunInterface(ByVal pluginName As String)
         Try
             OSAEApi.AddToLog("Initializing plugin: " & pluginName, True)
             'ComputerName = OSAEApi.ComputerName
@@ -31,7 +31,7 @@ Public Class CM17A
         End Try
     End Sub
 
-    Public Sub ProcessCommand(method As OSAEMethod) Implements IOpenSourceAutomationAddInv2.ProcessCommand
+    Public Sub Overrides ProcessCommand(method As OSAEMethod)
 
         Dim HouseCode As String
         Dim UnitCode As Integer

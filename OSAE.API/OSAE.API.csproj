@@ -8,7 +8,7 @@
     <ProjectGuid>{022F45F1-C988-41A1-A203-39E97BE928B6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OSAE.API</RootNamespace>
+    <RootNamespace>OSAE</RootNamespace>
     <AssemblyName>OSAE.API</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -51,13 +51,20 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="Enums\DaysOfWeek.cs" />
     <Compile Include="Images\ImageManager.cs" />
     <Compile Include="Images\OSAEImage.cs" />
+    <Compile Include="Logging.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ObjectProperty.cs" />
     <Compile Include="ObjectState.cs" />
     <Compile Include="OSAE.cs" />
-    <Compile Include="OSAEMethod.cs" />
+    <Compile Include="OSAE.Obselete.cs" />
+    <Compile Include="OSAEMethods\OSAEMethod.cs" />
+    <Compile Include="OSAEMethods\OSAEMethodManager.cs" />
     <Compile Include="OSAEObject.cs" />
     <Compile Include="OSAEPluginBase.cs" />
     <Compile Include="OSAEScreenControl.cs" />

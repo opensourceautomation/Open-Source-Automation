@@ -11,6 +11,11 @@ namespace OSAE.Jabber
         string pName;
         bool shuttingDown = false;
 
+        /// <summary>
+        /// Provides access to logging
+        /// </summary>
+        Logging logging = new Logging("Jabber");
+
         #region OSAPlugin Methods
         public override void RunInterface(string pluginName)
         {
@@ -26,7 +31,7 @@ namespace OSAE.Jabber
             xmppCon.OnClose += new ObjectHandler(xmppCon_OnClose);
             xmppCon.OnMessage += new agsXMPP.protocol.client.MessageHandler(xmppCon_OnMessage);
             
-            osae.AddToLog("Connecting to server...", true);
+            logging.AddToLog("Connecting to server...", true);
             connect();
         }
 
@@ -37,9 +42,9 @@ namespace OSAE.Jabber
                 //basically just need to send parameter two to the contact in parameter one with sendMessage();
                 //Process incomming command
                 string to = "";
-                osae.AddToLog("Process command: " + method.MethodName, false);
-                osae.AddToLog("Message: " + method.Parameter2, false);
-                osae.AddToLog("To: " + method.Parameter1, false);
+                logging.AddToLog("Process command: " + method.MethodName, false);
+                logging.AddToLog("Message: " + method.Parameter2, false);
+                logging.AddToLog("To: " + method.Parameter1, false);
                 ObjectProperty prop = osae.GetObjectPropertyValue(method.Parameter1, "JabberID");
                 if(prop != null)
                     to = prop.Value;
@@ -64,7 +69,7 @@ namespace OSAE.Jabber
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error processing command: " +ex.Message, true);
+                logging.AddToLog("Error processing command: " +ex.Message, true);
             }
         }
 
@@ -83,8 +88,8 @@ namespace OSAE.Jabber
             if (msg.Body == null)
                 return;
 
-            osae.AddToLog(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()), false);
-            osae.AddToLog("Message: " + msg.Body, false);
+            logging.AddToLog(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()), false);
+            logging.AddToLog("Message: " + msg.Body, false);
             string pattern = osae.MatchPattern(msg.Body);
             if(pattern != "")
                 osae.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, msg.From.Bare);
@@ -94,27 +99,27 @@ namespace OSAE.Jabber
 
         void xmppCon_OnClose(object sender)
         {
-            osae.AddToLog("OnClose Connection closed", true);
+            logging.AddToLog("OnClose Connection closed", true);
             if (!shuttingDown)
             {
-                osae.AddToLog("Connection closed unexpectedly.  Attempting reconnect...", true);
+                logging.AddToLog("Connection closed unexpectedly.  Attempting reconnect...", true);
                 connect();
             }
         }
 
         void xmppCon_OnError(object sender, Exception ex)
         {
-            osae.AddToLog("OnError", true);
+            logging.AddToLog("OnError", true);
         }
 
         void xmppCon_OnAuthError(object sender, agsXMPP.Xml.Dom.Element e)
         {
-            osae.AddToLog("OnAuthError", true);
+            logging.AddToLog("OnAuthError", true);
         }
 
         void xmppCon_OnPresence(object sender, agsXMPP.protocol.client.Presence pres)
         {
-            osae.AddToLog(String.Format("Received Presence from:{0} show:{1} status:{2}", pres.From.ToString(), pres.Show.ToString(), pres.Status), false);
+            logging.AddToLog(String.Format("Received Presence from:{0} show:{1} status:{2}", pres.From.ToString(), pres.Show.ToString(), pres.Status), false);
             List<OSAEObject> objects = osae.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
@@ -134,7 +139,7 @@ namespace OSAE.Jabber
         void xmppCon_OnRosterItem(object sender, agsXMPP.protocol.iq.roster.RosterItem item)
         {
             bool found = false;
-            osae.AddToLog(String.Format("Received Contact {0}", item.Jid.Bare), true);
+            logging.AddToLog(String.Format("Received Contact {0}", item.Jid.Bare), true);
             List<OSAEObject> objects = osae.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
@@ -156,7 +161,7 @@ namespace OSAE.Jabber
 
         void xmppCon_OnRosterEnd(object sender)
         {
-            osae.AddToLog("OnRosterEnd", true);
+            logging.AddToLog("OnRosterEnd", true);
 
             // Send our own presence to teh server, so other epople send us online
             // and the server sends us the presences of our contacts when they are
@@ -166,18 +171,18 @@ namespace OSAE.Jabber
 
         void xmppCon_OnRosterStart(object sender)
         {
-            osae.AddToLog("OnRosterStart", true);
+            logging.AddToLog("OnRosterStart", true);
         }
 
         void xmppCon_OnLogin(object sender)
         {
-            osae.AddToLog("OnLogin", true);
+            logging.AddToLog("OnLogin", true);
         }
         #endregion
 
         private void connect()
         {
-            osae.AddToLog("Connecting to server", true);
+            logging.AddToLog("Connecting to server", true);
             Jid jidUser = new Jid(osae.GetObjectPropertyValue(pName, "Username").Value);
 
             xmppCon.Username = jidUser.User;
@@ -191,13 +196,13 @@ namespace OSAE.Jabber
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error connecting: " + ex.Message, true);
+                logging.AddToLog("Error connecting: " + ex.Message, true);
             }
         }
 
         private void sendMessage(string message, string contact)
         {
-            osae.AddToLog("Sending message: '" + message + "' to " + contact, false);
+            logging.AddToLog("Sending message: '" + message + "' to " + contact, false);
             // Send a message
             agsXMPP.protocol.client.Message msg = new agsXMPP.protocol.client.Message();
             msg.Type = agsXMPP.protocol.client.MessageType.chat;

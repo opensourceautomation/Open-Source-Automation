@@ -1,5 +1,6 @@
-﻿namespace OSAE.API
+﻿namespace OSAE
 {
+    using System.Net;
     using MySql.Data.MySqlClient;
 
     /// <summary>
@@ -8,10 +9,35 @@
     public static class Common
     {
         /// <summary>
+        /// Gets the name of the computer running the code
+        /// </summary>
+        public static string ComputerName
+        {
+            get
+            {
+                return Dns.GetHostName();
+            }
+        }
+
+        /// <summary>
+        /// Gets the installation directory of OSAE
+        /// </summary>
+        public static string ApiPath
+        {
+            get
+            {
+                ModifyRegistry registry = new ModifyRegistry();
+                registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+
+                return registry.Read("INSTALLDIR");
+            }
+        }
+
+        /// <summary>
         /// Gets the connection string used to connect to the OSA DB
         /// </summary>
         /// <remarks>reads from the registry each time so that if the settings change the
-        /// service doesn't need to be restarted. If this creates performence issues then it
+        /// service doesn't need to be restarted. If this creates performance issues then it
         /// can be changed over to  a static string that reads once.</remarks>
         public static string ConnectionString
         {
@@ -19,23 +45,38 @@
             {
                 string connectionString = string.Empty;
                 
-                ModifyRegistry myRegistry = new ModifyRegistry();
-                myRegistry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+                ModifyRegistry registry = new ModifyRegistry();
+                registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
 
-                connectionString = "SERVER=" + myRegistry.Read("DBCONNECTION") + ";" +
-                    "DATABASE=" + myRegistry.Read("DBNAME") + ";" +
-                    "PORT=" + myRegistry.Read("DBPORT") + ";" +
-                    "UID=" + myRegistry.Read("DBUSERNAME") + ";" +
-                    "PASSWORD=" + myRegistry.Read("DBPASSWORD") + ";";
+                connectionString = "SERVER=" + registry.Read("DBCONNECTION") + ";" +
+                    "DATABASE=" + registry.Read("DBNAME") + ";" +
+                    "PORT=" + registry.Read("DBPORT") + ";" +
+                    "UID=" + registry.Read("DBUSERNAME") + ";" +
+                    "PASSWORD=" + registry.Read("DBPASSWORD") + ";";
 
                 return connectionString;
             }
         }
 
+        public static string DBConnection
+        {
+            get
+            {
+                string databaseConnection = string.Empty;
+
+                ModifyRegistry registry = new ModifyRegistry();
+                registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+
+                databaseConnection = registry.Read("DBCONNECTION");
+
+                return databaseConnection;
+            }
+        }
+
         /// <summary>
-        /// Test to see if we can get a successfull connection to the DB
+        /// Test to see if we can get a successful connection to the DB
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if connect success false otherwise</returns>
         public static bool TestConnection()
         {
             bool connectionStatus = true;
@@ -50,9 +91,7 @@
             catch
             {
                 connectionStatus = false;
-
-                OSAE osae = new OSAE("OSAE.API.Common.TestConnection");
-                osae.AddToLog("API - Cannot run query - bad connection: ", true);
+                new Logging("OSAE.API").AddToLog("API - Cannot run query - bad connection: ", true);
             }             
 
             return connectionStatus;

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.ServiceModel;
-using System.ServiceModel.Web;
-using OSAE;
-
-namespace OSAERest
+﻿namespace OSAERest
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.ServiceModel;
+    using System.ServiceModel.Web;
+    using OSAE;
     
     [ServiceContract]
     public interface IRestService
@@ -78,7 +77,7 @@ namespace OSAERest
 
     public class api : IRestService
     {
-        OSAE.OSAE osae = new OSAE.OSAE("WebService");
+        OSAE osae = new OSAE("WebService");
 
         public Object GetObject(string name)
         {

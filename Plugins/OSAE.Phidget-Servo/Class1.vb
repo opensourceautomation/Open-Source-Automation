@@ -2,7 +2,7 @@
 Imports OpenSourceAutomation
 <AddIn("Phidget-Servo", Version:="1.0.2")>
 Public Class PhidgetServo
-    Implements IOpenSourceAutomationAddIn
+    Implements OSAEPluginBase
     Private OSAEApi As New OSAE("Phidget-Servo")
     Private gAppName As String = ""
     Private gAttached As Boolean
