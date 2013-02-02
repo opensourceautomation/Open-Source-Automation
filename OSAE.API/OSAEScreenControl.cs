@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace OSAE
+﻿namespace OSAE
 {
+    using System;
+
     public class OSAEScreenControl
     {
         public string ControlName { get; set; }
@@ -12,5 +9,6 @@ namespace OSAE
         public string ObjectName { get; set; }
         public string ObjectState { get; set; }
         public DateTime LastUpdated { get; set; }
+        public string TimeInState { get; set; }
     }
 }

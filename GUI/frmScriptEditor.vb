@@ -28,7 +28,7 @@ Public Class frmScriptEditor
             CN.Open()
             CN.Close()
         Catch myerror As MySqlException
-            OSAEApi.AddToLog("Error Connecting to Database: " & myerror.Message, True)
+            logging.AddToLog("Error Connecting to Database: " & myerror.Message, True)
         End Try
     End Sub
     Private Sub btnRunScript_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnRunScript.Click

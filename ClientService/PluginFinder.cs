@@ -1,19 +1,19 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-
-
-namespace ClientService
+﻿namespace ClientService
 {
+    using OSAE;
+    using System;
+    using System.IO;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Reflection;
+
     /// <summary>
     /// Safely identifies assemblies within a designated plugin directory that contain qualifying plugin types.
     /// </summary>
     internal class PluginFinder : MarshalByRefObject
     {
-        OSAE.OSAE osae = new OSAE.OSAE("Service");
+        OSAE osae = new OSAE("Service");
         internal const string PluginPath = "Plugins";
 
         private readonly Type _pluginBaseType;
@@ -23,7 +23,7 @@ namespace ClientService
         /// </summary>
         public PluginFinder()
         {
-            _pluginBaseType = typeof(OSAE.OSAEPluginBase);
+            _pluginBaseType = typeof(OSAEPluginBase);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace ClientService
         {
             var result = new List<TypeLocator>();
 
-            foreach (var file in Directory.GetFiles(osae.APIpath + "\\" + PluginPath, "*.dll", SearchOption.AllDirectories))
+            foreach (var file in Directory.GetFiles(Common.ApiPath + "\\" + PluginPath, "*.dll", SearchOption.AllDirectories))
             {
                 try
                 {

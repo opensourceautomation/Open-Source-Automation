@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Net;
-using System.Windows;
-using MySql.Data.MySqlClient;
-
 namespace OSAE
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.IO;
+    using System.Net;
+    using MySql.Data.MySqlClient;
+
     /// <summary>
     /// API used to interact with the various components of OSA
     /// </summary>
@@ -20,6 +20,11 @@ namespace OSAE
         private object logLocker = new object();
         private string _parentProcess;
         private string connectionString = string.Empty;
+
+        /// <summary>
+        /// Used to get access to the logging facility
+        /// </summary>
+        private Logging logging;
 
         /// <summary>
         /// The installation folder of OSA
@@ -61,6 +66,10 @@ namespace OSAE
         /// <param name="parentProcess">The parent process</param>
         public OSAE(string parentProcess)
         {
+            Logging2 log = Logging2.GetLogger();
+            log.AddToLog("in API call", true);
+
+            logging = new Logging(parentProcess);
             ModifyRegistry myRegistry = new ModifyRegistry();
             myRegistry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
             DBConnection = myRegistry.Read("DBCONNECTION");
@@ -71,119 +80,7 @@ namespace OSAE
             ComputerName = Dns.GetHostName();
             _parentProcess = parentProcess;
             APIpath = myRegistry.Read("INSTALLDIR");
-        }      
-
-        /// <summary>
-        /// Adds a message to the log
-        /// </summary>
-        /// <param name="audit"></param>
-        /// <param name="alwaysLog"></param>
-        public void AddToLog(string audit, bool alwaysLog)
-        {
-            try
-            {
-                if (GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE" || alwaysLog)
-                {
-                    lock (logLocker)
-                    {
-                        string filePath = APIpath + "/Logs/" + _parentProcess + ".log";
-                        System.IO.FileInfo file = new System.IO.FileInfo(filePath);
-                        file.Directory.Create();
-                        StreamWriter sw = File.AppendText(filePath);
-                        sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - " + audit);
-                        sw.Close();
-                        if (GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
-                        {
-                            if (file.Length > 1000000)
-                                file.Delete();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                lock (logLocker)
-                {
-                    string filePath = APIpath + "/Logs/" + _parentProcess + ".log";
-                    System.IO.FileInfo file = new System.IO.FileInfo(filePath);
-                    file.Directory.Create();
-                    StreamWriter sw = File.AppendText(filePath);
-                    sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - LOGGING ERROR: " 
-                        + ex.Message + " - " + ex.InnerException);
-                    sw.Close();
-                    if (file.Length > 1000000)
-                        file.Delete();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Add an entry to the degug table
-        /// </summary>
-        /// <param name="entry">String to add to the debug table</param>
-        public void DebugLogAdd(string entry)
-        {
-            try
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.CommandText = "CALL osae_sp_debug_log_add (@Entry,@Process)";
-                    command.Parameters.AddWithValue("@Entry", entry);
-                    command.Parameters.AddWithValue("@Process", _parentProcess);
-                    RunQuery(command);
-                }
-            }
-            catch
-            {
-                // Not a lot we can do if it fails here
-            }
-        }
-
-        /// <summary>
-        /// Add an entry to the event log table
-        /// </summary>
-        /// <param name="objectName">Object Name</param>
-        /// <param name="eventName">Event Name</param>
-        public void EventLogAdd(string objectName, string eventName, string parameter1 = null, string parameter2 = null)
-        {
-            using (MySqlCommand command = new MySqlCommand())
-            {
-                command.CommandText = "CALL osae_sp_event_log_add (@ObjectName, @EventName, @FromObject, @DebugInfo, @Param1, @Param2)";
-                command.Parameters.AddWithValue("@ObjectName", objectName);
-                command.Parameters.AddWithValue("@EventName", eventName);
-                command.Parameters.AddWithValue("@FromObject", GetPluginName(_parentProcess, ComputerName));
-                command.Parameters.AddWithValue("@DebugInfo", null);
-                command.Parameters.AddWithValue("@Param1", parameter1);
-                command.Parameters.AddWithValue("@Param2", parameter2);
-                try
-                {
-                    RunQuery(command);
-                }
-                catch (Exception ex)
-                {
-                    AddToLog("API - EventLogAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Deletes everything from the event_log table
-        /// </summary>
-        public void EventLogClear()
-        {
-            using (MySqlCommand command = new MySqlCommand())
-            {
-                command.CommandText = "CALL osae_sp_event_log_clear";
-                try
-                {
-                    RunQuery(command);
-                }
-                catch (Exception ex)
-                {
-                    AddToLog("API - EventLogClear error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
-            }
-        }
+        }            
 
         /// <summary>
         /// Adds a method to the queue
@@ -209,7 +106,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - MethodQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - MethodQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -230,7 +127,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - MethodQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - MethodQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -262,25 +159,21 @@ namespace OSAE
                 try
                 {
                     //RunQuery(command);
-                    MySqlConnection connection = new MySqlConnection(connectionString = "SERVER=" + DBConnection + ";" +
-                        "DATABASE=" + DBName + ";" +
-                        "PORT=" + DBPort + ";" +
-                        "UID=" + DBUsername + ";" +
-                        "PASSWORD=" + DBPassword + ";");
+                    MySqlConnection connection = new MySqlConnection(Common.ConnectionString);
                     command.Connection = connection;
                     command.Connection.Open();
                     command.ExecuteNonQuery();
 
                     if (command.Parameters["?results"].Value.ToString() == "1")
-                        AddToLog("API - ObjectAdded successfully", true);
+                        logging.AddToLog("API - ObjectAdded successfully", true);
                     else if (command.Parameters["?results"].Value.ToString() == "2")
-                        AddToLog("API - ObjectAdd failed.  Object type doesn't exist.", true);
+                        logging.AddToLog("API - ObjectAdd failed.  Object type doesn't exist.", true);
                     else if (command.Parameters["?results"].Value.ToString() == "3")
-                        AddToLog("API - ObjectAdd failed.  Object with same name or address already exists", true);
+                        logging.AddToLog("API - ObjectAdd failed.  Object with same name or address already exists", true);
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -301,7 +194,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -322,7 +215,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectDeleteByAddress error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectDeleteByAddress error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -356,7 +249,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -382,7 +275,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectEventScriptAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectEventScriptAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -407,7 +300,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - ObjectEventScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                logging.AddToLog("API - ObjectEventScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
 
@@ -432,7 +325,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
+                logging.AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
 
@@ -457,7 +350,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ObjectStateSet error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ObjectStateSet error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -493,7 +386,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -514,7 +407,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -544,14 +437,14 @@ namespace OSAE
                 command.Parameters.AddWithValue("@System", System);
                 command.Parameters.AddWithValue("@Container", Container);
                 command.Parameters.AddWithValue("@HideRedundantEvents", HideRedundantEvents);
-                ///AddToLog("@TypeOwner" + TypeOwner + "  @Container" + Container);
+
                 try
                 {
                     RunQuery(command);
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -576,7 +469,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -599,7 +492,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -626,7 +519,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -655,7 +548,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -678,7 +571,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -711,8 +604,8 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                    AddToLog("osae_sp_object_type_method_update (" + oldName + "," + newName + "," + label + "," + objectType + "," + paramLabel1 + "," + paramLabel2 + ")", true);
+                    logging.AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("osae_sp_object_type_method_update (" + oldName + "," + newName + "," + label + "," + objectType + "," + paramLabel1 + "," + paramLabel2 + ")", true);
                 }
             }
         }
@@ -739,7 +632,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyAAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyAAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -762,7 +655,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -791,7 +684,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -810,7 +703,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -829,7 +722,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -849,7 +742,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -874,7 +767,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -897,7 +790,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -924,7 +817,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -952,7 +845,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectTypePropertyOptions error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectTypePropertyOptions error: " + ex.Message, true);
                 return dataset;
             }
         }
@@ -982,7 +875,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                logging.AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
 
@@ -1007,7 +900,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectPropertyArrayGetRandom error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectPropertyArrayGetRandom error: " + command.CommandText + " - error: " + ex.Message, true);
                     return "";
                 }
             }
@@ -1035,7 +928,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectPropertyArrayGetAll error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectPropertyArrayGetAll error: " + command.CommandText + " - error: " + ex.Message, true);
                     return dataset;
                 }
             }
@@ -1061,7 +954,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectPropertyArrayDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectPropertyArrayDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1084,7 +977,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ObjectPropertyArrayDeleteAll error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ObjectPropertyArrayDeleteAll error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1122,7 +1015,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1144,7 +1037,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1203,7 +1096,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleRecurringAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleRecurringAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1225,7 +1118,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleRecurringDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleRecurringDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1285,7 +1178,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("ScheduleRecurringUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("ScheduleRecurringUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1304,7 +1197,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - RunScheduledMethods error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - RunScheduledMethods error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1323,7 +1216,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - ProcessRecurring error: " + command.CommandText + " - error: " + ex.Message, true);
+                    logging.AddToLog("API - ProcessRecurring error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -1369,7 +1262,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - GetObjectsByType error: " + ex.Message, true);
+                    logging.AddToLog("API - GetObjectsByType error: " + ex.Message, true);
                     return objects;
                 }
             }
@@ -1413,7 +1306,7 @@ namespace OSAE
                 }
                 catch (Exception ex)
                 {
-                    AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                    logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
                     return objects;
                 }
             }        
@@ -1450,7 +1343,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
                 return objects;
             }
         }
@@ -1496,7 +1389,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectsByContainer error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectsByContainer error: " + ex.Message, true);
                 return objects;
             }
         }
@@ -1534,7 +1427,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectByAddress (" + address + ")error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectByAddress (" + address + ")error: " + ex.Message, true);
                 return obj;
             }
         }
@@ -1573,13 +1466,11 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectByName (" + name + ")error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectByName (" + name + ")error: " + ex.Message, true);
                 return null;
             }
         }
-        #endregion Object Getters
 
-        //#region Screen Controls
         public List<OSAEScreenControl> GetScreenControls(string screenName)
         {
             MySqlCommand command = new MySqlCommand();
@@ -1588,7 +1479,7 @@ namespace OSAE
             List<OSAEScreenControl> controls = new List<OSAEScreenControl>();
             try
             {
-                command.CommandText = "SELECT object_name, control_name, control_type, last_updated, state_name FROM osae_v_screen_object WHERE screen_name=@ScreenName";
+                command.CommandText = "SELECT object_name, control_name, control_type, state_name, last_updated, coalesce(time_in_state, 0) as time_in_state FROM osae_v_screen_object WHERE screen_name=@ScreenName";
                 command.Parameters.AddWithValue("@ScreenName", screenName);
                 dataset = RunQuery(command);
 
@@ -1597,11 +1488,14 @@ namespace OSAE
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
                         ctrl = new OSAEScreenControl();
+                        ctrl.ObjectState = dr["state_name"].ToString();
+
+
+                        ctrl.TimeInState = Convert.ToInt64(dr["time_in_state"]).ToString();
                         ctrl.ControlName = dr["control_name"].ToString();
                         ctrl.ControlType = dr["control_type"].ToString();
                         ctrl.LastUpdated = DateTime.Parse(dr["last_updated"].ToString());
                         ctrl.ObjectName = dr["object_name"].ToString();
-                        ctrl.ObjectState = dr["state_name"].ToString();
 
                         controls.Add(ctrl);
                     }
@@ -1611,12 +1505,13 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
                 return controls;
             }
         }
+		#endregion Object Getters
 
-        /// <summary>
+		/// <summary>
 		/// Returns an ObjectProperty whcih contains the value, type, ID, last updated, and name
 		/// </summary>
 		/// <param name="ObjectName"></param>
@@ -1658,7 +1553,7 @@ namespace OSAE
 			}
 			catch (Exception ex)
 			{
-				AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
+				logging.AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
 				return null;
 			}
 		}
@@ -1690,13 +1585,13 @@ namespace OSAE
 				}
 				else
 				{
-					AddToLog("API - GetObjectStateValue error: Object does not exist | ObjectName: " + ObjectName, true);
+					logging.AddToLog("API - GetObjectStateValue error: Object does not exist | ObjectName: " + ObjectName, true);
 					return null;
 				}
 			}
 			catch (Exception ex)
 			{
-				AddToLog("API - GetObjectStateValue error: " + ex.Message + " | ObjectName: " + ObjectName, true);
+				logging.AddToLog("API - GetObjectStateValue error: " + ex.Message + " | ObjectName: " + ObjectName, true);
 				return null;
 			}
 			finally
@@ -1739,7 +1634,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetPluginName error: " + ex.Message + " - objectType: " + objectType + " | machineName: " + machineName, true);
+                logging.AddToLog("API - GetPluginName error: " + ex.Message + " - objectType: " + objectType + " | machineName: " + machineName, true);
                 return string.Empty;
             }
         }
@@ -1764,7 +1659,7 @@ namespace OSAE
 				}
 				catch (Exception ex)
 				{
-					AddToLog("API - GetPluginSettings error: " + ex.Message, true);
+					logging.AddToLog("API - GetPluginSettings error: " + ex.Message, true);
 					return dataset;
 				}
 			}
@@ -1795,7 +1690,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - ObjectExists Error: " + ex.Message, true);
+                logging.AddToLog("API - ObjectExists Error: " + ex.Message, true);
                 return false;
             }
         }
@@ -1809,11 +1704,11 @@ namespace OSAE
         {           
             DataSet dataset = new DataSet();
             
-            if (API.Common.TestConnection())
+            if (Common.TestConnection())
             {
                 lock (locker)
                 {
-                    using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+                    using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                     {
                         MySqlDataAdapter adapter = new MySqlDataAdapter(command);
                         command.Connection = connection;                        
@@ -1833,12 +1728,12 @@ namespace OSAE
         {
             DataSet dataset = new DataSet();
 
-            using (MySqlConnection connection = new MySqlConnection(API.Common.ConnectionString))
+            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
             {
                 MySqlCommand command = new MySqlCommand(sql);
                 MySqlDataAdapter adapter;  
 
-                if (API.Common.TestConnection())
+                if (Common.TestConnection())
                 {
                     lock (locker)
                     {                        
@@ -1873,7 +1768,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - PatternParse error: " + ex.Message, true);
+                logging.AddToLog("API - PatternParse error: " + ex.Message, true);
                 return "";
             }
         }
@@ -1895,7 +1790,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - MatchPattern error: " + ex.Message, true);
+                logging.AddToLog("API - MatchPattern error: " + ex.Message, true);
                 return "";
             }
         }
@@ -1914,7 +1809,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - NamedScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                logging.AddToLog("API - NamedScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
 
@@ -1944,7 +1839,7 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectProperty error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectProperty error: " + ex.Message, true);
                 return props;
             }
         }
@@ -1972,25 +1867,11 @@ namespace OSAE
             }
             catch (Exception ex)
             {
-                AddToLog("API - GetObjectMethods error: " + ex.Message, true);
+                logging.AddToLog("API - GetObjectMethods error: " + ex.Message, true);
                 return methods;
             }
         }
-
     }
-
-   
-
-    
-
-    
-
-  
-
-  
-
-
-
 }
 
 

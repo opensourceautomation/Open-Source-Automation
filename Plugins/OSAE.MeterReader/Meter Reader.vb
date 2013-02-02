@@ -8,7 +8,7 @@ Imports MySql.Data.MySqlClient
 
 <AddIn("Meter Reader", Version:="0.1.0")>
 Public Class MeterReader
-    Implements IOpenSourceAutomationAddIn
+    Inherits OSAEPluginBase
     Private OSAEApi As New OSAE("Meter Reader")
     Private AddInName As String
     'Private ComputerName As String
@@ -28,7 +28,7 @@ Public Class MeterReader
     End Class
     Public Shared MeterDict As New Dictionary(Of Integer, Meter)
 
-    Public Sub RunInterface(ByVal pluginName As String) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.RunInterface
+    Public Sub RunInterface(ByVal pluginName As String) Implements OSAEPluginBase.RunInterface
 
         Try
             OSAEApi.AddToLog("Initializing plugin: " & pluginName, True)

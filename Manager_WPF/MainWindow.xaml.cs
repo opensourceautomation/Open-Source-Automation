@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.ServiceModel;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.ServiceProcess;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-namespace Manager_WPF
+﻿namespace Manager_WPF
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.ServiceModel;
+    using System.ServiceProcess;
+    using System.Threading;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Documents;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using System.Windows.Navigation;
+    using OSAE;
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -29,7 +25,13 @@ namespace Manager_WPF
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
         ServiceController myService = new ServiceController();
         WCFServiceReference.WCFServiceClient wcfObj;
-        OSAE.OSAE osae = new OSAE.OSAE("Manager_WPF");
+        OSAE osae = null;
+
+        /// <summary>
+        /// Used to get access to the logging facility
+        /// </summary>
+        private Logging logging = new Logging("Manager_WPF");
+
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
         private bool clicked = true;
@@ -49,7 +51,6 @@ namespace Manager_WPF
                     {
                         filename = System.IO.Path.GetFileName(System.IO.Path.GetFullPath(args[0]));
 
-
                         if (filename.EndsWith("osapp", StringComparison.Ordinal))
                         {
                             // its a plugin package
@@ -64,8 +65,6 @@ namespace Manager_WPF
                     application.InitializeComponent();
                     application.Run();
                 }
-
-
 
                 // Allow single instance code to perform cleanup operations
                 SingleInstance<App>.Cleanup();
@@ -86,6 +85,17 @@ namespace Manager_WPF
         {
             //imgUpdate.Source = (ImageSource)FindResource("upgrade.png");
 
+            // Test the connection to the DB is valid before we start else the UI will
+            // hang when it tries to connect
+            if (!Common.TestConnection())
+            {
+                MessageBox.Show("The OSA DB could not be contacted, Please ensure the correct address is specified and the DB is available");
+                return;
+            }
+
+            // don't initialise this until we know we can get a connection
+            osae = new OSAE("Manager_WPF");
+
             loadPlugins();
 
             if (connectToService())
@@ -93,8 +103,6 @@ namespace Manager_WPF
                 Thread thread = new Thread(() => messageHost("info", "connected"));
                 thread.Start();
             }
-
-            
             
             try
             {
@@ -147,17 +155,17 @@ namespace Manager_WPF
         {
             try
             {
-                EndpointAddress ep = new EndpointAddress("net.tcp://" + osae.DBConnection + ":8731/WCFService/");
+                EndpointAddress ep = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
                 InstanceContext context = new InstanceContext(this);
                 wcfObj = new WCFServiceReference.WCFServiceClient(context, "NetTcpBindingEndpoint", ep);
                 wcfObj.Subscribe();
-                osae.AddToLog("Connected to Service", true);
+                logging.AddToLog("Connected to Service", true);
                 //reloadPlugins();
                 return true;
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
+                logging.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
                 return false;
             }
         }
@@ -176,7 +184,7 @@ namespace Manager_WPF
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error messaging host: " + ex.Message, true);
+                logging.AddToLog("Error messaging host: " + ex.Message, true);
             }
         }
 
@@ -210,11 +218,11 @@ namespace Manager_WPF
                 else
                     imgUpdate.Visibility = System.Windows.Visibility.Hidden;
 
-                string pluginPath = osae.APIpath + "\\Plugins\\" + p.Path + "\\";
+                string pluginPath = Common.ApiPath + "\\Plugins\\" + p.Path + "\\";
                 string[] paths = System.IO.Directory.GetFiles(pluginPath, "Screenshot*");
 
-                osae.AddToLog("Plugin path: " + pluginPath, true);
-                osae.AddToLog("paths length: " + paths.Length.ToString(), true);
+                logging.AddToLog("Plugin path: " + pluginPath, true);
+                logging.AddToLog("paths length: " + paths.Length.ToString(), true);
                 if (paths.Length > 0)
                 {
                     // load the image, specify CacheOption so the file is not locked
@@ -234,13 +242,12 @@ namespace Manager_WPF
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error loading details: " + ex.Message, true);
+                logging.AddToLog("Error loading details: " + ex.Message, true);
             }
         }
 
         private void CheckService(object sender, EventArgs e)
-        {
-            
+        {            
             string svcStatus = myService.Status.ToString();
 
             if (svcStatus == "Running")
@@ -268,7 +275,7 @@ namespace Manager_WPF
                 setButton("Start", true);
                 if (!clicked)
                 {
-                    osae.AddToLog("Service died.  Attempting to restart.", true);
+                    logging.AddToLog("Service died.  Attempting to restart.", true);
                     clicked = false;
                     System.Threading.Thread.Sleep(5000);
                     Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
@@ -282,7 +289,7 @@ namespace Manager_WPF
         {
             pluginList = new BindingList<PluginDescription>();
             List<string> osapdFiles = new List<string>();
-            string[] pluginFile = Directory.GetFiles(osae.APIpath + "\\Plugins", "*.osapd", SearchOption.AllDirectories);
+            string[] pluginFile = Directory.GetFiles(Common.ApiPath + "\\Plugins", "*.osapd", SearchOption.AllDirectories);
             osapdFiles.AddRange(pluginFile);
 
             foreach (string path in osapdFiles)
@@ -293,10 +300,10 @@ namespace Manager_WPF
                     desc.Deserialize(path);
                     desc.Status = "Stopped";
                     desc.Enabled = false;
-                    List<OSAE.OSAEObject> objs = osae.GetObjectsByType(desc.Type);
-                    foreach (OSAE.OSAEObject o in objs)
+                    List<OSAEObject> objs = osae.GetObjectsByType(desc.Type);
+                    foreach (OSAEObject o in objs)
                     {
-                        if (osae.GetObjectPropertyValue(o.Name, "Computer Name").Value == osae.ComputerName || desc.Type == o.Name)
+                        if (osae.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
                         {
                             desc.Name = o.Name;
                             if (o.Enabled == 1)
@@ -322,7 +329,7 @@ namespace Manager_WPF
             catch (Exception ex)
             {
                 MessageBox.Show("Error stopping service.  Make sure you are running Manager as Administrator");
-                osae.AddToLog("Error starting service: " + ex.Message, true);
+                logging.AddToLog("Error starting service: " + ex.Message, true);
                 starting = false;
             }
         }
@@ -339,7 +346,7 @@ namespace Manager_WPF
             catch (Exception ex)
             {
                 MessageBox.Show("Error stopping service.  Make sure you are running Manager as Administrator");
-                osae.AddToLog("Error stopping service: " + ex.Message, true);
+                logging.AddToLog("Error stopping service: " + ex.Message, true);
             }
         }
 
@@ -361,43 +368,6 @@ namespace Manager_WPF
                 }));
         }
 
-        //private void StartStopService()
-        //{
-        //    btnService.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
-        //    {
-        //        //setButton(btnService.Content.ToString(), false);
-        //        this.btnService.IsEnabled = false;
-        //        if (btnService.Content.ToString() == "Stop")
-        //        {
-        //            //client.Close();
-        //            setLabel(Brushes.Red, "STOPPING...");
-        //            try
-        //            {
-        //                myService.Stop();
-        //                myService.WaitForStatus(ServiceControllerStatus.Stopped);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                osae.AddToLog("Error stopping service: " + ex.Message, true);
-        //            }
-        //        }
-        //        else if (btnService.Content.ToString() == "Start")
-        //        {
-        //            setLabel(Brushes.Green, "STARTING...");
-        //            System.TimeSpan ts = new TimeSpan(0, 0, 30);
-        //            try
-        //            {
-        //                myService.Start();
-        //                myService.WaitForStatus(ServiceControllerStatus.Running, ts);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                osae.AddToLog("Error starting service: " + ex.Message, true);
-        //            }
-        //        }
-        //    }));
-        //}
-
         void HandleRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(e.Uri.ToString());
@@ -406,7 +376,7 @@ namespace Manager_WPF
 
         public void OnMessageReceived(string msgType, string message, string from, DateTime timestamp)
         {
-            osae.AddToLog("Message received: " + msgType + " - " + message, false);
+            logging.AddToLog("Message received: " + msgType + " - " + message, false);
             //this.Invoke((MethodInvoker)delegate
             //{
                 switch (msgType)
@@ -418,7 +388,7 @@ namespace Manager_WPF
                             enabled = true;
                         foreach (PluginDescription plugin in pluginList)
                         {
-                            if ((plugin.Type == split[5].Trim() && osae.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
+                            if ((plugin.Type == split[5].Trim() && Common.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
                             {
                                 plugin.Status = split[3].Trim();
                                 plugin.Enabled = enabled;
@@ -427,14 +397,14 @@ namespace Manager_WPF
                                     plugin.Upgrade = split[4].Trim();
                                 else
                                     plugin.Upgrade = "";
-                                osae.AddToLog("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString(), true);
+                                logging.AddToLog("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString(), true);
                                 break;
                             }
                         }
                         break;
                     case "command":
                         string[] param = message.Split('|');
-                        if (param[2].Trim() == osae.ComputerName)
+                        if (param[2].Trim() == Common.ComputerName)
                         {
                             Process pr = new Process();
                             pr.StartInfo.FileName = param[0].Trim();
@@ -453,8 +423,7 @@ namespace Manager_WPF
                 }
             //});
         }
-
-
+        
         private void btnService_Click(object sender, RoutedEventArgs e)
         {
             if (btnService.Content.ToString() == "Stop")
@@ -486,19 +455,17 @@ namespace Manager_WPF
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
                 m_WorkerThreadStart.Start(); 
-            }
-
-
+            }            
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             try
             {
-                osae.AddToLog("Closing", true);
+                logging.AddToLog("Closing", true);
                 Clock.Stop();
                 Clock = null;
-                osae.AddToLog("Timer stopped", true);
+                logging.AddToLog("Timer stopped", true);
                 wcfObj.Unsubscribe();
             }
             catch
@@ -538,7 +505,7 @@ namespace Manager_WPF
 
         private void Menu_GUI(object sender, RoutedEventArgs e)
         {
-            Process.Start(osae.APIpath + "\\OSAE.GUI.exe");
+            Process.Start(Common.ApiPath + "\\OSAE.GUI.exe");
         }
 
         private void hypSettings_Click(object sender, RoutedEventArgs e)
@@ -549,7 +516,7 @@ namespace Manager_WPF
 
         private void hypGUI_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(osae.APIpath + "\\OSAE.GUI.exe");
+            Process.Start(Common.ApiPath + "\\OSAE.GUI.exe");
         }
 
         void OnChecked(object sender, RoutedEventArgs e)
@@ -558,13 +525,13 @@ namespace Manager_WPF
             {
                 PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
 
-                osae.AddToLog("checked: " + pd.Name, true);
+                logging.AddToLog("checked: " + pd.Name, true);
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
                     Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|True"));
                     thread.Start();
-                    osae.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
+                    logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
                     if (myService.Status == ServiceControllerStatus.Running)
                     {
                         foreach (PluginDescription plugin in pluginList)
@@ -576,14 +543,12 @@ namespace Manager_WPF
                         }
                     }
                 }
-                OSAE.OSAEObject obj = osae.GetObjectByName(pd.Name);
-                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
-
-                
+                OSAEObject obj = osae.GetObjectByName(pd.Name);
+                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);                
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error enabling plugin: " + ex.Message, true);
+                logging.AddToLog("Error enabling plugin: " + ex.Message, true);
             }
         }
 
@@ -592,13 +557,13 @@ namespace Manager_WPF
             try
             {
                 PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
-                osae.AddToLog("unchecked: " + pd.Name, true);
+                logging.AddToLog("unchecked: " + pd.Name, true);
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
                     Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|False"));
                     thread.Start();
-                    osae.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
+                    logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
 
                     if (myService.Status == ServiceControllerStatus.Running)
                     {
@@ -611,14 +576,12 @@ namespace Manager_WPF
                         }
                     }
                 }
-                OSAE.OSAEObject obj = osae.GetObjectByName(pd.Name);
-                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);
-
-                
+                OSAEObject obj = osae.GetObjectByName(pd.Name);
+                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);                
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error disabling plugin: " + ex.Message, true);
+                logging.AddToLog("Error disabling plugin: " + ex.Message, true);
             }
         }
 
@@ -672,8 +635,5 @@ namespace Manager_WPF
             LogWindow l = new LogWindow();
             l.ShowDialog();
         }
-
     }
-
-
 }

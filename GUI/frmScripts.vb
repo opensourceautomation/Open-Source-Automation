@@ -12,7 +12,7 @@ Public Class frmScripts
             CN.Open()
             CN.Close()
         Catch myerror As MySqlException
-            OSAEApi.AddToLog("Error Connecting to Database: " & myerror.Message, True)
+            logging.AddToLog("Error Connecting to Database: " & myerror.Message, True)
         End Try
     End Sub
     Public Sub Load_Patterns()

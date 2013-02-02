@@ -16,7 +16,7 @@ Imports MySql.Data.MySqlClient
 
 <AddIn("Lightswitch Server", Version:="0.1.0")>
 Public Class LightswitchServer
-    Implements IOpenSourceAutomationAddIn
+    Implements OSAEPluginBase
 
     Public OSAEApi As New OSAE("Lightswitch Server")
     Public pluginVersion As String = "0.1.0"
@@ -35,11 +35,11 @@ Public Class LightswitchServer
     Dim objRandom As New System.Random(CType(System.DateTime.Now.Ticks Mod System.Int32.MaxValue, Integer))
 
 
-    Public Sub ProcessCommand(ByVal table As System.Data.DataTable) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.ProcessCommand
+    Public Sub Overrides ProcessCommand(ByVal table As System.Data.DataTable)
         'process start and stop commands here
     End Sub
 
-    Public Sub RunInterface(ByVal pluginName As String) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.RunInterface
+    Public Sub Overrides RunInterface(ByVal pluginName As String)
         Dim app As New LightswitchServer()
         Try
             OSAEApi.AddToLog("Initializing plugin: " & pluginName, True)

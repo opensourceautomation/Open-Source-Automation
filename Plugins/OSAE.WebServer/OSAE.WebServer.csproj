@@ -37,6 +37,9 @@
     <Reference Include="HttpServer.MVC">
       <HintPath>..\..\Assemblies\HttpServer.MVC.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\Assemblies\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -60,6 +63,7 @@
     <None Include="Web Server.osapd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="WebUI.zip" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Screenshot.jpg">
@@ -67,6 +71,9 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(ProjectDir)7z.exe" a -r -tzip "$(ProjectDir)WebUI.zip" "$(SolutionDir)Web UI\*.*"</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

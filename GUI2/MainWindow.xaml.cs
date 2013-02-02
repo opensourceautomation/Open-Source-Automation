@@ -1,37 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MySql.Data.MySqlClient;
-using System.IO;
-using System.Threading;
-using System.Windows.Threading;
-//using System.Drawing;
-namespace GUI2
+﻿namespace GUI2
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Threading;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Documents;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using MySql.Data.MySqlClient;
+    using OSAE.UI.Controls;   
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         OSAE.OSAE OSAEApi = new OSAE.OSAE("GUI");
+
+        OSAE.Logging logging = new OSAE.Logging("GUI");
+        
         String gAppName = "";
         String gCurrentScreen = "";
 
-        List<OSAE.UI.Controls.StateImage> stateImages = new List<OSAE.UI.Controls.StateImage>();
-        List<OSAE.UI.Controls.NavigationImage> navImages = new List<OSAE.UI.Controls.NavigationImage>();
-        List<OSAE.UI.Controls.VideoStreamViewer> cameraViewers = new List<OSAE.UI.Controls.VideoStreamViewer>();
-        List<OSAE.UI.Controls.PropertyLabel> propLabels = new List<OSAE.UI.Controls.PropertyLabel>();
+        List<StateImage> stateImages = new List<StateImage>();
+        List<NavigationImage> navImages = new List<NavigationImage>();
+        List<VideoStreamViewer> cameraViewers = new List<VideoStreamViewer>();
+        List<PropertyLabel> propLabels = new List<PropertyLabel>();
 
         bool loadingScreen = true;
 
@@ -83,7 +80,7 @@ namespace GUI2
         private void Load_Screen(String sScreen)
         {
             loadingScreen = true;
-            OSAEApi.AddToLog("Loading screen: " + sScreen, false);
+            logging.AddToLog("Loading screen: " + sScreen, false);
             gCurrentScreen = sScreen;
             String sPath = "";
             OSAEApi.ObjectPropertySet(gAppName, "Current Screen", sScreen);
@@ -120,8 +117,8 @@ namespace GUI2
                 #region CONTROL STATE IMAGE
                 if (obj.Type == "CONTROL STATE IMAGE")
                 {
-                    OSAE.UI.Controls.StateImage stateImageControl = new OSAE.UI.Controls.StateImage(obj);
-                    
+                    StateImage stateImageControl = new StateImage(obj);
+
                     foreach (OSAE.ObjectProperty p in obj.Properties)
                     {
                         if (p.Value.ToLower() == stateImageControl.CurState.ToLower())
@@ -137,7 +134,7 @@ namespace GUI2
                     Canvas.SetTop(stateImageControl, stateImageControl.Location.Y);
                     Canvas.SetZIndex(stateImageControl, dZ);
                     stateImages.Add(stateImageControl);
-                    controlTypes.Add(typeof(OSAE.UI.Controls.StateImage));
+                    controlTypes.Add(typeof(StateImage));
                     stateImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
                 #endregion
@@ -146,8 +143,8 @@ namespace GUI2
                 else if (obj.Type == "CONTROL PROPERTY LABEL")
                 {
 
-                    OSAEApi.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
-                    OSAE.UI.Controls.PropertyLabel pl = new OSAE.UI.Controls.PropertyLabel(obj);
+                    logging.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
+                    PropertyLabel pl = new PropertyLabel(obj);
                     canGUI.Children.Add(pl);
                     int dZ = Int32.Parse(obj.Property("ZOrder").Value);
                     pl.Location.X = Double.Parse(obj.Property("X").Value);
@@ -156,7 +153,7 @@ namespace GUI2
                     Canvas.SetTop(pl, pl.Location.Y);
                     Canvas.SetZIndex(pl, dZ);
                     propLabels.Add(pl);
-                    controlTypes.Add(typeof(OSAE.UI.Controls.PropertyLabel));
+                    controlTypes.Add(typeof(PropertyLabel));
                     pl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
                 #endregion
@@ -298,10 +295,10 @@ namespace GUI2
                 {
                     try
                     {
-                        OSAE.UI.Controls.NavigationImage navImageControl = new OSAE.UI.Controls.NavigationImage(obj.Property("Screen").Value, obj.Property("Image").Value, obj);
+                        NavigationImage navImageControl = new NavigationImage(obj.Property("Screen").Value, obj.Property("Image").Value, obj);
                         navImageControl.MouseLeftButtonUp += new MouseButtonEventHandler(Navigaton_Image_MouseLeftButtonUp); 
                         canGUI.Children.Add(navImageControl);
-                        
+
                         OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
                         OSAE.ObjectProperty pX = obj.Property("X");
                         OSAE.ObjectProperty pY = obj.Property("Y");
@@ -314,7 +311,7 @@ namespace GUI2
                         navImageControl.Location.X = dX;
                         navImageControl.Location.Y = dY;
                         navImages.Add(navImageControl);
-                        controlTypes.Add(typeof(OSAE.UI.Controls.NavigationImage));
+                        controlTypes.Add(typeof(NavigationImage));
                         navImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
                     catch (MySqlException myerror)
@@ -330,9 +327,9 @@ namespace GUI2
                     try
                     {
                         string stream = OSAEApi.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
-                        OSAE.UI.Controls.VideoStreamViewer vsv = new OSAE.UI.Controls.VideoStreamViewer(stream);
+                        VideoStreamViewer vsv = new VideoStreamViewer(stream);
                         canGUI.Children.Add(vsv);
-                        OSAE.ObjectProperty pZOrder =obj.Property("ZOrder");
+                        OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
                         OSAE.ObjectProperty pX = obj.Property("X");
                         OSAE.ObjectProperty pY = obj.Property("Y");
                         Double dX = Convert.ToDouble(pX.Value);
@@ -344,7 +341,7 @@ namespace GUI2
                         vsv.Location.X = dX;
                         vsv.Location.Y = dY;
                         cameraViewers.Add(vsv);
-                        controlTypes.Add(typeof(OSAE.UI.Controls.VideoStreamViewer));
+                        controlTypes.Add(typeof(VideoStreamViewer));
                         vsv.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
                     catch (MySqlException myerror)
@@ -360,7 +357,7 @@ namespace GUI2
                     string sUCType = obj.Property("Control Type").Value;
                     if (sUCType == "USER CONTROL WEATHER")
                     {
-                        OSAE.UI.Controls.Weather wc = new OSAE.UI.Controls.Weather(obj);
+                        Weather wc = new Weather(obj);
                         canGUI.Children.Add(wc);
                         OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
                         OSAE.ObjectProperty pX = obj.Property("X");
@@ -374,7 +371,7 @@ namespace GUI2
 
                         wc.Location.X = dX;
                         wc.Location.Y = dY;
-                        controlTypes.Add(typeof(OSAE.UI.Controls.Weather));
+                        controlTypes.Add(typeof(Weather));
                         wc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
                 }
@@ -391,7 +388,7 @@ namespace GUI2
             {
                 if (!loadingScreen)
                 {
-                    OSAEApi.AddToLog("Entering Update_Objects", false);
+                    logging.AddToLog("Entering Update_Objects", false);
                     List<OSAE.OSAEScreenControl> controls = OSAEApi.GetScreenControls(gCurrentScreen);
 
                     foreach (OSAE.OSAEScreenControl newCtrl in controls)
@@ -399,11 +396,11 @@ namespace GUI2
                         #region CONTROL STATE IMAGE
                         if (newCtrl.ControlType == "CONTROL STATE IMAGE")
                         {
-                            foreach (OSAE.UI.Controls.StateImage sImage in stateImages)
+                            foreach (StateImage sImage in stateImages)
                             {
                                 if (newCtrl.ControlName == sImage.screenObject.Name && newCtrl.LastUpdated != sImage.LastUpdated)
                                 {
-                                    OSAEApi.AddToLog("Updating:  " + newCtrl.ControlName, false);
+                                    logging.AddToLog("Updating:  " + newCtrl.ControlName, false);
                                     sImage.LastUpdated = newCtrl.LastUpdated;
                                     sImage.Update();
 
@@ -412,7 +409,7 @@ namespace GUI2
                                         Canvas.SetLeft(sImage, sImage.Location.X);
                                         Canvas.SetTop(sImage, sImage.Location.Y);
                                     }));
-                                    OSAEApi.AddToLog("Complete:  " + newCtrl.ControlName, false);
+                                    logging.AddToLog("Complete:  " + newCtrl.ControlName, false);
                                 }
                             }
                         }
@@ -421,14 +418,14 @@ namespace GUI2
                         #region CONTROL PROPERTY LABEL
                         else if (newCtrl.ControlType == "CONTROL PROPERTY LABEL")
                         {
-                            foreach (OSAE.UI.Controls.PropertyLabel pl in propLabels)
+                            foreach (PropertyLabel pl in propLabels)
                             {
                                 if (newCtrl.ControlName == pl.screenObject.Name && newCtrl.LastUpdated != pl.LastUpdated)
                                 {
-                                    OSAEApi.AddToLog("Updating:  " + newCtrl.ControlName, false);
+                                    logging.AddToLog("Updating:  " + newCtrl.ControlName, false);
                                     pl.LastUpdated = newCtrl.LastUpdated; 
                                     pl.Update();
-                                    OSAEApi.AddToLog("Complete:  " + newCtrl.ControlName, false);
+                                    logging.AddToLog("Complete:  " + newCtrl.ControlName, false);
                                 }
                             }
                         }
@@ -447,7 +444,7 @@ namespace GUI2
                         }
                         #endregion
                     }
-                    OSAEApi.AddToLog("Leaving Update_Objects", false);
+                    logging.AddToLog("Leaving Update_Objects", false);
                 }
                 System.Threading.Thread.Sleep(1000);
             }
@@ -455,7 +452,7 @@ namespace GUI2
         
         private void Load_App_Name()
         {
-            
+
             List<OSAE.OSAEObject> screens = OSAEApi.GetObjectsByType("GUI CLIENT");
             foreach (OSAE.OSAEObject obj in screens)
             {
@@ -487,7 +484,7 @@ namespace GUI2
 
         private void Navigaton_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
         {
-            OSAE.UI.Controls.NavigationImage navCtrl = (OSAE.UI.Controls.NavigationImage)sender;
+            NavigationImage navCtrl = (NavigationImage)sender;
             gCurrentScreen = navCtrl.screenName;
             stateImages.Clear();
             propLabels.Clear();
@@ -512,27 +509,27 @@ namespace GUI2
 
                 beingDragged.Location = new Point(newX, newY);
 
-                if (beingDragged.GetType() == typeof(OSAE.UI.Controls.StateImage))
+                if (beingDragged.GetType() == typeof(StateImage))
                 {
                     Thread thread = new Thread(() => updateObjectCoordsStateImg(beingDragged.screenObject.Name, beingDragged.StateMatch, newX.ToString(), newY.ToString()));
                     thread.Start();
                 }
-                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.NavigationImage))
+                else if (beingDragged.GetType() == typeof(NavigationImage))
                 {
                     Thread thread = new Thread(() => updateObjectCoords(beingDragged.screenObject.Name, newX.ToString(), newY.ToString()));
                     thread.Start();
                 }
-                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.VideoStreamViewer))
+                else if (beingDragged.GetType() == typeof(VideoStreamViewer))
                 {
                     Thread thread = new Thread(() => updateObjectCoords(beingDragged.screenObject.Name, newX.ToString(), newY.ToString()));
                     thread.Start();
                 }
-                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.PropertyLabel))
+                else if (beingDragged.GetType() == typeof(PropertyLabel))
                 {
                     Thread thread = new Thread(() => updateObjectCoords(beingDragged.screenObject.Name, newX.ToString(), newY.ToString()));
                     thread.Start();
                 }
-                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.Weather))
+                else if (beingDragged.GetType() == typeof(Weather))
                 {
                     Thread thread = new Thread(() => updateObjectCoords(beingDragged.screenObject.Name, newX.ToString(), newY.ToString()));
                     thread.Start();

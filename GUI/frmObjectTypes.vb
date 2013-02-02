@@ -12,9 +12,9 @@ Public Class frmObjectTypes
         Try
             CN.Open()
             CN.Close()
-            ' OSAEApi.AddToLog("Connected to Database: " & OSAEApi.DBName & " @ " & OSAEApi.DBConnection & ":" & OSAEApi.DBPort, "CM15A")
+            ' logging.AddToLog("Connected to Database: " & OSAEApi.DBName & " @ " & OSAEApi.DBConnection & ":" & OSAEApi.DBPort, "CM15A")
         Catch myerror As MySqlException
-            OSAEApi.AddToLog("Error Connecting to Database: " & myerror.Message, True)
+            logging.AddToLog("Error Connecting to Database: " & myerror.Message, True)
         End Try
     End Sub
     Public Sub Load_Object_Types()

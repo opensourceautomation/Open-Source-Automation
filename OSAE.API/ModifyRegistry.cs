@@ -8,9 +8,9 @@ namespace OSAE
     /// </summary>
     public class ModifyRegistry
     {
-        public string SubKey { get ; set; }        
+        public string SubKey { get; set; }        
 
-        public RegistryKey BaseRegistryKey { get ; set; }       
+        public RegistryKey BaseRegistryKey { get; set; }       
 
         /// <summary>
         /// Default constructor
@@ -81,7 +81,7 @@ namespace OSAE
             }
             catch (Exception e)
             {               
-                //ShowErrorMessage(e, "Writing registry " + KeyName.ToUpper());
+                // ShowErrorMessage(e, "Writing registry " + KeyName.ToUpper());
                 return false;
             }
         }
