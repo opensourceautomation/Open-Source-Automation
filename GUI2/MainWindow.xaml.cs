@@ -32,6 +32,8 @@ namespace GUI2
         List<OSAE.UI.Controls.NavigationImage> navImages = new List<OSAE.UI.Controls.NavigationImage>();
         List<OSAE.UI.Controls.VideoStreamViewer> cameraViewers = new List<OSAE.UI.Controls.VideoStreamViewer>();
         List<OSAE.UI.Controls.PropertyLabel> propLabels = new List<OSAE.UI.Controls.PropertyLabel>();
+        List<OSAE.UI.Controls.StaticLabel> staticLabels = new List<OSAE.UI.Controls.StaticLabel>();
+        List<OSAE.UI.Controls.TimerLabel> timerLabels = new List<OSAE.UI.Controls.TimerLabel>();
 
         bool loadingScreen = true;
 
@@ -145,7 +147,6 @@ namespace GUI2
                 #region CONTROL PROPERTY LABEL
                 else if (obj.Type == "CONTROL PROPERTY LABEL")
                 {
-
                     OSAEApi.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
                     OSAE.UI.Controls.PropertyLabel pl = new OSAE.UI.Controls.PropertyLabel(obj);
                     canGUI.Children.Add(pl);
@@ -164,100 +165,41 @@ namespace GUI2
                 #region CONTROL STATIC LABEL
                 else if (obj.Type == "CONTROL STATIC LABEL")
                 {
-                    String sPropertyValue = obj.Property("Value").Value;
-                    String sBackColor = obj.Property("Back Color").Value;
-                    String sForeColor = obj.Property("Fore Color").Value;
-                    Label dsl = new Label();
-                    OSAE.ObjectProperty pX = obj.Property("X");
-                    OSAE.ObjectProperty pY = obj.Property("Y");
-                    canGUI.Children.Add(dsl);
-                    Double dX = Convert.ToDouble(pX.Value);
-                    Canvas.SetLeft(dsl, dX);
-                    Double dY = Convert.ToDouble(pY.Value);
-                    Canvas.SetTop(dsl, dY);
-
-                    if (sPropertyValue != "")
-                    {
-                        if (sBackColor != "")
-                        {
-                            try
-                            {
-                                BrushConverter conv = new BrushConverter();
-                                SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
-                                dsl.Background = brush;
-                            }
-                            catch (Exception myerror)
-                            {
-                            }
-                        }
-                        if (sForeColor != "")
-                        {
-                            try
-                            {
-                                BrushConverter conv = new BrushConverter();
-                                SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
-                                dsl.Foreground = brush;
-                            }
-                            catch (Exception myerror)
-                            {
-                            }
-                        }
-                        dsl.Content = sPropertyValue;
-                    }
-                    else
-                    {
-                        dsl.Content = "";
-                    }
+                    OSAEApi.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
+                    OSAE.UI.Controls.StaticLabel sl = new OSAE.UI.Controls.StaticLabel(obj);
+                    canGUI.Children.Add(sl);
+                    int dZ = Int32.Parse(obj.Property("ZOrder").Value);
+                    sl.Location.X = Double.Parse(obj.Property("X").Value);
+                    sl.Location.Y = Double.Parse(obj.Property("Y").Value);
+                    Canvas.SetLeft(sl, sl.Location.X);
+                    Canvas.SetTop(sl, sl.Location.Y);
+                    Canvas.SetZIndex(sl, dZ);
+                    staticLabels.Add(sl);
+                    controlTypes.Add(typeof(OSAE.UI.Controls.StaticLabel));
+                    sl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
                 #endregion
 
                 #region CONTROL TIMER LABEL
-                //else if (obj.Type == "CONTROL TIMER LABEL")
-                //{
-                //    sObj.Object_Name = obj.Property("Object Name").Value;
-                //    OSAE.OSAEObject timerObject = OSAEApi.GetObjectByName(sObj.Object_Name);
-                //    String sBackColor = obj.Property("Back Color").Value;
-                //    String sForeColor = obj.Property("Font Color").Value;
-                //    Label dtl = new Label();
-                //    OSAE.ObjectProperty pX = obj.Property("X");
-                //    OSAE.ObjectProperty pY = obj.Property("Y");
-                //    canGUI.Children.Add(dtl);
-                //    Double dX = Convert.ToDouble(pX.Value);
-                //    Canvas.SetLeft(dtl, dX);
-                //    Double dY = Convert.ToDouble(pY.Value);
-                //    Canvas.SetTop(dtl, dY);
+                else if (obj.Type == "CONTROL TIMER LABEL")
+                {
+                OSAEApi.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
+                OSAE.UI.Controls.TimerLabel tl = new OSAE.UI.Controls.TimerLabel(obj);
+                canGUI.Children.Add(tl);
+                    int dZ = Int32.Parse(obj.Property("ZOrder").Value);
+                    tl.Location.X = Double.Parse(obj.Property("X").Value);
+                    tl.Location.Y = Double.Parse(obj.Property("Y").Value);
+                    Canvas.SetLeft(tl, tl.Location.X);
+                    Canvas.SetTop(tl, tl.Location.Y);
+                    Canvas.SetZIndex(tl, dZ);
+                    timerLabels.Add(tl);
+                    controlTypes.Add(typeof(OSAE.UI.Controls.TimerLabel));
+                    tl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
 
-                //    sObj.Object_State_Time = Convert.ToInt32(timerObject.State.TimeInState).ToString();
-                //    sObj.Object_Last_Updated = timerObject.LastUpd;
-
-                //    if (sBackColor != "")
-                //    {
-                //        try
-                //        {
-                //            BrushConverter conv = new BrushConverter();
-                //            SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
-                //            dtl.Background = brush;
-                //        }
-                //        catch (Exception myerror)
-                //        {
-                //        }
-                //    }
-                //    if (sForeColor != "")
-                //    {
-                //        try
-                //        {
-                //            BrushConverter conv = new BrushConverter();
-                //            SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
-                //            dtl.Foreground = brush;
-                //        }
-                //        catch (Exception myerror)
-                //        {
-                //        }
-                //    }
-
-                //}
+                }
                 #endregion
 
+                #region CONTROL METHOD IMAGE
                 //    else if (aScreenObject(iLoop).Control_Type = "CONTROL METHOD IMAGE")
                 //        iMethodImageCount = iMethodImageCount + 1
                 //        aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Object Name")
@@ -292,6 +234,7 @@ namespace GUI2
                 //            MessageBox.Show("GUI Error Load_Objects 4: " + myerror.Message);
                 //            CN.Close();
                 //         }
+                #endregion
 
                 #region CONTROL NAVIGATION IMAGE
                 else if (obj.Type == "CONTROL NAVIGATION IMAGE")
@@ -437,13 +380,16 @@ namespace GUI2
                         #region CONTROL TIMER LABEL
                         else if (newCtrl.ControlType == "CONTROL TIMER LABEL")
                         {
-                            //foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
-                            //{
-                            //    if (newCtrl.Object_Name == tl.ObjectName)
-                            //    {
-                            //        tl.Update();
-                            //    }
-                            //}
+                            foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
+                            {
+                                if (newCtrl.ControlName == tl.screenObject.Name && newCtrl.LastUpdated != tl.LastUpdated)
+                                {
+                                    OSAEApi.AddToLog("Updating:  " + newCtrl.ControlName, false);
+                                    tl.LastUpdated = newCtrl.LastUpdated;
+                                    tl.Update();
+                                    OSAEApi.AddToLog("Complete:  " + newCtrl.ControlName, false);
+                                }
+                            }
                         }
                         #endregion
                     }
@@ -517,22 +463,7 @@ namespace GUI2
                     Thread thread = new Thread(() => updateObjectCoordsStateImg(beingDragged.screenObject.Name, beingDragged.StateMatch, newX.ToString(), newY.ToString()));
                     thread.Start();
                 }
-                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.NavigationImage))
-                {
-                    Thread thread = new Thread(() => updateObjectCoords(beingDragged.screenObject.Name, newX.ToString(), newY.ToString()));
-                    thread.Start();
-                }
-                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.VideoStreamViewer))
-                {
-                    Thread thread = new Thread(() => updateObjectCoords(beingDragged.screenObject.Name, newX.ToString(), newY.ToString()));
-                    thread.Start();
-                }
-                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.PropertyLabel))
-                {
-                    Thread thread = new Thread(() => updateObjectCoords(beingDragged.screenObject.Name, newX.ToString(), newY.ToString()));
-                    thread.Start();
-                }
-                else if (beingDragged.GetType() == typeof(OSAE.UI.Controls.Weather))
+                else
                 {
                     Thread thread = new Thread(() => updateObjectCoords(beingDragged.screenObject.Name, newX.ToString(), newY.ToString()));
                     thread.Start();

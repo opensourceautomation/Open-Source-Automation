@@ -25,7 +25,7 @@ namespace OSAE
             }
             set
             {
-                osae.ObjectUpdate(_name, value, _description, _type, _address, _container, _enabled);
+                //osae.ObjectUpdate(_name, value, _description, _type, _address, _container, _enabled);
                 _name = value;
             }
         }
@@ -39,7 +39,7 @@ namespace OSAE
             set
             {
                 _description = value;
-                osae.ObjectUpdate(_name, _name, value, _type, _address, _container, _enabled);
+                //osae.ObjectUpdate(_name, _name, value, _type, _address, _container, _enabled);
             }
         }      
 
@@ -52,7 +52,7 @@ namespace OSAE
             set
             {
                 _type = value;
-                osae.ObjectUpdate(_name, _name, _description, value, _address, _container, _enabled);
+                //osae.ObjectUpdate(_name, _name, _description, value, _address, _container, _enabled);
             }
         }      
 
@@ -77,7 +77,7 @@ namespace OSAE
             set
             {
                 _address = value;
-                osae.ObjectUpdate(_name, _name, _description, _type, value, _container, _enabled);
+                //osae.ObjectUpdate(_name, _name, _description, _type, value, _container, _enabled);
             }
         }      
 
@@ -90,7 +90,7 @@ namespace OSAE
             set
             {
                 _container = value;
-                osae.ObjectUpdate(_name, _name, _description, _type, _address, value, _enabled);
+                //osae.ObjectUpdate(_name, _name, _description, _type, _address, value, _enabled);
             }
         }      
               
@@ -103,7 +103,7 @@ namespace OSAE
             set
             {
                 _enabled = value;
-                osae.ObjectUpdate(_name, _name, _description, _type, _address, _container, value);
+                //osae.ObjectUpdate(_name, _name, _description, _type, _address, _container, value);
             }
         }
 
