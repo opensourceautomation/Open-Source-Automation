@@ -80,6 +80,12 @@
     <Compile Include="StateImage.xaml.cs">
       <DependentUpon>StateImage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StaticLabel.xaml.cs">
+      <DependentUpon>StaticLabel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TimerLabel.xaml.cs">
+      <DependentUpon>TimerLabel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VideoStreamViewer.xaml.cs">
       <DependentUpon>VideoStreamViewer.xaml</DependentUpon>
     </Compile>
@@ -109,6 +115,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="StateImage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StaticLabel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TimerLabel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

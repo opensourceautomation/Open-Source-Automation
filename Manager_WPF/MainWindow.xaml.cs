@@ -90,7 +90,7 @@ namespace Manager_WPF
 
             if (connectToService())
             {
-                Thread thread = new Thread(() => messageHost("info", "connected"));
+                Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.CONNECT, "connected"));
                 thread.Start();
             }
 
@@ -162,7 +162,7 @@ namespace Manager_WPF
             }
         }
 
-        private void messageHost(string msgType, string message)
+        private void messageHost(WCFServiceReference.OSAEWCFMessageType msgType, string message)
         {
             try
             {
@@ -251,7 +251,7 @@ namespace Manager_WPF
                 {
                     if (connectToService())
                     {
-                        Thread thread = new Thread(() => messageHost("info", "connected"));
+                        Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.CONNECT, "connected"));
                         thread.Start();
                     }
                 }
@@ -404,15 +404,15 @@ namespace Manager_WPF
             e.Handled = true;
         }
 
-        public void OnMessageReceived(string msgType, string message, string from, DateTime timestamp)
+        public void OnMessageReceived(WCFServiceReference.OSAEWCFMessage message)
         {
-            osae.AddToLog("Message received: " + msgType + " - " + message, false);
+            osae.AddToLog("Message received: " + message.Type + " - " + message.Message, false);
             //this.Invoke((MethodInvoker)delegate
             //{
-                switch (msgType)
+                switch (message.Type)
                 {
-                    case "plugin":
-                        string[] split = message.Split('|');
+                    case WCFServiceReference.OSAEWCFMessageType.PLUGIN:
+                        string[] split = message.Message.Split('|');
                         bool enabled = false;
                         if (split[1].Trim() == "True")
                             enabled = true;
@@ -432,8 +432,8 @@ namespace Manager_WPF
                             }
                         }
                         break;
-                    case "command":
-                        string[] param = message.Split('|');
+                    case WCFServiceReference.OSAEWCFMessageType.CMDLINE:
+                        string[] param = message.Message.Split('|');
                         if (param[2].Trim() == osae.ComputerName)
                         {
                             Process pr = new Process();
@@ -442,8 +442,8 @@ namespace Manager_WPF
                             pr.Start();
                         }
                         break;
-                    case "service":
-                        string[] serv = message.Split('|');
+                    case WCFServiceReference.OSAEWCFMessageType.SERVICE:
+                        string[] serv = message.Message.Split('|');
                         if (serv[0] != serv[1] && txblNewVersion.Visibility == Visibility.Hidden)
                         {
                             ShowNewVersion("Version " + serv[1] + " Available");
@@ -562,7 +562,7 @@ namespace Manager_WPF
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
-                    Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|True"));
+                    Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|True"));
                     thread.Start();
                     osae.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
                     if (myService.Status == ServiceControllerStatus.Running)
@@ -596,7 +596,7 @@ namespace Manager_WPF
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
-                    Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|False"));
+                    Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|False"));
                     thread.Start();
                     osae.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
 

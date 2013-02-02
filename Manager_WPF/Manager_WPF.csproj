@@ -143,6 +143,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Properties\DataSources\OSAE.OSAEObject.datasource" />
+    <None Include="Properties\DataSources\OSAE.OSAEObject1.datasource" />
     <None Include="Properties\DataSources\System.Data.DataSet.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -163,6 +164,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Service References\WCFServiceReference\service2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\WCFServiceReference\WCF.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

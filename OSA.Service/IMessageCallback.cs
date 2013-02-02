@@ -6,11 +6,9 @@ using System.ServiceModel;
 
 namespace WCF
 {
-  
-
     interface IMessageCallback
     {
         [OperationContract(IsOneWay = true)]
-        void OnMessageReceived(string msgType, string message, string from, DateTime timestamp);
+        void OnMessageReceived(WCF.OSAEWCFMessage message);
     }
 }

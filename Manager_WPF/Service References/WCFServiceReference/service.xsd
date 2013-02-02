@@ -1,12 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/WCF" />
   <xs:import namespace="http://schemas.datacontract.org/2004/07/OSAE" />
   <xs:element name="SendMessageToClients">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="msgType" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="from" nillable="true" type="xs:string" />
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/WCF" minOccurs="0" name="message" nillable="true" type="q1:OSAEWCFMessage" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -42,7 +41,7 @@
   <xs:element name="messageHost">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="msgType" nillable="true" type="xs:string" />
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/WCF" minOccurs="0" name="msgType" type="q2:OSAEWCFMessageType" />
         <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="from" nillable="true" type="xs:string" />
       </xs:sequence>
@@ -61,7 +60,7 @@
   <xs:element name="GetAllObjectsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetAllObjectsResult" nillable="true" type="q1:ArrayOfOSAEObject" />
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetAllObjectsResult" nillable="true" type="q3:ArrayOfOSAEObject" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -75,7 +74,7 @@
   <xs:element name="GetObjectResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectResult" nillable="true" type="q2:OSAEObject" />
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectResult" nillable="true" type="q4:OSAEObject" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -89,7 +88,7 @@
   <xs:element name="GetObjectByAddressResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectByAddressResult" nillable="true" type="q3:OSAEObject" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectByAddressResult" nillable="true" type="q5:OSAEObject" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -173,7 +172,7 @@
   <xs:element name="GetObjectsByTypeResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectsByTypeResult" nillable="true" type="q4:ArrayOfOSAEObject" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectsByTypeResult" nillable="true" type="q6:ArrayOfOSAEObject" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -187,7 +186,7 @@
   <xs:element name="GetObjectsByBaseTypeResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectsByBaseTypeResult" nillable="true" type="q5:ArrayOfOSAEObject" />
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectsByBaseTypeResult" nillable="true" type="q7:ArrayOfOSAEObject" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -201,7 +200,7 @@
   <xs:element name="GetObjectsByContainerResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectsByContainerResult" nillable="true" type="q6:ArrayOfOSAEObject" />
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetObjectsByContainerResult" nillable="true" type="q8:ArrayOfOSAEObject" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -213,7 +212,7 @@
   <xs:element name="GetPluginsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetPluginsResult" nillable="true" type="q7:ArrayOfOSAEObject" />
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/OSAE" minOccurs="0" name="GetPluginsResult" nillable="true" type="q9:ArrayOfOSAEObject" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -324,10 +323,7 @@
   <xs:element name="OnMessageReceived">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="msgType" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="from" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="timestamp" type="xs:dateTime" />
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/WCF" minOccurs="0" name="message" nillable="true" type="q10:OSAEWCFMessage" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

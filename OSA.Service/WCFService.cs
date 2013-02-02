@@ -19,7 +19,7 @@ namespace WCF
 
         private static readonly List<IMessageCallback> subscribers = new List<IMessageCallback>();
 
-        public void SendMessageToClients(string msgType, string message, string from)
+        public void SendMessageToClients(OSAEWCFMessage message)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace WCF
                     {
                         try
                         {
-                            callback.OnMessageReceived(msgType, message, from, DateTime.Now);
+                            callback.OnMessageReceived(message);
                             osae.AddToLog("Message sent to client: " + message, false);
                         }
                         catch (TimeoutException ex)
@@ -92,12 +92,19 @@ namespace WCF
             }
         }
 
-        public void messageHost(string msgType, string message, string from)
+        public void messageHost(OSAEWCFMessageType msgType, string message, string from)
         {
             try
             {
                 if (MessageReceived != null)
-                    MessageReceived(null, new CustomEventArgs(msgType, message, from));
+                {
+                    OSAEWCFMessage msg = new OSAEWCFMessage();
+                    msg.Type = msgType;
+                    msg.Message = message;
+                    msg.From = osae.ComputerName;
+                    msg.TimeSent = DateTime.Now;
+                    MessageReceived(null, new CustomEventArgs(msg));
+                }
             }
             catch
             {
@@ -210,7 +217,7 @@ namespace WCF
             List<OSAEObject> objects = osae.GetObjectsByBaseType("plugin");
             return objects;
         }
-
+        
         public DataSet ExecuteSQL(string sql)
         {
             MySqlCommand command = new MySqlCommand(sql);
@@ -236,16 +243,33 @@ namespace WCF
 
     public class CustomEventArgs : EventArgs
     {
-        public string Message;
-        public string MsgType;
-        public string From;
+        public OSAEWCFMessage Message;
 
-        public CustomEventArgs(string msgType, string message, string from)
+        public CustomEventArgs(OSAEWCFMessage message)
         {
             Message = message;
-            MsgType = msgType;
-            From = from;
         }
+
+    }
+
+    public class OSAEWCFMessage
+    {
+        public OSAEWCFMessageType Type { get; set; }
+        public string From { get; set; }
+        public string Message { get; set; }
+        public DateTime TimeSent { get; set; }
+    }
+
+    public enum OSAEWCFMessageType
+    {
+        PLUGIN = 1,
+        LOG = 2,
+        CONNECT = 3,
+        CMDLINE = 4,
+        METHOD = 5,
+        UPDATESCREEN = 6,
+        SERVICE = 7
+
 
     }
 }
