@@ -162,7 +162,7 @@
                 #region CONTROL STATIC LABEL
                 else if (obj.Type == "CONTROL STATIC LABEL")
                 {
-                    OSAEApi.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
+                    logging.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
                     OSAE.UI.Controls.StaticLabel sl = new OSAE.UI.Controls.StaticLabel(obj);
                     canGUI.Children.Add(sl);
                     int dZ = Int32.Parse(obj.Property("ZOrder").Value);
@@ -180,7 +180,7 @@
                 #region CONTROL TIMER LABEL
                 else if (obj.Type == "CONTROL TIMER LABEL")
                 {
-                OSAEApi.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
+                logging.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
                 OSAE.UI.Controls.TimerLabel tl = new OSAE.UI.Controls.TimerLabel(obj);
                 canGUI.Children.Add(tl);
                     int dZ = Int32.Parse(obj.Property("ZOrder").Value);
@@ -381,10 +381,10 @@
                             {
                                 if (newCtrl.ControlName == tl.screenObject.Name && newCtrl.LastUpdated != tl.LastUpdated)
                                 {
-                                    OSAEApi.AddToLog("Updating:  " + newCtrl.ControlName, false);
+                                    logging.AddToLog("Updating:  " + newCtrl.ControlName, false);
                                     tl.LastUpdated = newCtrl.LastUpdated;
                                     tl.Update();
-                                    OSAEApi.AddToLog("Complete:  " + newCtrl.ControlName, false);
+                                    logging.AddToLog("Complete:  " + newCtrl.ControlName, false);
                                 }
                             }
                         }

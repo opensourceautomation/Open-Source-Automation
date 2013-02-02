@@ -15,7 +15,6 @@ namespace OSAE.Service
     /// </summary>
     internal class PluginFinder : MarshalByRefObject
     {
-        Logging2 log = Logging2.GetLogger("PluginFinder");
         OSAE osae = new OSAE("Service");
         internal const string PluginPath = "Plugins";
 

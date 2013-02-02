@@ -5,6 +5,7 @@ Imports System.Text.RegularExpressions
 Public Class ScriptProcessor
     Inherits OSAEPluginBase
     Private OSAEApi As New OSAE("Script Processor")
+    Private logging As New Logging("Script Processor")
     Private gAppName As String = ""
     Private scriptArray() As String
 
@@ -18,24 +19,24 @@ Public Class ScriptProcessor
                 sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("event_script"))
                 sEvent = Convert.ToString(dsResults.Tables(0).Rows(0)("event_name"))
                 sObject = Convert.ToString(dsResults.Tables(0).Rows(0)("object_name"))
-                OSAEApi.AddToLog("Found Script for: " & sObject & " " & sEvent, True)
+                logging.AddToLog("Found Script for: " & sObject & " " & sEvent, True)
                 RunScript(sScript, method.Parameter2)
-                OSAEApi.AddToLog("Executed Script", True)
+                logging.AddToLog("Executed Script", True)
             Catch ex As Exception
-                OSAEApi.AddToLog("Error ProcessCommand - " & ex.Message, True)
+                logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
             End Try
         ElseIf method.MethodName = "NAMED SCRIPT" Then
-            OSAEApi.AddToLog("NAMED SCRIPT Found", True)
+            logging.AddToLog("NAMED SCRIPT Found", True)
             Try
                 Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT pattern,script FROM osae_pattern WHERE pattern='" & method.Parameter1 & "'")
                 sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("script"))
                 sEvent = Convert.ToString(dsResults.Tables(0).Rows(0)("pattern"))
-                OSAEApi.AddToLog("Found Script for: " & sEvent, True)
-                OSAEApi.AddToLog(sScript, False)
+                logging.AddToLog("Found Script for: " & sEvent, True)
+                logging.AddToLog(sScript, False)
                 RunScript(sScript, method.Parameter2)
-                OSAEApi.AddToLog("Executed Script", True)
+                logging.AddToLog("Executed Script", True)
             Catch ex As Exception
-                OSAEApi.AddToLog("Error ProcessCommand - " & ex.Message, True)
+                logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
             End Try
         End If
     End Sub
@@ -45,7 +46,7 @@ Public Class ScriptProcessor
     End Sub
 
     Public Overrides Sub Shutdown()
-        OSAEApi.AddToLog("*** Received Shutdown", True)
+        logging.AddToLog("*** Received Shutdown", True)
     End Sub
 
     Private Sub RunScript(ByVal scriptText As String, ByVal sScriptParameter As String)
@@ -390,7 +391,7 @@ Public Class ScriptProcessor
         Next iLoop
     End Sub
     Public Sub Display_Results(ByVal sText As String)
-        OSAEApi.AddToLog(sText, False)
+        logging.AddToLog(sText, False)
     End Sub
     Private Function ReturnSeconds(ByVal strTime As String) As Integer
 

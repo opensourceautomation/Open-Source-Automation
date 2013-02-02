@@ -48,8 +48,6 @@
         {          
             if (args.Length > 0)
             {
-                
-
                 OSAE osacl = new OSAE("OSACL");
                 Logging commandLineLogging = new Logging("OSACL");
 
@@ -108,8 +106,6 @@
 
             try
             {
-                
-
                 IPHostEntry ipEntry = Dns.GetHostByName(Common.ComputerName);
                 IPAddress[] addr = ipEntry.AddressList;
                 _computerIP = addr[0].ToString();
@@ -133,9 +129,6 @@
 
             logging.AddToLog("OnStart", true);
             
-            Logging2 log = Logging2.GetLogger("test3");
-            log.AddToLog("just in", true);
-
             logging.AddToLog("Removing orphaned methods", true);
 
             try
@@ -252,7 +245,7 @@
                 // as we can't guarantee the quality of a third party plugin
                 var taskA = new Task(() =>
                 {
-                    checkPlugins.Enabled = false;
+                    //checkPlugins.Enabled = false;
                     running = false;
                     if (sHost.State == CommunicationState.Opened)
                         sHost.Close();

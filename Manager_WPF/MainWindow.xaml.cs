@@ -376,7 +376,7 @@
 
         public void OnMessageReceived(WCFServiceReference.OSAEWCFMessage message)
         {
-            osae.AddToLog("Message received: " + message.Type + " - " + message.Message, false);
+            logging.AddToLog("Message received: " + message.Type + " - " + message.Message, false);
             //this.Invoke((MethodInvoker)delegate
             //{
                 switch (message.Type)
