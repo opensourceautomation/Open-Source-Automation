@@ -66,9 +66,6 @@ namespace OSAE
         /// <param name="parentProcess">The parent process</param>
         public OSAE(string parentProcess)
         {
-            Logging2 log = Logging2.GetLogger();
-            log.AddToLog("in API call", true);
-
             logging = new Logging(parentProcess);
             ModifyRegistry myRegistry = new ModifyRegistry();
             myRegistry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";

@@ -8,8 +8,6 @@
     [Serializable]
     public class Plugin
     {
-        Logging2 log = Logging2.GetLogger("Plugin");
-
         private string _pluginName;
         private string _pluginType;
         private string _pluginVersion;
