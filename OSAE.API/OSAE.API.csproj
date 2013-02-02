@@ -51,7 +51,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Enums\DaysOfWeek.cs" />
     <Compile Include="Images\ImageManager.cs" />

@@ -132,10 +132,6 @@
             }
 
             logging.AddToLog("OnStart", true);
-            
-            Logging2 log = Logging2.GetLogger("test3");
-            log.AddToLog("just in", true);
-
             logging.AddToLog("Removing orphaned methods", true);
 
             try
