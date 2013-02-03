@@ -55,11 +55,9 @@
     <Compile Include="ClientService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Plugin.cs" />
     <Compile Include="ClientServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="PluginFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service References\WCFServiceReference\Reference.cs">
       <AutoGen>True</AutoGen>

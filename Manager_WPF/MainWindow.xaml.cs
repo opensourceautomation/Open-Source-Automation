@@ -201,22 +201,26 @@
                 lblPluginName.Content = p.Type;
                 lblVersion.Content = p.Version;
 
-                if (p.WikiUrl != "")
+                if (p.WikiUrl != string.Empty)
                 {
                     hypWiki.NavigateUri = new Uri(p.WikiUrl);
                     txblWiki.Visibility = System.Windows.Visibility.Visible;
                 }
                 else
+                {
                     txblWiki.Visibility = System.Windows.Visibility.Hidden;
+                }
 
-                if (p.Upgrade != "")
+                if (p.Upgrade != string.Empty)
                 {
                     imgUpdate.Visibility = System.Windows.Visibility.Visible;
                     Uri u = new Uri("http://www.opensourceautomation.com/plugin_details.php?pid=" + p.ID);
                     hypUpdate.NavigateUri = u;
                 }
                 else
+                {
                     imgUpdate.Visibility = System.Windows.Visibility.Hidden;
+                }
 
                 string pluginPath = Common.ApiPath + "\\Plugins\\" + p.Path + "\\";
                 string[] paths = System.IO.Directory.GetFiles(pluginPath, "Screenshot*");
@@ -314,9 +318,9 @@
                         }
                     }
                     pluginList.Add(desc);
+                    logging.AddToLog("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID, true);
                 }
-            }
-
+            }            
             dgLocalPlugins.ItemsSource = pluginList;
         }
 
@@ -387,7 +391,10 @@
                         string[] split = message.Split('|');
                         bool enabled = false;
                         if (split[1].Trim() == "True")
+                        {
                             enabled = true;
+                        }
+
                         foreach (PluginDescription plugin in pluginList)
                         {
                             if ((plugin.Type == split[5].Trim() && Common.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
@@ -398,7 +405,9 @@
                                 if (split[4].Trim() != "")
                                     plugin.Upgrade = split[4].Trim();
                                 else
-                                    plugin.Upgrade = "";
+                                {
+                                    plugin.Upgrade = string.Empty;
+                                }
                                 logging.AddToLog("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString(), true);
                                 break;
                             }
@@ -429,8 +438,9 @@
         private void btnService_Click(object sender, RoutedEventArgs e)
         {
             if (btnService.Content.ToString() == "Stop")
+            {
                 clicked = true;
-
+            }
 
             setButton(btnService.Content.ToString(), false);
             if (btnService.Content.ToString() == "Stop")
@@ -451,8 +461,10 @@
                 setLabel(Brushes.Green, "STARTING...");
                 foreach (PluginDescription pd in pluginList)
                 {
-                    if (pd.Enabled) 
+                    if (pd.Enabled)
+                    {
                         pd.Status = "Starting...";
+                    }
                 }
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
@@ -620,7 +632,7 @@
         {
             // Configure open file dialog box 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = ""; // Default file name 
+            dlg.FileName = string.Empty; // Default file name 
             dlg.DefaultExt = ".osapp"; // Default file extension 
             dlg.Filter = "Open Source Automation Plugin Pakages (.osapp)|*.osapp"; // Filter files by extension 
 
