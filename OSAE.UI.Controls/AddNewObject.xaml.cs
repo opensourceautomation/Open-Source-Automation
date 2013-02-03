@@ -52,7 +52,9 @@
         {
             if (ValidateForm())
             {
-                osae.ObjectAdd(
+                OSAEObjectManager objectManager = new OSAEObjectManager();
+
+                objectManager.ObjectAdd(
                     nameTextBox.Text,
                     descriptionTextBox.Text,
                     objectTypesComboBox.SelectedValue.ToString(),

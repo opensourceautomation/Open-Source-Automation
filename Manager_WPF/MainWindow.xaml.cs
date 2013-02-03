@@ -30,7 +30,7 @@
         /// <summary>
         /// Used to get access to the logging facility
         /// </summary>
-        private Logging logging = new Logging("Manager_WPF");
+        private Logging logging = Logging.GetLogger("Manager_WPF");
 
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
@@ -297,10 +297,12 @@
                 if (!string.IsNullOrEmpty(path))
                 {
                     PluginDescription desc = new PluginDescription();
+                    OSAEObjectManager objectManager = new OSAEObjectManager();
+
                     desc.Deserialize(path);
                     desc.Status = "Stopped";
                     desc.Enabled = false;
-                    List<OSAEObject> objs = osae.GetObjectsByType(desc.Type);
+                    List<OSAEObject> objs = objectManager.GetObjectsByType(desc.Type);
                     foreach (OSAEObject o in objs)
                     {
                         if (osae.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
@@ -543,8 +545,10 @@
                         }
                     }
                 }
-                OSAEObject obj = osae.GetObjectByName(pd.Name);
-                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);                
+
+                OSAEObjectManager objectManager = new OSAEObjectManager();
+                OSAEObject obj = objectManager.GetObjectByName(pd.Name);
+                objectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);                
             }
             catch (Exception ex)
             {
@@ -576,8 +580,10 @@
                         }
                     }
                 }
-                OSAEObject obj = osae.GetObjectByName(pd.Name);
-                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);                
+
+                OSAEObjectManager objectManager = new OSAEObjectManager();
+                OSAEObject obj = objectManager.GetObjectByName(pd.Name);
+                objectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);                
             }
             catch (Exception ex)
             {

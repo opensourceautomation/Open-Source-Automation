@@ -23,7 +23,7 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Plugin");
+        Logging logging = Logging.GetLogger();
         
         #region Properties
         //public Assembly Assembly;

@@ -20,7 +20,7 @@
     {
         OSAE.OSAE OSAEApi = new OSAE.OSAE("GUI");
 
-        OSAE.Logging logging = new OSAE.Logging("GUI");
+        OSAE.Logging logging = OSAE.Logging.GetLogger("GUI");
         
         String gAppName = "";
         String gCurrentScreen = "";
@@ -84,7 +84,7 @@
             gCurrentScreen = sScreen;
             String sPath = "";
             OSAEApi.ObjectPropertySet(gAppName, "Current Screen", sScreen);
-            sPath = OSAEApi.APIpath + OSAEApi.GetObjectPropertyValue(sScreen, "Background Image").Value;
+            sPath = OSAE.Common.ApiPath + OSAEApi.GetObjectPropertyValue(sScreen, "Background Image").Value;
             if (File.Exists(sPath))
             {
                 byte[] byteArray = File.ReadAllBytes(sPath);
@@ -109,8 +109,8 @@
             String sStateMatch = "";
             String sImage = "";
 
-
-            List<OSAE.OSAEObject> screenObjects = OSAEApi.GetObjectsByContainer(sScreen);
+            OSAE.OSAEObjectManager objectManager = new OSAE.OSAEObjectManager();
+            List<OSAE.OSAEObject> screenObjects = objectManager.GetObjectsByContainer(sScreen);
 
             foreach (OSAE.OSAEObject obj in screenObjects)
             {
@@ -452,8 +452,8 @@
         
         private void Load_App_Name()
         {
-
-            List<OSAE.OSAEObject> screens = OSAEApi.GetObjectsByType("GUI CLIENT");
+            OSAE.OSAEObjectManager objectManager = new OSAE.OSAEObjectManager();
+            List<OSAE.OSAEObject> screens = objectManager.GetObjectsByType("GUI CLIENT");
             foreach (OSAE.OSAEObject obj in screens)
             {
                 if (obj.Property("Computer Name").Value == OSAEApi.ComputerName)
@@ -462,14 +462,15 @@
             if (gAppName == "")
             {
                 gAppName = "GUI CLIENT-" + OSAEApi.ComputerName;
-                OSAEApi.ObjectAdd(gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
+                objectManager.ObjectAdd(gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
                 OSAEApi.ObjectPropertySet(gAppName, "Computer Name", OSAEApi.ComputerName);
             }
         }
 
         private void Set_Default_Screen()
         {
-            List<OSAE.OSAEObject> screens = OSAEApi.GetObjectsByType("SCREEN");
+            OSAE.OSAEObjectManager objectManager = new OSAE.OSAEObjectManager();
+            List<OSAE.OSAEObject> screens = objectManager.GetObjectsByType("SCREEN");
             if (screens.Count > 0)
             {
                 gCurrentScreen = screens[0].Name;

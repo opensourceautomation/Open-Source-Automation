@@ -13,7 +13,7 @@
         /// <summary>
         /// Used to get access to the logging facility
         /// </summary>
-        private Logging logging = new Logging("OSAE.API");
+        private Logging logging = Logging.GetLogger();
 
         /// <summary>
         /// Adds an image to the DB

@@ -23,7 +23,7 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Plugin");
+        Logging logging = Logging.GetLogger("Plugin");
 
         private AppDomain _domain;
         private OSAEPluginBase _plugin;

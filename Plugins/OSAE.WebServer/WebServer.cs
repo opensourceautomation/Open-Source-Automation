@@ -22,7 +22,7 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Web Server");
+        Logging logging = Logging.GetLogger("Web Server");
 
         /// <summary>
         /// Used as part of the host site

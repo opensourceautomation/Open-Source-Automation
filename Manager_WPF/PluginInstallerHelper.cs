@@ -42,7 +42,7 @@
         public static bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
             OSAE osae = new OSAE("Plugin Installer");
-            Logging logging = new Logging("Plugin Installer");
+            Logging logging = Logging.GetLogger("Plugin Installer");
 
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
             if (Directory.Exists(exePath + "/tempDir/"))
@@ -101,23 +101,10 @@
                     string pluginFolder = desc.Path;
                     if (!string.IsNullOrEmpty(pluginFolder))  //only extract valid plugins
                     {
-                        //Directory.CreateDirectory(exePath + "/Plugins/" + pluginFolder);
-
                         string[] files = System.IO.Directory.GetFiles(tempfolder);
 
-                        // Copy the files and overwrite destination files if they already exist.
-                        //foreach (string s in files)
-                        //{
-                        //    string fileName = System.IO.Path.GetFileName(s);
-                        //    if (desc.AdditionalAssemblies.Contains(fileName))
-                        //    {
-                        //        string destFile = System.IO.Path.Combine(exePath + "/", fileName);
-                        //        System.IO.File.Copy(s, destFile, true);
-                        //    }
-                        //}
-
                         string ConnectionString = string.Format("Uid={0};Pwd={1};Server={2};Port={3};Database={4};allow user variables=true",
-                            osae.DBUsername, osae.DBPassword, osae.DBConnection, osae.DBPort, osae.DBName);
+                            Common.DBUsername, Common.DBPassword, Common.DBConnection, Common.DBPort, Common.DBName);
                         MySql.Data.MySqlClient.MySqlConnection connection = new MySql.Data.MySqlClient.MySqlConnection(ConnectionString);
                         connection.Open();
                         foreach (string s in sqlFile)
@@ -229,7 +216,6 @@
             return returnValue;
         }
 
-        
         /// <summary>
         /// Deletes a folder and its contents on disk
         /// </summary>
@@ -251,5 +237,4 @@
             dir.Delete(true);
         }
     }
-
 }

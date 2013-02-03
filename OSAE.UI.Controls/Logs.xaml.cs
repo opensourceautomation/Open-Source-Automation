@@ -14,6 +14,7 @@
         /// OSAE API to interact with OSA DB
         /// </summary>
         private OSAE osae = new OSAE("OSAE.UI.Controls");
+        Logging logging = Logging.GetLogger();
 
         /// <summary>
         /// Timer to allow reload of log data after given period
@@ -58,7 +59,7 @@
         /// <param name="e">Standard RoutedEventArgs argument see MSDN</param>
         private void clearLogButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            this.osae.EventLogClear();
+            this.logging.EventLogClear();
             this.LoadLoags();
         }
 

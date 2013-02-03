@@ -13,7 +13,7 @@ namespace OSAE.NetworkMonitor
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Network Monitor");
+        Logging logging = Logging.GetLogger("Network Monitor");
 
         System.Timers.Timer Clock = new System.Timers.Timer();
         Thread updateThread;
@@ -68,7 +68,8 @@ namespace OSAE.NetworkMonitor
         {
             try
             {
-                List<OSAEObject> objects = osae.GetObjectsByType("NETWORK DEVICE");
+                OSAEObjectManager objectManager = new OSAEObjectManager();
+                List<OSAEObject> objects = objectManager.GetObjectsByType("NETWORK DEVICE");
                 logging.AddToLog("# NETWORK DEVICE: " + objects.Count.ToString(), false);
                 
                 foreach (OSAEObject obj in objects)
@@ -79,8 +80,8 @@ namespace OSAE.NetworkMonitor
                     else
                         osae.ObjectStateSet(obj.Name, "OFF");
                 }
-
-                objects = osae.GetObjectsByType("COMPUTER");
+                
+                objects = objectManager.GetObjectsByType("COMPUTER");
                 logging.AddToLog("# COMPUTERS: " + objects.Count.ToString(), false);
                 
                 foreach (OSAEObject obj in objects)

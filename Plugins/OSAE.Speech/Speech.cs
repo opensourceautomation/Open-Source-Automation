@@ -8,7 +8,7 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("SPEECH");
+        Logging logging = Logging.GetLogger("SPEECH");
 
         OSAE OSAEApi = new OSAE("SPEECH");
         SpeechSynthesizer oSpeech = new SpeechSynthesizer();

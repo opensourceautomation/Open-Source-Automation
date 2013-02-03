@@ -12,7 +12,7 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Email");
+        Logging logging = Logging.GetLogger("Email");
         
         public override void ProcessCommand(OSAEMethod method)
         {

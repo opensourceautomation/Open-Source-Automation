@@ -33,6 +33,50 @@
             }
         }
 
+        public static string DBName
+        {
+            get
+            {
+                ModifyRegistry registry = new ModifyRegistry();
+                registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+
+                return registry.Read("DBNAME");
+            }
+        }
+
+        public static string DBPort
+        {
+            get
+            {
+                ModifyRegistry registry = new ModifyRegistry();
+                registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+
+                return registry.Read("DBPORT");
+            }
+        }
+
+        public static string DBPassword
+        {
+            get
+            {
+                ModifyRegistry registry = new ModifyRegistry();
+                registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+
+                return registry.Read("DBPASSWORD");
+            }
+        }
+
+        public static string DBUsername
+        {
+            get
+            {
+                ModifyRegistry registry = new ModifyRegistry();
+                registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+
+                return registry.Read("DBUSERNAME");
+            }
+        }
+             
         /// <summary>
         /// Gets the connection string used to connect to the OSA DB
         /// </summary>
@@ -91,7 +135,7 @@
             catch
             {
                 connectionStatus = false;
-                new Logging("OSAE.API").AddToLog("API - Cannot run query - bad connection: ", true);
+                Logging.GetLogger().AddToLog("API - Cannot run query - bad connection: ", true);
             }             
 
             return connectionStatus;

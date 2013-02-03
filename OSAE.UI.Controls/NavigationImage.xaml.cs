@@ -32,7 +32,7 @@ namespace OSAE.UI.Controls
             InitializeComponent();
             screenObject = sObj;
             screenName = Name;
-            imgPath = osae.APIpath + path;
+            imgPath = Common.ApiPath + path;
 
             Image.Tag = screenName;
             if (File.Exists(imgPath))

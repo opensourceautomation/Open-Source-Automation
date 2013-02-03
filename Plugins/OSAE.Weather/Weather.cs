@@ -15,7 +15,7 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Weather");
+        Logging logging = Logging.GetLogger("Weather");
 
         Thread updateThread;
         Thread SunriseSunsetThread;
@@ -37,9 +37,10 @@
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-            List<OSAEObject> objects = osae.GetObjectsByType("WEATHER");
+            OSAEObjectManager objectManager = new OSAEObjectManager();
+            List<OSAEObject> objects = objectManager.GetObjectsByType("WEATHER");
             if (objects.Count == 0)
-                osae.ObjectAdd("Weather Data", "Weather Data", "WEATHER", "", "SYSTEM",true);
+                objectManager.ObjectAdd("Weather Data", "Weather Data", "WEATHER", "", "SYSTEM", true);
             if (!Directory.Exists(Common.ApiPath + "/Images/Weather"))
             {
                 DirectoryInfo di = Directory.CreateDirectory(Common.ApiPath + "/Images/Weather");

@@ -46,7 +46,7 @@ namespace OSAE.UI.Controls
                 }
             }
 
-            imgPath = osae.APIpath + screenObject.Property(StateMatch + " Image").Value;
+            imgPath = Common.ApiPath + screenObject.Property(StateMatch + " Image").Value;
 
             if (File.Exists(imgPath))
             {
@@ -83,9 +83,9 @@ namespace OSAE.UI.Controls
             Location.Y = Double.Parse(screenObject.Property(StateMatch + " Y").Value);
 
             String imagePath = screenObject.Property(StateMatch + " Image").Value;
-            if (File.Exists(osae.APIpath + imagePath))
+            if (File.Exists(Common.ApiPath + imagePath))
             {
-                imagePath = osae.APIpath + imagePath;
+                imagePath = Common.ApiPath + imagePath;
             }
 
             if (File.Exists(imagePath))

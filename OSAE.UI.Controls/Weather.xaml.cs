@@ -18,7 +18,7 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("GUI");
+        Logging logging = Logging.GetLogger("GUI");
 
         OSAEObject weatherObj;
         string sMode = "Max";
@@ -41,7 +41,8 @@
 
         private void Load_All_Weather()
 	    {
-		    weatherObj = osae.GetObjectByName("Weather Data");
+            OSAEObjectManager objectManager = new OSAEObjectManager();
+            weatherObj = objectManager.GetObjectByName("Weather Data");
 		    lblCurTemp.Content = weatherObj.Property("Temp").Value + "°";
 		    lblConditions.Content = weatherObj.Property("Today Forecast").Value;
 		    lblLastUpd.Content = weatherObj.Property("Last Updated").Value;

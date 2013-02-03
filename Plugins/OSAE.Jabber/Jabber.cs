@@ -14,7 +14,7 @@ namespace OSAE.Jabber
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Jabber");
+        Logging logging = Logging.GetLogger("Jabber");
 
         #region OSAPlugin Methods
         public override void RunInterface(string pluginName)
@@ -120,11 +120,13 @@ namespace OSAE.Jabber
         void xmppCon_OnPresence(object sender, agsXMPP.protocol.client.Presence pres)
         {
             logging.AddToLog(String.Format("Received Presence from:{0} show:{1} status:{2}", pres.From.ToString(), pres.Show.ToString(), pres.Status), false);
-            List<OSAEObject> objects = osae.GetObjectsByType("PERSON");
+            OSAEObjectManager objectManager = new OSAEObjectManager();
+            List<OSAEObject> objects = objectManager.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
-            {
-                OSAEObject obj = osae.GetObjectByName(oObj.Name);
+            {                
+                OSAEObject obj = objectManager.GetObjectByName(oObj.Name);
+
                 if (osae.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
                 {
                     if (pres.Show.ToString() == "away")
@@ -140,11 +142,13 @@ namespace OSAE.Jabber
         {
             bool found = false;
             logging.AddToLog(String.Format("Received Contact {0}", item.Jid.Bare), true);
-            List<OSAEObject> objects = osae.GetObjectsByType("PERSON");
+
+            OSAEObjectManager objectManager = new OSAEObjectManager();
+            List<OSAEObject> objects = objectManager.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
             {
-                OSAEObject obj = osae.GetObjectByName(oObj.Name);
+                OSAEObject obj = objectManager.GetObjectByName(oObj.Name);
                 if (osae.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
                 {
                     found = true;
@@ -154,7 +158,7 @@ namespace OSAE.Jabber
 
             if (!found)
             {
-                osae.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "PERSON", "", "",true);
+                objectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "PERSON", "", "", true);
                 osae.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare);
             }
         }

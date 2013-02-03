@@ -37,10 +37,12 @@ namespace OSAE.UI.Controls
 
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
+            OSAEObjectManager objectManager = new OSAEObjectManager();
+
             if (ValidateForm())
             {
                 string sName = currentScreen + " - " + objectsComboBox.Text;
-                osae.ObjectAdd(sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
+                objectManager.ObjectAdd(sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
                 osae.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text);
                 osae.ObjectPropertySet(sName, "X", "100");
                 osae.ObjectPropertySet(sName, "Y", "100");
