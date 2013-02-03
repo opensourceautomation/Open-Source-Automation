@@ -245,7 +245,7 @@
         {
             List<string> states = new List<string>();
 
-            DataSet ds = osae.RunSQL("select state_name from osae_v_object_state where object_name = 'SYSTEM'");
+            DataSet ds = OSAESql.RunSQL("select state_name from osae_v_object_state where object_name = 'SYSTEM'");
             foreach (DataRow dr in ds.Tables[0].Rows)
             {
                 states.Add(dr["state_name"].ToString());

@@ -114,7 +114,7 @@
         public List<OSAEObject> GetAllObjects()
         {
             MySqlCommand command = new MySqlCommand("SELECT object_name, object_description, object_type_description, container_name, state_label, last_updated, address, enabled, time_in_state, base_type FROM osae_v_object");
-            DataSet ds = osae.RunQuery(command);
+            DataSet ds = OSAESql.RunQuery(command);
 
             List<OSAEObject> objs = new List<OSAEObject>();
             OSAEObject obj;
@@ -219,7 +219,7 @@
         public DataSet ExecuteSQL(string sql)
         {
             MySqlCommand command = new MySqlCommand(sql);
-            return osae.RunQuery(command);
+            return OSAESql.RunQuery(command);
         }
         #endregion
 

@@ -6,7 +6,7 @@
     using System.Text;
     using MySql.Data.MySqlClient;
 
-    class ScheduleManager
+    public class ScheduleManager
     {
         Logging logging = Logging.GetLogger();
         OSAE osae = new OSAE("");
@@ -36,7 +36,7 @@
 
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -58,7 +58,7 @@
 
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -117,7 +117,8 @@
 
                 try
                 {
-                    osae.RunQuery(command);
+
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -139,7 +140,7 @@
 
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -199,7 +200,7 @@
                 command.Parameters.AddWithValue("@RecurringDate", recurringDate);
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -218,7 +219,7 @@
                 command.CommandText = "CALL osae_sp_run_scheduled_methods";
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -237,7 +238,7 @@
                 command.CommandText = "CALL osae_sp_process_recurring";
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {

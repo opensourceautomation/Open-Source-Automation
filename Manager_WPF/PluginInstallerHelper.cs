@@ -168,7 +168,7 @@
                             command.Parameters.AddWithValue("@pdebuginfo", "");
                             try
                             {
-                                osae.RunQuery(command);
+                                OSAESql.RunQuery(command);
                             }
                             catch (Exception ex)
                             {

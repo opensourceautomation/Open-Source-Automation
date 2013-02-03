@@ -38,7 +38,7 @@
         /// </summary>
         public void LoadLoags()
         {
-            DataSet dataSet = this.osae.RunSQL("SELECT log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY log_time DESC, object_name LIMIT 1000");
+            DataSet dataSet = OSAESql.RunSQL("SELECT log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY log_time DESC, object_name LIMIT 1000");
             this.logDataGrid.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 

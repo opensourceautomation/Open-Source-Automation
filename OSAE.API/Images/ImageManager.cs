@@ -38,7 +38,7 @@
                 command.Parameters.AddWithValue("@pimage_data", imageData);
                 command.Parameters.AddWithValue("@pimage_name", name);
                 command.Parameters.AddWithValue("@pimage_type", type);
-                osae.RunQuery(command);
+                OSAESql.RunQuery(command);
             }
         }
 
@@ -52,7 +52,7 @@
             {
                 command.CommandText = "CALL osae_sp_image_delete (@pimage_id)";
                 command.Parameters.AddWithValue("@pimage_id", imageId);               
-                osae.RunQuery(command);
+                OSAESql.RunQuery(command);
             }        
         }       
 

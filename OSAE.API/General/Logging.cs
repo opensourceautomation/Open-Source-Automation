@@ -121,7 +121,7 @@
                     command.CommandText = "CALL osae_sp_debug_log_add (@Entry,@Process)";
                     command.Parameters.AddWithValue("@Entry", entry);
                     command.Parameters.AddWithValue("@Process", logName);
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
             }
             catch
@@ -149,7 +149,7 @@
                 command.Parameters.AddWithValue("@Param2", parameter2);
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -169,7 +169,7 @@
                 try
                 {
                     OSAE osae = new OSAE(string.Empty);
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {

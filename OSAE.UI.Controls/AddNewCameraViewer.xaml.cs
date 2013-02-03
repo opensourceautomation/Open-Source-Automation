@@ -31,7 +31,7 @@ namespace OSAE.UI.Controls
         /// </summary>
         private void LoadObjects()
         {
-            DataSet dataSet = osae.RunSQL("SELECT object_name FROM osae_v_object WHERE object_Type = 'IP CAMERA' ORDER BY object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_Type = 'IP CAMERA' ORDER BY object_name");
             objectsComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -47,7 +47,7 @@ namespace OSAE.UI.Controls
                 osae.ObjectPropertySet(sName, "X", "100");
                 osae.ObjectPropertySet(sName, "Y", "100");
 
-                osae.RunSQL("CALL osae_sp_screen_object_add('" + currentScreen + "','" + objectsComboBox.Text + "','" + sName + "')");
+                OSAESql.RunSQL("CALL osae_sp_screen_object_add('" + currentScreen + "','" + objectsComboBox.Text + "','" + sName + "')");
 
 
                 HwndSource source = (HwndSource)PresentationSource.FromVisual(sender as Button);

@@ -55,7 +55,7 @@
                 command.Parameters.AddWithValue("@DebugInfo", null);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -76,7 +76,7 @@
                 command.Parameters.AddWithValue("@ID", methodID);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -102,7 +102,7 @@
 
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -127,7 +127,7 @@
 
             try
             {
-                RunQuery(command);
+                OSAESql.RunQuery(command);
             }
             catch (Exception ex)
             {
@@ -152,7 +152,7 @@
             command.Parameters.AddWithValue("@DebugInfo", null);
             try
             {
-                RunQuery(command);
+                OSAESql.RunQuery(command);
             }
             catch (Exception ex)
             {
@@ -177,7 +177,7 @@
 
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -213,7 +213,7 @@
 
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -234,7 +234,7 @@
                 command.Parameters.AddWithValue("@Name", Name);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -271,7 +271,7 @@
 
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -296,7 +296,7 @@
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -319,7 +319,7 @@
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -346,7 +346,7 @@
                 command.Parameters.AddWithValue("@ObjectType", objectType);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -375,7 +375,7 @@
                 command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -398,7 +398,7 @@
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -431,7 +431,7 @@
                 command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -459,7 +459,7 @@
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -482,7 +482,7 @@
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -511,7 +511,7 @@
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -530,7 +530,7 @@
                 command.Parameters.AddWithValue("@option", option);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -549,7 +549,7 @@
                 command.Parameters.AddWithValue("@option", option);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -569,7 +569,7 @@
                 command.Parameters.AddWithValue("@oldoption", oldoption);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -594,7 +594,7 @@
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -617,7 +617,7 @@
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -644,7 +644,7 @@
                 command.Parameters.AddWithValue("@ObjectType", objectType);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -669,7 +669,7 @@
                     command.CommandText = "SELECT option_name FROM osae_v_object_type_property_option WHERE object_type=@ObjectType AND property_name=@PropertyName";
                     command.Parameters.AddWithValue("@ObjectType", objType);
                     command.Parameters.AddWithValue("@PropertyName", propName);
-                    dataset = RunQuery(command);
+                    dataset = OSAESql.RunQuery(command);
                 }
 
                 return dataset;
@@ -702,7 +702,7 @@
             command.Parameters.AddWithValue("@PropertyLabel", propertyLabel);
             try
             {
-                RunQuery(command);
+                OSAESql.RunQuery(command);
             }
             catch (Exception ex)
             {
@@ -725,7 +725,7 @@
                 command.Parameters.AddWithValue("@PropertyName", propertyName);
                 try
                 {
-                    dataset = RunQuery(command);
+                    dataset = OSAESql.RunQuery(command);
                     string Result = dataset.Tables[0].Rows[0][0].ToString();
                     return Result;
                 }
@@ -753,7 +753,7 @@
                     command.CommandText = "CALL osae_sp_object_property_array_get_all (@ObjectName, @PropertyName)";
                     command.Parameters.AddWithValue("@ObjectName", objectName);
                     command.Parameters.AddWithValue("@PropertyName", propertyName);
-                    dataset = RunQuery(command);
+                    dataset = OSAESql.RunQuery(command);
 
                     return dataset;
                 }
@@ -781,7 +781,7 @@
                 command.Parameters.AddWithValue("@PropertyValue", propertyValue);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -804,7 +804,7 @@
                 command.Parameters.AddWithValue("@PropertyName", propertyName);
                 try
                 {
-                    RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -825,7 +825,7 @@
             {
                 command.CommandText = "SELECT object_name, control_name, control_type, state_name, last_updated, coalesce(time_in_state, 0) as time_in_state FROM osae_v_screen_object WHERE screen_name=@ScreenName";
                 command.Parameters.AddWithValue("@ScreenName", screenName);
-                dataset = RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
@@ -869,7 +869,7 @@
 				command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
 				command.Parameters.AddWithValue("@ObjectName", ObjectName);
 				command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
-				dataset = RunQuery(command);
+				dataset = OSAESql.RunQuery(command);
 
 				if (dataset.Tables[0].Rows.Count > 0)
 				{
@@ -916,7 +916,7 @@
 				{
 					command.CommandText = "SELECT state_name, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@ObjectName";
 					command.Parameters.AddWithValue("@ObjectName", ObjectName);
-					dataset = RunQuery(command);
+					dataset = OSAESql.RunQuery(command);
 				}
 
 				if (dataset.Tables[0].Rows.Count > 0)
@@ -958,7 +958,7 @@
                 command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_type=@ObjectType AND property_name='Computer Name' AND (property_value IS NULL OR property_value='' OR property_value=@MachineName) LIMIT 1";
                 command.Parameters.AddWithValue("@ObjectType", objectType);
                 command.Parameters.AddWithValue("@MachineName", machineName);
-                dataset = RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                     return dataset.Tables[0].Rows[0]["object_name"].ToString();
@@ -967,7 +967,7 @@
                     command = new MySqlCommand();
                     command.CommandText = "SELECT * FROM osae_object WHERE object_name=@ObjectType2";
                     command.Parameters.AddWithValue("@ObjectType2", objectType);
-                    dataset = RunQuery(command);
+                    dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
                         return objectType;
@@ -996,7 +996,7 @@
 				{
 					command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_name=@ObjectName";
 					command.Parameters.AddWithValue("@ObjectName", ObjectName);
-					dataset = RunQuery(command);
+					dataset = OSAESql.RunQuery(command);
 
 					return dataset;
 				}
@@ -1007,54 +1007,7 @@
 				}
 			}
 		}
-
-        
-
-        /// <summary>
-        /// Runs the passed in SQL query on the database and returns a dataset of the results
-        /// </summary>
-        /// <param name="SQL"></param>
-        /// <returns></returns>
-        public DataSet RunQuery(MySqlCommand command)
-        {           
-            DataSet dataset = new DataSet();
-            
-            if (Common.TestConnection())
-            {
-                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
-                {
-                    MySqlDataAdapter adapter = new MySqlDataAdapter(command);
-                    command.Connection = connection;                        
-                    adapter.Fill(dataset);
-                }              
-            }
-            return dataset;
-        }
-
-        /// <summary>
-        /// Runs the passed in SQL query on the database and returns a dataset of the results
-        /// </summary>
-        /// <param name="SQL"></param>
-        /// <returns></returns>
-        public DataSet RunSQL(string sql)
-        {
-            DataSet dataset = new DataSet();
-
-            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
-            {
-                MySqlCommand command = new MySqlCommand(sql);
-                MySqlDataAdapter adapter;  
-
-                if (Common.TestConnection())
-                {
-                    command.Connection = connection;
-                    adapter = new MySqlDataAdapter(command);
-                    adapter.Fill(dataset);
-                }
-            }
-            return dataset;
-        }
-
+               
         /// <summary>
 		/// CALL osae_sp_pattern_parse(pattern) and returns result
         /// </summary>
@@ -1068,7 +1021,7 @@
             {
                 command.CommandText = "CALL osae_sp_pattern_parse(@Pattern)";
                 command.Parameters.AddWithValue("@Pattern", pattern);
-                dataset = RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                     return dataset.Tables[0].Rows[0]["vInput"].ToString();
@@ -1090,7 +1043,7 @@
             {
                 command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                 command.Parameters.AddWithValue("@Name", str);
-                dataset = RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                     return dataset.Tables[0].Rows[0]["pattern"].ToString();
@@ -1114,7 +1067,7 @@
 
             try
             {
-                RunQuery(command);
+                OSAESql.RunQuery(command);
             }
             catch (Exception ex)
             {
@@ -1132,7 +1085,7 @@
             {
                 command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName ORDER BY property_name";
                 command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                dataset = RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
 
                 foreach (DataRow drp in dataset.Tables[0].Rows)
                 {
@@ -1164,7 +1117,7 @@
                 {
                     command.CommandText = "SELECT method_name FROM osae_v_object_method WHERE object_name=@ObjectName ORDER BY method_name";
                     command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                    dataset = RunQuery(command);
+                    dataset = OSAESql.RunQuery(command);
                 }
 
                 foreach (DataRow drp in dataset.Tables[0].Rows)

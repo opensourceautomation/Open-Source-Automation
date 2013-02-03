@@ -139,7 +139,7 @@
                     MySqlCommand command = new MySqlCommand();
                     command.Connection = connection;
                     command.CommandText = "SET sql_safe_updates=0; DELETE FROM osae_method_queue;";
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
             }
             catch (Exception ex)
@@ -293,7 +293,7 @@
                     DataSet dataset = new DataSet();
                     MySqlCommand command = new MySqlCommand();
                     command.CommandText = "SELECT method_queue_id, object_name, address, method_name, parameter_1, parameter_2, object_owner FROM osae_v_method_queue ORDER BY entry_time";
-                    dataset = osae.RunQuery(command);
+                    dataset = OSAESql.RunQuery(command);
 
                     foreach (DataRow row in dataset.Tables[0].Rows)
                     {
@@ -353,7 +353,7 @@
                             }
                             command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
                             logging.AddToLog("Removing method from queue: " + command.CommandText, false);
-                            osae.RunQuery(command);
+                            OSAESql.RunQuery(command);
                         }
                         else
                         {
@@ -364,7 +364,7 @@
                                 {
                                     command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
                                     logging.AddToLog("Removing method from queue: " + command.CommandText, false);
-                                    osae.RunQuery(command);
+                                    OSAESql.RunQuery(command);
                                    
                                     plugin.ExecuteCommand(method);
                                     processed = true;
@@ -381,7 +381,7 @@
                                 
                                 command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
                                 logging.AddToLog("Removing method from queue: " + command.CommandText, false);
-                                osae.RunQuery(command);
+                                OSAESql.RunQuery(command);
                                 processed = true;
                             }
                         }

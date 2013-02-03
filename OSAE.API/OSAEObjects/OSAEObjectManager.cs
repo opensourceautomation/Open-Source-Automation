@@ -23,7 +23,7 @@
             {
                 command.CommandText = "SELECT * FROM osae_v_object WHERE address=@Address";
                 command.Parameters.AddWithValue("@Address", address);
-                dataset = osae.RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
@@ -53,7 +53,7 @@
             {
                 command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
                 command.Parameters.AddWithValue("@Name", name);
-                dataset = osae.RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
@@ -93,7 +93,7 @@
             {
                 command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
                 command.Parameters.AddWithValue("@Address", address);
-                dataset = osae.RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
@@ -136,7 +136,7 @@
                     command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
                     command.Parameters.AddWithValue("@ContainerName", ContainerName);
                 }
-                dataset = osae.RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
                     foreach (DataRow dr in dataset.Tables[0].Rows)
@@ -172,7 +172,7 @@
             {
                 command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
                 command.Parameters.AddWithValue("@ObjectOwner", ObjectOwner);
-                dataset = osae.RunQuery(command);
+                dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
@@ -215,7 +215,7 @@
                 {
                     command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE base_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectBaseType);
-                    dataset = osae.RunQuery(command);
+                    dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
                     {
@@ -259,7 +259,7 @@
                 {
                     command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectType);
-                    dataset = osae.RunQuery(command);
+                    dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
                     {
@@ -344,7 +344,7 @@
                 command.Parameters.AddWithValue("@Name", Name);
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -365,7 +365,7 @@
                 command.Parameters.AddWithValue("@Address", address);
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
@@ -399,7 +399,7 @@
 
                 try
                 {
-                    osae.RunQuery(command);
+                    OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {

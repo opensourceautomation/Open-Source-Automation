@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="General\Common.cs" />
     <Compile Include="Enums\DaysOfWeek.cs" />
+    <Compile Include="General\OSAESql.cs" />
     <Compile Include="Images\ImageManager.cs" />
     <Compile Include="Images\OSAEImage.cs" />
     <Compile Include="General\Logging.cs">
