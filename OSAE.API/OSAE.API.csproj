@@ -60,9 +60,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ObjectProperties\ObjectPopertiesManager.cs" />
+    <Compile Include="ObjectType\ObjectTypeManager.cs" />
+    <Compile Include="OSAEScreenControls\OSAEScreenControlManager.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginDescription.cs" />
     <Compile Include="Plugin\PluginFinder.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Schedules.cs\ScheduleManager.cs" />
     <Compile Include="ObjectProperties\ObjectProperty.cs" />
     <Compile Include="ObjectState.cs" />
@@ -72,7 +75,7 @@
     <Compile Include="OSAEMethods\OSAEMethodManager.cs" />
     <Compile Include="OSAEObjects\OSAEObject.cs" />
     <Compile Include="Plugin\OSAEPluginBase.cs" />
-    <Compile Include="OSAEScreenControl.cs" />
+    <Compile Include="OSAEScreenControls\OSAEScreenControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="General\ModifyRegistry.cs" />
   </ItemGroup>

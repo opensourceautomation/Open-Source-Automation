@@ -162,15 +162,17 @@
         public Boolean ExecuteMethod(string name, string method, string param1, string param2)
         {
             // execute a method on an object 
-            osae.MethodQueueAdd(name, method, param1, param2);
+            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "WCF Service");
             return true;
         }
 
         public Boolean SendPattern(string pattern)
         {
             string patternName = osae.MatchPattern(pattern);
-            if (patternName != "")
-                osae.MethodQueueAdd("Script Processor", "NAMED SCRIPT", patternName, "");
+            if (!string.IsNullOrEmpty(patternName))
+            {
+                OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", patternName, "", "WCF Service");
+            }
             return true;
         }
 
@@ -225,7 +227,7 @@
 
         public Boolean SetProperty(string objName, string propName, string propValue)
         {
-            osae.ObjectPropertySet(objName, propName, propValue);
+            ObjectPopertiesManager.ObjectPropertySet(objName, propName, propValue, "WCF Service");
 
             return true;
         }

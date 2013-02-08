@@ -63,7 +63,7 @@ namespace OSAE.Jabber
                         break;
 
                     case "SEND FROM LIST":
-                        sendMessage(osae.PatternParse(osae.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
+                        sendMessage(osae.PatternParse(ObjectPopertiesManager.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
                         break;
                 }
             }
@@ -91,10 +91,10 @@ namespace OSAE.Jabber
             logging.AddToLog(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()), false);
             logging.AddToLog("Message: " + msg.Body, false);
             string pattern = osae.MatchPattern(msg.Body);
-            if(pattern != "")
-                osae.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, msg.From.Bare);
-
-  
+            if (pattern != string.Empty)
+            {
+                OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, msg.From.Bare, "Jabber");
+            }             
         }
 
         void xmppCon_OnClose(object sender)
@@ -130,9 +130,9 @@ namespace OSAE.Jabber
                 if (osae.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
                 {
                     if (pres.Show.ToString() == "away")
-                        osae.ObjectPropertySet(obj.Name, "JabberStatus", "Idle");
+                        ObjectPopertiesManager.ObjectPropertySet(obj.Name, "JabberStatus", "Idle", "Jabber");
                     else if (pres.Show.ToString() == "NONE")
-                        osae.ObjectPropertySet(obj.Name, "JabberStatus", "Online");
+                        ObjectPopertiesManager.ObjectPropertySet(obj.Name, "JabberStatus", "Online", "Jabber");
                     break;
                 }
             }
@@ -159,7 +159,7 @@ namespace OSAE.Jabber
             if (!found)
             {
                 objectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "PERSON", "", "", true);
-                osae.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare);
+                ObjectPopertiesManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
             }
         }
 

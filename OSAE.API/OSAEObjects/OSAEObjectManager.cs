@@ -6,9 +6,9 @@
     using MySql.Data.MySqlClient;
 
     public class OSAEObjectManager
-    {
-        Logging logging = Logging.GetLogger();
+    {       
         OSAE osae = new OSAE("");
+
         /// <summary>
         /// Returns true or false whether the object with the specified address exists
         /// </summary>
@@ -34,7 +34,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("API - ObjectExists Error: " + ex.Message, true);
+                Logging.GetLogger().AddToLog("API - ObjectExists Error: " + ex.Message, true);
                 return false;
             }
         }
@@ -62,9 +62,9 @@
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
 
-                    obj.Properties = osae.GetObjectProperties(obj.Name);
+                    obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
 
-                    obj.Methods = osae.GetObjectMethods(obj.Name);
+                    obj.Methods = GetObjectMethods(obj.Name);
 
                     return obj;
                 }
@@ -73,7 +73,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("API - GetObjectByName (" + name + ")error: " + ex.Message, true);
+                Logging.GetLogger().AddToLog("API - GetObjectByName (" + name + ")error: " + ex.Message, true);
                 return null;
             }
         }
@@ -102,8 +102,8 @@
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
 
-                    obj.Properties = osae.GetObjectProperties(obj.Name);
-                    obj.Methods = osae.GetObjectMethods(obj.Name);
+                    obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                    obj.Methods = GetObjectMethods(obj.Name);
                     return obj;
                 }
                 else
@@ -111,7 +111,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("API - GetObjectByAddress (" + address + ")error: " + ex.Message, true);
+                Logging.GetLogger().AddToLog("API - GetObjectByAddress (" + address + ")error: " + ex.Message, true);
                 return obj;
             }
         }
@@ -147,8 +147,8 @@
                         obj.BaseType = dr["base_type"].ToString();
                         obj.LastUpd = dr["last_updated"].ToString();
 
-                        obj.Properties = osae.GetObjectProperties(obj.Name);
-                        obj.Methods = osae.GetObjectMethods(obj.Name);
+                        obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                        obj.Methods = GetObjectMethods(obj.Name);
                         objects.Add(obj);
                     }
                     return objects;
@@ -157,7 +157,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("API - GetObjectsByContainer error: " + ex.Message, true);
+                Logging.GetLogger().AddToLog("API - GetObjectsByContainer error: " + ex.Message, true);
                 return objects;
             }
         }
@@ -168,6 +168,7 @@
             DataSet dataset = new DataSet();
             OSAEObject obj = new OSAEObject();
             List<OSAEObject> objects = new List<OSAEObject>();
+
             try
             {
                 command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
@@ -183,8 +184,8 @@
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
 
-                        obj.Properties = osae.GetObjectProperties(obj.Name);
-                        obj.Methods = osae.GetObjectMethods(obj.Name);
+                        obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                        obj.Methods = GetObjectMethods(obj.Name);
                         objects.Add(obj);
                     }
                     return objects;
@@ -193,7 +194,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                Logging.GetLogger().AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
                 return objects;
             }
         }
@@ -226,8 +227,8 @@
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
 
-                            obj.Properties = osae.GetObjectProperties(obj.Name);
-                            obj.Methods = osae.GetObjectMethods(obj.Name);
+                            obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                            obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
                         return objects;
@@ -236,7 +237,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - GetObjectsByBaseType error: " + ex.Message, true);
                     return objects;
                 }
             }
@@ -270,8 +271,8 @@
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
 
-                            obj.Properties = osae.GetObjectProperties(obj.Name);
-                            obj.Methods = osae.GetObjectMethods(obj.Name);
+                            obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                            obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
                         return objects;
@@ -280,7 +281,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - GetObjectsByType error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - GetObjectsByType error: " + ex.Message, true);
                     return objects;
                 }
             }
@@ -296,6 +297,8 @@
         /// <param name="container"></param>
         public void ObjectAdd(string name, string description, string objectType, string address, string container, bool enabled)
         {
+            Logging logging = Logging.GetLogger();
+
             using (MySqlCommand command = new MySqlCommand())
             {
                 //command.CommandText = "CALL osae_sp_object_add (@Name, @Description, @ObjectType, @Address, @Container, @Enabled, @results)";
@@ -348,7 +351,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -369,7 +372,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectDeleteByAddress error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectDeleteByAddress error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -403,9 +406,36 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
+        }
+
+        public List<string> GetObjectMethods(string ObjectName)
+        {
+            DataSet dataset = new DataSet();
+            List<string> methods = new List<string>();
+
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "SELECT method_name FROM osae_v_object_method WHERE object_name=@ObjectName ORDER BY method_name";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    dataset = OSAESql.RunQuery(command);
+                }
+
+                foreach (DataRow drp in dataset.Tables[0].Rows)
+                {
+                    methods.Add(drp["method_name"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - GetObjectMethods error: " + ex.Message, true);
+            }
+
+            return methods;
         }
     }
 }

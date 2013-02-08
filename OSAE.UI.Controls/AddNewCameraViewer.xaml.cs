@@ -43,9 +43,9 @@ namespace OSAE.UI.Controls
             {
                 string sName = currentScreen + " - " + objectsComboBox.Text;
                 objectManager.ObjectAdd(sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
-                osae.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text);
-                osae.ObjectPropertySet(sName, "X", "100");
-                osae.ObjectPropertySet(sName, "Y", "100");
+                ObjectPopertiesManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "Weather");
+                ObjectPopertiesManager.ObjectPropertySet(sName, "X", "100", "Weather");
+                ObjectPopertiesManager.ObjectPropertySet(sName, "Y", "100", "Weather");
 
                 OSAESql.RunSQL("CALL osae_sp_screen_object_add('" + currentScreen + "','" + objectsComboBox.Text + "','" + sName + "')");
 

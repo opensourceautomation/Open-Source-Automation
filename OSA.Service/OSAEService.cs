@@ -10,14 +10,12 @@
     using System.Security;
     using System.Security.Policy;
     using System.ServiceModel;
-    using System.ServiceModel.Web;
     using System.ServiceProcess;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Timers;
     using System.Xml.Linq;
     using MySql.Data.MySqlClient;
-    using API;
 
     class OSAEService : ServiceBase
     {
@@ -26,8 +24,7 @@
         private List<Plugin> plugins = new List<Plugin>();
         private List<Plugin> masterPlugins = new List<Plugin>();
         private string _computerIP;
-        private bool goodConnection = false;
-        private WebServiceHost serviceHost = new WebServiceHost(typeof(OSAERest.api));
+        private bool goodConnection = false;        
         private OSAE osae = new OSAE("OSAE Service");
 
         /// <summary>
@@ -53,7 +50,7 @@
                 string pattern = osacl.MatchPattern(args[0]);
                 Logging.AddToLog("Processing command: " + args[0] + ", Named Script: " + pattern, true, "OSACL");
                 if (pattern != "")
-                    osacl.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, "");
+                    OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, "", "OSACL");
             }
             else
             {
@@ -131,8 +128,7 @@
 
             try
             {
-                OSAEMethodManager methodManager = new OSAEMethodManager();
-                methodManager.ClearMethodQueue();
+                OSAEMethodManager.ClearMethodQueue();
             }
             catch (Exception ex)
             {
@@ -149,24 +145,24 @@
                 if (obj == null)
                 {
                     objectManager.ObjectAdd(osae.ComputerName, osae.ComputerName, "COMPUTER", _computerIP, "", true);
-                    osae.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName);
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, "OSAE Service");
                 }
                 else if (obj.Type == "COMPUTER")
                 {
                     objectManager.ObjectUpdate(obj.Name, osae.ComputerName, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                    osae.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName);
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, "OSAE Service");
                 }
                 else
                 {
-                    objectManager.ObjectAdd(osae.ComputerName + "." + _computerIP, osae.ComputerName, "COMPUTER", _computerIP, "", true);
-                    osae.ObjectPropertySet(osae.ComputerName + "." + _computerIP, "Host Name", osae.ComputerName);
+                    objectManager.ObjectAdd(Common.ComputerName + "." + _computerIP, Common.ComputerName, "COMPUTER", _computerIP, "", true);
+                    ObjectPopertiesManager.ObjectPropertySet(Common.ComputerName + "." + _computerIP, "Host Name", Common.ComputerName, "OSAE Service");
                 }
             }
             else
             {
                 OSAEObject obj = objectManager.GetObjectByName(osae.ComputerName);
                 objectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                osae.ObjectPropertySet(obj.Name, "Host Name", osae.ComputerName);
+                ObjectPopertiesManager.ObjectPropertySet(obj.Name, "Host Name", osae.ComputerName, "OSAE Service");
             }
 
             try
@@ -174,28 +170,21 @@
                 logging.AddToLog("Creating Service object", true);
                 OSAEObject svcobj = objectManager.GetObjectByName("SERVICE-" + osae.ComputerName);
                 if (svcobj == null)
+                {
                     objectManager.ObjectAdd("SERVICE-" + osae.ComputerName, "SERVICE-" + osae.ComputerName, "SERVICE", "", "SYSTEM", true);
+                }
                 osae.ObjectStateSet("SERVICE-" + osae.ComputerName, "ON");
             }
             catch (Exception ex)
             {
                 logging.AddToLog("Error creating service object - " + ex.Message, true);
-            }
-
+            }                      
+                        
             try
             {
-                serviceHost.Open();
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Error starting RESTful web service: " + ex.Message, true);
-            }
-            
-            wcfService = new WCF.WCFService();
-            sHost = new ServiceHost(wcfService);
-            wcfService.MessageReceived += new EventHandler<WCF.CustomEventArgs>(wcfService_MessageReceived);
-            try
-            {
+                wcfService = new WCF.WCFService();
+                sHost = new ServiceHost(wcfService);
+                wcfService.MessageReceived += new EventHandler<WCF.CustomEventArgs>(wcfService_MessageReceived);
                 sHost.Open();
             }
             catch (Exception ex)
@@ -243,8 +232,7 @@
                     checkPlugins.Enabled = false;
                     running = false;
                     if (sHost.State == CommunicationState.Opened)
-                        sHost.Close();
-                    serviceHost.Close();
+                        sHost.Close();                    
                     logging.AddToLog("shutting down plugins", true);
                     foreach (Plugin p in plugins)
                     {
@@ -473,7 +461,7 @@
                                 plugin.PluginName = plugin.PluginType;
                             logging.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
                             objectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
-                            osae.ObjectPropertySet(plugin.PluginName, "Computer Name", osae.ComputerName);
+                            ObjectPopertiesManager.ObjectPropertySet(plugin.PluginName, "Computer Name", osae.ComputerName, "OSAE Service");
 
                             logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
                             sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);

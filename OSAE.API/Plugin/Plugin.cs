@@ -88,7 +88,7 @@
             }
 
             _pluginType = desc.Type;
-            _pluginName = osae.GetPluginName(_pluginType, osae.ComputerName);
+            _pluginName = PluginManager.GetPluginName(_pluginType, Common.ComputerName);
             _assemblyType = assemblyType;
             _assemblyName = assemblyName;
             _domain = domain;

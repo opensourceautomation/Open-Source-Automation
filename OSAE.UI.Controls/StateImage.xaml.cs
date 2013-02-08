@@ -112,12 +112,12 @@ namespace OSAE.UI.Controls
 
             if (CurState == "ON")
             {
-                osae.MethodQueueAdd(ObjectName, "OFF", "", "");
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "", "", "GUI");
                 osae.ObjectStateSet(ObjectName, "OFF");
             }
             else
             {
-                osae.MethodQueueAdd(ObjectName, "ON", "", "");
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "", "", "GUI");
                 osae.ObjectStateSet(ObjectName, "ON");
             }
             

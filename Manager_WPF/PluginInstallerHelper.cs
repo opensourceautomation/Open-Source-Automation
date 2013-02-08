@@ -190,7 +190,7 @@
                     deleteFolder(exePath + "/tempDir/");
                 }
 
-                osae.MethodQueueAdd("SERVICE-" + osae.ComputerName, "RELOAD PLUGINS", "", "");
+                OSAEMethodManager.MethodQueueAdd("SERVICE-" + osae.ComputerName, "RELOAD PLUGINS", "", "", "Plugin Installer");
             return NoError;
         }
 

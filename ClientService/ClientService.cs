@@ -20,7 +20,7 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = Logging.GetLogger("Web Server");
+        Logging logging = Logging.GetLogger("Client Service");
 
         private WCFServiceReference.WCFServiceClient wcfObj;
         private List<Plugin> plugins = new List<Plugin>();
@@ -37,7 +37,7 @@
                 string pattern = osacl.MatchPattern(args[0]);
                 Logging.AddToLog("Processing command: " + args[0] + ", Pattern: " + pattern, true, "OSACL");
                 if (pattern != "")
-                    osacl.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, "");
+                    OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, "", "OSACL");
             }
             else
             {
@@ -102,24 +102,24 @@
                 if (obj == null)
                 {
                     objectManager.ObjectAdd(osae.ComputerName, osae.ComputerName, "COMPUTER", _computerIP, "", true);
-                    osae.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName);
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, "Client Service");
                 }
                 else if (obj.Type == "COMPUTER")
                 {
                     objectManager.ObjectUpdate(obj.Name, osae.ComputerName, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                    osae.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName);
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, "Client Service");
                 }
                 else
                 {
                     objectManager.ObjectAdd(osae.ComputerName + "." + _computerIP, osae.ComputerName, "COMPUTER", _computerIP, "", true);
-                    osae.ObjectPropertySet(osae.ComputerName + "." + _computerIP, "Host Name", osae.ComputerName);
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName + "." + _computerIP, "Host Name", osae.ComputerName, "Client Service");
                 }
             }
             else
             {
                 OSAEObject obj = objectManager.GetObjectByName(osae.ComputerName);
                 objectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                osae.ObjectPropertySet(obj.Name, "Host Name", osae.ComputerName);
+                ObjectPopertiesManager.ObjectPropertySet(obj.Name, "Host Name", osae.ComputerName, "Client Service");
             }
 
             try
@@ -261,7 +261,7 @@
 
                             logging.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
                             objectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
-                            osae.ObjectPropertySet(plugin.PluginName, "Computer Name", osae.ComputerName);
+                            ObjectPopertiesManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, "Client Service");
 
                             logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
                             Thread thread = new Thread(() => messageHost("plugin", "plugin|" + plugin.PluginName + "|" + plugin.Status

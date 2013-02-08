@@ -83,7 +83,7 @@
             logging.AddToLog("Loading screen: " + sScreen, false);
             gCurrentScreen = sScreen;
             String sPath = "";
-            OSAEApi.ObjectPropertySet(gAppName, "Current Screen", sScreen);
+            OSAE.ObjectPopertiesManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
             sPath = OSAE.Common.ApiPath + OSAEApi.GetObjectPropertyValue(sScreen, "Background Image").Value;
             if (File.Exists(sPath))
             {
@@ -389,7 +389,8 @@
                 if (!loadingScreen)
                 {
                     logging.AddToLog("Entering Update_Objects", false);
-                    List<OSAE.OSAEScreenControl> controls = OSAEApi.GetScreenControls(gCurrentScreen);
+                    
+                    List<OSAE.OSAEScreenControl> controls = OSAE.OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
 
                     foreach (OSAE.OSAEScreenControl newCtrl in controls)
                     {
@@ -463,7 +464,7 @@
             {
                 gAppName = "GUI CLIENT-" + OSAEApi.ComputerName;
                 objectManager.ObjectAdd(gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
-                OSAEApi.ObjectPropertySet(gAppName, "Computer Name", OSAEApi.ComputerName);
+                OSAE.ObjectPopertiesManager.ObjectPropertySet(gAppName, "Computer Name", OSAE.Common.ComputerName, "GUI");
             }
         }
 
@@ -474,7 +475,7 @@
             if (screens.Count > 0)
             {
                 gCurrentScreen = screens[0].Name;
-                OSAEApi.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen);
+                OSAE.ObjectPopertiesManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, "GUI");
             }
         }
 
@@ -662,14 +663,14 @@
 
         private void updateObjectCoords(string name, string X, string Y)
         {
-            OSAEApi.ObjectPropertySet(name, "X", X);
-            OSAEApi.ObjectPropertySet(name, "Y", Y);
+            OSAE.ObjectPopertiesManager.ObjectPropertySet(name, "X", X, "GUI");
+            OSAE.ObjectPopertiesManager.ObjectPropertySet(name, "Y", Y, "GUI");
         }
 
         private void updateObjectCoordsStateImg(string name, string state, string X, string Y)
         {
-            OSAEApi.ObjectPropertySet(name, state + " X", X);
-            OSAEApi.ObjectPropertySet(name, state + " Y", Y);
+            OSAE.ObjectPopertiesManager.ObjectPropertySet(name, state + " X", X, "GUI");
+            OSAE.ObjectPopertiesManager.ObjectPropertySet(name, state + " Y", Y, "GUI");
         }
         #endregion
     }

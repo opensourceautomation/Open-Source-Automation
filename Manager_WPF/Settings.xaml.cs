@@ -39,8 +39,8 @@
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             ComboBoxItem cbi = (ComboBoxItem)cbDebugging.SelectedItem;
-            osae.ObjectPropertySet("SYSTEM", "Debug", cbi.Content.ToString());
-            osae.ObjectPropertySet("SYSTEM", "ZIP Code", txbxZipcode.Text);
+            ObjectPopertiesManager.ObjectPropertySet("SYSTEM", "Debug", cbi.Content.ToString(), "Manager_WPF");
+            ObjectPopertiesManager.ObjectPropertySet("SYSTEM", "ZIP Code", txbxZipcode.Text, "Manager_WPF");
             this.Close();
         }
     }

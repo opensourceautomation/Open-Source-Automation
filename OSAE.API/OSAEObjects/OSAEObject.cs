@@ -19,6 +19,9 @@
         private int _enabled;
         private string _lastUpd;
         private ObjectState _state;
+        public List<ObjectProperty> Properties { get; set; }
+        public List<string> Methods { get; set; }
+        private OSAE osae = new OSAE("API");
 
         public string Name
         {
@@ -136,11 +139,7 @@
             }
         }
       
-        public List<ObjectProperty> Properties  { get; set; }
-            
-        public List<string> Methods  { get; set; }
-       
-        private OSAE osae = new OSAE("API");
+        
         #endregion
 
         public OSAEObject(string name, string description, string type, string address, string container, int enabled)
@@ -170,9 +169,9 @@
             State = osae.GetObjectStateValue(Name);
         }
 
-        public void SetProperty(string prop, string value)
+        public void SetProperty(string prop, string value, string source)
         {
-            osae.ObjectPropertySet(Name, prop, value);
+            ObjectPopertiesManager.ObjectPropertySet(Name, prop, value, source);
             foreach (ObjectProperty p in Properties)
             {
                 if (p.Name == prop)

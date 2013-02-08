@@ -143,7 +143,7 @@
                 command.CommandText = "CALL osae_sp_event_log_add (@ObjectName, @EventName, @FromObject, @DebugInfo, @Param1, @Param2)";
                 command.Parameters.AddWithValue("@ObjectName", objectName);
                 command.Parameters.AddWithValue("@EventName", eventName);
-                command.Parameters.AddWithValue("@FromObject", osae.GetPluginName(logName, Common.ComputerName));
+                command.Parameters.AddWithValue("@FromObject", PluginManager.GetPluginName(logName, Common.ComputerName));
                 command.Parameters.AddWithValue("@DebugInfo", null);
                 command.Parameters.AddWithValue("@Param1", parameter1);
                 command.Parameters.AddWithValue("@Param2", parameter2);
