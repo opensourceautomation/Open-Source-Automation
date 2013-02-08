@@ -352,6 +352,26 @@ namespace OSAE
             }
         }
 
+        public void ScreenObjectAdd(string screen, string objectName, string controlName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_screen_object_add(@Screen, @ObjectName, @ControlName)";
+                command.Parameters.AddWithValue("@Screen", screen);
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@ControlName", controlName);
+
+                try
+                {
+                    RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("ScreenObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
         #region Object Type Methods
         /// <summary>
         /// Create new object type

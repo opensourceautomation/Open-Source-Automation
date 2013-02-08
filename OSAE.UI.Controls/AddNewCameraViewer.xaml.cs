@@ -19,10 +19,10 @@ namespace OSAE.UI.Controls
         /// </summary>
         private OSAE osae = new OSAE("OSAE.UI.Controls");
 
-        public AddNewCameraViewer()
+        public AddNewCameraViewer(string screen)
         {
             InitializeComponent();
-
+            currentScreen = screen;
             LoadObjects();
         }
 
@@ -44,13 +44,12 @@ namespace OSAE.UI.Controls
                 osae.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text);
                 osae.ObjectPropertySet(sName, "X", "100");
                 osae.ObjectPropertySet(sName, "Y", "100");
+                osae.ObjectPropertySet(sName, "ZOrder", "1");
 
-                osae.RunSQL("CALL osae_sp_screen_object_add('" + currentScreen + "','" + objectsComboBox.Text + "','" + sName + "')");
+                osae.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
 
 
-                HwndSource source = (HwndSource)PresentationSource.FromVisual(sender as Button);
-                System.Windows.Forms.Control ctl = System.Windows.Forms.Control.FromChildHandle(source.Handle);
-                ctl.FindForm().Close();
+                NotifyParentFinished();
             }
             else
             {
@@ -74,9 +73,20 @@ namespace OSAE.UI.Controls
 
         private void cancelbutton_Click(object sender, RoutedEventArgs e)
         {
-            HwndSource source = (HwndSource)PresentationSource.FromVisual(sender as Button);
-            System.Windows.Forms.Control ctl = System.Windows.Forms.Control.FromChildHandle(source.Handle);
-            ctl.FindForm().Close();
+            NotifyParentFinished();
+        }
+
+        /// <summary>
+        /// Let the hosting contol know that we are done
+        /// </summary>
+        /// <remarks>At present it tells the parent to close, this could later be altered to have a event that fires to
+        /// the parent allowing them to decide what to do when the control is finished. If the control is being hosted in
+        /// an element host this will have no affect as the parent is the element host and not the form.</remarks>
+        private void NotifyParentFinished()
+        {
+            // Get the window hosting us so we can ask it to close
+            Window parentWindow = Window.GetWindow(this);
+            parentWindow.Close();
         }
 
     }

@@ -1,6 +1,9 @@
-﻿namespace OSAE.API.Images
+﻿namespace OSAE
 {
     using System;
+    using System.Drawing;
+    using System.Data;
+    using System.Windows.Media.Imaging;
     using MySql.Data.MySqlClient;    
     using System.IO;
     using System.Collections;
@@ -19,9 +22,9 @@
         /// Adds an image to the DB
         /// </summary>
         /// <param name="osaeImage">The image information to add</param>
-        public void AddImage(OSAEImage osaeImage)
+        public int AddImage(OSAEImage osaeImage)
         {
-            AddImage(osaeImage.Name, osaeImage.Type, osaeImage.Data);         
+            return AddImage(osaeImage.Name, osaeImage.Type, osaeImage.Data);         
         }
 
         /// <summary>
@@ -30,7 +33,7 @@
         /// <param name="name">The name of the image this should not include the path or extension</param>
         /// <param name="type">the type of the image e.g. jpg, png do not include the .</param>
         /// <param name="imageData">the binary data of the image</param>
-        public void AddImage(string name, string type, byte[] imageData)
+        public int AddImage(string name, string type, byte[] imageData)
         {
             using (MySqlCommand command = new MySqlCommand())
             {                
@@ -38,7 +41,13 @@
                 command.Parameters.AddWithValue("@pimage_data", imageData);
                 command.Parameters.AddWithValue("@pimage_name", name);
                 command.Parameters.AddWithValue("@pimage_type", type);
-                osae.RunQuery(command);
+                command.Parameters.Add(new MySqlParameter("@id", MySqlDbType.Int32));
+                command.Parameters["@id"].Direction = System.Data.ParameterDirection.Output;
+                DataSet ds = osae.RunQuery(command);
+
+
+                return Int32.Parse(ds.Tables[0].Rows[0][0].ToString());
+
             }
         }
 
@@ -68,6 +77,38 @@
             {
                 using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
+                    //MySqlCommand command = new MySqlCommand("SELECT image_id, image_name, image_type FROM osae_images WHERE image_id = " + imageId, connection);
+                    //connection.Open();
+
+                    //MySqlDataReader reader = command.ExecuteReader();
+
+                    //if (reader.Read())
+                    //{
+                    //    osaeImage.ID = reader.GetUInt32("image_id");
+                    //    osaeImage.Name = reader.GetString("image_name");
+                    //    osaeImage.Type = reader.GetString("image_type");
+
+                    //    //Check if image exists locally
+                    //    if (File.Exists(osae.APIpath + @"\Images\" + osaeImage.Name + "." + osaeImage.Type))
+                    //    {
+                    //        Image img = Image.FromFile(osae.APIpath + @"\Images\" + osaeImage.Name + "." + osaeImage.Type);
+
+                    //        switch (osaeImage.Type.ToLower())
+                    //        {
+                    //            case "jpg":
+                    //                osaeImage.Data = jpgToByteArray(img);
+                    //                break;
+                    //            case "png":
+                    //                osaeImage.Data = pngToByteArray(img);
+                    //                break;
+                    //            case "gif":
+                    //                osaeImage.Data = gifToByteArray(img);
+                    //                break;
+                    //        }
+                    //        return osaeImage;
+                    //    }
+                    //}
+
                     MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images WHERE image_id = " + imageId, connection);
                     connection.Open();
 
@@ -87,7 +128,41 @@
                 }
             }
 
-            return new OSAEImage();
+            return osaeImage;
+        }
+
+        /// <summary>
+        /// Gets an image from the DB
+        /// </summary>
+        /// <param name="imageId">The id of the image to get</param>
+        /// <returns>the requested image</returns>
+        public OSAEImage GetImage(string imageName)
+        {
+            OSAEImage osaeImage = new OSAEImage();
+            if (Common.TestConnection())
+            {
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+                {
+                   MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images WHERE image_name = '" + imageName + "'", connection);
+                    connection.Open();
+
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        osaeImage.ID = reader.GetUInt32("image_id");
+                        osaeImage.Name = reader.GetString("image_name");
+                        osaeImage.Type = reader.GetString("image_type");
+                        osaeImage.Data = (byte[])reader.GetValue(1);
+                    }
+                    else
+                    {
+                        logging.AddToLog("API - Failed to get requested image from DB: ", true);
+                    }
+                }
+            }
+
+            return osaeImage;
         }
 
         /// <summary>
@@ -165,6 +240,54 @@
                 }
             }
             return imageList;                
+        }
+
+        public byte[] getJPGFromImageControl(BitmapImage imageC)
+        {
+            MemoryStream memStream = new MemoryStream();
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(imageC));
+            encoder.Save(memStream);
+            return memStream.GetBuffer();
+        }
+
+        public byte[] getPNGFromImageControl(BitmapImage imageC)
+        {
+            MemoryStream memStream = new MemoryStream();
+            PngBitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(imageC));
+            encoder.Save(memStream);
+            return memStream.GetBuffer();
+        }
+
+        public byte[] getGIFFromImageControl(BitmapImage imageC)
+        {
+            MemoryStream memStream = new MemoryStream();
+            GifBitmapEncoder encoder = new GifBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(imageC));
+            encoder.Save(memStream);
+            return memStream.GetBuffer();
+        }
+
+        public byte[] gifToByteArray(Image imageIn)
+        {
+            MemoryStream ms = new MemoryStream();
+            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+            return ms.ToArray();
+        }
+
+        public byte[] jpgToByteArray(Image imageIn)
+        {
+            MemoryStream ms = new MemoryStream();
+            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            return ms.ToArray();
+        }
+
+        public byte[] pngToByteArray(Image imageIn)
+        {
+            MemoryStream ms = new MemoryStream();
+            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            return ms.ToArray();
         }
     }
 }

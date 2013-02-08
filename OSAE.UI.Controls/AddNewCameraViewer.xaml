@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" d:DesignWidth="580" Height="131">
+             mc:Ignorable="d" Width="580" Height="131">
     <Grid Height="131" VerticalAlignment="Top">
         <Label Content="Object" Height="28" HorizontalAlignment="Left" Margin="13,34,0,0" Name="label3" VerticalAlignment="Top" Width="73" />
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="92,34,0,0" x:Name="objectsComboBox" VerticalAlignment="Top" Width="357" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" />

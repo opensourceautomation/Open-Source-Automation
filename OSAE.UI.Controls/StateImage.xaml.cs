@@ -22,7 +22,7 @@ namespace OSAE.UI.Controls
 
         private string ObjectName;
         private string ObjectStateTime;
-        
+        private ImageManager imgMgr = new ImageManager();
         
         public StateImage(OSAEObject sObject)
         {
@@ -45,13 +45,13 @@ namespace OSAE.UI.Controls
                     StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
                 }
             }
+            
+            string imgName = screenObject.Property(StateMatch + " Image").Value;
+            OSAEImage img = imgMgr.GetImage(imgName);
 
-            imgPath = osae.APIpath + screenObject.Property(StateMatch + " Image").Value;
-
-            if (File.Exists(imgPath))
+            if (img.Data != null)
             {
-                byte[] byteArray = File.ReadAllBytes(imgPath);
-                var imageStream = new MemoryStream(byteArray);
+                var imageStream = new MemoryStream(img.Data);
                 var bitmapImage = new BitmapImage();
 
                 bitmapImage.BeginInit();
@@ -82,17 +82,12 @@ namespace OSAE.UI.Controls
             Location.X = Double.Parse(screenObject.Property(StateMatch + " X").Value);
             Location.Y = Double.Parse(screenObject.Property(StateMatch + " Y").Value);
 
-            String imagePath = screenObject.Property(StateMatch + " Image").Value;
-            if (File.Exists(osae.APIpath + imagePath))
-            {
-                imagePath = osae.APIpath + imagePath;
-            }
+            string imgName = screenObject.Property(StateMatch + " Image").Value;
+            OSAEImage img = imgMgr.GetImage(imgName);
 
-            if (File.Exists(imagePath))
+            if (img.Data != null)
             {
-                
-                byte[] byteArray = File.ReadAllBytes(imagePath);
-                var imageStream = new MemoryStream(byteArray);
+                var imageStream = new MemoryStream(img.Data);
 
 
                 this.Dispatcher.Invoke((Action)(() =>
