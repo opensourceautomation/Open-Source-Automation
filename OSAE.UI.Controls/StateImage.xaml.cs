@@ -28,7 +28,7 @@ namespace OSAE.UI.Controls
 
             screenObject = sObject;
             ObjectName = screenObject.Property("Object Name").Value;
-            CurState = ObjectStateManager.GetObjectStateValue(ObjectName).Value;
+            CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
 
             Image.Tag = ObjectName;
             Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
@@ -36,7 +36,7 @@ namespace OSAE.UI.Controls
             //ObjectStateTime = stateObject.LastUpd;
 
             string imgPath;
-            foreach (ObjectProperty p in screenObject.Properties)
+            foreach (OSAEObjectProperty p in screenObject.Properties)
             {
                 if (p.Value.ToLower() == CurState.ToLower())
                 {
@@ -67,9 +67,9 @@ namespace OSAE.UI.Controls
 
         public void Update()
         {
-            CurState = ObjectStateManager.GetObjectStateValue(ObjectName).Value;
+            CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
 
-            foreach (ObjectProperty p in screenObject.Properties)
+            foreach (OSAEObjectProperty p in screenObject.Properties)
             {
                 if (p.Value.ToLower() == CurState.ToLower())
                 {
@@ -109,12 +109,12 @@ namespace OSAE.UI.Controls
             if (CurState == "ON")
             {
                 OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", string.Empty, string.Empty, sourceName);
-                ObjectStateManager.ObjectStateSet(ObjectName, "OFF", sourceName);
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", sourceName);
             }
             else
             {
                 OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", string.Empty, string.Empty, sourceName);
-                ObjectStateManager.ObjectStateSet(ObjectName, "ON", sourceName);
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", sourceName);
             }            
         }        
     }

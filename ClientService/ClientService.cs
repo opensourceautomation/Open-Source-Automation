@@ -78,7 +78,7 @@
 
                 System.IO.FileInfo file = new System.IO.FileInfo(Common.ApiPath + "/Logs/");
                 file.Directory.Create();
-                if (ObjectPopertiesManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
+                if (OSAEObjectPopertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
                 {
                     string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
                     foreach (string f in files)
@@ -99,24 +99,24 @@
                 if (obj == null)
                 {
                     OSAEObjectManager.ObjectAdd(Common.ComputerName, Common.ComputerName, "COMPUTER", _computerIP, "", true);
-                    ObjectPopertiesManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
+                    OSAEObjectPopertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
                 }
                 else if (obj.Type == "COMPUTER")
                 {
                     OSAEObjectManager.ObjectUpdate(obj.Name, Common.ComputerName, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                    ObjectPopertiesManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
+                    OSAEObjectPopertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
                 }
                 else
                 {
                     OSAEObjectManager.ObjectAdd(Common.ComputerName + "." + _computerIP, Common.ComputerName, "COMPUTER", _computerIP, "", true);
-                    ObjectPopertiesManager.ObjectPropertySet(Common.ComputerName + "." + _computerIP, "Host Name", Common.ComputerName, sourceName);
+                    OSAEObjectPopertyManager.ObjectPropertySet(Common.ComputerName + "." + _computerIP, "Host Name", Common.ComputerName, sourceName);
                 }
             }
             else
             {
                 OSAEObject obj = OSAEObjectManager.GetObjectByName(Common.ComputerName);
                 OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                ObjectPopertiesManager.ObjectPropertySet(obj.Name, "Host Name", Common.ComputerName, sourceName);
+                OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, "Host Name", Common.ComputerName, sourceName);
             }
 
             try
@@ -125,7 +125,7 @@
                 OSAEObject svcobj = OSAEObjectManager.GetObjectByName("SERVICE-" + Common.ComputerName);
                 if (svcobj == null)
                     OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "", "SYSTEM", true);
-                ObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", sourceName);
+                OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", sourceName);
             }
             catch (Exception ex)
             {
@@ -201,7 +201,7 @@
 
                         logging.AddToLog("setting found: " + obj.Name + " - " + obj.Enabled.ToString(), true);
                         bool isSystemPlugin = false;
-                        foreach (ObjectProperty p in obj.Properties)
+                        foreach (OSAEObjectProperty p in obj.Properties)
                         {
                             if (p.Name == "System Plugin")
                             {
@@ -255,7 +255,7 @@
 
                             logging.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
                             OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
-                            ObjectPopertiesManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, "Client Service");
+                            OSAEObjectPopertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, "Client Service");
 
                             logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
                             Thread thread = new Thread(() => messageHost("plugin", "plugin|" + plugin.PluginName + "|" + plugin.Status
@@ -307,9 +307,9 @@
                     string[] arguments = message.Split('|');
                 
                     if (arguments[1] == "True")
-                        ObjectStateManager.ObjectStateSet(arguments[0], "ON", sourceName);
+                        OSAEObjectStateManager.ObjectStateSet(arguments[0], "ON", sourceName);
                     else if (arguments[1] == "False")
-                        ObjectStateManager.ObjectStateSet(arguments[0], "OFF", sourceName);
+                        OSAEObjectStateManager.ObjectStateSet(arguments[0], "OFF", sourceName);
 
                     foreach (Plugin p in plugins)
                     {                        
@@ -320,7 +320,7 @@
                             if (obj != null)
                             {
                                 bool isSystemPlugin = false;
-                                foreach (ObjectProperty p2 in obj.Properties)
+                                foreach (OSAEObjectProperty p2 in obj.Properties)
                                 {
                                     if (p2.Name == "System Plugin")
                                     {
@@ -492,7 +492,7 @@
                 if (plugin.ActivatePlugin())
                 {
                     plugin.RunInterface();
-                    ObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", sourceName);
+                    OSAEObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", sourceName);
                     logging.AddToLog("Plugin enabled: " + plugin.PluginName, true);
                 }
             }

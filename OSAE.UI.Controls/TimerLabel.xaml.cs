@@ -110,7 +110,7 @@ namespace OSAE.UI.Controls
             this.Dispatcher.Invoke((Action)(() =>
             {
                 string sValue;
-                ObjectState os = ObjectStateManager.GetObjectStateValue(ObjectName);
+                OSAEObjectState os = OSAEObjectStateManager.GetObjectStateValue(ObjectName);
                 CurrentState = os.Value;
 
                 TimeSpan ts = DateTime.Now - LastUpdated;

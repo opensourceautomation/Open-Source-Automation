@@ -76,7 +76,7 @@ namespace OSAE.UI.Controls
             string fileName = Path.GetFileName(txtPath.Text).Split('.')[0];
             string ext = Path.GetFileName(txtPath.Text).Split('.')[1];
 
-            ImageManager imgMgr = new ImageManager();
+            OSAEImageManager imgMgr = new OSAEImageManager();
 
             int imgID = 0;
             byte[] byt;
@@ -99,11 +99,11 @@ namespace OSAE.UI.Controls
 
             string sName = "Screen - Nav - " + txtName.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Image", fileName, "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Screen", screenComboBox.Text, "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "X", "100", "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Image", fileName, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Screen", screenComboBox.Text, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, screenComboBox.Text, sName);
 

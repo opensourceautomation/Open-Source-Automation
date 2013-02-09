@@ -6,7 +6,7 @@
     using System.Text;
     using MySql.Data.MySqlClient;
 
-    public class ScheduleManager
+    public class OSAEScheduleManager
     {
         private Logging logging = Logging.GetLogger();
         

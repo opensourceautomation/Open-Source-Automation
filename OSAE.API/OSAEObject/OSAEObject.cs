@@ -16,8 +16,8 @@
         private string _container;
         private int _enabled;
         private string _lastUpd;
-        private ObjectState _state;
-        public List<ObjectProperty> Properties { get; set; }
+        private OSAEObjectState _state;
+        public List<OSAEObjectProperty> Properties { get; set; }
         public List<string> Methods { get; set; }
 
         public string Name
@@ -117,18 +117,18 @@
             }
         }
 
-        public ObjectState State
+        public OSAEObjectState State
         {
             get
             {
-                _state.Value = ObjectStateManager.GetObjectStateValue(_name).Value;
+                _state.Value = OSAEObjectStateManager.GetObjectStateValue(_name).Value;
                 return _state;
             }
 
             set
             {
                 _state = value;
-                ObjectStateManager.ObjectStateSet(_name, value.Value, "API");
+                OSAEObjectStateManager.ObjectStateSet(_name, value.Value, "API");
             }
         }      
 
@@ -155,12 +155,12 @@
             Container = container;
             Enabled = enabled;
             Description = description;
-            State = new ObjectState();
+            State = new OSAEObjectState();
         }
 
         public OSAEObject()
         {
-            State = new ObjectState();
+            State = new OSAEObjectState();
         }
 
         public void Delete()
@@ -170,14 +170,14 @@
 
         public void SetState(string state)
         {
-            ObjectStateManager.ObjectStateSet(Name, state, "API");
-            State = ObjectStateManager.GetObjectStateValue(Name);
+            OSAEObjectStateManager.ObjectStateSet(Name, state, "API");
+            State = OSAEObjectStateManager.GetObjectStateValue(Name);
         }
 
         public void SetProperty(string prop, string value, string source)
         {
-            ObjectPopertiesManager.ObjectPropertySet(Name, prop, value, source);
-            foreach (ObjectProperty p in Properties)
+            OSAEObjectPopertyManager.ObjectPropertySet(Name, prop, value, source);
+            foreach (OSAEObjectProperty p in Properties)
             {
                 if (p.Name == prop)
                 {
@@ -186,9 +186,9 @@
             }
         }
 
-        public ObjectProperty Property(string prop)
+        public OSAEObjectProperty Property(string prop)
         {
-            foreach (ObjectProperty p in Properties)
+            foreach (OSAEObjectProperty p in Properties)
             {
                 if (p.Name == prop)
                 {

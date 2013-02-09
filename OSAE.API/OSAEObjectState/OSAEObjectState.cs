@@ -3,7 +3,7 @@
     /// <summary>
     /// This class is used to hold information about the state of an object.
     /// </summary>
-    public class ObjectState
+    public class OSAEObjectState
     {
         /// <summary>
         /// The state the object was in

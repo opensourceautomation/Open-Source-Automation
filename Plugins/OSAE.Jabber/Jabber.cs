@@ -44,7 +44,7 @@ namespace OSAE.Jabber
                 logging.AddToLog("Process command: " + method.MethodName, false);
                 logging.AddToLog("Message: " + method.Parameter2, false);
                 logging.AddToLog("To: " + method.Parameter1, false);
-                ObjectProperty prop = ObjectPopertiesManager.GetObjectPropertyValue(method.Parameter1, "JabberID");
+                OSAEObjectProperty prop = OSAEObjectPopertyManager.GetObjectPropertyValue(method.Parameter1, "JabberID");
                 if(prop != null)
                     to = prop.Value;
                     if (to == "")
@@ -62,7 +62,7 @@ namespace OSAE.Jabber
                         break;
 
                     case "SEND FROM LIST":
-                        sendMessage(Common.PatternParse(ObjectPopertiesManager.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
+                        sendMessage(Common.PatternParse(OSAEObjectPopertyManager.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
                         break;
                 }
             }
@@ -126,12 +126,12 @@ namespace OSAE.Jabber
             {
                 OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
 
-                if (ObjectPopertiesManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
+                if (OSAEObjectPopertyManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
                 {
                     if (pres.Show.ToString() == "away")
-                        ObjectPopertiesManager.ObjectPropertySet(obj.Name, "JabberStatus", "Idle", "Jabber");
+                        OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, "JabberStatus", "Idle", "Jabber");
                     else if (pres.Show.ToString() == "NONE")
-                        ObjectPopertiesManager.ObjectPropertySet(obj.Name, "JabberStatus", "Online", "Jabber");
+                        OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, "JabberStatus", "Online", "Jabber");
                     break;
                 }
             }
@@ -147,7 +147,7 @@ namespace OSAE.Jabber
             foreach (OSAEObject oObj in objects)
             {
                 OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
-                if (ObjectPopertiesManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
+                if (OSAEObjectPopertyManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
                 {
                     found = true;
                     break;
@@ -157,7 +157,7 @@ namespace OSAE.Jabber
             if (!found)
             {
                 OSAEObjectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "PERSON", "", "", true);
-                ObjectPopertiesManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
+                OSAEObjectPopertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
             }
         }
 
@@ -185,11 +185,11 @@ namespace OSAE.Jabber
         private void connect()
         {
             logging.AddToLog("Connecting to server", true);
-            Jid jidUser = new Jid(ObjectPopertiesManager.GetObjectPropertyValue(pName, "Username").Value);
+            Jid jidUser = new Jid(OSAEObjectPopertyManager.GetObjectPropertyValue(pName, "Username").Value);
 
             xmppCon.Username = jidUser.User;
             xmppCon.Server = jidUser.Server;
-            xmppCon.Password = ObjectPopertiesManager.GetObjectPropertyValue(pName, "Password").Value;
+            xmppCon.Password = OSAEObjectPopertyManager.GetObjectPropertyValue(pName, "Password").Value;
             xmppCon.AutoResolveConnectServer = true;
 
             try

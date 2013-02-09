@@ -1,6 +1,6 @@
 ﻿namespace OSAE
 {
-    public class ObjectProperty
+    public class OSAEObjectProperty
     {
         /// <summary>
         /// The db Id of the property

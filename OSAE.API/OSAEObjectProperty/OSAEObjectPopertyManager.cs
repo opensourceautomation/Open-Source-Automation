@@ -5,15 +5,15 @@
     using System.Data;
     using MySql.Data.MySqlClient;
 
-    public class ObjectPopertiesManager
+    public class OSAEObjectPopertyManager
     {
         /// <summary>
-        /// Returns an ObjectProperty whcih contains the value, type, ID, last updated, and name
+        /// Returns an OSAEObjectProperty whcih contains the value, type, ID, last updated, and name
         /// </summary>
         /// <param name="ObjectName"></param>
-        /// <param name="ObjectProperty"></param>
+        /// <param name="OSAEObjectProperty"></param>
         /// <returns></returns>
-        public static ObjectProperty GetObjectPropertyValue(string ObjectName, string ObjectProperty)
+        public static OSAEObjectProperty GetObjectPropertyValue(string ObjectName, string ObjectProperty)
         {           
             try
             {
@@ -21,14 +21,14 @@
                 {
                     DataSet dataset = new DataSet();
 
-                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@OSAEObjectProperty";
                     command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                    command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
+                    command.Parameters.AddWithValue("@OSAEObjectProperty", ObjectProperty);
                     dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
                     {
-                        ObjectProperty p = new ObjectProperty();
+                        OSAEObjectProperty p = new OSAEObjectProperty();
                         p.Id = dataset.Tables[0].Rows[0]["object_property_id"].ToString();
                         p.DataType = dataset.Tables[0].Rows[0]["property_datatype"].ToString();
                         p.LastUpdated = dataset.Tables[0].Rows[0]["last_updated"].ToString();
@@ -39,7 +39,7 @@
                     }
                     else
                     {
-                        ObjectProperty p = new ObjectProperty();
+                        OSAEObjectProperty p = new OSAEObjectProperty();
                         p.Id = string.Empty;
                         p.DataType = string.Empty;
                         p.LastUpdated = string.Empty;
@@ -84,9 +84,9 @@
             }
         }
 
-        public static List<ObjectProperty> GetObjectProperties(string ObjectName)
+        public static List<OSAEObjectProperty> GetObjectProperties(string ObjectName)
         {
-            List<ObjectProperty> props = new List<ObjectProperty>();
+            List<OSAEObjectProperty> props = new List<OSAEObjectProperty>();
                         
             try
             {
@@ -100,7 +100,7 @@
 
                     foreach (DataRow drp in dataset.Tables[0].Rows)
                     {
-                        ObjectProperty p = new ObjectProperty();
+                        OSAEObjectProperty p = new OSAEObjectProperty();
                         p.Name = drp["property_name"].ToString();
                         p.Value = drp["property_value"].ToString();
                         p.DataType = drp["property_datatype"].ToString();

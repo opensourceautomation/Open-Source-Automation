@@ -198,13 +198,13 @@
 
         public Boolean AddScript(string objName, string objEvent, string script)
         {
-            ScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
+            OSAEScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
             return true;
         }
 
         public Boolean UpdateScript(string objName, string objEvent, string script)
         {
-            ScriptManager.ObjectEventScriptUpdate(objName, objEvent, script);
+            OSAEScriptManager.ObjectEventScriptUpdate(objName, objEvent, script);
             return true;
         }
 
@@ -226,14 +226,14 @@
 
         public Boolean SetProperty(string objName, string propName, string propValue)
         {
-            ObjectPopertiesManager.ObjectPropertySet(objName, propName, propValue, sourceName);
+            OSAEObjectPopertyManager.ObjectPropertySet(objName, propName, propValue, sourceName);
 
             return true;
         }
 
         public Boolean SetState(string objName, string state)
         {
-            ObjectStateManager.ObjectStateSet(objName, state, sourceName);
+            OSAEObjectStateManager.ObjectStateSet(objName, state, sourceName);
 
             return true;
         }

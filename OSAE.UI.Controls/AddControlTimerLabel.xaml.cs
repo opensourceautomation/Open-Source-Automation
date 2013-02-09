@@ -83,14 +83,14 @@
         {
             string sName = "Screen - " + currentScreen + " - " + objectComboBox.Text + "(Off Timer)";
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL TIMER LABEL", "", currentScreen, true);
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "X", "100", "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
 

@@ -39,7 +39,7 @@
             else if (sMethod == "SPEAKFROM")
             {
                 logging.AddToLog("--Speak From Object: " + sParam1 + " and pick From list: " + sParam2, true);
-                string sText = ObjectPopertiesManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
+                string sText = OSAEObjectPopertyManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
                 sText = Common.PatternParse(sText);
                 oSpeech.Speak(sText);
                 logging.AddToLog("Said " + sText, true);
@@ -52,7 +52,7 @@
             }
             else if (sMethod == "PLAYFROM")
             {
-                string sFile = ObjectPopertiesManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
+                string sFile = OSAEObjectPopertyManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
                 wmPlayer.URL = sFile;
                 wmPlayer.controls.play();
                 logging.AddToLog("Played " + sFile, true);
@@ -78,7 +78,7 @@
                 if (Convert.ToInt16(sParam1) > 0 && Convert.ToInt16(sParam1) <= 100)
                 {
                     oSpeech.Volume = Convert.ToInt16(sParam1);
-                    ObjectPopertiesManager.ObjectPropertySet(gAppName, "TTS Volume", sParam1, "SPEECH");
+                    OSAEObjectPopertyManager.ObjectPropertySet(gAppName, "TTS Volume", sParam1, "SPEECH");
                     logging.AddToLog("TTS Volume Set to " + Convert.ToInt16(sParam1), true);
                 }
             }
@@ -87,7 +87,7 @@
                 if (Convert.ToInt16(sParam1) > -11 && Convert.ToInt16(sParam1) < 11)
                 {
                     oSpeech.Rate = Convert.ToInt16(sParam1);
-                    ObjectPopertiesManager.ObjectPropertySet(gAppName, "TTS Rate", sParam1, "SPEECH");
+                    OSAEObjectPopertyManager.ObjectPropertySet(gAppName, "TTS Rate", sParam1, "SPEECH");
                     logging.AddToLog("TTS Rate Set to " + Convert.ToInt16(sParam1), true);
                 }
             }
@@ -108,18 +108,18 @@
         {        
             try
             {
-                gSelectedVoice = ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "Voice").Value;
-                ObjectPopertiesManager.ObjectPropertyArrayDeleteAll(gAppName, "Voices");
+                gSelectedVoice = OSAEObjectPopertyManager.GetObjectPropertyValue(gAppName, "Voice").Value;
+                OSAEObjectPopertyManager.ObjectPropertyArrayDeleteAll(gAppName, "Voices");
                 foreach (System.Speech.Synthesis.InstalledVoice i in oSpeech.GetInstalledVoices())
                 {
                     if (gSelectedVoice == "")
                     {
                         gSelectedVoice = i.VoiceInfo.Name;
-                        ObjectPopertiesManager.ObjectPropertySet(gAppName, "Voice", gSelectedVoice, "SPEECH");
+                        OSAEObjectPopertyManager.ObjectPropertySet(gAppName, "Voice", gSelectedVoice, "SPEECH");
                         logging.AddToLog("Default Voice Set to " + gSelectedVoice, true);
                     }
                     logging.AddToLog("Adding Voice: " + i.VoiceInfo.Name, false);
-                    ObjectPopertiesManager.ObjectPropertyArrayAdd(gAppName, "Voices", i.VoiceInfo.Name, "Voice");
+                    OSAEObjectPopertyManager.ObjectPropertyArrayAdd(gAppName, "Voices", i.VoiceInfo.Name, "Voice");
                 }
 
                 if (gSelectedVoice != "")
@@ -128,14 +128,14 @@
                     logging.AddToLog("Current Voice Set to " + gSelectedVoice, true);
                 }
 
-                Int16 iTTSRate = Convert.ToInt16(ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
+                Int16 iTTSRate = Convert.ToInt16(OSAEObjectPopertyManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
                 if (iTTSRate > 0 && iTTSRate <= 100)
                 {
                     oSpeech.Rate = iTTSRate;
                     logging.AddToLog("TTS Rate Set to " + iTTSRate.ToString(), true);
                 }
 
-                Int16 iTTSVolume = Convert.ToInt16(ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
+                Int16 iTTSVolume = Convert.ToInt16(OSAEObjectPopertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
                 if (iTTSVolume > -11 && iTTSVolume <= 11)
                 {
                     oSpeech.Rate = iTTSVolume;

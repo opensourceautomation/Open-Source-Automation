@@ -1,12 +1,9 @@
 ﻿namespace OSAE
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using MySql.Data.MySqlClient;
 
-    public class ScriptManager
+    public class OSAEScriptManager
     {
         /// <summary>
         /// Add a new event script for an object

@@ -4,7 +4,7 @@
     using System;
     using System.Data;
 
-    public class ObjectTypeManager
+    public class OSAEObjectTypeManager
     {
         private Logging logging = Logging.GetLogger();
 

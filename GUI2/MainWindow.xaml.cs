@@ -72,7 +72,7 @@
             canGUI.Width = 200;//bitmapImage.Width;
 
             Load_App_Name();
-            gCurrentScreen = ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
+            gCurrentScreen = OSAEObjectPopertyManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
             if (gCurrentScreen == "")
             {
                 Set_Default_Screen();
@@ -99,9 +99,9 @@
                 loadingScreen = true;
                 logging.AddToLog("Loading screen: " + sScreen, false);
                 gCurrentScreen = sScreen;
-                ObjectPopertiesManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
-                OSAE.ImageManager imgMgr = new OSAE.ImageManager();
-                string imgID = ObjectPopertiesManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
+                OSAEObjectPopertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
+                OSAE.OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
+                string imgID = OSAEObjectPopertyManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
                 OSAE.OSAEImage img = imgMgr.GetImage(imgID);
 
                 //sPath = OSAEApi.APIpath + OSAEApi.GetObjectPropertyValue(sScreen, "Background Image").Value;
@@ -297,7 +297,7 @@
                 {
                     StateImage stateImageControl = new StateImage(obj);
 
-                    foreach (OSAE.ObjectProperty p in obj.Properties)
+                    foreach (OSAE.OSAEObjectProperty p in obj.Properties)
                     {
                         if (p.Value.ToLower() == stateImageControl.CurState.ToLower())
                         {
@@ -418,9 +418,9 @@
                         navImageControl.MouseLeftButtonUp += new MouseButtonEventHandler(Navigaton_Image_MouseLeftButtonUp);
                         canGUI.Children.Add(navImageControl);
 
-                        OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.ObjectProperty pX = obj.Property("X");
-                        OSAE.ObjectProperty pY = obj.Property("Y");
+                        OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
+                        OSAE.OSAEObjectProperty pX = obj.Property("X");
+                        OSAE.OSAEObjectProperty pY = obj.Property("Y");
                         Double dX = Convert.ToDouble(pX.Value);
                         Canvas.SetLeft(navImageControl, dX);
                         Double dY = Convert.ToDouble(pY.Value);
@@ -445,12 +445,12 @@
                 {
                     try
                     {
-                        string stream = ObjectPopertiesManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
+                        string stream = OSAEObjectPopertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
                         VideoStreamViewer vsv = new VideoStreamViewer(stream, obj);
                         canGUI.Children.Add(vsv);
-                        OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.ObjectProperty pX = obj.Property("X");
-                        OSAE.ObjectProperty pY = obj.Property("Y");
+                        OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
+                        OSAE.OSAEObjectProperty pX = obj.Property("X");
+                        OSAE.OSAEObjectProperty pY = obj.Property("Y");
                         Double dX = Convert.ToDouble(pX.Value);
                         Canvas.SetLeft(vsv, dX);
                         Double dY = Convert.ToDouble(pY.Value);
@@ -478,9 +478,9 @@
                     {
                         Weather wc = new Weather(obj);
                         canGUI.Children.Add(wc);
-                        OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.ObjectProperty pX = obj.Property("X");
-                        OSAE.ObjectProperty pY = obj.Property("Y");
+                        OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
+                        OSAE.OSAEObjectProperty pX = obj.Property("X");
+                        OSAE.OSAEObjectProperty pY = obj.Property("Y");
                         Double dX = Convert.ToDouble(pX.Value);
                         Canvas.SetLeft(wc, dX);
                         Double dY = Convert.ToDouble(pY.Value);
@@ -512,7 +512,7 @@
             {
                 gAppName = "GUI CLIENT-" + Common.ComputerName;
                 OSAEObjectManager.ObjectAdd(gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
-                ObjectPopertiesManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, "GUI");
+                OSAEObjectPopertyManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, "GUI");
             }
         }
 
@@ -522,7 +522,7 @@
             if (screens.Count > 0)
             {
                 gCurrentScreen = screens[0].Name;
-                ObjectPopertiesManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, "GUI");
+                OSAEObjectPopertyManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, "GUI");
             }
         }
 
@@ -694,8 +694,8 @@
 
         private void updateObjectCoords(OSAE.OSAEObject obj, string X, string Y)
         {
-            ObjectPopertiesManager.ObjectPropertySet(obj.Name, "X", X, "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(obj.Name, "Y", Y, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, "X", X, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, "Y", Y, "GUI");
 
             obj.Property("X").Value = X;
             obj.Property("Y").Value = Y;
@@ -703,8 +703,8 @@
 
         private void updateObjectCoordsStateImg(OSAE.OSAEObject obj, string state, string X, string Y)
         {
-            ObjectPopertiesManager.ObjectPropertySet(obj.Name, state + " X", X, "GUI");
-            ObjectPopertiesManager.ObjectPropertySet(obj.Name, state + " Y", Y, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, state + " X", X, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, state + " Y", Y, "GUI");
 
             obj.Property(state + " X").Value = X; 
             obj.Property(state + " Y").Value = Y;

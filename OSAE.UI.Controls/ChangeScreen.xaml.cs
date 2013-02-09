@@ -13,7 +13,7 @@
     /// </summary>
     public partial class ctrlChangeScreen : UserControl
     {      
-        ImageManager imgMgr = new ImageManager();
+        OSAEImageManager imgMgr = new OSAEImageManager();
         public ctrlChangeScreen()
         {
             InitializeComponent();

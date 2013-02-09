@@ -64,7 +64,7 @@
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
 
-                    obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                    obj.Properties = OSAEObjectPopertyManager.GetObjectProperties(obj.Name);
 
                     obj.Methods = GetObjectMethods(obj.Name);
 
@@ -108,7 +108,7 @@
                         obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                         obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
 
-                        obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                        obj.Properties = OSAEObjectPopertyManager.GetObjectProperties(obj.Name);
                         obj.Methods = GetObjectMethods(obj.Name);
                         return obj;
                     }
@@ -158,7 +158,7 @@
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
                         obj.LastUpd = dr["last_updated"].ToString();
-                        obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                        obj.Properties = OSAEObjectPopertyManager.GetObjectProperties(obj.Name);
                         obj.Methods = GetObjectMethods(obj.Name);
                         objects.Add(obj);
                     }
@@ -199,7 +199,7 @@
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
 
-                            obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                            obj.Properties = OSAEObjectPopertyManager.GetObjectProperties(obj.Name);
                             obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
@@ -245,7 +245,7 @@
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
 
-                            obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                            obj.Properties = OSAEObjectPopertyManager.GetObjectProperties(obj.Name);
                             obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
@@ -290,7 +290,7 @@
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
-                            obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                            obj.Properties = OSAEObjectPopertyManager.GetObjectProperties(obj.Name);
                             obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }

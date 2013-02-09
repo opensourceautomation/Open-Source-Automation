@@ -4,7 +4,7 @@
     using System.Data;
     using MySql.Data.MySqlClient;
 
-    public class ObjectStateManager
+    public class OSAEObjectStateManager
     {
         /// <summary>
         /// Set the state of an object
@@ -34,14 +34,14 @@
         }           
 
         /// <summary>
-        /// Returns a ObjectState object
+        /// Returns a OSAEObjectState object
         /// </summary>
         /// <param name="ObjectName"></param>
         /// <returns></returns>
-        public static ObjectState GetObjectStateValue(string ObjectName)
+        public static OSAEObjectState GetObjectStateValue(string ObjectName)
         {
             DataSet dataset = new DataSet();
-            ObjectState state = new ObjectState();
+            OSAEObjectState state = new OSAEObjectState();
 
             try
             {

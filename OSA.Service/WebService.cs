@@ -16,7 +16,7 @@
         
         [OperationContract]
         [WebGet(UriTemplate = "object/{name}/state", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        ObjectState GetObjectState(string name);
+        OSAEObjectState GetObjectState(string name);
 
         [OperationContract]
         [WebGet(UriTemplate = "object/{name}/{method}?param1={param1}&param2={param2}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -83,9 +83,9 @@
             return OSAEobj;
         }
 
-        public ObjectState GetObjectState(string name)
+        public OSAEObjectState GetObjectState(string name)
         {
-            ObjectState state = ObjectStateManager.GetObjectStateValue(name);
+            OSAEObjectState state = OSAEObjectStateManager.GetObjectStateValue(name);
             return state;
         }
 
@@ -148,19 +148,19 @@
 
         public Boolean AddScript(string objName, string objEvent, string script)
         {
-            ScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
+            OSAEScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
             return true;
         }
 
         public Boolean UpdateScript(string objName, string objEvent, string script)
         {
-            ScriptManager.ObjectEventScriptUpdate(objName, objEvent, script.Replace("\n", "\r\n"));
+            OSAEScriptManager.ObjectEventScriptUpdate(objName, objEvent, script.Replace("\n", "\r\n"));
             return true;
         }
 
         public Boolean UpdateNamedScript(string Name, string oldName, string script)
         {
-            ScriptManager.NamedScriptUpdate(Name, oldName, script.Replace("\n", "\r\n"));
+            OSAEScriptManager.NamedScriptUpdate(Name, oldName, script.Replace("\n", "\r\n"));
             return true;
         }
 
@@ -191,7 +191,7 @@
 
         public Boolean SetObjectProperty(string objName, string propName, string propVal)
         {
-            ObjectPopertiesManager.ObjectPropertySet(objName, propName, propVal, "WebService");
+            OSAEObjectPopertyManager.ObjectPropertySet(objName, propName, propVal, "WebService");
 
             return true;
         }
@@ -199,7 +199,7 @@
         public List<string> getPropertyList(string objName, string propName)
         {            
             List<string> list = new List<string>();
-            DataSet ds = ObjectPopertiesManager.ObjectPropertyArrayGetAll(objName, propName);
+            DataSet ds = OSAEObjectPopertyManager.ObjectPropertyArrayGetAll(objName, propName);
 
             foreach (DataRow dr in ds.Tables[0].Rows)
             {
@@ -209,15 +209,15 @@
             return list;
         }
 
-        private List<ObjectProperty> getProperties(string objName)
+        private List<OSAEObjectProperty> getProperties(string objName)
         {
             OSAEObject oObj = OSAEObjectManager.GetObjectByName(objName);
-            List<ObjectProperty> props = oObj.Properties;
-            List<ObjectProperty> properties = new List<ObjectProperty>();
+            List<OSAEObjectProperty> props = oObj.Properties;
+            List<OSAEObjectProperty> properties = new List<OSAEObjectProperty>();
 
-            foreach (ObjectProperty prop in props)
+            foreach (OSAEObjectProperty prop in props)
             {
-                ObjectProperty p = new ObjectProperty();
+                OSAEObjectProperty p = new OSAEObjectProperty();
                 p.Name = prop.Name;
                 p.Value = prop.Value;
                 p.DataType = prop.DataType;

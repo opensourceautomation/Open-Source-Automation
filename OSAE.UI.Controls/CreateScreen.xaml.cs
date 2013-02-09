@@ -36,7 +36,7 @@ namespace OSAE.UI.Controls
             string fileName = Path.GetFileName(txtPath.Text).Split('.')[0];
             string ext = Path.GetFileName(txtPath.Text).Split('.')[1];
 
-            ImageManager imgMgr = new ImageManager();
+            OSAEImageManager imgMgr = new OSAEImageManager();
 
             int imgID = 0;
             byte[] byt;
@@ -54,7 +54,7 @@ namespace OSAE.UI.Controls
 
             screenName = "Screen - " + txtName.Text;
             OSAEObjectManager.ObjectAdd(screenName, screenName, "SCREEN", "", screenName, true);
-            ObjectPopertiesManager.ObjectPropertySet(screenName, "Background Image", fileName, "GUI");
+            OSAEObjectPopertyManager.ObjectPropertySet(screenName, "Background Image", fileName, "GUI");
 
             OnLoadScreen();
 
