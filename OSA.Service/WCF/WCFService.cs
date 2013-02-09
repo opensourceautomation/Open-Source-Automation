@@ -11,13 +11,14 @@
     [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single)]
     public class WCFService : IWCFService
     {
+        private const string sourceName = "WCF Service";
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = Logging.GetLogger("WCF Service");
+        Logging logging = Logging.GetLogger(sourceName);
         
         OSAEObjectManager objectManager = new OSAEObjectManager();
-        OSAE osae = new OSAE("WCF Service");
+        OSAE osae = new OSAE(sourceName);
 
         public event EventHandler<CustomEventArgs> MessageReceived;
 
@@ -162,7 +163,7 @@
         public Boolean ExecuteMethod(string name, string method, string param1, string param2)
         {
             // execute a method on an object 
-            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "WCF Service");
+            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, sourceName);
             return true;
         }
 
@@ -171,7 +172,7 @@
             string patternName = osae.MatchPattern(pattern);
             if (!string.IsNullOrEmpty(patternName))
             {
-                OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", patternName, "", "WCF Service");
+                OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", patternName, "", sourceName);
             }
             return true;
         }
@@ -227,14 +228,14 @@
 
         public Boolean SetProperty(string objName, string propName, string propValue)
         {
-            ObjectPopertiesManager.ObjectPropertySet(objName, propName, propValue, "WCF Service");
+            ObjectPopertiesManager.ObjectPropertySet(objName, propName, propValue, sourceName);
 
             return true;
         }
 
         public Boolean SetState(string objName, string state)
         {
-            osae.ObjectStateSet(objName, state);
+            ObjectStateManager.ObjectStateSet(objName, state, sourceName);
 
             return true;
         }

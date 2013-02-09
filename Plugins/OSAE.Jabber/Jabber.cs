@@ -45,7 +45,7 @@ namespace OSAE.Jabber
                 logging.AddToLog("Process command: " + method.MethodName, false);
                 logging.AddToLog("Message: " + method.Parameter2, false);
                 logging.AddToLog("To: " + method.Parameter1, false);
-                ObjectProperty prop = osae.GetObjectPropertyValue(method.Parameter1, "JabberID");
+                ObjectProperty prop = ObjectPopertiesManager.GetObjectPropertyValue(method.Parameter1, "JabberID");
                 if(prop != null)
                     to = prop.Value;
                     if (to == "")
@@ -127,7 +127,7 @@ namespace OSAE.Jabber
             {                
                 OSAEObject obj = objectManager.GetObjectByName(oObj.Name);
 
-                if (osae.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
+                if (ObjectPopertiesManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
                 {
                     if (pres.Show.ToString() == "away")
                         ObjectPopertiesManager.ObjectPropertySet(obj.Name, "JabberStatus", "Idle", "Jabber");
@@ -149,7 +149,7 @@ namespace OSAE.Jabber
             foreach (OSAEObject oObj in objects)
             {
                 OSAEObject obj = objectManager.GetObjectByName(oObj.Name);
-                if (osae.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
+                if (ObjectPopertiesManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
                 {
                     found = true;
                     break;
@@ -187,11 +187,11 @@ namespace OSAE.Jabber
         private void connect()
         {
             logging.AddToLog("Connecting to server", true);
-            Jid jidUser = new Jid(osae.GetObjectPropertyValue(pName, "Username").Value);
+            Jid jidUser = new Jid(ObjectPopertiesManager.GetObjectPropertyValue(pName, "Username").Value);
 
             xmppCon.Username = jidUser.User;
             xmppCon.Server = jidUser.Server;
-            xmppCon.Password = osae.GetObjectPropertyValue(pName, "Password").Value;
+            xmppCon.Password = ObjectPopertiesManager.GetObjectPropertyValue(pName, "Password").Value;
             xmppCon.AutoResolveConnectServer = true;
 
             try

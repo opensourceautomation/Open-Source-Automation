@@ -48,7 +48,7 @@
 
             logging.AddToLog("Running Interface!", true);
             Clock = new System.Timers.Timer();
-            Clock.Interval = Int32.Parse(osae.GetObjectPropertyValue(pName, "Update Interval").Value) * 60000;
+            Clock.Interval = Int32.Parse(ObjectPopertiesManager.GetObjectPropertyValue(pName, "Update Interval").Value) * 60000;
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
 
@@ -96,14 +96,14 @@
             logging.AddToLog("Starting Update", false);
             try
             {
-                string zipcode = osae.GetObjectPropertyValue(pName, "Zipcode").Value;
+                string zipcode = ObjectPopertiesManager.GetObjectPropertyValue(pName, "Zipcode").Value;
                 logging.AddToLog("ZipCode: " + zipcode, false);
                 if (zipcode != "")
                 {
                     List<ObservationStation> stationList = new List<ObservationStation>();
                     PointF pt = GetLatLonFromZip(zipcode);
                     ObservationStation myStation = new ObservationStation();
-                    feedUrl = osae.GetObjectPropertyValue(pName, "Feed URL").Value;
+                    feedUrl = ObjectPopertiesManager.GetObjectPropertyValue(pName, "Feed URL").Value;
                     logging.AddToLog("pt.X: " + pt.X.ToString(), false);
                     logging.AddToLog("pt.Y: " + pt.Y.ToString(), false);
                     if (pt.X != 0 || pt.Y != 0)
@@ -581,8 +581,8 @@
                         #endregion
 
 
-                        osae.ObjectStateSet("Weather Data", "ON");
-                        ObjectPopertiesManager.ObjectPropertySet("Weather Data", "Last Updated", DateTime.Now.ToString(), "Weather");
+                        ObjectStateManager.ObjectStateSet("Weather Data", "ON", pName);
+                        ObjectPopertiesManager.ObjectPropertySet("Weather Data", "Last Updated", DateTime.Now.ToString(), pName);
                     }
                 }
             }
@@ -597,7 +597,7 @@
             try
             {
                 logging.AddToLog("Starting sunrise and sunset update", false);
-                PointF pt = GetLatLonFromZip(osae.GetObjectPropertyValue(pName, "Zipcode").Value);
+                PointF pt = GetLatLonFromZip(ObjectPopertiesManager.GetObjectPropertyValue(pName, "Zipcode").Value);
 
                 WebClient webClientTimezone = new WebClient();
                 string strSourceTimezone = webClientTimezone.DownloadString("http://www.earthtools.org/timezone/" + pt.X.ToString() + "/" + pt.Y.ToString());
@@ -624,9 +624,9 @@
                 webClientSunriseSunset.Dispose();
                 XmlDocument xmlSunriseSunset = new XmlDocument();
                 xmlSunriseSunset.LoadXml(strSourceSunriseSunset);
-                ObjectPopertiesManager.ObjectPropertySet("Weather Data", "Sunrise", xmlSunriseSunset.SelectSingleNode("//sunrise").InnerText, "Weather");
+                ObjectPopertiesManager.ObjectPropertySet("Weather Data", "Sunrise", xmlSunriseSunset.SelectSingleNode("//sunrise").InnerText, pName);
                 logging.AddToLog("Found sunrise: " + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd") + " " + xmlSunriseSunset.SelectSingleNode("//sunrise").InnerText).ToString(), false);
-                ObjectPopertiesManager.ObjectPropertySet("Weather Data", "Sunset", xmlSunriseSunset.SelectSingleNode("//sunset").InnerText, "Weather");
+                ObjectPopertiesManager.ObjectPropertySet("Weather Data", "Sunset", xmlSunriseSunset.SelectSingleNode("//sunset").InnerText, pName);
                 logging.AddToLog("Found sunset: " + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd") + " " + xmlSunriseSunset.SelectSingleNode("//sunset").InnerText).ToString(), false);
 
                 //osae.ScheduleQueueAdd(Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd") + " " + xmlSunriseSunset.SelectSingleNode("//sunrise").InnerText), "", "", "", "", "Sunrise", 0);

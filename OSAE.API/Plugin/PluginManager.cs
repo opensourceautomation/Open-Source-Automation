@@ -5,7 +5,33 @@
     using MySql.Data.MySqlClient;
 
     public class PluginManager
-    {        
+    {
+        /// <summary>
+        /// Returns a Dataset with all of the properties and their values for a plugin object
+        /// </summary>
+        /// <param name="ObjectName"></param>
+        /// <returns></returns>
+        public static DataSet GetPluginSettings(string ObjectName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                DataSet dataset = new DataSet();
+                try
+                {
+                    command.CommandText = "SELECT * FROM osae_v_object_property WHERE object_name=@ObjectName";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    dataset = OSAESql.RunQuery(command);
+
+                    return dataset;
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - GetPluginSettings error: " + ex.Message, true);
+                    return dataset;
+                }
+            }
+        }
+
         /// <summary>
         /// Returns the name of the plugin object of the specified type on the scecified machine.
         /// </summary>

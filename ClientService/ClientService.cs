@@ -17,16 +17,17 @@
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
     public partial class ClientService : ServiceBase, WCFServiceReference.IWCFServiceCallback, IDisposable
     {
+        private const string sourceName = "Client Service";
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = Logging.GetLogger("Client Service");
+        Logging logging = Logging.GetLogger(sourceName);
 
         private WCFServiceReference.WCFServiceClient wcfObj;
         private List<Plugin> plugins = new List<Plugin>();
         private string _computerIP;
         private ModifyRegistry myRegistry = new ModifyRegistry();
-        private OSAE osae = new OSAE("Client Service");
+        private OSAE osae = new OSAE(sourceName);
         System.Timers.Timer Clock = new System.Timers.Timer();
 
         static void Main(string[] args)
@@ -79,7 +80,7 @@
 
                 System.IO.FileInfo file = new System.IO.FileInfo(Common.ApiPath + "/Logs/");
                 file.Directory.Create();
-                if (osae.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
+                if (ObjectPopertiesManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
                 {
                     string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
                     foreach (string f in files)
@@ -102,24 +103,24 @@
                 if (obj == null)
                 {
                     objectManager.ObjectAdd(osae.ComputerName, osae.ComputerName, "COMPUTER", _computerIP, "", true);
-                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, "Client Service");
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, sourceName);
                 }
                 else if (obj.Type == "COMPUTER")
                 {
                     objectManager.ObjectUpdate(obj.Name, osae.ComputerName, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, "Client Service");
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, sourceName);
                 }
                 else
                 {
                     objectManager.ObjectAdd(osae.ComputerName + "." + _computerIP, osae.ComputerName, "COMPUTER", _computerIP, "", true);
-                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName + "." + _computerIP, "Host Name", osae.ComputerName, "Client Service");
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName + "." + _computerIP, "Host Name", osae.ComputerName, sourceName);
                 }
             }
             else
             {
                 OSAEObject obj = objectManager.GetObjectByName(osae.ComputerName);
                 objectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                ObjectPopertiesManager.ObjectPropertySet(obj.Name, "Host Name", osae.ComputerName, "Client Service");
+                ObjectPopertiesManager.ObjectPropertySet(obj.Name, "Host Name", osae.ComputerName, sourceName);
             }
 
             try
@@ -128,7 +129,7 @@
                 OSAEObject svcobj = objectManager.GetObjectByName("SERVICE-" + osae.ComputerName);
                 if (svcobj == null)
                     objectManager.ObjectAdd("SERVICE-" + osae.ComputerName, "SERVICE-" + osae.ComputerName, "SERVICE", "", "SYSTEM", true);
-                osae.ObjectStateSet("SERVICE-" + osae.ComputerName, "ON");
+                ObjectStateManager.ObjectStateSet("SERVICE-" + osae.ComputerName, "ON", sourceName);
             }
             catch (Exception ex)
             {
@@ -313,9 +314,9 @@
                     string[] arguments = message.Split('|');
                 
                     if (arguments[1] == "True")
-                        osae.ObjectStateSet(arguments[0], "ON");
+                        ObjectStateManager.ObjectStateSet(arguments[0], "ON", sourceName);
                     else if (arguments[1] == "False")
-                        osae.ObjectStateSet(arguments[0], "OFF");
+                        ObjectStateManager.ObjectStateSet(arguments[0], "OFF", sourceName);
 
                     foreach (Plugin p in plugins)
                     {                        
@@ -501,7 +502,7 @@
                 if (plugin.ActivatePlugin())
                 {
                     plugin.RunInterface();
-                    osae.ObjectStateSet(plugin.PluginName, "ON");
+                    ObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", sourceName);
                     logging.AddToLog("Plugin enabled: " + plugin.PluginName, true);
                 }
             }

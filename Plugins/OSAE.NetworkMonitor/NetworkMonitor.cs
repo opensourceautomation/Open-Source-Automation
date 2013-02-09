@@ -31,7 +31,7 @@ namespace OSAE.NetworkMonitor
             pName = pluginName;
             logging.AddToLog("Running Interface!", true);
             int interval;
-            bool isNum = Int32.TryParse(osae.GetObjectPropertyValue(pName, "Poll Interval").Value, out interval);
+            bool isNum = Int32.TryParse(ObjectPopertiesManager.GetObjectPropertyValue(pName, "Poll Interval").Value, out interval);
             Clock = new System.Timers.Timer();
             if(isNum)
                 Clock.Interval = interval * 1000;
@@ -76,9 +76,13 @@ namespace OSAE.NetworkMonitor
                 {
                     logging.AddToLog("Pinging: " + obj.Address, false);
                     if (CanPing(obj.Address.ToString()))
-                        osae.ObjectStateSet(obj.Name, "ON");
+                    {
+                        ObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
+                    }
                     else
-                        osae.ObjectStateSet(obj.Name, "OFF");
+                    {
+                        ObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
+                    }
                 }
                 
                 objects = objectManager.GetObjectsByType("COMPUTER");
@@ -88,9 +92,13 @@ namespace OSAE.NetworkMonitor
                 {
                     logging.AddToLog("Pinging: " + obj.Address, false);
                     if (CanPing(obj.Address))
-                        osae.ObjectStateSet(obj.Name, "ON");
+                    {
+                        ObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
+                    }
                     else
-                        osae.ObjectStateSet(obj.Name, "OFF");
+                    {
+                        ObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
+                    }
                 }
 
             }

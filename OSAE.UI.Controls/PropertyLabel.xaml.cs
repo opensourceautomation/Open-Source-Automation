@@ -25,7 +25,7 @@
             ObjectName = screenObject.Property("Object Name").Value;
             PropertyName = screenObject.Property("Property Name").Value;
 
-            string sPropertyValue = osae.GetObjectPropertyValue(ObjectName, PropertyName).Value;
+            string sPropertyValue = ObjectPopertiesManager.GetObjectPropertyValue(ObjectName, PropertyName).Value;
             string sBackColor = screenObject.Property("Back Color").Value;
             string sForeColor = screenObject.Property("Fore Color").Value;
             string sPrefix = screenObject.Property("Prefix").Value;
@@ -82,7 +82,7 @@
         {
             this.Dispatcher.Invoke((Action)(() =>
             {
-                string sPropertyValue = osae.GetObjectPropertyValue(ObjectName, PropertyName).Value;
+                string sPropertyValue = ObjectPopertiesManager.GetObjectPropertyValue(ObjectName, PropertyName).Value;
                 string sPrefix = screenObject.Property("Prefix").Value;
                 string sSuffix = screenObject.Property("Suffix").Value;
                 propLabel.Content = sPrefix + sPropertyValue + sSuffix;

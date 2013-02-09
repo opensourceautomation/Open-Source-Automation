@@ -88,7 +88,7 @@
 
         public ObjectState GetObjectState(string name)
         {
-            ObjectState state = osae.GetObjectStateValue(name);
+            ObjectState state = ObjectStateManager.GetObjectStateValue(name);
             return state;
         }
 

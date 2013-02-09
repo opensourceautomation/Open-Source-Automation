@@ -109,7 +109,7 @@
         {        
             try
             {
-                gSelectedVoice = OSAEApi.GetObjectPropertyValue(gAppName, "Voice").Value;
+                gSelectedVoice = ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "Voice").Value;
                 ObjectPopertiesManager.ObjectPropertyArrayDeleteAll(gAppName, "Voices");
                 foreach (System.Speech.Synthesis.InstalledVoice i in oSpeech.GetInstalledVoices())
                 {
@@ -129,14 +129,14 @@
                     logging.AddToLog("Current Voice Set to " + gSelectedVoice, true);
                 }
 
-                Int16 iTTSRate = Convert.ToInt16(OSAEApi.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
+                Int16 iTTSRate = Convert.ToInt16(ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
                 if (iTTSRate > 0 && iTTSRate <= 100)
                 {
                     oSpeech.Rate = iTTSRate;
                     logging.AddToLog("TTS Rate Set to " + iTTSRate.ToString(), true);
                 }
 
-                Int16 iTTSVolume = Convert.ToInt16(OSAEApi.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
+                Int16 iTTSVolume = Convert.ToInt16(ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
                 if (iTTSVolume > -11 && iTTSVolume <= 11)
                 {
                     oSpeech.Rate = iTTSVolume;

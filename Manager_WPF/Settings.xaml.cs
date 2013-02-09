@@ -28,9 +28,9 @@
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            lblDBVersion.Content = osae.GetObjectPropertyValue("SYSTEM", "DB Version").Value;
-            txbxZipcode.Text = osae.GetObjectPropertyValue("SYSTEM", "ZIP Code").Value;
-            if (osae.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE")
+            lblDBVersion.Content = ObjectPopertiesManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value;
+            txbxZipcode.Text = ObjectPopertiesManager.GetObjectPropertyValue("SYSTEM", "ZIP Code").Value;
+            if (ObjectPopertiesManager.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE")
                 cbDebugging.SelectedItem = cbDebugging.Items[0];
             else
                 cbDebugging.SelectedItem = cbDebugging.Items[1];

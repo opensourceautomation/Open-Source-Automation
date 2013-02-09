@@ -117,13 +117,13 @@
         {
             get
             {
-                _state.Value = osae.GetObjectStateValue(_name).Value;
+                _state.Value = ObjectStateManager.GetObjectStateValue(_name).Value;
                 return _state;
             }
             set
             {
                 _state = value;
-                osae.ObjectStateSet(_name, value.Value);
+                ObjectStateManager.ObjectStateSet(_name, value.Value, "API");
             }
         }      
 
@@ -165,8 +165,8 @@
 
         public void SetState(string state)
         {
-            osae.ObjectStateSet(Name, state);
-            State = osae.GetObjectStateValue(Name);
+            ObjectStateManager.ObjectStateSet(Name, state, "API");
+            State = ObjectStateManager.GetObjectStateValue(Name);
         }
 
         public void SetProperty(string prop, string value, string source)

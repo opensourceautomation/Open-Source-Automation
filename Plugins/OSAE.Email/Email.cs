@@ -23,7 +23,7 @@
                 string parameter2 = string.Empty;
                 string subject = string.Empty;
                 string body = string.Empty;
-                ObjectProperty prop = osae.GetObjectPropertyValue(method.Parameter1, "Email Address");
+                ObjectProperty prop = ObjectPopertiesManager.GetObjectPropertyValue(method.Parameter1, "Email Address");
                 if (prop != null)
                 {
                     to = prop.Value;
@@ -39,7 +39,7 @@
                 mailMsg.To.Add(to);
 
                 // From
-                MailAddress mailAddress = new MailAddress(osae.GetObjectPropertyValue(pName, "From Address").Value);
+                MailAddress mailAddress = new MailAddress(ObjectPopertiesManager.GetObjectPropertyValue(pName, "From Address").Value);
                 mailMsg.From = mailAddress;
 
                 // Subject and Body
@@ -78,8 +78,8 @@
                 }              
 
                 // Init SmtpClient and send
-                SmtpClient smtpClient = new SmtpClient(osae.GetObjectPropertyValue(pName, "SMTP Server").Value, Int32.Parse(osae.GetObjectPropertyValue(pName, "SMTP Port").Value));
-                if (osae.GetObjectPropertyValue(pName, "ssl").Value == "TRUE")
+                SmtpClient smtpClient = new SmtpClient(ObjectPopertiesManager.GetObjectPropertyValue(pName, "SMTP Server").Value, Int32.Parse(ObjectPopertiesManager.GetObjectPropertyValue(pName, "SMTP Port").Value));
+                if (ObjectPopertiesManager.GetObjectPropertyValue(pName, "ssl").Value == "TRUE")
                 {
                     smtpClient.EnableSsl = true;
                 }
@@ -91,17 +91,17 @@
                 smtpClient.Timeout = 10000;
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new NetworkCredential(osae.GetObjectPropertyValue(pName, "Username").Value, osae.GetObjectPropertyValue(pName, "Password").Value);
+                smtpClient.Credentials = new NetworkCredential(ObjectPopertiesManager.GetObjectPropertyValue(pName, "Username").Value, ObjectPopertiesManager.GetObjectPropertyValue(pName, "Password").Value);
                 
                 logging.AddToLog("to: " + mailMsg.To, true);
                 logging.AddToLog("from: " + mailMsg.From, true);
                 logging.AddToLog("subject: " + mailMsg.Subject, true);
                 logging.AddToLog("body: " + mailMsg.Body, true);
-                logging.AddToLog("smtpServer: " + osae.GetObjectPropertyValue(pName, "SMTP Server").Value, true);
-                logging.AddToLog("smtpPort: " + osae.GetObjectPropertyValue(pName, "SMTP Port").Value, true);
-                logging.AddToLog("username: " + osae.GetObjectPropertyValue(pName, "Username").Value, true);
-                logging.AddToLog("password: " + osae.GetObjectPropertyValue(pName, "Password").Value, true);
-                logging.AddToLog("ssl: " + osae.GetObjectPropertyValue(pName, "ssl").Value, true);
+                logging.AddToLog("smtpServer: " + ObjectPopertiesManager.GetObjectPropertyValue(pName, "SMTP Server").Value, true);
+                logging.AddToLog("smtpPort: " + ObjectPopertiesManager.GetObjectPropertyValue(pName, "SMTP Port").Value, true);
+                logging.AddToLog("username: " + ObjectPopertiesManager.GetObjectPropertyValue(pName, "Username").Value, true);
+                logging.AddToLog("password: " + ObjectPopertiesManager.GetObjectPropertyValue(pName, "Password").Value, true);
+                logging.AddToLog("ssl: " + ObjectPopertiesManager.GetObjectPropertyValue(pName, "ssl").Value, true);
 
                 smtpClient.Send(mailMsg);
             }

@@ -63,7 +63,7 @@
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Load_App_Name();
-            gCurrentScreen = OSAEApi.GetObjectPropertyValue(gAppName, "Default Screen").Value;
+            gCurrentScreen = OSAE.ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
             if (gCurrentScreen == "")
             {
                 Set_Default_Screen();
@@ -84,7 +84,7 @@
             gCurrentScreen = sScreen;
             String sPath = "";
             OSAE.ObjectPopertiesManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
-            sPath = OSAE.Common.ApiPath + OSAEApi.GetObjectPropertyValue(sScreen, "Background Image").Value;
+            sPath = OSAE.Common.ApiPath + OSAE.ObjectPopertiesManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
             if (File.Exists(sPath))
             {
                 byte[] byteArray = File.ReadAllBytes(sPath);
@@ -326,7 +326,7 @@
                 {
                     try
                     {
-                        string stream = OSAEApi.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
+                        string stream = OSAE.ObjectPopertiesManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
                         VideoStreamViewer vsv = new VideoStreamViewer(stream);
                         canGUI.Children.Add(vsv);
                         OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");

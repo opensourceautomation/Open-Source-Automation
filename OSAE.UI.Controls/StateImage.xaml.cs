@@ -12,7 +12,8 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class StateImage : UserControl
     {
-        OSAE osae = new OSAE("GUI");
+        private const string sourceName = "GUI";
+        OSAE osae = new OSAE(sourceName);
         public OSAEObject screenObject { get; set; }
         public Point Location;
         public DateTime LastUpdated;
@@ -21,8 +22,6 @@ namespace OSAE.UI.Controls
         public string CurState;
 
         private string ObjectName;
-        private string ObjectStateTime;
-        
         
         public StateImage(OSAEObject sObject)
         {
@@ -30,7 +29,7 @@ namespace OSAE.UI.Controls
 
             screenObject = sObject;
             ObjectName = screenObject.Property("Object Name").Value;
-            CurState = osae.GetObjectStateValue(ObjectName).Value;
+            CurState = ObjectStateManager.GetObjectStateValue(ObjectName).Value;
 
             Image.Tag = ObjectName;
             Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
@@ -69,7 +68,7 @@ namespace OSAE.UI.Controls
 
         public void Update()
         {
-            CurState = osae.GetObjectStateValue(ObjectName).Value;
+            CurState = ObjectStateManager.GetObjectStateValue(ObjectName).Value;
 
             foreach (ObjectProperty p in screenObject.Properties)
             {
@@ -112,13 +111,13 @@ namespace OSAE.UI.Controls
 
             if (CurState == "ON")
             {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "", "", "GUI");
-                osae.ObjectStateSet(ObjectName, "OFF");
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", string.Empty, string.Empty, sourceName);
+                ObjectStateManager.ObjectStateSet(ObjectName, "OFF", sourceName);
             }
             else
             {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "", "", "GUI");
-                osae.ObjectStateSet(ObjectName, "ON");
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", string.Empty, string.Empty, sourceName);
+                ObjectStateManager.ObjectStateSet(ObjectName, "ON", sourceName);
             }
             
         }

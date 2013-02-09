@@ -65,7 +65,7 @@
         }
         public string Status
         {
-            get { return osae.GetObjectStateValue(_pluginName).Value; }
+            get { return ObjectStateManager.GetObjectStateValue(_pluginName).Value; }
         }
 
         #endregion

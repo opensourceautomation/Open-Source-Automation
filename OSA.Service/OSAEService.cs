@@ -19,18 +19,19 @@
 
     class OSAEService : ServiceBase
     {
+        private const string sourceName = "OSAE Service";
         private ServiceHost sHost;
         private WCF.WCFService wcfService;
         private List<Plugin> plugins = new List<Plugin>();
         private List<Plugin> masterPlugins = new List<Plugin>();
         private string _computerIP;
-        private bool goodConnection = false;        
-        private OSAE osae = new OSAE("OSAE Service");
+        private bool goodConnection = false;
+        private OSAE osae = new OSAE(sourceName);
 
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = Logging.GetLogger("OSAE Service");
+        Logging logging = Logging.GetLogger(sourceName);
 
         private bool running = true;
         
@@ -108,7 +109,7 @@
 
                 System.IO.FileInfo file = new System.IO.FileInfo(Common.ApiPath + "/Logs/");
                 file.Directory.Create();
-                if (osae.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
+                if (ObjectPopertiesManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
                 {
                     string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
                     foreach (string f in files)
@@ -145,24 +146,24 @@
                 if (obj == null)
                 {
                     objectManager.ObjectAdd(osae.ComputerName, osae.ComputerName, "COMPUTER", _computerIP, "", true);
-                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, "OSAE Service");
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, sourceName);
                 }
                 else if (obj.Type == "COMPUTER")
                 {
                     objectManager.ObjectUpdate(obj.Name, osae.ComputerName, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, "OSAE Service");
+                    ObjectPopertiesManager.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName, sourceName);
                 }
                 else
                 {
                     objectManager.ObjectAdd(Common.ComputerName + "." + _computerIP, Common.ComputerName, "COMPUTER", _computerIP, "", true);
-                    ObjectPopertiesManager.ObjectPropertySet(Common.ComputerName + "." + _computerIP, "Host Name", Common.ComputerName, "OSAE Service");
+                    ObjectPopertiesManager.ObjectPropertySet(Common.ComputerName + "." + _computerIP, "Host Name", Common.ComputerName, sourceName);
                 }
             }
             else
             {
                 OSAEObject obj = objectManager.GetObjectByName(osae.ComputerName);
                 objectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                ObjectPopertiesManager.ObjectPropertySet(obj.Name, "Host Name", osae.ComputerName, "OSAE Service");
+                ObjectPopertiesManager.ObjectPropertySet(obj.Name, "Host Name", osae.ComputerName, sourceName);
             }
 
             try
@@ -173,7 +174,7 @@
                 {
                     objectManager.ObjectAdd("SERVICE-" + osae.ComputerName, "SERVICE-" + osae.ComputerName, "SERVICE", "", "SYSTEM", true);
                 }
-                osae.ObjectStateSet("SERVICE-" + osae.ComputerName, "ON");
+                ObjectStateManager.ObjectStateSet("SERVICE-" + osae.ComputerName, "ON", "OSAE Service");
             }
             catch (Exception ex)
             {
@@ -461,7 +462,7 @@
                                 plugin.PluginName = plugin.PluginType;
                             logging.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
                             objectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
-                            ObjectPopertiesManager.ObjectPropertySet(plugin.PluginName, "Computer Name", osae.ComputerName, "OSAE Service");
+                            ObjectPopertiesManager.ObjectPropertySet(plugin.PluginName, "Computer Name", osae.ComputerName, sourceName);
 
                             logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
                             sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
@@ -520,9 +521,14 @@
                     {
                         bool local = false;
                         if (arguments[2] == "True")
-                            osae.ObjectStateSet(arguments[1], "ON");
+                        {
+                            ObjectStateManager.ObjectStateSet(arguments[1], "ON", sourceName);
+                        }
                         else if (arguments[2] == "False")
-                            osae.ObjectStateSet(arguments[1], "OFF");
+                        {
+                            ObjectStateManager.ObjectStateSet(arguments[1], "OFF", sourceName);
+                        }
+
                         foreach (Plugin p in plugins)
                         {
                             if (p.PluginName == arguments[1])
@@ -724,7 +730,7 @@
             }
             try
             {
-                checkForUpdates("Service", osae.GetObjectPropertyValue("SYSTEM", "DB Version").Value);
+                checkForUpdates("Service", ObjectPopertiesManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value);
             }
             catch { }
             
@@ -795,7 +801,7 @@
                 {
                     plugin.Enabled = true;
                     plugin.RunInterface();
-                    osae.ObjectStateSet(plugin.PluginName, "ON");
+                    ObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", sourceName);
                     sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
                     logging.AddToLog("Plugin enabled: " + plugin.PluginName, true);
                 }

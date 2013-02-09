@@ -8,6 +8,53 @@
     public class ObjectPopertiesManager
     {
         /// <summary>
+        /// Returns an ObjectProperty whcih contains the value, type, ID, last updated, and name
+        /// </summary>
+        /// <param name="ObjectName"></param>
+        /// <param name="ObjectProperty"></param>
+        /// <returns></returns>
+        public static ObjectProperty GetObjectPropertyValue(string ObjectName, string ObjectProperty)
+        {
+            MySqlCommand command = new MySqlCommand();
+            DataSet dataset = new DataSet();
+            try
+            {
+                command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
+                command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
+                dataset = OSAESql.RunQuery(command);
+
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    ObjectProperty p = new ObjectProperty();
+                    p.Id = dataset.Tables[0].Rows[0]["object_property_id"].ToString();
+                    p.DataType = dataset.Tables[0].Rows[0]["property_datatype"].ToString();
+                    p.LastUpdated = dataset.Tables[0].Rows[0]["last_updated"].ToString();
+                    p.Name = dataset.Tables[0].Rows[0]["property_name"].ToString();
+                    p.Value = dataset.Tables[0].Rows[0]["property_value"].ToString();
+
+                    return p;
+                }
+                else
+                {
+                    ObjectProperty p = new ObjectProperty();
+                    p.Id = string.Empty;
+                    p.DataType = string.Empty;
+                    p.LastUpdated = string.Empty;
+                    p.Name = string.Empty;
+                    p.Value = string.Empty;
+
+                    return p;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Set the value of a object's property
         /// </summary>
         /// <param name="objectName">The name of the object</param>

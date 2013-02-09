@@ -66,7 +66,7 @@
                 
                 server.Add(afm);                
                 logging.AddToLog("starting server...", true);
-                server.Start(IPAddress.Any, Int32.Parse(osae.GetObjectPropertyValue(pName, "Port").Value));
+                server.Start(IPAddress.Any, Int32.Parse(ObjectPopertiesManager.GetObjectPropertyValue(pName, "Port").Value));
 
             }
             catch (Exception ex)
