@@ -66,10 +66,10 @@
                 OSAEObjectTypeManager.ObjectTypeUpdate("ZWAVE SMART ENERGY SWITCH", "ZWAVE SMART ENERGY SWITCH", "ZWave Smart Energy Switch", pName, "ZWAVE SMART ENERGY SWITCH", 0, 0, 0, 1);
 
                 #region Screen Init
-                //osae.ObjectPropertySet("Screen - ZWave Manager - ZWave - ADD CONTROLLER", "Object Name", pName);
-                //osae.ObjectPropertySet("Screen - ZWave Manager - ZWave - ADD DEVICE", "Object Name", pName);
-                //osae.ObjectPropertySet("Screen - ZWave Manager - ZWave - REMOVE CONTROLLER", "Object Name", pName);
-                //osae.ObjectPropertySet("Screen - ZWave Manager - ZWave - REMOVE DEVICE", "Object Name", pName);
+                //OSAEObjectPropertyManager.ObjectPropertySet("Screen - ZWave Manager - ZWave - ADD CONTROLLER", "Object Name", pName);
+                //OSAEObjectPropertyManager.ObjectPropertySet("Screen - ZWave Manager - ZWave - ADD DEVICE", "Object Name", pName);
+                //OSAEObjectPropertyManager.ObjectPropertySet("Screen - ZWave Manager - ZWave - REMOVE CONTROLLER", "Object Name", pName);
+                //OSAEObjectPropertyManager.ObjectPropertySet("Screen - ZWave Manager - ZWave - REMOVE DEVICE", "Object Name", pName);
                 #endregion
             }
             catch (Exception ex)

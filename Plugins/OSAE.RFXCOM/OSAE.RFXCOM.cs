@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO.Ports;
-using System.Globalization;
-
-namespace OSAE.RFXCOM
+﻿namespace OSAE.RFXCOM
 {
+    using System;
+    using System.IO.Ports;
+
     public class RFXCOM : OSAEPluginBase
     {
-        OSAE osae = new OSAE("RFXCOM");
-        Logging logging = new Logging("RFXCOM");
+        Logging logging = Logging.GetLogger("RFXCOM");
 
         private System.Timers.Timer tmrRead = new System.Timers.Timer(100);
         private string rcvdStr = "";
@@ -38,7 +33,7 @@ namespace OSAE.RFXCOM
             logging.AddToLog("--------------Processing Command---------------", false);
             logging.AddToLog("Command: " + method.MethodName, false);
 
-            OSAEObject obj = osae.GetObjectByName(method.ObjectName);
+            OSAEObject obj = OSAEObjectManager.GetObjectByName(method.ObjectName);
             logging.AddToLog("Object Name: " + obj.Name, false);
             logging.AddToLog("Object Type: " + obj.Type, false);
             logging.AddToLog("Object Adress: " + obj.Address, false);
@@ -98,19 +93,19 @@ namespace OSAE.RFXCOM
                         {
                             case "OFF":
                                 kar[(byte)LIGHTING1.cmnd] = (byte)LIGHTING1.sOff;
-                                osae.ObjectStateSet(obj.Name, "OFF");
+                                OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
                                 break;
                             case "ON":
                                 kar[(byte)LIGHTING1.cmnd] = (byte)LIGHTING1.sOn;
-                                osae.ObjectStateSet(obj.Name, "ON");
+                                OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
                                 break;
                             case "ALL OFF":
                                 kar[(byte)LIGHTING1.cmnd] = (byte)LIGHTING1.sAllOff;
-                                osae.ObjectStateSet(obj.Name, "OFF");
+                                OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
                                 break;
                             case "ALL ON":
                                 kar[(byte)LIGHTING1.cmnd] = (byte)LIGHTING1.sAllOn;
-                                osae.ObjectStateSet(obj.Name, "ON");
+                                OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
                                 break;
                             case "CHIME":
                                 kar[(byte)LIGHTING1.cmnd] = (byte)LIGHTING1.sChime;
@@ -170,7 +165,7 @@ namespace OSAE.RFXCOM
                         {
                             case "OFF":
                                 kar[(byte)LIGHTING2.cmnd] = (byte)LIGHTING2.sOff;
-                                osae.ObjectStateSet(obj.Name, "OFF");
+                                OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
                                 break;
                             case "ON":
                                 if (method.Parameter1 != "")
@@ -183,7 +178,7 @@ namespace OSAE.RFXCOM
                                     kar[(byte)LIGHTING2.cmnd] = (byte)LIGHTING2.sOn;
                                     //kar[(byte)LIGHTING2.level] = (byte)Math.Round((double)Int32.Parse(method.Parameter1) / 7, 0);
                                 }
-                                osae.ObjectStateSet(obj.Name, "ON");
+                                OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
 
                                 break;
                         }
@@ -256,7 +251,7 @@ namespace OSAE.RFXCOM
                                 case "OFF":
                                     kar[(byte)LIGHTING5.cmnd] = (byte)LIGHTING5.sOff;
                                     logging.AddToLog("kar[(byte)LIGHTING5.cmnd]: " + kar[(byte)LIGHTING5.cmnd].ToString(), false);
-                                    osae.ObjectStateSet(obj.Name, "OFF");
+                                    OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF",pName);
                                     break;
                                 case "ON":
                                     if (method.Parameter1 == "")
@@ -273,7 +268,7 @@ namespace OSAE.RFXCOM
                                         kar[(byte)LIGHTING5.level] = (byte)Math.Round((double)Int32.Parse(method.Parameter1) / 3, 0);
                                         logging.AddToLog("kar[(byte)LIGHTING5.level]: " + kar[(byte)LIGHTING5.level].ToString(), false);
                                     }
-                                    osae.ObjectStateSet(obj.Name, "ON");
+                                    OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON",pName);
 
                                     break;
                             }
@@ -321,7 +316,7 @@ namespace OSAE.RFXCOM
         {
             logging.AddToLog("Plugin version: 0.2.8", true);
             pName = pluginName;
-            RSInit("COM" + osae.GetObjectPropertyValue(pluginName,"Port").Value, 38400);
+            RSInit("COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName,"Port").Value, 38400);
             if(RSOpen())
                 gRecComPortEnabled = true;
 
@@ -1319,7 +1314,7 @@ namespace OSAE.RFXCOM
 
 
 
-                    obj = osae.GetObjectByAddress((recbuf[(byte)LIGHTING2.id1].ToString("X") +
+                    obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)LIGHTING2.id1].ToString("X") +
                         "-" + recbuf[(byte)LIGHTING2.id2].ToString("X") +
                         "-" + recbuf[(byte)LIGHTING2.id3].ToString("X") +
                         "-" + recbuf[(byte)LIGHTING2.id4].ToString("X") +
@@ -1347,11 +1342,11 @@ namespace OSAE.RFXCOM
                     {
                         case (byte)LIGHTING2.sOff:
                             logging.AddToLog("Command       = Off", false);
-                            osae.ObjectStateSet(obj.Name, "OFF");
+                            OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
                             break;
                         case (byte)LIGHTING2.sOn:
                             logging.AddToLog("Command       = On", false);
-                            osae.ObjectStateSet(obj.Name, "ON");
+                            OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
                             break;
                         case (byte)LIGHTING2.sSetLevel:
                             logging.AddToLog("Set Level:" + recbuf[(byte)LIGHTING2.level].ToString(), false);
@@ -1436,7 +1431,7 @@ namespace OSAE.RFXCOM
             switch (recbuf[(byte)LIGHTING5.subtype])
             {
                 case (byte)LIGHTING5.sTypeLightwaveRF:
-                    obj = osae.GetObjectByAddress("0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2].ToString() + "-0" + recbuf[(byte)LIGHTING5.id3].ToString() + "-" + recbuf[(byte)LIGHTING5.unitcode].ToString()); 
+                    obj = OSAEObjectManager.GetObjectByAddress("0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2].ToString() + "-0" + recbuf[(byte)LIGHTING5.id3].ToString() + "-" + recbuf[(byte)LIGHTING5.unitcode].ToString()); 
                     logging.AddToLog("subtype       = LightwaveRF", false);
                     logging.AddToLog("Sequence nbr  = " + recbuf[(byte)LIGHTING5.seqnbr].ToString(), false);
                     logging.AddToLog("ID            = " + "0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2] + "-0" + recbuf[(byte)LIGHTING5.id3].ToString(), false);
@@ -1444,11 +1439,11 @@ namespace OSAE.RFXCOM
                     switch (recbuf[(byte)LIGHTING5.cmnd])
                     {
                         case (byte)LIGHTING5.sOff:
-                            osae.ObjectStateSet(obj.Name, "OFF");
+                            OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
                             logging.AddToLog("Command       = Off", false);
                             break;
                         case (byte)LIGHTING5.sOn:
-                            osae.ObjectStateSet(obj.Name, "ON");
+                            OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
                             logging.AddToLog("Command       = On", false);
                             break;
                         case (byte)LIGHTING5.sGroupOff:
@@ -1497,7 +1492,7 @@ namespace OSAE.RFXCOM
 
                     break;
                 case (byte)LIGHTING5.sTypeEMW100:
-                    obj = osae.GetObjectByAddress("0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2].ToString() + "-" + recbuf[(byte)LIGHTING5.unitcode].ToString()); 
+                    obj = OSAEObjectManager.GetObjectByAddress("0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2].ToString() + "-" + recbuf[(byte)LIGHTING5.unitcode].ToString()); 
                     logging.AddToLog("subtype       = EMW100", false);
                     logging.AddToLog("Sequence nbr  = " + recbuf[(byte)LIGHTING5.seqnbr].ToString(), false);
                     logging.AddToLog("ID            = " + "0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2].ToString(), false);
@@ -1505,11 +1500,11 @@ namespace OSAE.RFXCOM
                     switch (recbuf[(byte)LIGHTING5.cmnd])
                     {
                         case (byte)LIGHTING5.sOff:
-                            osae.ObjectStateSet(obj.Name, "OFF");
+                            OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
                             logging.AddToLog("Command       = Off", false);
                             break;
                         case (byte)LIGHTING5.sOn:
-                            osae.ObjectStateSet(obj.Name, "ON");
+                            OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
                             logging.AddToLog("Command       = On", false);
                             break;
                         case (byte)LIGHTING5.sLearn:
@@ -2687,12 +2682,12 @@ namespace OSAE.RFXCOM
 
         public void decode_Temp()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName,"Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName,"Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New temperature sensor found.  Adding to OSA", true);
-                osae.ObjectAdd("Temperature Sensor - " + (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "Temperature Sensor", "OS TEMP SENSOR", (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("Temperature Sensor - " + (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "Temperature Sensor", "OS TEMP SENSOR", (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString());
             }
 
             switch (recbuf[(byte)TEMP.subtype])
@@ -2729,7 +2724,7 @@ namespace OSAE.RFXCOM
             double temp = Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2);
             string strTemp = "";
 
-            if (osae.GetObjectPropertyValue(pName, "Temp Units").Value.Trim() == "Farenheit")
+            if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Temp Units").Value.Trim() == "Farenheit")
             {
                 temp = (temp * 9 / 5) + 32;
                 strTemp = temp.ToString() + " °F";
@@ -2740,34 +2735,34 @@ namespace OSAE.RFXCOM
             if ((recbuf[(byte)TEMP.tempsign] & 0x80) == 0)
             {
                 logging.AddToLog("Temperature   = " + strTemp, false);
-                osae.ObjectPropertySet(obj.Name, "Temperature", temp.ToString());
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", temp.ToString(), pName);
             }
             else
             {
                 logging.AddToLog("Temperature   = -" + strTemp, false);
-                osae.ObjectPropertySet(obj.Name, "Temperature", "-" + temp.ToString());
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + temp.ToString(), pName);
             }
             logging.AddToLog("Signal level  = " + (recbuf[(byte)TEMP.rssi] >> 4).ToString(), false);
             if ((recbuf[(byte)TEMP.battery_level] & 0xf) == 0)
             {
                 logging.AddToLog("Battery       = Low", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "Low");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
                 logging.AddToLog("Battery       = OK", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "OK");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
 
         public void decode_Hum()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New humidity sensor found.  Adding to OSA", true);
-                osae.ObjectAdd("Humidity Sensor - " + (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "Humidity Sensor", "HUMIDITY METER", (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("Humidity Sensor - " + (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "Humidity Sensor", "HUMIDITY METER", (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString());
             }
 
             switch (recbuf[(byte)HUM.subtype])
@@ -2782,48 +2777,48 @@ namespace OSAE.RFXCOM
             logging.AddToLog("Sequence nbr  = " + recbuf[(byte)HUM.seqnbr].ToString(), false);
             logging.AddToLog("ID            = " + (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), false);
             logging.AddToLog("Humidity      = " + recbuf[(byte)HUM.humidity].ToString(), false);
-            osae.ObjectPropertySet(obj.Name, "Humidity", recbuf[(byte)HUM.humidity].ToString());
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Humidity", recbuf[(byte)HUM.humidity].ToString(), pName);
 
             switch (recbuf[(byte)HUM.humidity_status])
             {
                 case 0x0:
                     logging.AddToLog("Status        = Dry", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Dry");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Dry", pName);
                     break;
                 case 0x1:
                     logging.AddToLog("Status        = Comfortable", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Comfortable");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Comfortable", pName);
                     break;
                 case 0x2:
                     logging.AddToLog("Status        = Normal", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Normal");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Normal", pName);
                     break;
                 case 0x3:
                     logging.AddToLog("Status        = Wet", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Wet");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Wet", pName);
                     break;
             }
             logging.AddToLog("Signal level  = " + (recbuf[(byte)HUM.rssi] >> 4).ToString(), false);
             if ((recbuf[(byte)HUM.battery_level] & 0xf) == 0)
             {
                 logging.AddToLog("Battery       = Low", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "Low");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
                 logging.AddToLog("Battery       = OK", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "OK");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
 
         public void decode_TempHum()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New temperature and humidity sensor found.  Adding to OSA", true);
-                osae.ObjectAdd("Temp and Humidity Sensor - " + (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "Temp and Humidity Sensor", "TEMP HUM METER", (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("Temp and Humidity Sensor - " + (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "Temp and Humidity Sensor", "TEMP HUM METER", (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString());
             }
             
             switch (recbuf[(byte)TEMP_HUM.subtype])
@@ -2891,31 +2886,31 @@ namespace OSAE.RFXCOM
             if ((recbuf[(byte)TEMP_HUM.tempsign] & 0x80) == 0)
             {
                 logging.AddToLog("Temperature   = " + (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                osae.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
             }
             else
             {
                 logging.AddToLog("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                osae.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
             }
             logging.AddToLog("Humidity      = " + recbuf[(byte)TEMP_HUM.humidity].ToString(), false);
             switch (recbuf[(byte)TEMP_HUM.humidity_status])
             {
                 case 0x0:
                     logging.AddToLog("Status        = Dry", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Dry");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Dry", pName);
                     break;
                 case 0x1:
                     logging.AddToLog("Status        = Comfortable", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Comfortable");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Comfortable", pName);
                     break;
                 case 0x2:
                     logging.AddToLog("Status        = Normal", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Normal");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Normal", pName);
                     break;
                 case 0x3:
                     logging.AddToLog("Status        = Wet", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Wet");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Wet", pName);
                     break;
             }
             logging.AddToLog("Signal level  = " + (recbuf[(byte)TEMP_HUM.rssi] >> 4).ToString(), false);
@@ -2925,43 +2920,43 @@ namespace OSAE.RFXCOM
                 {
                     case 0:
                         logging.AddToLog("Battery       = 10%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "10%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "10%", pName);
                         break;
                     case 1:
                         logging.AddToLog("Battery       = 20%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "20%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "20%", pName);
                         break;
                     case 2:
                         logging.AddToLog("Battery       = 30%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "30%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "30%", pName);
                         break;
                     case 3:
                         logging.AddToLog("Battery       = 40%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "40%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "40%", pName);
                         break;
                     case 4:
                         logging.AddToLog("Battery       = 50%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "50%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "50%", pName);
                         break;
                     case 5:
                         logging.AddToLog("Battery       = 60%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "60%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "60%", pName);
                         break;
                     case 6:
                         logging.AddToLog("Battery       = 70%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "70%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "70%", pName);
                         break;
                     case 7:
                         logging.AddToLog("Battery       = 80%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "80%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "80%", pName);
                         break;
                     case 8:
                         logging.AddToLog("Battery       = 90%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "90%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "90%", pName);
                         break;
                     case 9:
                         logging.AddToLog("Battery       = 100%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "100%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "100%", pName);
                         break;
                 }
             }
@@ -2970,12 +2965,12 @@ namespace OSAE.RFXCOM
                 if ((recbuf[(byte)TEMP_HUM.battery_level] & 0xf) == 0)
                 {
                     logging.AddToLog("Battery       = Low", false);
-                    osae.ObjectPropertySet(obj.Name, "Battery", "Low");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
                 }
                 else
                 {
                     logging.AddToLog("Battery       = OK", false);
-                    osae.ObjectPropertySet(obj.Name, "Battery", "OK");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
                 }
             }
         }
@@ -2987,12 +2982,12 @@ namespace OSAE.RFXCOM
 
         public void decode_TempHumBaro()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New temperature, humidity and barometric sensor found.  Adding to OSA", true);
-                osae.ObjectAdd("Temp, Humidity and Baro Sensor - " + (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "Temp, Humidity and Baro Sensor", "TEMP HUM BARO METER", (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("Temp, Humidity and Baro Sensor - " + (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "Temp, Humidity and Baro Sensor", "TEMP HUM BARO METER", (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString());
             }
             
             switch (recbuf[(byte)TEMP_HUM_BARO.subtype])
@@ -3014,59 +3009,59 @@ namespace OSAE.RFXCOM
             if ((recbuf[(byte)TEMP_HUM_BARO.tempsign] & 0x80) == 0)
             {
                 logging.AddToLog("Temperature   = " + (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                osae.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
             }
             else
             {
                 logging.AddToLog("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                osae.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
             }
             logging.AddToLog("Humidity      = " + recbuf[(byte)TEMP_HUM_BARO.humidity].ToString(), false);
-            osae.ObjectPropertySet(obj.Name, "Humidity", recbuf[(byte)TEMP_HUM_BARO.humidity].ToString());
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Humidity", recbuf[(byte)TEMP_HUM_BARO.humidity].ToString(), pName);
             
             switch (recbuf[(byte)TEMP_HUM_BARO.humidity_status])
             {
                 case 0x0:
                     logging.AddToLog("Status        = Dry", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Dry");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Dry", pName);
                     break;
                 case 0x1:
                     logging.AddToLog("Status        = Comfortable", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Comfortable");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Comfortable", pName);
                     break;
                 case 0x2:
                     logging.AddToLog("Status        = Normal", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Normal");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Normal", pName);
                     break;
                 case 0x3:
                     logging.AddToLog("Status        = Wet", false);
-                    osae.ObjectPropertySet(obj.Name, "Status", "Wet");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Wet", pName);
                     break;
             }
             logging.AddToLog("Barometer     = " + recbuf[(byte)TEMP_HUM_BARO.baroh] * 256 + recbuf[(byte)TEMP_HUM_BARO.barol].ToString(), false);
-            osae.ObjectPropertySet(obj.Name, "Barometer", recbuf[(byte)TEMP_HUM_BARO.baroh] * 256 + recbuf[(byte)TEMP_HUM_BARO.barol].ToString());
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Barometer", recbuf[(byte)TEMP_HUM_BARO.baroh] * 256 + recbuf[(byte)TEMP_HUM_BARO.barol].ToString(), pName);
 
             switch (recbuf[(byte)TEMP_HUM_BARO.forecast])
             {
                 case 0x0:
                     logging.AddToLog("Forecast      = No information available", false);
-                    osae.ObjectPropertySet(obj.Name, "Forecast", "No information available");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "No information available", pName);
                     break;
                 case 0x1:
                     logging.AddToLog("Forecast      = Sunny", false);
-                    osae.ObjectPropertySet(obj.Name, "Forecast", "Sunny");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "Sunny", pName);
                     break;
                 case 0x2:
                     logging.AddToLog("Forecast      = Partly Cloudy", false);
-                    osae.ObjectPropertySet(obj.Name, "Forecast", "Partly Cloudy");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "Partly Cloudy", pName);
                     break;
                 case 0x3:
                     logging.AddToLog("Forecast      = Cloudy", false);
-                    osae.ObjectPropertySet(obj.Name, "Forecast", "Cloudy");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "Cloudy", pName);
                     break;
                 case 0x4:
                     logging.AddToLog("Forecast      = Rain", false);
-                    osae.ObjectPropertySet(obj.Name, "Forecast", "Rain");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "Rain", pName);
                     break;
             }
 
@@ -3074,23 +3069,23 @@ namespace OSAE.RFXCOM
             if ((recbuf[(byte)TEMP_HUM_BARO.battery_level] & 0xf) == 0)
             {
                 logging.AddToLog("Battery       = Low", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "Low");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
                 logging.AddToLog("Battery       = OK", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "OK");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
 
         public void decode_Rain()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New temperature sensor found.  Adding to OSA", true);
-                osae.ObjectAdd("Rain Meter - " + (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "Rain Meter", "OS RAIN METER", (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("Rain Meter - " + (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "Rain Meter", "OS RAIN METER", (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString());
             }
 
             switch (recbuf[(byte)RAIN.subtype])
@@ -3117,38 +3112,38 @@ namespace OSAE.RFXCOM
             if (recbuf[(byte)RAIN.subtype] == (byte)RAIN.RAIN1)
             {
                 logging.AddToLog("Rain rate     = " + ((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]).ToString() + " mm/h", false);
-                osae.ObjectPropertySet(obj.Name, "Rain Rate", ((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]).ToString());
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Rain Rate", ((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]).ToString(), pName);
             }
             else if (recbuf[(byte)RAIN.subtype] == (byte)RAIN.RAIN2)
             {
                 logging.AddToLog("Rain rate     = " + (((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]) / 100).ToString() + " mm/h", false);
-                osae.ObjectPropertySet(obj.Name, "Rain Rate", (((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]) / 100).ToString());
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Rain Rate", (((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]) / 100).ToString(), pName);
             }
 
             logging.AddToLog("Total rain    = " + Math.Round((double)((recbuf[(byte)RAIN.raintotal1] * 65535) + recbuf[(byte)RAIN.raintotal2] * 256 + recbuf[(byte)RAIN.raintotal3]) / 10, 2).ToString() + " mm", false);
-            osae.ObjectPropertySet(obj.Name, "Total Rain", Math.Round((double)((recbuf[(byte)RAIN.raintotal1] * 65535) + recbuf[(byte)RAIN.raintotal2] * 256 + recbuf[(byte)RAIN.raintotal3]) / 10, 2).ToString());
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Total Rain", Math.Round((double)((recbuf[(byte)RAIN.raintotal1] * 65535) + recbuf[(byte)RAIN.raintotal2] * 256 + recbuf[(byte)RAIN.raintotal3]) / 10, 2).ToString(), pName);
 
             logging.AddToLog("Signal level  = " + (recbuf[(byte)RAIN.rssi] >> 4).ToString(), false);
             if ((recbuf[(byte)RAIN.battery_level] & 0xf) == 0)
             {
                 logging.AddToLog("Battery       = Low", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "Low");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
                 logging.AddToLog("Battery       = OK", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "OK");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
 
         public void decode_Wind()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New wind sensor found.  Adding to OSA", true);
-                osae.ObjectAdd("Wind Sensor - " + (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "Wind Sensor", "WIND SENSOR", (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("Wind Sensor - " + (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "Wind Sensor", "WIND SENSOR", (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString());
             }
 
             int intDirection = 0;
@@ -3248,41 +3243,41 @@ namespace OSAE.RFXCOM
                 strDirection = "---";
             }
             logging.AddToLog("Direction     = " + intDirection.ToString() + " degrees  " + strDirection, false);
-            osae.ObjectPropertySet(obj.Name, "Direction", intDirection.ToString() + " degrees  " + strDirection);
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Direction", intDirection.ToString() + " degrees  " + strDirection, pName);
 
             intSpeed = (recbuf[(byte)WIND.av_speedh] * 256) + recbuf[(byte)WIND.av_speedl];
             if (recbuf[(byte)WIND.subtype] != (byte)WIND.WIND5)
             {
                 logging.AddToLog("Average speed = " + (intSpeed / 10).ToString() + " mtr/sec = " + Math.Round((intSpeed * 0.36), 2).ToString() + " km/hr = " + Math.Round((intSpeed * 0.223693629) / 10, 2).ToString() + " mph", false);
-                osae.ObjectPropertySet(obj.Name, "Average Speed", Math.Round((intSpeed * 0.223693629) / 10, 2).ToString());
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Average Speed", Math.Round((intSpeed * 0.223693629) / 10, 2).ToString(), pName);
             }
 
             intSpeed = (recbuf[(byte)WIND.gusth] * 256) + recbuf[(byte)WIND.gustl];
             logging.AddToLog("Wind gust     = " + (intSpeed / 10).ToString() + " mtr/sec = " + Math.Round((intSpeed * 0.36), 2).ToString() + " km/hr = " + Math.Round((intSpeed * 0.223693629) / 10, 2).ToString() + " mph", false);
-            osae.ObjectPropertySet(obj.Name, "Wind Gust", Math.Round((intSpeed * 0.223693629) / 10, 2).ToString()); 
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Wind Gust", Math.Round((intSpeed * 0.223693629) / 10, 2).ToString(), pName); 
             
             if (recbuf[(byte)WIND.subtype] == (byte)WIND.WIND4)
             {
                 if (((byte)WIND.tempsign & 0x80) == 0)
                 {
                     logging.AddToLog("Temperature   = " + (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                    osae.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
                 else
                 {
                     logging.AddToLog("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                    osae.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
 
                 if (((byte)WIND.chillsign & 0x80) == 0)
                 {
                     logging.AddToLog("Chill         = " + (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                    osae.ObjectPropertySet(obj.Name, "Windchill", (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString());
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Windchill", (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
                 else
                 {
                     logging.AddToLog("Chill         = -" + (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                    osae.ObjectPropertySet(obj.Name, "Windchill", "-" + (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString());
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Windchill", "-" + (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
             }
 
@@ -3293,43 +3288,43 @@ namespace OSAE.RFXCOM
                 {
                     case 0:
                         logging.AddToLog("Battery       = 10%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "10%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "10%", pName);
                         break;
                     case 1:
                         logging.AddToLog("Battery       = 20%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "20%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "20%", pName);
                         break;
                     case 2:
                         logging.AddToLog("Battery       = 30%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "30%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "30%", pName);
                         break;
                     case 3:
                         logging.AddToLog("Battery       = 40%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "40%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "40%", pName);
                         break;
                     case 4:
                         logging.AddToLog("Battery       = 50%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "50%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "50%", pName);
                         break;
                     case 5:
                         logging.AddToLog("Battery       = 60%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "60%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "60%", pName);
                         break;
                     case 6:
                         logging.AddToLog("Battery       = 70%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "70%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "70%", pName);
                         break;
                     case 7:
                         logging.AddToLog("Battery       = 80%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "80%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "80%", pName);
                         break;
                     case 8:
                         logging.AddToLog("Battery       = 90%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "90%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "90%", pName);
                         break;
                     case 9:
                         logging.AddToLog("Battery       = 100%", false);
-                        osae.ObjectPropertySet(obj.Name, "Battery", "100%");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "100%", pName);
                         break;
                 }
             }
@@ -3338,24 +3333,24 @@ namespace OSAE.RFXCOM
                 if ((recbuf[(byte)WIND.battery_level] & 0xf) == 0)
                 {
                     logging.AddToLog("Battery       = Low", false);
-                    osae.ObjectPropertySet(obj.Name, "Battery", "Low");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
                 }
                 else
                 {
                     logging.AddToLog("Battery       = OK", false);
-                    osae.ObjectPropertySet(obj.Name, "Battery", "OK");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
                 }
             }
         }
 
         public void decode_UV()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New UV sensor found.  Adding to OSA", true);
-                osae.ObjectAdd("UV Sensor - " + (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "UV Sensor", "UV SENSOR", (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("UV Sensor - " + (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "UV Sensor", "UV SENSOR", (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString());
             }
 
             switch (recbuf[(byte)UV.subtype])
@@ -3376,56 +3371,56 @@ namespace OSAE.RFXCOM
             logging.AddToLog("Sequence nbr  = " + recbuf[(byte)UV.seqnbr].ToString(), false);
             logging.AddToLog("ID            = " + (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), false);
             logging.AddToLog("Level         = " + (recbuf[(byte)UV.uv] / 10).ToString(), false);
-            osae.ObjectPropertySet(obj.Name, "Level", (recbuf[(byte)UV.uv] / 10).ToString());
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Level", (recbuf[(byte)UV.uv] / 10).ToString(), pName);
 
             if (recbuf[(byte)UV.subtype] == (byte)UV.UV3)
             {
                 if (((byte)UV.tempsign & 0x80) == 0)
                 {
                     logging.AddToLog("Temperature   = " + (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                    osae.ObjectPropertySet(obj.Name, "Level", (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Level", (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
                 else
                 {
                     logging.AddToLog("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
-                    osae.ObjectPropertySet(obj.Name, "Level", (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString());
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Level", (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
             }
             if (recbuf[(byte)UV.uv] < 3)
             {
                 logging.AddToLog("Description = Low", false);
-                osae.ObjectPropertySet(obj.Name, "Description", "Low");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "Low", pName);
             }
             else if (recbuf[(byte)UV.uv] < 6)
             {
                 logging.AddToLog("Description = Medium", false);
-                osae.ObjectPropertySet(obj.Name, "Description", "Medium");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "Medium", pName);
             }
             else if (recbuf[(byte)UV.uv] < 8)
             {
                 logging.AddToLog("Description = High", false);
-                osae.ObjectPropertySet(obj.Name, "Description", "High");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "High", pName);
             }
             else if (recbuf[(byte)UV.uv] < 11)
             {
                 logging.AddToLog("Description = Very high", false);
-                osae.ObjectPropertySet(obj.Name, "Description", "Very high");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "Very high", pName);
             }
             else
             {
                 logging.AddToLog("Description = Dangerous", false);
-                osae.ObjectPropertySet(obj.Name, "Description", "Dangerous");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "Dangerous", pName);
             }
             logging.AddToLog("Signal level  = " + (recbuf[(byte)UV.rssi] >> 4).ToString(), false);
             if ((recbuf[(byte)UV.battery_level] & 0xf) == 0)
             {
                 logging.AddToLog("Battery       = Low", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "Low");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
                 logging.AddToLog("Battery       = OK", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "OK");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
 
@@ -3437,12 +3432,12 @@ namespace OSAE.RFXCOM
 
         public void decode_Current()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New Current meter found.  Adding to OSA", true);
-                osae.ObjectAdd("Current Meter - " + (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "Current Meter", "CURRENT METER", (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("Current Meter - " + (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "Current Meter", "CURRENT METER", (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString());
             }
 
             switch (recbuf[(byte)CURRENT.subtype])
@@ -3460,32 +3455,32 @@ namespace OSAE.RFXCOM
             logging.AddToLog("Channel 1     = " + ((recbuf[(byte)CURRENT.ch1h] * 256 + recbuf[(byte)CURRENT.ch1l]) / 10).ToString() + " ampere", false);
             logging.AddToLog("Channel 2     = " + ((recbuf[(byte)CURRENT.ch2h] * 256 + recbuf[(byte)CURRENT.ch2l]) / 10).ToString() + " ampere", false);
             logging.AddToLog("Channel 3     = " + ((recbuf[(byte)CURRENT.ch3h] * 256 + recbuf[(byte)CURRENT.ch3l]) / 10).ToString() + " ampere", false);
-            osae.ObjectPropertySet(obj.Name, "Count", recbuf[5].ToString());
-            osae.ObjectPropertySet(obj.Name, "Channel 1", ((recbuf[(byte)CURRENT.ch1h] * 256 + recbuf[(byte)CURRENT.ch1l]) / 10).ToString());
-            osae.ObjectPropertySet(obj.Name, "Channel 2", ((recbuf[(byte)CURRENT.ch2h] * 256 + recbuf[(byte)CURRENT.ch2l]) / 10).ToString());
-            osae.ObjectPropertySet(obj.Name, "Channel 3", ((recbuf[(byte)CURRENT.ch3h] * 256 + recbuf[(byte)CURRENT.ch3l]) / 10).ToString());
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Count", recbuf[5].ToString(), pName);
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Channel 1", ((recbuf[(byte)CURRENT.ch1h] * 256 + recbuf[(byte)CURRENT.ch1l]) / 10).ToString(), pName);
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Channel 2", ((recbuf[(byte)CURRENT.ch2h] * 256 + recbuf[(byte)CURRENT.ch2l]) / 10).ToString(), pName);
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Channel 3", ((recbuf[(byte)CURRENT.ch3h] * 256 + recbuf[(byte)CURRENT.ch3l]) / 10).ToString(), pName);
 
             logging.AddToLog("Signal level  = " + (recbuf[(byte)CURRENT.rssi] >> 4).ToString(), false);
             if ((recbuf[(byte)CURRENT.battery_level] & 0xf) == 0)
             {
                 logging.AddToLog("Battery       = Low", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "Low");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
                 logging.AddToLog("Battery       = OK", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "OK");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
 
         public void decode_Energy()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New Energy meter found.  Adding to OSA", true);
-                osae.ObjectAdd("Energy Meter - " + (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "Energy Meter", "ENERGY METER", (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("Energy Meter - " + (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "Energy Meter", "ENERGY METER", (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString());
             }
 
             long instant = 0;
@@ -3508,20 +3503,20 @@ namespace OSAE.RFXCOM
             logging.AddToLog("Count         = " + recbuf[(byte)ENERGY.count].ToString(), false);
             logging.AddToLog("Instant usage = " + instant.ToString() + " Watt", false);
             logging.AddToLog("total usage   = " + usage.ToString() + " Wh", false);
-            osae.ObjectPropertySet(obj.Name, "Count", recbuf[5].ToString());
-            osae.ObjectPropertySet(obj.Name, "Instant usage", instant.ToString());
-            osae.ObjectPropertySet(obj.Name, "Total usage", usage.ToString());
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Count", recbuf[5].ToString(), pName);
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Instant usage", instant.ToString(), pName);
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Total usage", usage.ToString(), pName);
 
             logging.AddToLog("Signal level  = " + (recbuf[(byte)ENERGY.rssi] >> 4).ToString(), false);
             if ((recbuf[(byte)ENERGY.battery_level] & 0xf) == 0)
             {
                 logging.AddToLog("Battery       = Low", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "Low");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
                 logging.AddToLog("Battery       = OK", false);
-                osae.ObjectPropertySet(obj.Name, "Battery", "OK");
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
 
@@ -3537,12 +3532,12 @@ namespace OSAE.RFXCOM
 
         public void decode_Weight()
         {
-            OSAEObject obj = osae.GetObjectByAddress((recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString());
-            if (obj == null && osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+            OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString());
+            if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 logging.AddToLog("New Scale found.  Adding to OSA", true);
-                osae.ObjectAdd("Scale Meter - " + (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "Scale Meter", "SCALE", (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "", true);
-                obj = obj = osae.GetObjectByAddress((recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString());
+                OSAEObjectManager.ObjectAdd("Scale Meter - " + (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "Scale Meter", "SCALE", (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "", true);
+                obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString());
             }
             
             switch (recbuf[(byte)WEIGHT.subtype])
@@ -3562,7 +3557,7 @@ namespace OSAE.RFXCOM
             logging.AddToLog("Weight        = " + (((recbuf[(byte)WEIGHT.weighthigh] * 25.6) + recbuf[(byte)WEIGHT.weightlow] / 10).ToString() + 2.2).ToString() + " lb", false);
             logging.AddToLog("Signal level  = " + (recbuf[(byte)WEIGHT.rssi] >> 4).ToString(), false);
 
-            osae.ObjectPropertySet(obj.Name, "Weight", (((recbuf[(byte)WEIGHT.weighthigh] * 25.6) + recbuf[(byte)WEIGHT.weightlow] / 10).ToString() + 2.2).ToString());
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Weight", (((recbuf[(byte)WEIGHT.weighthigh] * 25.6) + recbuf[(byte)WEIGHT.weightlow] / 10).ToString() + 2.2).ToString(), pName);
         }
 
         //public void decode_RFXSensor()
