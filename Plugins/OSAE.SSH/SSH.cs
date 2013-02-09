@@ -9,6 +9,7 @@ namespace OSAE.SSH
     public class SSH : OSAEPluginBase
     {
         OSAE osae = new OSAE("SSH");
+        Logging logging = new Logging("SSH");
         string pName;
         string server = "";
         string username = "";
@@ -23,17 +24,17 @@ namespace OSAE.SSH
                 username = tmp[1];
                 password = tmp[2];
                 string command = method.Parameter2;
-                osae.AddToLog("Sending command: " + command + " | " + server + " | " + username + " | " + password, false);
+                logging.AddToLog("Sending command: " + command + " | " + server + " | " + username + " | " + password, false);
                 SshExec ssh = new SshExec(server, username, password);
                 ssh.Connect();
                 
                 string response = ssh.RunCommand(command);
-                osae.AddToLog("Response: " + response, false);
+                logging.AddToLog("Response: " + response, false);
                 ssh.Close();
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error Sending command - " + ex.Message + " -" + ex.InnerException, true);
+                logging.AddToLog("Error Sending command - " + ex.Message + " -" + ex.InnerException, true);
             }
         }
 

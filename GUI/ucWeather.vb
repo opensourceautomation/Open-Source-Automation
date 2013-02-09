@@ -91,7 +91,7 @@ Public Class ucWeather
         If imageName = "" Then Exit Sub
 
         Dim url As New Uri(imageName)
-        Dim path As String = String.Format("{0}\images\WUnderground{1}", OSAEApi.APIpath, url.AbsolutePath.Replace("/", "\"))
+        Dim path As String = String.Format("{0}\images\Weather{1}", OSAEApi.APIpath, url.AbsolutePath.Replace("/", "\"))
         Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path))
         If File.Exists(path) Then
             imageBox.Image = New Bitmap(New MemoryStream(New WebClient().DownloadData(url.OriginalString)))

@@ -66,8 +66,7 @@ namespace OSAE.NetworkMonitor
         {
             try
             {
-                OSAEObjectManager objectManager = new OSAEObjectManager();
-                List<OSAEObject> objects = objectManager.GetObjectsByType("NETWORK DEVICE");
+                List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("NETWORK DEVICE");
                 logging.AddToLog("# NETWORK DEVICE: " + objects.Count.ToString(), false);
                 
                 foreach (OSAEObject obj in objects)
@@ -82,8 +81,8 @@ namespace OSAE.NetworkMonitor
                         ObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
                     }
                 }
-                
-                objects = objectManager.GetObjectsByType("COMPUTER");
+
+                objects = OSAEObjectManager.GetObjectsByType("COMPUTER");
                 logging.AddToLog("# COMPUTERS: " + objects.Count.ToString(), false);
                 
                 foreach (OSAEObject obj in objects)

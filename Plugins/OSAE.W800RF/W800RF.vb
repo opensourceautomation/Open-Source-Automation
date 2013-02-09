@@ -5,6 +5,7 @@ Imports System.IO.Ports
 Public Class W800RF
     Inherits OSAEPluginBase
     Private OSAEApi As New OSAE("W800RF")
+    Private logging As New Logging("W800RF")
     Private gAppName As String = ""
 
     Private _baudRate As String = "4800"
@@ -20,25 +21,25 @@ Public Class W800RF
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         gAppName = pluginName
-        OSAEApi.AddToLog("Found my Object Name: " & gAppName, True)
+        logging.AddToLog("Found my Object Name: " & gAppName, True)
         Load_App_Name()
 
         Set_Codes()
         OpenPort()
 
-        OSAEApi.AddToLog("Finished Loading: " & gAppName, True)
+        logging.AddToLog("Finished Loading: " & gAppName, True)
     End Sub
 
     Public Overrides Sub Shutdown()
-        OSAEApi.AddToLog("*** Received Shut-Down.", True)
+        logging.AddToLog("*** Received Shut-Down.", True)
     End Sub
 
     Private Sub Load_App_Name()
-        OSAEApi.AddToLog("W800RF Plugin Version: 1.0.4", True)
+        logging.AddToLog("W800RF Plugin Version: 1.0.4", True)
         _portName = "COM" & OSAEApi.GetObjectPropertyValue(gAppName, "Port").Value
-        OSAEApi.AddToLog("Port is set to: " & _portName, True)
+        logging.AddToLog("Port is set to: " & _portName, True)
         _Debounce = OSAEApi.GetObjectPropertyValue(gAppName, "Debounce").Value
-        OSAEApi.AddToLog("Debounce is set to: " & _Debounce, True)
+        logging.AddToLog("Debounce is set to: " & _Debounce, True)
     End Sub
 
     Public Function OpenPort() As Boolean
@@ -53,11 +54,11 @@ Public Class W800RF
             comPort.Parity = DirectCast([Enum].Parse(GetType(Parity), _parity), Parity)
             comPort.PortName = _portName
             comPort.Open()
-            OSAEApi.AddToLog("COM" & _portName & " opened", True)
+            logging.AddToLog("COM" & _portName & " opened", True)
             AddHandler comPort.DataReceived, AddressOf comPort_DataReceived
             Return True
         Catch ex As Exception
-            OSAEApi.AddToLog("COM" & _portName & " error: " & ex.Message, True)
+            logging.AddToLog("COM" & _portName & " error: " & ex.Message, True)
             Return False
         End Try
     End Function
@@ -152,7 +153,7 @@ Public Class W800RF
                     gDevice.House_Code = gHouseCodes(ByteDetail(3).DecimalValue - &H20)
                 End If
             Catch ex As Exception
-                OSAEApi.AddToLog("Bad House Code Detected: " & ByteDetail(3).DecimalValue, False)
+                logging.AddToLog("Bad House Code Detected: " & ByteDetail(3).DecimalValue, False)
             End Try
             intUnit = ByteDetail(3).BinaryValue.Substring(2, 1) * 8
             intUnit += ByteDetail(1).BinaryValue.Substring(6, 1) * 4
@@ -173,7 +174,7 @@ Public Class W800RF
                 gDevice.Current_Command = "ON"
             End If
         End If
-        OSAEApi.AddToLog(gDevice.House_Code & gDevice.Device_Code & " " & gDevice.Current_Command & " [" & gDevice.Device_Type & "]", True)
+        logging.AddToLog(gDevice.House_Code & gDevice.Device_Code & " " & gDevice.Current_Command & " [" & gDevice.Device_Type & "]", True)
         ProcessInput()
         gNewTime = DateTime.Now().AddMilliseconds(_Debounce)
     End Sub
@@ -183,35 +184,35 @@ Public Class W800RF
         Dim oObject As OSAEObject
         Dim gLearning As String
         Try
-            OSAEApi.AddToLog("---------------------------------------------------------------------", True)
-            OSAEApi.AddToLog("GetObjectByAddress: " & gDevice.House_Code & gDevice.Device_Code, False)
+            logging.AddToLog("---------------------------------------------------------------------", True)
+            logging.AddToLog("GetObjectByAddress: " & gDevice.House_Code & gDevice.Device_Code, False)
             Try
                 oObject = OSAEApi.GetObjectByAddress(gDevice.House_Code & gDevice.Device_Code)
                 If IsNothing(oObject) Then
                     gLearning = OSAEApi.GetObjectPropertyValue(gAppName, "Learning Mode").Value
                     If gLearning.ToUpper = "TRUE" Then
                         If gDevice.Device_Type = "X10_SECURITY_DS10" Then
-                            OSAEApi.AddToLog("Adding new DS10A: " & gDevice.Device_Code, True)
-                            OSAEApi.AddToLog("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)", False)
+                            logging.AddToLog("Adding new DS10A: " & gDevice.Device_Code, True)
+                            logging.AddToLog("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)", False)
                             OSAEApi.ObjectAdd("X10-" & gDevice.Device_Code, "Unknown DS10A found by W800RF", "X10 SENSOR", gDevice.Device_Code, "", True)
                         Else
-                            OSAEApi.AddToLog("Adding new X10: " & gDevice.House_Code & gDevice.Device_Code, True)
-                            OSAEApi.AddToLog("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)", False)
+                            logging.AddToLog("Adding new X10: " & gDevice.House_Code & gDevice.Device_Code, True)
+                            logging.AddToLog("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)", False)
                             OSAEApi.ObjectAdd("X10-" & gDevice.House_Code & gDevice.Device_Code, "Unknown X10 found by W800RF", "X10 SENSOR", gDevice.House_Code & gDevice.Device_Code, "", True)
                         End If
                     End If
                 Else
                     OSAEApi.ObjectStateSet(oObject.Name, gDevice.Current_Command)
-                    OSAEApi.AddToLog("Set: " & oObject.Name & " to " & gDevice.Current_Command, True)
+                    logging.AddToLog("Set: " & oObject.Name & " to " & gDevice.Current_Command, True)
                 End If
             Catch ex As Exception
-                OSAEApi.AddToLog("Object Not Found for: " & gDevice.House_Code & gDevice.Device_Code, True)
-                OSAEApi.AddToLog("Error Msg: " & ex.Message, True)
-                OSAEApi.AddToLog("--- Msg: " & ex.InnerException.Message, False)
+                logging.AddToLog("Object Not Found for: " & gDevice.House_Code & gDevice.Device_Code, True)
+                logging.AddToLog("Error Msg: " & ex.Message, True)
+                logging.AddToLog("--- Msg: " & ex.InnerException.Message, False)
             End Try
         Catch ex As Exception
-            OSAEApi.AddToLog("Error ReadCommPort: " & ex.Message, True)
-            OSAEApi.AddToLog("--- Msg: " & ex.InnerException.Message, False)
+            logging.AddToLog("Error ReadCommPort: " & ex.Message, True)
+            logging.AddToLog("--- Msg: " & ex.InnerException.Message, False)
         End Try
 DropOut:
     End Sub

@@ -1,4 +1,4 @@
-﻿namespace OSAE.API.Images
+﻿namespace OSAE
 {
     public class OSAEImage
     {

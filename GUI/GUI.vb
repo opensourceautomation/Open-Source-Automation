@@ -1124,7 +1124,7 @@ Public Class GUI
         CMD.CommandType = CommandType.Text
         CMD2.Connection = CN2
         CMD2.CommandType = CommandType.Text
-        CMD2.CommandText = "SELECT * FROM osae_v_screen_updates WHERE screen_name=?ScreenName AND last_updated > subtime(now(),'00:00:05')"
+        CMD2.CommandText = "SELECT * FROM osae_v_screen_object WHERE screen_name=?ScreenName AND last_updated > subtime(now(),'00:00:05')"
         CMD2.Parameters.AddWithValue("?ScreenName", gCurrentScreen)
         Try
             CN2.Open()

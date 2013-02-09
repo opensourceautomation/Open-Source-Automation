@@ -76,10 +76,9 @@
     public class api : IRestService
     {
         public OSAEObject GetObject(string name)
-        {
-            OSAEObjectManager objectManager = new OSAEObjectManager();
+        {           
             // lookup object 
-            OSAEObject OSAEobj = objectManager.GetObjectByName(name);
+            OSAEObject OSAEobj = OSAEObjectManager.GetObjectByName(name);
             OSAEobj.Properties = getProperties(OSAEobj.Name);
             return OSAEobj;
         }
@@ -91,10 +90,8 @@
         }
 
         public List<OSAEObject> GetObjectsByType(string type)
-        {
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-
-            List<OSAEObject> objects = objectManager.GetObjectsByType(type);
+        {           
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType(type);
 
             foreach (OSAEObject oObj in objects)
             {
@@ -106,8 +103,7 @@
 
         public List<OSAEObject> GetObjectsByContainer(string container)
         {
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-            List<OSAEObject> objects = objectManager.GetObjectsByContainer(container);
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByContainer(container);
 
             foreach (OSAEObject oObj in objects)
             {
@@ -138,16 +134,14 @@
 
         public Boolean AddObject(string name, string description, string type, string address, string container, string enabled)
         {
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-            objectManager.ObjectAdd(name, description, type, address, container, Convert.ToBoolean(enabled));
+            OSAEObjectManager.ObjectAdd(name, description, type, address, container, Convert.ToBoolean(enabled));
 
             return true;
         }
 
         public Boolean UpdateObject(string oldName, string newName, string description, string type, string address, string container, string enabled)
         {
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-            objectManager.ObjectUpdate(oldName, newName, description, type, address, container, Int32.Parse(enabled));
+            OSAEObjectManager.ObjectUpdate(oldName, newName, description, type, address, container, Int32.Parse(enabled));
 
             return true;
         }
@@ -172,8 +166,7 @@
 
         public List<OSAEObject> GetPlugins()
         {
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-            List<OSAEObject> objects = objectManager.GetObjectsByBaseType("plugin");
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByBaseType("plugin");
 
             foreach (OSAEObject oObj in objects)
             {
@@ -218,8 +211,7 @@
 
         private List<ObjectProperty> getProperties(string objName)
         {
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-            OSAEObject oObj = objectManager.GetObjectByName(objName);
+            OSAEObject oObj = OSAEObjectManager.GetObjectByName(objName);
             List<ObjectProperty> props = oObj.Properties;
             List<ObjectProperty> properties = new List<ObjectProperty>();
 

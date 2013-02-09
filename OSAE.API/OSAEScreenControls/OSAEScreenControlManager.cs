@@ -7,6 +7,26 @@
 
     public static class OSAEScreenControlManager
     {
+        public static void ScreenObjectAdd(string screen, string objectName, string controlName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_screen_object_add(@Screen, @ObjectName, @ControlName)";
+                command.Parameters.AddWithValue("@Screen", screen);
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@ControlName", controlName);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("ScreenObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
         public static List<OSAEScreenControl> GetScreenControls(string screenName)
         {           
             List<OSAEScreenControl> controls = new List<OSAEScreenControl>();

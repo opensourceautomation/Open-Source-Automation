@@ -12,6 +12,7 @@ namespace OSAE.XBMC
     public class XBMC : OSAEPluginBase
     {
         private OSAE osae = new OSAE("XBMC");
+        private Logging logging = new Logging("XBMC");
         private List<XBMCSystem> Systems = new List<XBMCSystem>();
         private string pName;
         //private System.Timers.Timer Clock;
@@ -22,7 +23,7 @@ namespace OSAE.XBMC
         public override void ProcessCommand(OSAEMethod method)
         {
             //System.Data.DataRow row = table.Rows[0];
-            //osae.AddToLog("Found Command: " + row["method_name"].ToString() + " | param1: " + row["parameter_1"].ToString() + " | param2: " + row["parameter_1"].ToString(), false);
+            //logging.AddToLog("Found Command: " + row["method_name"].ToString() + " | param1: " + row["parameter_1"].ToString() + " | param2: " + row["parameter_1"].ToString(), false);
 
             //XBMCSystem s = getXBMCSystem(row["object_name"].ToString());
             //if (s != null)
@@ -48,7 +49,7 @@ namespace OSAE.XBMC
 
         public override void RunInterface(string pluginName)
         {
-            osae.AddToLog("Running interface", false);
+            logging.AddToLog("Running interface", false);
             pName = pluginName;
             osae.ObjectTypeUpdate("XBMC SYSTEM", "XBMC SYSTEM", "XBMC System", pluginName, "XBMC SYSTEM", 0, 0, 0, 1);
 
@@ -77,7 +78,7 @@ namespace OSAE.XBMC
                             break;
                     }
                 }
-                osae.AddToLog("Creating new XBMC System connection: " + obj.Name + " - " + ip, false);
+                logging.AddToLog("Creating new XBMC System connection: " + obj.Name + " - " + ip, false);
                 XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
                 system.Connect();
                 Systems.Add(system);
@@ -114,26 +115,26 @@ namespace OSAE.XBMC
 
                     //if (!r.isConnected())
                     //{
-                    //    osae.AddToLog("Trying to reconnect", false);
+                    //    logging.AddToLog("Trying to reconnect", false);
                     //    r.Connect();
                     //}
                     r.getStatus();
 
                     if (r.Playing)
                     {
-                        osae.AddToLog("Checking " + r.Name + " - Playing", false);
+                        logging.AddToLog("Checking " + r.Name + " - Playing", false);
                         osae.ObjectStateSet(r.Name, "Playing");
                     }
                     else
                     {
-                        osae.AddToLog("Checking " + r.Name + " - Stopped", false);
+                        logging.AddToLog("Checking " + r.Name + " - Stopped", false);
                         osae.ObjectStateSet(r.Name, "Stopped");
                     }
                 }
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error on timer tick: " + ex.Message, true);
+                logging.AddToLog("Error on timer tick: " + ex.Message, true);
             }
 
         }
@@ -151,6 +152,7 @@ namespace OSAE.XBMC
         private bool _playing;
         private Client _xbmcSystem;
         private OSAE osae = new OSAE("XBMC");
+        private Logging logging = new Logging("XBMC");
 
         public string Name
         {
@@ -186,14 +188,14 @@ namespace OSAE.XBMC
         public void Connect()
         {
             _xbmcSystem = new Client(_ip, _port, _username, _password);
-            osae.AddToLog("Client connected", false);
+            logging.AddToLog("Client connected", false);
 
             _xbmcSystem.Player.OnPlay += Player_OnPlay;
             _xbmcSystem.Player.OnStop += Player_OnStop;
             _xbmcSystem.Player.OnPause += Player_OnPause;
 
             _xbmcSystem.StartNotificationListener();
-            osae.AddToLog("Events wired up", false);
+            logging.AddToLog("Events wired up", false);
         }
 
 
@@ -201,7 +203,7 @@ namespace OSAE.XBMC
         //{
         //    try
         //    {
-        //        osae.AddToLog("EventListener captured event : " + type.ToString() + " - " + sender.ToString() + " - " + _ip, false);
+        //        logging.AddToLog("EventListener captured event : " + type.ToString() + " - " + sender.ToString() + " - " + _ip, false);
 
         //        switch (type)
         //        {
@@ -237,7 +239,7 @@ namespace OSAE.XBMC
         //    }
         //    catch (Exception ex)
         //    {
-        //        osae.AddToLog("Error receiving message: " + ex.Message, true);
+        //        logging.AddToLog("Error receiving message: " + ex.Message, true);
         //    }
         //}
 
@@ -256,7 +258,7 @@ namespace OSAE.XBMC
         //        }
         //        catch(Exception ex)
         //        {
-        //            osae.AddToLog("Error checking if connected: " + ex.Message, true);
+        //            logging.AddToLog("Error checking if connected: " + ex.Message, true);
         //            return false;
         //        }
                         //else
@@ -282,24 +284,24 @@ namespace OSAE.XBMC
             else
                 _playing = false;
 
-            osae.AddToLog(" --- " + _playing.ToString(), false);
+            logging.AddToLog(" --- " + _playing.ToString(), false);
         }
 
         void Player_OnPlay(string sender = null, XBMCRPC.Player.Notifications.Data data = null)
         {
-            osae.AddToLog(Name + " started playing", false);
+            logging.AddToLog(Name + " started playing", false);
             osae.ObjectStateSet(Name, "Playing");
                 }
 
         void Player_OnStop(string sender = null, Player.OnStopdataType data = null)
                 {
-            osae.AddToLog(Name + " stopped playing", false); 
+            logging.AddToLog(Name + " stopped playing", false); 
             osae.ObjectStateSet(Name, "Stopped");
         }
 
         void Player_OnPause(string sender = null, XBMCRPC.Player.Notifications.Data data = null)
         {
-            osae.AddToLog(Name + " paused", false);
+            logging.AddToLog(Name + " paused", false);
             osae.ObjectStateSet(Name, "Stopped");
         }
     }

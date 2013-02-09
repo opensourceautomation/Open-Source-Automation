@@ -36,10 +36,12 @@
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-            List<OSAEObject> objects = objectManager.GetObjectsByType("WEATHER");
+         
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("WEATHER");
             if (objects.Count == 0)
-                objectManager.ObjectAdd("Weather Data", "Weather Data", "WEATHER", "", "SYSTEM", true);
+            {
+                OSAEObjectManager.ObjectAdd("Weather Data", "Weather Data", "WEATHER", "", "SYSTEM", true);
+            }
             if (!Directory.Exists(Common.ApiPath + "/Images/Weather"))
             {
                 DirectoryInfo di = Directory.CreateDirectory(Common.ApiPath + "/Images/Weather");

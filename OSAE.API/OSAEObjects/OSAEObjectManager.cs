@@ -12,7 +12,7 @@
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public bool ObjectExists(string address)
+        public static  bool ObjectExists(string address)
         {           
             try
             {
@@ -46,7 +46,7 @@
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public OSAEObject GetObjectByName(string name)
+        public static OSAEObject GetObjectByName(string name)
         {
             MySqlCommand command = new MySqlCommand();
             DataSet dataset = new DataSet();
@@ -87,7 +87,7 @@
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public OSAEObject GetObjectByAddress(string address)
+        public static OSAEObject GetObjectByAddress(string address)
         {            
             OSAEObject obj = null;
 
@@ -130,7 +130,7 @@
         /// </summary>
         /// <param name="ContainerName"></param>
         /// <returns></returns>
-        public List<OSAEObject> GetObjectsByContainer(string ContainerName)
+        public static List<OSAEObject> GetObjectsByContainer(string ContainerName)
         {
             MySqlCommand command = new MySqlCommand();
             DataSet dataset = new DataSet();
@@ -175,7 +175,7 @@
             }
         }
 
-        public List<OSAEObject> GetObjectsByOwner(string ObjectOwner)
+        public static List<OSAEObject> GetObjectsByOwner(string ObjectOwner)
         {            
             List<OSAEObject> objects = new List<OSAEObject>();
 
@@ -222,7 +222,7 @@
         /// </summary>
         /// <param name="ObjectBaseType"></param>
         /// <returns></returns>
-        public List<OSAEObject> GetObjectsByBaseType(string ObjectBaseType)
+        public static List<OSAEObject> GetObjectsByBaseType(string ObjectBaseType)
         {
             DataSet dataset = new DataSet();
             OSAEObject obj = new OSAEObject();
@@ -268,7 +268,7 @@
         /// </summary>
         /// <param name="ObjectType"></param>
         /// <returns></returns>
-        public List<OSAEObject> GetObjectsByType(string ObjectType)
+        public static List<OSAEObject> GetObjectsByType(string ObjectType)
         {
             DataSet dataset = new DataSet();
             OSAEObject obj = new OSAEObject();
@@ -314,7 +314,7 @@
         /// <param name="objectType"></param>
         /// <param name="address"></param>
         /// <param name="container"></param>
-        public void ObjectAdd(string name, string description, string objectType, string address, string container, bool enabled)
+        public static void ObjectAdd(string name, string description, string objectType, string address, string container, bool enabled)
         {
             Logging logging = Logging.GetLogger();
 
@@ -363,7 +363,7 @@
         /// Delete an object
         /// </summary>
         /// <param name="Name"></param>
-        public void ObjectDelete(string Name)
+        public static void ObjectDelete(string Name)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -384,7 +384,7 @@
         /// Delete an object
         /// </summary>
         /// <param name="Name"></param>
-        public void ObjectDeleteByAddress(string address)
+        public static void ObjectDeleteByAddress(string address)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -411,7 +411,7 @@
         /// <param name="Address"></param>
         /// <param name="Container"></param>
         /// <param name="Enabled"></param>
-        public void ObjectUpdate(string oldName, string newName, string description, string objectType, string address, string container, int enabled)
+        public static void ObjectUpdate(string oldName, string newName, string description, string objectType, string address, string container, int enabled)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -435,7 +435,7 @@
             }
         }
 
-        public List<string> GetObjectMethods(string ObjectName)
+        public static List<string> GetObjectMethods(string ObjectName)
         {
             DataSet dataset = new DataSet();
             List<string> methods = new List<string>();

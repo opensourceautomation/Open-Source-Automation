@@ -119,12 +119,12 @@ namespace OSAE.Jabber
         void xmppCon_OnPresence(object sender, agsXMPP.protocol.client.Presence pres)
         {
             logging.AddToLog(String.Format("Received Presence from:{0} show:{1} status:{2}", pres.From.ToString(), pres.Show.ToString(), pres.Status), false);
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-            List<OSAEObject> objects = objectManager.GetObjectsByType("PERSON");
+
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
-            {                
-                OSAEObject obj = objectManager.GetObjectByName(oObj.Name);
+            {
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
 
                 if (ObjectPopertiesManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
                 {
@@ -142,12 +142,11 @@ namespace OSAE.Jabber
             bool found = false;
             logging.AddToLog(String.Format("Received Contact {0}", item.Jid.Bare), true);
 
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-            List<OSAEObject> objects = objectManager.GetObjectsByType("PERSON");
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
             {
-                OSAEObject obj = objectManager.GetObjectByName(oObj.Name);
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
                 if (ObjectPopertiesManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
                 {
                     found = true;
@@ -157,7 +156,7 @@ namespace OSAE.Jabber
 
             if (!found)
             {
-                objectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "PERSON", "", "", true);
+                OSAEObjectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "PERSON", "", "", true);
                 ObjectPopertiesManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
             }
         }

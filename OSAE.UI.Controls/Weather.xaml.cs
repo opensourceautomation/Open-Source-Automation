@@ -39,8 +39,7 @@
 
         private void Load_All_Weather()
 	    {
-            OSAEObjectManager objectManager = new OSAEObjectManager();
-            weatherObj = objectManager.GetObjectByName("Weather Data");
+            weatherObj = OSAEObjectManager.GetObjectByName("Weather Data");
 		    lblCurTemp.Content = weatherObj.Property("Temp").Value + "°";
 		    lblConditions.Content = weatherObj.Property("Today Forecast").Value;
 		    lblLastUpd.Content = weatherObj.Property("Last Updated").Value;

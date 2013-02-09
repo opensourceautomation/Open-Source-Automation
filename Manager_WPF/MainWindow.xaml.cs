@@ -96,7 +96,7 @@
 
             if (connectToService())
             {
-                Thread thread = new Thread(() => messageHost("info", "connected"));
+                Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.CONNECT, "connected"));
                 thread.Start();
             }
             
@@ -166,7 +166,7 @@
             }
         }
 
-        private void messageHost(string msgType, string message)
+        private void messageHost(WCFServiceReference.OSAEWCFMessageType msgType, string message)
         {
             try
             {
@@ -258,7 +258,7 @@
                 {
                     if (connectToService())
                     {
-                        Thread thread = new Thread(() => messageHost("info", "connected"));
+                        Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.CONNECT, "connected"));
                         thread.Start();
                     }
                 }
@@ -297,12 +297,11 @@
                 if (!string.IsNullOrEmpty(path))
                 {
                     PluginDescription desc = new PluginDescription();
-                    OSAEObjectManager objectManager = new OSAEObjectManager();
-
+                 
                     desc.Deserialize(path);
                     desc.Status = "Stopped";
                     desc.Enabled = false;
-                    List<OSAEObject> objs = objectManager.GetObjectsByType(desc.Type);
+                    List<OSAEObject> objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                     foreach (OSAEObject o in objs)
                     {
                         if (ObjectPopertiesManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
@@ -376,15 +375,15 @@
             e.Handled = true;
         }
 
-        public void OnMessageReceived(string msgType, string message, string from, DateTime timestamp)
+        public void OnMessageReceived(WCFServiceReference.OSAEWCFMessage message)
         {
-            logging.AddToLog("Message received: " + msgType + " - " + message, false);
+            logging.AddToLog("Message received: " + message.Type + " - " + message.Message, false);
             //this.Invoke((MethodInvoker)delegate
             //{
-                switch (msgType)
+                switch (message.Type)
                 {
-                    case "plugin":
-                        string[] split = message.Split('|');
+                    case WCFServiceReference.OSAEWCFMessageType.PLUGIN:
+                        string[] split = message.Message.Split('|');
                         bool enabled = false;
                         if (split[1].Trim() == "True")
                         {
@@ -409,8 +408,8 @@
                             }
                         }
                         break;
-                    case "command":
-                        string[] param = message.Split('|');
+                    case WCFServiceReference.OSAEWCFMessageType.CMDLINE:
+                        string[] param = message.Message.Split('|');
                         if (param[2].Trim() == Common.ComputerName)
                         {
                             Process pr = new Process();
@@ -419,8 +418,8 @@
                             pr.Start();
                         }
                         break;
-                    case "service":
-                        string[] serv = message.Split('|');
+                    case WCFServiceReference.OSAEWCFMessageType.SERVICE:
+                        string[] serv = message.Message.Split('|');
                         if (serv[0] != serv[1] && txblNewVersion.Visibility == Visibility.Hidden)
                         {
                             ShowNewVersion("Version " + serv[1] + " Available");
@@ -539,7 +538,7 @@
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
-                    Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|True"));
+                    Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|True"));
                     thread.Start();
                     logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
                     if (myService.Status == ServiceControllerStatus.Running)
@@ -554,9 +553,8 @@
                     }
                 }
 
-                OSAEObjectManager objectManager = new OSAEObjectManager();
-                OSAEObject obj = objectManager.GetObjectByName(pd.Name);
-                objectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);                
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);                
             }
             catch (Exception ex)
             {
@@ -573,7 +571,7 @@
 
                 if (wcfObj.State == CommunicationState.Opened)
                 {
-                    Thread thread = new Thread(() => messageHost("plugin", "ENABLEPLUGIN|" + pd.Name + "|False"));
+                    Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|False"));
                     thread.Start();
                     logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
 
@@ -589,9 +587,8 @@
                     }
                 }
 
-                OSAEObjectManager objectManager = new OSAEObjectManager();
-                OSAEObject obj = objectManager.GetObjectByName(pd.Name);
-                objectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);                
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);                
             }
             catch (Exception ex)
             {

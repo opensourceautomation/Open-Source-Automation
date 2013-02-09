@@ -12,10 +12,12 @@ namespace OSAE.UI.Controls
     {
         MjpegDecoder _mjpeg;
         public Point Location;
+        public OSAEObject screenObject = new OSAEObject();
 
-        public VideoStreamViewer(string url)
+        public VideoStreamViewer(string url, OSAEObject obj)
         {
             InitializeComponent();
+            screenObject = obj;
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
             _mjpeg.ParseStream(new Uri(url));

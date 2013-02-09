@@ -15,6 +15,7 @@ namespace OSAE.RSS
     {
         string pName;
         OSAE osae = new OSAE("RSS");
+        Logging logging = new Logging("RSS");
         System.Timers.Timer Clock;
         Thread updateThread;
         int updateInterval=60;
@@ -28,15 +29,15 @@ namespace OSAE.RSS
         public override void RunInterface(string pluginName)
         { 
             pName = pluginName;
-            osae.AddToLog("Running Interface!", true);
+            logging.AddToLog("Running Interface!", true);
             Clock = new System.Timers.Timer();
             Clock.Interval = Int32.Parse(osae.GetObjectProperty(pName, "Update Interval")) * 60000;
-            osae.AddToLog(updateInterval.ToString(), true);
+            logging.AddToLog(updateInterval.ToString(), true);
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
-            osae.AddToLog(Clock.Interval.ToString(), true);
+            logging.AddToLog(Clock.Interval.ToString(), true);
             Clock.Start();
             
-            osae.AddToLog("Starting timer", true);
+            logging.AddToLog("Starting timer", true);
             this.updateThread = new Thread(new ThreadStart(updateFeeds));
             this.updateThread.Start();
         }
@@ -50,7 +51,7 @@ namespace OSAE.RSS
 
         public void Timer_Tick(object sender, EventArgs eArgs)
         {
-            osae.AddToLog("Timer Tick", false);
+            logging.AddToLog("Timer Tick", false);
             if (sender == Clock)
             {
                 if (!updateThread.IsAlive)
@@ -65,7 +66,7 @@ namespace OSAE.RSS
         public void updateFeeds()
         {
 
-            osae.AddToLog("Trying to get all feed Urls:" + pName, false);
+            logging.AddToLog("Trying to get all feed Urls:" + pName, false);
             
                 DataSet ds = new DataSet();
                 ds = osae.ObjectPropertyArrayGetAll(pName, "Feeds");
@@ -73,7 +74,7 @@ namespace OSAE.RSS
                 {
                     try
                     {
-                        osae.AddToLog("Fetching feed: " + dr["item_name"].ToString(), false);
+                        logging.AddToLog("Fetching feed: " + dr["item_name"].ToString(), false);
                         WebClient webClient = new WebClient();
                         string strSource = webClient.DownloadString(dr["item_name"].ToString());
                         webClient.Dispose();
@@ -82,27 +83,27 @@ namespace OSAE.RSS
                         xml.LoadXml(strSource);
 
                         string feedTitle = xml.SelectSingleNode("/rss/channel/title").InnerText;
-                        osae.AddToLog("Feeds title: " + feedTitle, false);
+                        logging.AddToLog("Feeds title: " + feedTitle, false);
                         if (osae.GetObjectProperty(pName, feedTitle) == "")
                         {
-                            osae.AddToLog("Adding property to object type", false);
+                            logging.AddToLog("Adding property to object type", false);
                             osae.ObjectTypePropertyAdd(feedTitle, "List", "", "RSS", false);
                         }
                         osae.ObjectPropertyArrayDeleteAll(pName, feedTitle);
-                        osae.AddToLog("Cleared feed data", false);
+                        logging.AddToLog("Cleared feed data", false);
 
                         XmlNodeList xnList = xml.SelectNodes("/rss/channel/item");
                         foreach (XmlNode xn in xnList)
                         {
                             string content = xn.SelectSingleNode("title").InnerText + " - " + xn.SelectSingleNode("description").InnerText;
                             content = Regex.Replace(content, "<.*?>", string.Empty);
-                            osae.AddToLog("Added item to feed data: " + content, false);
+                            logging.AddToLog("Added item to feed data: " + content, false);
                             osae.ObjectPropertyArrayAdd(pName, feedTitle, content, "");
                         }
                     }
                     catch(Exception ex)
                     {
-                        osae.AddToLog("Error: " + ex.Message, true);
+                        logging.AddToLog("Error: " + ex.Message, true);
                     }
                 }
 

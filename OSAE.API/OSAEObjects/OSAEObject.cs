@@ -7,9 +7,7 @@
     public class OSAEObject
     {
         #region Properties
-
-        private OSAEObjectManager objectManager = new OSAEObjectManager();
-
+           
         private string _name;
         private string _description;
         private string _type;    
@@ -31,7 +29,7 @@
 
             set
             {
-                objectManager.ObjectUpdate(_name, value, _description, _type, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, value, _description, _type, _address, _container, _enabled);
                 _name = value;
             }
         }
@@ -46,7 +44,7 @@
             set
             {
                 _description = value;
-                objectManager.ObjectUpdate(_name, _name, value, _type, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, value, _type, _address, _container, _enabled);
             }
         }      
 
@@ -60,7 +58,7 @@
             set
             {
                 _type = value;
-                objectManager.ObjectUpdate(_name, _name, _description, value, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _description, value, _address, _container, _enabled);
             }
         }      
 
@@ -87,7 +85,7 @@
             set
             {
                 _address = value;
-                objectManager.ObjectUpdate(_name, _name, _description, _type, value, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _description, _type, value, _container, _enabled);
             }
         }      
 
@@ -101,7 +99,7 @@
             set
             {
                 _container = value;
-                objectManager.ObjectUpdate(_name, _name, _description, _type, _address, value, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _description, _type, _address, value, _enabled);
             }
         }      
               
@@ -115,7 +113,7 @@
             set
             {
                 _enabled = value;
-                objectManager.ObjectUpdate(_name, _name, _description, _type, _address, _container, value);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _description, _type, _address, _container, value);
             }
         }
 
@@ -167,7 +165,7 @@
 
         public void Delete()
         {
-            objectManager.ObjectDelete(Name);
+            OSAEObjectManager.ObjectDelete(Name);
         }
 
         public void SetState(string state)

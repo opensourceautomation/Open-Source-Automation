@@ -12,13 +12,12 @@
     public class WCFService : IWCFService
     {
         private const string sourceName = "WCF Service";
+
         /// <summary>
         /// Provides access to logging
         /// </summary>
         Logging logging = Logging.GetLogger(sourceName);
-        
-        OSAEObjectManager objectManager = new OSAEObjectManager();
-
+      
         public event EventHandler<CustomEventArgs> MessageReceived;
 
         #region iWCFService Members
@@ -134,29 +133,29 @@
         public OSAEObject GetObject(string name)
         {
             // lookup object 
-            return objectManager.GetObjectByName(name);
+            return OSAEObjectManager.GetObjectByName(name);
         }
 
         public OSAEObject GetObjectByAddress(string address)
         {
             // lookup object 
-            return objectManager.GetObjectByAddress(address);
+            return OSAEObjectManager.GetObjectByAddress(address);
         }
 
         public List<OSAEObject> GetObjectsByType(string type)
         {
-            return objectManager.GetObjectsByType(type);
+            return OSAEObjectManager.GetObjectsByType(type);
         }
 
         public List<OSAEObject> GetObjectsByBaseType(string type)
         {
             // lookup objects of the requested type             
-            return objectManager.GetObjectsByBaseType(type);
+            return OSAEObjectManager.GetObjectsByBaseType(type);
         }
 
         public List<OSAEObject> GetObjectsByContainer(string container)
         {
-            return objectManager.GetObjectsByContainer(container);
+            return OSAEObjectManager.GetObjectsByContainer(container);
         }
 
         public Boolean ExecuteMethod(string name, string method, string param1, string param2)
@@ -178,21 +177,21 @@
 
         public Boolean AddObject(string name, string description, string type, string address, string container, string enabled)
         {
-            objectManager.ObjectAdd(name, description, type, address, container, Convert.ToBoolean(enabled));
+            OSAEObjectManager.ObjectAdd(name, description, type, address, container, Convert.ToBoolean(enabled));
 
             return true;
         }
 
         public Boolean UpdateObject(string oldName, string newName, string description, string type, string address, string container, int enabled)
         {
-            objectManager.ObjectUpdate(oldName, newName, description, type, address, container, enabled);
+            OSAEObjectManager.ObjectUpdate(oldName, newName, description, type, address, container, enabled);
 
             return true;
         }
 
         public Boolean DeleteObject(string name)
         {
-            objectManager.ObjectDelete(name);
+            OSAEObjectManager.ObjectDelete(name);
 
             return true;
         }
@@ -214,7 +213,7 @@
             OSAEObjectManager objectManager = new OSAEObjectManager();
 
             // lookup objects of the requested type 
-            List<OSAEObject> objects = objectManager.GetObjectsByBaseType("plugin");
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByBaseType("plugin");
             return objects;
         }
 
