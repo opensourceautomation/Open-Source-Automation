@@ -18,7 +18,6 @@
         Logging logging = Logging.GetLogger(sourceName);
         
         OSAEObjectManager objectManager = new OSAEObjectManager();
-        OSAE osae = new OSAE(sourceName);
 
         public event EventHandler<CustomEventArgs> MessageReceived;
 
@@ -169,7 +168,7 @@
 
         public Boolean SendPattern(string pattern)
         {
-            string patternName = osae.MatchPattern(pattern);
+            string patternName = Common.MatchPattern(pattern);
             if (!string.IsNullOrEmpty(patternName))
             {
                 OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", patternName, "", sourceName);
@@ -200,13 +199,13 @@
 
         public Boolean AddScript(string objName, string objEvent, string script)
         {
-            osae.ObjectEventScriptAdd(objName, objEvent, script);
+            ScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
             return true;
         }
 
         public Boolean UpdateScript(string objName, string objEvent, string script)
         {
-            osae.ObjectEventScriptUpdate(objName, objEvent, script);
+            ScriptManager.ObjectEventScriptUpdate(objName, objEvent, script);
             return true;
         }
 

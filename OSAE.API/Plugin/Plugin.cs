@@ -7,62 +7,98 @@
     [Serializable]
     public class Plugin
     {
+        /// <summary>
+        /// 
+        /// </summary>
         private string _pluginName;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private string _pluginType;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private string _pluginVersion;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private string _assemblyName;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private string _assemblyType;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private string _location;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _enabled;
+        
+        /// <summary>
+        /// 
+        /// </summary>
         private string _latestAvailableVersion;
-        private OSAE osae = new OSAE("Plugin");
 
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = Logging.GetLogger("Plugin");
+        private Logging logging = Logging.GetLogger();
 
         private AppDomain _domain;
         private OSAEPluginBase _plugin;
 
         #region Properties
-        //public Assembly Assembly;
 
         public string PluginName
         {
             get { return _pluginName; }
             set { _pluginName = value; }
         }
+
         public string PluginType
         {
             get { return _pluginType; }
             set { _pluginType = value; }
         }
+
         public string PluginVersion
         {
             get { return _pluginVersion; }
             set { _pluginVersion = value; }
         }
+
         public string Location
         {
             get { return _location; }
             set { _location = value; }
         }
+
         public string LatestAvailableVersion
         {
             get { return _latestAvailableVersion; }
             set { _latestAvailableVersion = value; }
         }
+
         public bool Enabled
         {
             get { return _enabled; }
             set { _enabled = value; }
         }
+
         public AppDomain Domain
         {
             get { return _domain; }
             set { _domain = value; }
         }
+
         public string Status
         {
             get { return ObjectStateManager.GetObjectStateValue(_pluginName).Value; }
@@ -94,12 +130,12 @@
             _domain = domain;
             _location = location;
 
-            _latestAvailableVersion = "";
+            _latestAvailableVersion = string.Empty;
         }
 
         public Plugin()
         {
-            _latestAvailableVersion = "";
+            _latestAvailableVersion = string.Empty;
         }
 
         public bool ActivatePlugin()
@@ -129,8 +165,7 @@
         private void Domain_UnhandledException(object source, System.UnhandledExceptionEventArgs e)
         {
             logging.AddToLog(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString(), true);
-            AppDomain.Unload(_domain);
-
+            AppDomain.Unload(_domain);            
         }
 
         public bool Shutdown()
@@ -160,6 +195,7 @@
             {
                 logging.AddToLog(PluginName + " - Run Interface Error: " + ex.Message, true);
             }
+
             logging.AddToLog(PluginName + " - Moving on...", false);
         }
 

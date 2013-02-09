@@ -42,10 +42,12 @@
             using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
             {
                 connection.Open();
-                MySqlCommand command = new MySqlCommand();
-                command.Connection = connection;
-                command.CommandText = "SET sql_safe_updates=0; DELETE FROM osae_method_queue;";
-                OSAESql.RunQuery(command);
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = "SET sql_safe_updates=0; DELETE FROM osae_method_queue;";
+                    OSAESql.RunQuery(command);
+                }
             }
         }
 

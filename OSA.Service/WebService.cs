@@ -75,8 +75,6 @@
 
     public class api : IRestService
     {
-        OSAE osae = new OSAE("WebService");
-
         public OSAEObject GetObject(string name)
         {
             OSAEObjectManager objectManager = new OSAEObjectManager();
@@ -128,7 +126,7 @@
 
         public Boolean SendPattern(string match)
         {
-            string patternName = osae.MatchPattern(match);
+            string patternName = Common.MatchPattern(match);
             if (patternName != "")
             {
                 OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", patternName, "", "WebService");
@@ -156,19 +154,19 @@
 
         public Boolean AddScript(string objName, string objEvent, string script)
         {
-            osae.ObjectEventScriptAdd(objName, objEvent, script);
+            ScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
             return true;
         }
 
         public Boolean UpdateScript(string objName, string objEvent, string script)
         {
-            osae.ObjectEventScriptUpdate(objName, objEvent, script.Replace("\n", "\r\n"));
+            ScriptManager.ObjectEventScriptUpdate(objName, objEvent, script.Replace("\n", "\r\n"));
             return true;
         }
 
         public Boolean UpdateNamedScript(string Name, string oldName, string script)
         {
-            osae.NamedScriptUpdate(Name, oldName, script.Replace("\n", "\r\n"));
+            ScriptManager.NamedScriptUpdate(Name, oldName, script.Replace("\n", "\r\n"));
             return true;
         }
 

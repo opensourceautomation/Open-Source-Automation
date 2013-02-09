@@ -1,15 +1,11 @@
 ﻿namespace OSAE.API.Images
 {
     using System;
-    using MySql.Data.MySqlClient;    
-    using System.IO;
-    using System.Collections;
     using System.Collections.Generic;
+    using MySql.Data.MySqlClient;
 
     public class ImageManager
     {
-        OSAE osae = new OSAE("OSAE.API");
-
         /// <summary>
         /// Used to get access to the logging facility
         /// </summary>
@@ -68,21 +64,23 @@
             {
                 using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
-                    MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images WHERE image_id = " + imageId, connection);
-                    connection.Open();
-
-                    MySqlDataReader reader = command.ExecuteReader();
-
-                    if (reader.Read())
+                    using (MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images WHERE image_id = " + imageId, connection))
                     {
-                        osaeImage.ID = reader.GetUInt32("image_id");
-                        osaeImage.Name = reader.GetString("image_name");
-                        osaeImage.Type = reader.GetString("image_type");
-                        osaeImage.Data = (byte[])reader.GetValue(1);                       
-                    }
-                    else
-                    {
-                        logging.AddToLog("API - Failed to get requested image from DB: ", true);
+                        connection.Open();
+
+                        MySqlDataReader reader = command.ExecuteReader();
+
+                        if (reader.Read())
+                        {
+                            osaeImage.ID = reader.GetUInt32("image_id");
+                            osaeImage.Name = reader.GetString("image_name");
+                            osaeImage.Type = reader.GetString("image_type");
+                            osaeImage.Data = (byte[])reader.GetValue(1);
+                        }
+                        else
+                        {
+                            logging.AddToLog("API - Failed to get requested image from DB: ", true);
+                        }
                     }
                 }
             }
@@ -106,16 +104,18 @@
                     {
                         connection.Open();
 
-                        MySqlCommand command = new MySqlCommand("SELECT image_id, image_name FROM osae_images", connection);
-                        MySqlDataReader reader = command.ExecuteReader();
-
-                        while (reader.Read())
+                        using (MySqlCommand command = new MySqlCommand("SELECT image_id, image_name FROM osae_images", connection))
                         {
-                            OSAEImage osaeImage = new OSAEImage();
-                            osaeImage.ID = reader.GetUInt32("image_id");
-                            osaeImage.Name = reader.GetString("image_name");
+                            MySqlDataReader reader = command.ExecuteReader();
 
-                            imageList.Add(osaeImage);                            
+                            while (reader.Read())
+                            {
+                                OSAEImage osaeImage = new OSAEImage();
+                                osaeImage.ID = reader.GetUInt32("image_id");
+                                osaeImage.Name = reader.GetString("image_name");
+
+                                imageList.Add(osaeImage);
+                            }
                         }
                     }
                     catch (Exception e)
@@ -124,6 +124,7 @@
                     }
                 }
             }
+
             return imageList;        
         }
 
@@ -144,19 +145,21 @@
                     {
                         connection.Open();
 
-                        MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images", connection);
-                        MySqlDataReader reader = command.ExecuteReader();
-
-                        while (reader.Read())
+                        using (MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images", connection))
                         {
-                            OSAEImage osaeImage = new OSAEImage();
-                            osaeImage.ID = reader.GetUInt32("image_id");
-                            osaeImage.Name = reader.GetString("image_name");
-                            osaeImage.Type = reader.GetString("image_type");
-                            osaeImage.Data = (byte[])reader.GetValue(1);
+                            MySqlDataReader reader = command.ExecuteReader();
 
-                            imageList.Add(osaeImage);
-                        }                    
+                            while (reader.Read())
+                            {
+                                OSAEImage osaeImage = new OSAEImage();
+                                osaeImage.ID = reader.GetUInt32("image_id");
+                                osaeImage.Name = reader.GetString("image_name");
+                                osaeImage.Type = reader.GetString("image_type");
+                                osaeImage.Data = (byte[])reader.GetValue(1);
+
+                                imageList.Add(osaeImage);
+                            }
+                        }
                     }
                     catch (Exception e)
                     {
@@ -164,6 +167,7 @@
                     }
                 }
             }
+
             return imageList;                
         }
     }

@@ -1,9 +1,6 @@
 ﻿namespace OSAE
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.IO;
     using System.Xml;
 
@@ -26,7 +23,11 @@
                     this._pluginName = value;
                 }
             }
-            get { return _pluginName; }
+
+            get 
+            { 
+                return _pluginName; 
+            }
         }
 
         /// <summary>
@@ -46,7 +47,11 @@
                     this._pluginType = value;
                 }
             }
-            get { return _pluginType; }
+
+            get 
+            {
+                return _pluginType;
+            }
         }
 
         /// <summary>
@@ -66,7 +71,11 @@
                     this._pluginVersion = value;
                 }
             }
-            get { return _pluginVersion; }
+
+            get
+            {
+                return _pluginVersion; 
+            }
         }
 
         /// <summary>
@@ -86,7 +95,11 @@
                     this._pluginAuthor = value;
                 }
             }
-            get { return _pluginAuthor; }
+
+            get 
+            { 
+                return _pluginAuthor;
+            }
         }
 
         /// <summary>
@@ -106,7 +119,11 @@
                     this._wikiUrl = value;
                 }
             }
-            get { return _wikiUrl; }
+
+            get 
+            { 
+                return _wikiUrl;
+            }
         }
 
         /// <summary>
@@ -126,7 +143,10 @@
                     this._description = value;
                 }
             }
-            get { return _description; }
+            get 
+            { 
+                return _description;
+            }
         }
 
         /// <summary>
@@ -146,7 +166,11 @@
                     this._status = value;
                 }
             }
-            get { return _status; }
+
+            get 
+            { 
+                return _status; 
+            }
         }
 
         /// <summary>
@@ -166,7 +190,11 @@
                     this._enabled = value;
                 }
             }
-            get { return _enabled; }
+
+            get 
+            { 
+                return _enabled; 
+            }
         }
 
         /// <summary>
@@ -186,7 +214,11 @@
                     this._upgrade = value;
                 }
             }
-            get { return _upgrade; }
+
+            get 
+            { 
+                return _upgrade;
+            }
         }
 
         /// <summary>
@@ -206,7 +238,11 @@
                     this._path = value;
                 }
             }
-            get { return _path; }
+
+            get 
+            { 
+                return _path; 
+            }
         }
 
         /// <summary>
@@ -226,7 +262,11 @@
                     this._id = value;
                 }
             }
-            get { return _id; }
+
+            get
+            { 
+                return _id;
+            }
         }
 
         /// <summary>
@@ -273,7 +313,6 @@
         {
             XmlDocument xml = new XmlDocument();
             xml.LoadXml(ReadFromFile(file));
-            //_pluginName = xml.SelectSingleNode("//plugin-name").InnerText;
             _pluginType = xml.SelectSingleNode("//plugin-name").InnerText;
             _id = xml.SelectSingleNode("//plugin-id").InnerText;
             _pluginVersion = xml.SelectSingleNode("//plugin-version").InnerText;
@@ -288,15 +327,19 @@
             XmlNodeList childNodes = temp.ChildNodes;
 
             foreach (XmlNode t in childNodes)
+            {
                 _additionalAssemblies.Add(t.InnerText);
+            }
 
-            //Check if this plugin supports any x64 Specific Assemblies
+            // Check if this plugin supports any x64 Specific Assemblies
             if ((temp = xml.SelectSingleNode("//x64-additional-assemblies")) != null)
             {
                 childNodes = temp.ChildNodes;
 
                 foreach (XmlNode t in childNodes)
+                {
                     _x64Assemblies.Add(t.InnerText);
+                }
             }
 
         }

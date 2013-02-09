@@ -1,5 +1,7 @@
 ﻿namespace OSAE
 {
+    using System;
+    using System.Data;
     using System.Net;
     using MySql.Data.MySqlClient;
 
@@ -139,6 +141,67 @@
             }             
 
             return connectionStatus;
+        }
+
+        /// <summary>
+        /// CALL osae_sp_pattern_parse(pattern) and returns result
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        public static string PatternParse(string pattern)
+        {
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    DataSet dataset = new DataSet();
+                    command.CommandText = "CALL osae_sp_pattern_parse(@Pattern)";
+                    command.Parameters.AddWithValue("@Pattern", pattern);
+                    dataset = OSAESql.RunQuery(command);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        return dataset.Tables[0].Rows[0]["vInput"].ToString();
+                    }
+                    else
+                    {
+                        return pattern;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - PatternParse error: " + ex.Message, true);
+                return string.Empty;
+            }
+        }
+
+        public static string MatchPattern(string str)
+        {
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    DataSet dataset = new DataSet();
+                    command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
+                    command.Parameters.AddWithValue("@Name", str);
+                    dataset = OSAESql.RunQuery(command);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        return dataset.Tables[0].Rows[0]["pattern"].ToString();
+                    }
+                    else
+                    {
+                        return string.Empty;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - MatchPattern error: " + ex.Message, true);
+                return string.Empty;
+            }
         }
     }
 }

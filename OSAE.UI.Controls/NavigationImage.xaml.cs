@@ -25,7 +25,6 @@ namespace OSAE.UI.Controls
         public OSAEObject screenObject { get; set; }
 
         private string imgPath;
-        private OSAE osae = new OSAE("GUI");
 
         public NavigationImage(string Name, string path, OSAEObject sObj)
         {

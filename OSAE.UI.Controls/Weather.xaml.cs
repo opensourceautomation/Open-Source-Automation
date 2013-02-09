@@ -13,8 +13,6 @@
     /// </summary>
     public partial class Weather : UserControl
     {
-        OSAE osae = new OSAE("GUI");
-
         /// <summary>
         /// Provides access to logging
         /// </summary>
@@ -132,17 +130,23 @@
 		    Uri url = new Uri(imageName);
             string path = string.Format("{0}\\images\\Weather\\{1}", Common.ApiPath, System.IO.Path.GetFileName(url.LocalPath));
 		    Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
-		    if (File.Exists(path)) {
+		    if (File.Exists(path)) 
+            {
 			    ImageSource imageSource = new BitmapImage(new Uri(path));
                 imageBox.Source = imageSource;
-		    } else {
-			    try {
+		    } 
+            else 
+            {
+			    try
+                {
                     WebClient webClient = new WebClient();
                     webClient.DownloadFile(url.OriginalString, path);
 				    ImageSource imageSource = new BitmapImage(new Uri(path));
                 imageBox.Source = imageSource;
 
-			    } catch (Exception ex) {
+			    } 
+                catch (Exception) 
+                {
 				    logging.AddToLog("Unable to download weather image " + url.OriginalString, true);
 			    }
 		    }
@@ -150,7 +154,8 @@
 
         private void Grid_MouseUp_1(object sender, MouseButtonEventArgs e)
         {
-              if (sMode == "Max") {
+              if (sMode == "Max") 
+              {
                   sMode = "Min";
                   this.Width = 110;
                   lblLastUpd.Visibility = System.Windows.Visibility.Hidden;

@@ -14,37 +14,40 @@
         /// <param name="ObjectProperty"></param>
         /// <returns></returns>
         public static ObjectProperty GetObjectPropertyValue(string ObjectName, string ObjectProperty)
-        {
-            MySqlCommand command = new MySqlCommand();
-            DataSet dataset = new DataSet();
+        {           
             try
             {
-                command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
-                command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
-                dataset = OSAESql.RunQuery(command);
-
-                if (dataset.Tables[0].Rows.Count > 0)
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    ObjectProperty p = new ObjectProperty();
-                    p.Id = dataset.Tables[0].Rows[0]["object_property_id"].ToString();
-                    p.DataType = dataset.Tables[0].Rows[0]["property_datatype"].ToString();
-                    p.LastUpdated = dataset.Tables[0].Rows[0]["last_updated"].ToString();
-                    p.Name = dataset.Tables[0].Rows[0]["property_name"].ToString();
-                    p.Value = dataset.Tables[0].Rows[0]["property_value"].ToString();
+                    DataSet dataset = new DataSet();
 
-                    return p;
-                }
-                else
-                {
-                    ObjectProperty p = new ObjectProperty();
-                    p.Id = string.Empty;
-                    p.DataType = string.Empty;
-                    p.LastUpdated = string.Empty;
-                    p.Name = string.Empty;
-                    p.Value = string.Empty;
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@ObjectProperty";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    command.Parameters.AddWithValue("@ObjectProperty", ObjectProperty);
+                    dataset = OSAESql.RunQuery(command);
 
-                    return p;
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        ObjectProperty p = new ObjectProperty();
+                        p.Id = dataset.Tables[0].Rows[0]["object_property_id"].ToString();
+                        p.DataType = dataset.Tables[0].Rows[0]["property_datatype"].ToString();
+                        p.LastUpdated = dataset.Tables[0].Rows[0]["last_updated"].ToString();
+                        p.Name = dataset.Tables[0].Rows[0]["property_name"].ToString();
+                        p.Value = dataset.Tables[0].Rows[0]["property_value"].ToString();
+
+                        return p;
+                    }
+                    else
+                    {
+                        ObjectProperty p = new ObjectProperty();
+                        p.Id = string.Empty;
+                        p.DataType = string.Empty;
+                        p.LastUpdated = string.Empty;
+                        p.Name = string.Empty;
+                        p.Value = string.Empty;
+
+                        return p;
+                    }
                 }
             }
             catch (Exception ex)
@@ -62,45 +65,51 @@
         /// <param name="propertyValue">The value of the property</param>
         public static void ObjectPropertySet(string objectName, string propertyName, string propertyValue, string source)
         {
-            MySqlCommand command = new MySqlCommand();
-            command.CommandText = "CALL osae_sp_object_property_set (@ObjectName, @PropertyName, @PropertyValue, @FromObject, @DebugInfo)";
-            command.Parameters.AddWithValue("@ObjectName", objectName);
-            command.Parameters.AddWithValue("@PropertyName", propertyName);
-            command.Parameters.AddWithValue("@PropertyValue", propertyValue);
-            command.Parameters.AddWithValue("@FromObject", PluginManager.GetPluginName(source, Common.ComputerName));
-            command.Parameters.AddWithValue("@DebugInfo", null);
-            try
+            using (MySqlCommand command = new MySqlCommand())
             {
-                OSAESql.RunQuery(command);
-            }
-            catch (Exception ex)
-            {
-                Logging.GetLogger().AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
+                command.CommandText = "CALL osae_sp_object_property_set (@ObjectName, @PropertyName, @PropertyValue, @FromObject, @DebugInfo)";
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@PropertyName", propertyName);
+                command.Parameters.AddWithValue("@PropertyValue", propertyValue);
+                command.Parameters.AddWithValue("@FromObject", PluginManager.GetPluginName(source, Common.ComputerName));
+                command.Parameters.AddWithValue("@DebugInfo", null);
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
             }
         }
 
         public static List<ObjectProperty> GetObjectProperties(string ObjectName)
         {
             List<ObjectProperty> props = new List<ObjectProperty>();
-
-            MySqlCommand command = new MySqlCommand();
-            DataSet dataset = new DataSet();
+                        
             try
             {
-                command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName ORDER BY property_name";
-                command.Parameters.AddWithValue("@ObjectName", ObjectName);
-                dataset = OSAESql.RunQuery(command);
-
-                foreach (DataRow drp in dataset.Tables[0].Rows)
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    ObjectProperty p = new ObjectProperty();
-                    p.Name = drp["property_name"].ToString();
-                    p.Value = drp["property_value"].ToString();
-                    p.DataType = drp["property_datatype"].ToString();
-                    p.LastUpdated = drp["last_updated"].ToString();
-                    p.Id = drp["object_property_id"].ToString();
-                    props.Add(p);
+                    DataSet dataset = new DataSet();
+
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName ORDER BY property_name";
+                    command.Parameters.AddWithValue("@ObjectName", ObjectName);
+                    dataset = OSAESql.RunQuery(command);
+
+                    foreach (DataRow drp in dataset.Tables[0].Rows)
+                    {
+                        ObjectProperty p = new ObjectProperty();
+                        p.Name = drp["property_name"].ToString();
+                        p.Value = drp["property_value"].ToString();
+                        p.DataType = drp["property_datatype"].ToString();
+                        p.LastUpdated = drp["last_updated"].ToString();
+                        p.Id = drp["object_property_id"].ToString();
+                        props.Add(p);
+                    }
                 }
+
                 return props;
             }
             catch (Exception ex)
@@ -119,19 +128,21 @@
         /// <param name="propertyLabel"></param>
         public static void ObjectPropertyArrayAdd(string objectName, string propertyName, string propertyValue, string propertyLabel)
         {
-            MySqlCommand command = new MySqlCommand();
-            command.CommandText = "CALL osae_sp_object_property_array_add (@ObjectName, @PropertyName, @PropertyValue, @PropertyLabel)";
-            command.Parameters.AddWithValue("@ObjectName", objectName);
-            command.Parameters.AddWithValue("@PropertyName", propertyName);
-            command.Parameters.AddWithValue("@PropertyValue", propertyValue);
-            command.Parameters.AddWithValue("@PropertyLabel", propertyLabel);
-            try
+            using (MySqlCommand command = new MySqlCommand())
             {
-                OSAESql.RunQuery(command);
-            }
-            catch (Exception ex)
-            {
-                Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                command.CommandText = "CALL osae_sp_object_property_array_add (@ObjectName, @PropertyName, @PropertyValue, @PropertyLabel)";
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@PropertyName", propertyName);
+                command.Parameters.AddWithValue("@PropertyValue", propertyValue);
+                command.Parameters.AddWithValue("@PropertyLabel", propertyLabel);
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
             }
         }
 
@@ -157,7 +168,7 @@
                 catch (Exception ex)
                 {
                     Logging.GetLogger().AddToLog("API - ObjectPropertyArrayGetRandom error: " + command.CommandText + " - error: " + ex.Message, true);
-                    return "";
+                    return string.Empty;
                 }
             }
         }

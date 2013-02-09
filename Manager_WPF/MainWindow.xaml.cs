@@ -25,7 +25,6 @@
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
         ServiceController myService = new ServiceController();
         WCFServiceReference.WCFServiceClient wcfObj;
-        OSAE osae = null;
 
         /// <summary>
         /// Used to get access to the logging facility
@@ -92,9 +91,6 @@
                 MessageBox.Show("The OSA DB could not be contacted, Please ensure the correct address is specified and the DB is available");
                 return;
             }
-
-            // don't initialise this until we know we can get a connection
-            osae = new OSAE("Manager_WPF");
 
             loadPlugins();
 
@@ -175,11 +171,11 @@
             try
             {
                 if (wcfObj.State == CommunicationState.Opened)
-                    wcfObj.messageHost(msgType, message, osae.ComputerName);
+                    wcfObj.messageHost(msgType, message, Common.ComputerName);
                 else
                 {
                     if (connectToService())
-                        wcfObj.messageHost(msgType, message, osae.ComputerName);
+                        wcfObj.messageHost(msgType, message, Common.ComputerName);
                 }
             }
             catch (Exception ex)

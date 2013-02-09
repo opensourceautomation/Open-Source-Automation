@@ -8,8 +8,6 @@ namespace OSAE.NetworkMonitor
 {
     public class NetworkMonitor : OSAEPluginBase
     {
-        OSAE osae = new OSAE("Network Monitor");
-
         /// <summary>
         /// Provides access to logging
         /// </summary>
@@ -128,7 +126,7 @@ namespace OSAE.NetworkMonitor
                     return false;
                 }
             }
-            catch (PingException e)
+            catch (PingException)
             {
                 logging.AddToLog("Off-Line", false);
                 return false;

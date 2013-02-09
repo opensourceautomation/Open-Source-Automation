@@ -19,8 +19,6 @@
     /// </summary>
     public partial class Settings : Window
     {
-        OSAE osae = new OSAE("Manager_WPF");
-
         public Settings()
         {
             InitializeComponent();

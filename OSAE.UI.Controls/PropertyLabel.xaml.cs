@@ -10,7 +10,6 @@
     /// </summary>
     public partial class PropertyLabel : UserControl
     {
-        private OSAE osae = new OSAE("GUI"); 
         public OSAEObject screenObject { get; set; }
         public Point Location;
         public DateTime LastUpdated;
@@ -43,7 +42,7 @@
                         SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
                         propLabel.Background = brush;
                     }
-                    catch (Exception myerror)
+                    catch (Exception)
                     {
                     }
                 }
@@ -55,7 +54,7 @@
                         SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
                         propLabel.Foreground = brush;
                     }
-                    catch (Exception myerror)
+                    catch (Exception)
                     {
                     }
                 }
@@ -65,7 +64,7 @@
                     {
                         propLabel.FontSize = Convert.ToDouble(iFontSize);
                     }
-                    catch (Exception myerror)
+                    catch (Exception)
                     {
                     }
                 }

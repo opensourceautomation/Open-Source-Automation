@@ -1,9 +1,9 @@
 ﻿namespace OSAE
 {
     using System;
-    using MySql.Data.MySqlClient;
     using System.IO;
     using System.Text;
+    using MySql.Data.MySqlClient;
     
     [Serializable]
     public class Logging
@@ -58,9 +58,7 @@
         {
             try
             {
-                // OSAE osae = new OSAE(string.Empty);
-
-                // if (osae.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE" || alwaysLog)
+                if (ObjectPopertiesManager.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE" || alwaysLog)
                 {
                     lock (logLocker)
                     {
@@ -72,11 +70,14 @@
 
                         sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + "ST:" + sb.ToString() + "\r\n\r\n - " + audit);
                         sw.Close();
-                        //if (osae.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
-                        //{
-                        //    if (file.Length > 1000000)
-                        //        file.Delete();
-                        //}
+
+                        if (ObjectPopertiesManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
+                        {
+                            if (file.Length > 1000000)
+                            {
+                                file.Delete();
+                            }
+                        }
                     }
                 }
             }
@@ -92,7 +93,9 @@
                         + ex.Message + " - " + ex.InnerException);
                     sw.Close();
                     if (file.Length > 1000000)
+                    {
                         file.Delete();
+                    }
                 }
             }        
         }
@@ -117,7 +120,6 @@
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    OSAE osae = new OSAE(string.Empty);
                     command.CommandText = "CALL osae_sp_debug_log_add (@Entry,@Process)";
                     command.Parameters.AddWithValue("@Entry", entry);
                     command.Parameters.AddWithValue("@Process", logName);
@@ -139,7 +141,6 @@
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                OSAE osae = new OSAE(string.Empty);
                 command.CommandText = "CALL osae_sp_event_log_add (@ObjectName, @EventName, @FromObject, @DebugInfo, @Param1, @Param2)";
                 command.Parameters.AddWithValue("@ObjectName", objectName);
                 command.Parameters.AddWithValue("@EventName", eventName);
@@ -168,7 +169,6 @@
                 command.CommandText = "CALL osae_sp_event_log_clear";
                 try
                 {
-                    OSAE osae = new OSAE(string.Empty);
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)

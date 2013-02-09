@@ -7,30 +7,32 @@
 
     public class OSAEObjectManager
     {       
-        OSAE osae = new OSAE("");
-
         /// <summary>
         /// Returns true or false whether the object with the specified address exists
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
         public bool ObjectExists(string address)
-        {
-            MySqlCommand command = new MySqlCommand();
-            DataSet dataset = new DataSet();
-
+        {           
             try
             {
-                command.CommandText = "SELECT * FROM osae_v_object WHERE address=@Address";
-                command.Parameters.AddWithValue("@Address", address);
-                dataset = OSAESql.RunQuery(command);
-
-                if (dataset.Tables[0].Rows.Count > 0)
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    return true;
+                    DataSet dataset = new DataSet();
+
+                    command.CommandText = "SELECT * FROM osae_v_object WHERE address=@Address";
+                    command.Parameters.AddWithValue("@Address", address);
+                    dataset = OSAESql.RunQuery(command);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
-                else
-                    return false;
             }
             catch (Exception ex)
             {
@@ -57,7 +59,7 @@
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
-                    OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                    OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
                     obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
@@ -69,7 +71,9 @@
                     return obj;
                 }
                 else
+                {
                     return null;
+                }
             }
             catch (Exception ex)
             {
@@ -84,30 +88,35 @@
         /// <param name="address"></param>
         /// <returns></returns>
         public OSAEObject GetObjectByAddress(string address)
-        {
-            MySqlCommand command = new MySqlCommand();
-            DataSet dataset = new DataSet();
+        {            
             OSAEObject obj = null;
 
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
-                command.Parameters.AddWithValue("@Address", address);
-                dataset = OSAESql.RunQuery(command);
-
-                if (dataset.Tables[0].Rows.Count > 0)
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Int32.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
-                    obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
-                    obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
-                    obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
+                    DataSet dataset = new DataSet();
 
-                    obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
-                    obj.Methods = GetObjectMethods(obj.Name);
-                    return obj;
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
+                    command.Parameters.AddWithValue("@Address", address);
+                    dataset = OSAESql.RunQuery(command);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                        obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
+                        obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
+                        obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
+
+                        obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                        obj.Methods = GetObjectMethods(obj.Name);
+                        return obj;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
-                else
-                    return null;
             }
             catch (Exception ex)
             {
@@ -129,30 +138,34 @@
             List<OSAEObject> objects = new List<OSAEObject>();
             try
             {
-                if (ContainerName == "")
+                if (ContainerName == string.Empty)
+                {
                     command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
+                }
                 else
                 {
                     command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
                     command.Parameters.AddWithValue("@ContainerName", ContainerName);
                 }
+
                 dataset = OSAESql.RunQuery(command);
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
-                        obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
+                        obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), int.Parse(dr["enabled"].ToString()));
                         obj.State.Value = dr["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
                         obj.LastUpd = dr["last_updated"].ToString();
-
                         obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
                         obj.Methods = GetObjectMethods(obj.Name);
                         objects.Add(obj);
                     }
+
                     return objects;
                 }
+
                 return objects;
             }
             catch (Exception ex)
@@ -163,33 +176,38 @@
         }
 
         public List<OSAEObject> GetObjectsByOwner(string ObjectOwner)
-        {
-            MySqlCommand command = new MySqlCommand();
-            DataSet dataset = new DataSet();
-            OSAEObject obj = new OSAEObject();
+        {            
             List<OSAEObject> objects = new List<OSAEObject>();
 
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
-                command.Parameters.AddWithValue("@ObjectOwner", ObjectOwner);
-                dataset = OSAESql.RunQuery(command);
-
-                if (dataset.Tables[0].Rows.Count > 0)
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    foreach (DataRow dr in dataset.Tables[0].Rows)
-                    {
-                        obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
-                        obj.State.Value = dr["state_name"].ToString();
-                        obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
-                        obj.BaseType = dr["base_type"].ToString();
+                    DataSet dataset = new DataSet();
+                    OSAEObject obj = new OSAEObject();
 
-                        obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
-                        obj.Methods = GetObjectMethods(obj.Name);
-                        objects.Add(obj);
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
+                    command.Parameters.AddWithValue("@ObjectOwner", ObjectOwner);
+                    dataset = OSAESql.RunQuery(command);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        foreach (DataRow dr in dataset.Tables[0].Rows)
+                        {
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), int.Parse(dr["enabled"].ToString()));
+                            obj.State.Value = dr["state_name"].ToString();
+                            obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
+                            obj.BaseType = dr["base_type"].ToString();
+
+                            obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
+                            obj.Methods = GetObjectMethods(obj.Name);
+                            objects.Add(obj);
+                        }
+
+                        return objects;
                     }
-                    return objects;
                 }
+
                 return objects;
             }
             catch (Exception ex)
@@ -222,7 +240,7 @@
                     {
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
-                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), int.Parse(dr["enabled"].ToString()));
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
@@ -231,8 +249,10 @@
                             obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
+
                         return objects;
                     }
+
                     return objects;
                 }
                 catch (Exception ex)
@@ -266,11 +286,10 @@
                     {
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
-                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Int32.Parse(dr["enabled"].ToString()));
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), int.Parse(dr["enabled"].ToString()));
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
-
                             obj.Properties = ObjectPopertiesManager.GetObjectProperties(obj.Name);
                             obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
@@ -301,7 +320,6 @@
 
             using (MySqlCommand command = new MySqlCommand())
             {
-                //command.CommandText = "CALL osae_sp_object_add (@Name, @Description, @ObjectType, @Address, @Container, @Enabled, @results)";
                 command.CommandText = "osae_sp_object_add";
                 command.CommandType = CommandType.StoredProcedure;
 
@@ -313,20 +331,26 @@
                 command.Parameters.AddWithValue("?penabled", enabled);
                 command.Parameters.Add(new MySqlParameter("?results", MySqlDbType.Int32));
                 command.Parameters["?results"].Direction = ParameterDirection.Output;
+
                 try
                 {
-                    //RunQuery(command);
                     MySqlConnection connection = new MySqlConnection(Common.ConnectionString);
                     command.Connection = connection;
                     command.Connection.Open();
                     command.ExecuteNonQuery();
 
                     if (command.Parameters["?results"].Value.ToString() == "1")
+                    {
                         logging.AddToLog("API - ObjectAdded successfully", true);
+                    }
                     else if (command.Parameters["?results"].Value.ToString() == "2")
+                    {
                         logging.AddToLog("API - ObjectAdd failed.  Object type doesn't exist.", true);
+                    }
                     else if (command.Parameters["?results"].Value.ToString() == "3")
+                    {
                         logging.AddToLog("API - ObjectAdd failed.  Object with same name or address already exists", true);
+                    }
                 }
                 catch (Exception ex)
                 {

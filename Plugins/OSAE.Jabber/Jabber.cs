@@ -6,7 +6,6 @@ namespace OSAE.Jabber
 {
     public class Jabber : OSAEPluginBase
     {
-        OSAE osae = new OSAE("Jabber");
         XmppClientConnection xmppCon = new XmppClientConnection();
         string pName;
         bool shuttingDown = false;
@@ -59,11 +58,11 @@ namespace OSAE.Jabber
                 switch (method.MethodName)
                 {
                     case "SEND MESSAGE":
-                        sendMessage(osae.PatternParse(method.Parameter2), to);
+                        sendMessage(Common.PatternParse(method.Parameter2), to);
                         break;
 
                     case "SEND FROM LIST":
-                        sendMessage(osae.PatternParse(ObjectPopertiesManager.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
+                        sendMessage(Common.PatternParse(ObjectPopertiesManager.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
                         break;
                 }
             }
@@ -90,7 +89,7 @@ namespace OSAE.Jabber
 
             logging.AddToLog(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()), false);
             logging.AddToLog("Message: " + msg.Body, false);
-            string pattern = osae.MatchPattern(msg.Body);
+            string pattern = Common.MatchPattern(msg.Body);
             if (pattern != string.Empty)
             {
                 OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, msg.From.Bare, "Jabber");

@@ -28,10 +28,9 @@
         /// </summary>
         public abstract void Shutdown();
 
-        public override Object InitializeLifetimeService()
+        public override object InitializeLifetimeService()
         {            
             return null;
         }
     }
-
 }

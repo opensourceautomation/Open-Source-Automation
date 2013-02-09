@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.Win32;
-
-namespace OSAE
+﻿namespace OSAE
 {
+    using System;
+    using Microsoft.Win32;
+
     /// <summary>
     /// Class for modifying OSAE registry keys
     /// </summary>
@@ -36,8 +36,10 @@ namespace OSAE
         {
             // Opening the registry key
             RegistryKey rk = BaseRegistryKey;
+
             // Open a subKey as read-only
             RegistryKey sk1 = rk.OpenSubKey(SubKey);
+
             // If the RegistrySubKey doesn't exist -> (null)
             if (sk1 == null)
             {
@@ -79,9 +81,8 @@ namespace OSAE
 
                 return true;
             }
-            catch (Exception e)
-            {               
-                // ShowErrorMessage(e, "Writing registry " + KeyName.ToUpper());
+            catch (Exception)
+            {             
                 return false;
             }
         }

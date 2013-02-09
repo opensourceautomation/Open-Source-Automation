@@ -41,7 +41,6 @@
 
         public static bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
-            OSAE osae = new OSAE("Plugin Installer");
             Logging logging = Logging.GetLogger("Plugin Installer");
 
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
@@ -160,7 +159,7 @@
                         using (MySql.Data.MySqlClient.MySqlCommand command = new MySql.Data.MySqlClient.MySqlCommand())
                         {
                             command.CommandText = "CALL osae_sp_method_queue_add (@pobject,@pmethod,@pparameter1,@pparameter2,@pfromobject,@pdebuginfo);";
-                            command.Parameters.AddWithValue("@pobject", "SERVICE-" + osae.ComputerName);
+                            command.Parameters.AddWithValue("@pobject", "SERVICE-" + Common.ComputerName);
                             command.Parameters.AddWithValue("@pmethod", "LOAD PLUGIN");
                             command.Parameters.AddWithValue("@pparameter1", "");
                             command.Parameters.AddWithValue("@pparameter2", "");
@@ -190,7 +189,7 @@
                     deleteFolder(exePath + "/tempDir/");
                 }
 
-                OSAEMethodManager.MethodQueueAdd("SERVICE-" + osae.ComputerName, "RELOAD PLUGINS", "", "", "Plugin Installer");
+                OSAEMethodManager.MethodQueueAdd("SERVICE-" + Common.ComputerName, "RELOAD PLUGINS", "", "", "Plugin Installer");
             return NoError;
         }
 

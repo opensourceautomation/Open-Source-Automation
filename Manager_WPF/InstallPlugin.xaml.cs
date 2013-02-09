@@ -22,12 +22,13 @@
     public partial class InstallPlugin : Window
     {
         #region variables
+
         private string filename = string.Empty;
         private int s = 5;
         private PluginDescription desc = new PluginDescription();
         private Image MyPluginImage = null;
         public bool install = false;
-        OSAE osae = new OSAE("Manager_WPF");
+
         #endregion
 
         public InstallPlugin(string Sendfilename)

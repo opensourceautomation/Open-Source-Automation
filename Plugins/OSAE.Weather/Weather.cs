@@ -20,7 +20,6 @@
         Thread updateThread;
         Thread SunriseSunsetThread;
         string zipcode = "";
-        OSAE osae = new OSAE("Weather");
         int updateInterval = 60;
         System.Timers.Timer Clock, Clock2;
         string feedUrl = "";
@@ -710,7 +709,6 @@
 
         private PointF GetLatLonFromZip(string zipString)
         {
-            OSAE osae = new OSAE("Weather");
             if (string.IsNullOrEmpty(zipString))
             {
                 throw new ArgumentNullException("zipString");

@@ -7,7 +7,6 @@
     public class Email : OSAEPluginBase
     {
         string pName;
-        OSAE osae = new OSAE("Email");
 
         /// <summary>
         /// Provides access to logging
@@ -44,8 +43,8 @@
 
                 // Subject and Body
                 mailMsg.Subject = "Message from OSAE";
-                mailMsg.Body = osae.PatternParse(method.Parameter2);
-                parameter2 = osae.PatternParse(method.Parameter2);
+                mailMsg.Body = Common.PatternParse(method.Parameter2);
+                parameter2 = Common.PatternParse(method.Parameter2);
 
                 // Make sure there is a body of text.
                 if (parameter2.Equals(""))

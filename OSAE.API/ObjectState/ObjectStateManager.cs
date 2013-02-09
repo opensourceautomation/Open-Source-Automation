@@ -1,9 +1,6 @@
 ﻿namespace OSAE
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Data;
     using MySql.Data.MySqlClient;
 
@@ -45,6 +42,7 @@
         {
             DataSet dataset = new DataSet();
             ObjectState state = new ObjectState();
+
             try
             {
                 using (MySqlCommand command = new MySqlCommand())

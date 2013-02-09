@@ -8,8 +8,7 @@
 
     public class ScheduleManager
     {
-        Logging logging = Logging.GetLogger();
-        OSAE osae = new OSAE("");
+        private Logging logging = Logging.GetLogger();
         
         /// <summary>
         /// 
@@ -21,7 +20,7 @@
         /// <param name="parameter2"></param>
         /// <param name="pattern"></param>
         /// <param name="recurringID"></param>
-        public void ScheduleQueueAdd(DateTime scheduleDate, string obj, string method, string parameter1, string parameter2, string pattern, int recurringID)
+        public static void ScheduleQueueAdd(DateTime scheduleDate, string obj, string method, string parameter1, string parameter2, string pattern, int recurringID)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -40,7 +39,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("ScheduleQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("ScheduleQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -49,7 +48,7 @@
         /// 
         /// </summary>
         /// <param name="queueID"></param>
-        public void ScheduleQueueDelete(int queueID)
+        public static void ScheduleQueueDelete(int queueID)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -62,7 +61,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("ScheduleQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("ScheduleQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -87,7 +86,7 @@
         /// <param name="interval"></param>
         /// <param name="recurringDay"></param>
         /// <param name="recurringDate"></param>
-        public void ScheduleRecurringAdd(string scheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
+        public static void ScheduleRecurringAdd(string scheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
             string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
             string interval, int recurringMinutes, string recurringDay, string recurringDate)
         {
@@ -117,12 +116,11 @@
 
                 try
                 {
-
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("ScheduleRecurringAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("ScheduleRecurringAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -131,7 +129,7 @@
         /// 
         /// </summary>
         /// <param name="scheduleName"></param>
-        public void ScheduleRecurringDelete(string scheduleName)
+        public static void ScheduleRecurringDelete(string scheduleName)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -144,7 +142,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("ScheduleRecurringDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("ScheduleRecurringDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -170,7 +168,7 @@
         /// <param name="interval"></param>
         /// <param name="recurringDay"></param>
         /// <param name="recurringDate"></param>
-        public void ScheduleRecurringUpdate(string oldScheduleName, string newScheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
+        public static void ScheduleRecurringUpdate(string oldScheduleName, string newScheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
             string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
             string interval, int recurringMinutes, string recurringDay, string recurringDate)
         {
@@ -204,7 +202,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("ScheduleRecurringUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("ScheduleRecurringUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -212,7 +210,7 @@
         /// <summary>
         /// 
         /// </summary>
-        public void RunScheduledMethods()
+        public static void RunScheduledMethods()
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -223,7 +221,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - RunScheduledMethods error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - RunScheduledMethods error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -231,7 +229,7 @@
         /// <summary>
         /// 
         /// </summary>
-        public void ProcessRecurring()
+        public static void ProcessRecurring()
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -242,10 +240,9 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ProcessRecurring error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ProcessRecurring error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
-
     }
 }

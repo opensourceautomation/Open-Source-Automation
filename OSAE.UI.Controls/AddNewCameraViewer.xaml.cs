@@ -14,11 +14,6 @@ namespace OSAE.UI.Controls
         public string currentScreen;
         private Window parentWindow;
 
-        /// <summary>
-        /// OSAE API to interact with OSA DB
-        /// </summary>
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
-
         public AddNewCameraViewer()
         {
             InitializeComponent();

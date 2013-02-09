@@ -21,7 +21,6 @@
         private ObjectState _state;
         public List<ObjectProperty> Properties { get; set; }
         public List<string> Methods { get; set; }
-        private OSAE osae = new OSAE("API");
 
         public string Name
         {
@@ -29,6 +28,7 @@
             {
                 return _name;
             }
+
             set
             {
                 objectManager.ObjectUpdate(_name, value, _description, _type, _address, _container, _enabled);
@@ -42,6 +42,7 @@
             {
                 return _description;
             }
+
             set
             {
                 _description = value;
@@ -55,6 +56,7 @@
             {
                 return _type;
             }
+
             set
             {
                 _type = value;
@@ -68,6 +70,7 @@
             {
                 return _baseType;
             }
+
             set
             {
                 _baseType = value;
@@ -80,6 +83,7 @@
             {
                 return _address;
             }
+
             set
             {
                 _address = value;
@@ -93,6 +97,7 @@
             {
                 return _container;
             }
+
             set
             {
                 _container = value;
@@ -106,6 +111,7 @@
             {
                 return _enabled;
             }
+
             set
             {
                 _enabled = value;
@@ -120,6 +126,7 @@
                 _state.Value = ObjectStateManager.GetObjectStateValue(_name).Value;
                 return _state;
             }
+
             set
             {
                 _state = value;
@@ -133,12 +140,12 @@
             {
                 return _lastUpd;
             }
+
             set
             {
                 _lastUpd = value;
             }
-        }
-      
+        }      
         
         #endregion
 
@@ -186,8 +193,11 @@
             foreach (ObjectProperty p in Properties)
             {
                 if (p.Name == prop)
+                {
                     return p;
+                }
             }
+
             return null;
         }
     }

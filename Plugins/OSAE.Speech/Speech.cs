@@ -10,7 +10,6 @@
         /// </summary>
         Logging logging = Logging.GetLogger("SPEECH");
 
-        OSAE OSAEApi = new OSAE("SPEECH");
         SpeechSynthesizer oSpeech = new SpeechSynthesizer();
         WMPLib.WindowsMediaPlayer wmPlayer = new WMPLib.WindowsMediaPlayer();
         String gAppName = "";
@@ -33,7 +32,7 @@
 
             if (sMethod == "SPEAK")
             {
-                string sText = OSAEApi.PatternParse(sParam1);
+                string sText = Common.PatternParse(sParam1);
                 oSpeech.Speak(sText);
                 logging.AddToLog("Said " + sText, true);
             }
@@ -41,7 +40,7 @@
             {
                 logging.AddToLog("--Speak From Object: " + sParam1 + " and pick From list: " + sParam2, true);
                 string sText = ObjectPopertiesManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
-                sText = OSAEApi.PatternParse(sText);
+                sText = Common.PatternParse(sText);
                 oSpeech.Speak(sText);
                 logging.AddToLog("Said " + sText, true);
             }

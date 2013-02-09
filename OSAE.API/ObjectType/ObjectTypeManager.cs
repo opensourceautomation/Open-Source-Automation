@@ -4,9 +4,9 @@
     using System;
     using System.Data;
 
-    class ObjectTypeManager
+    public class ObjectTypeManager
     {
-        Logging logging = Logging.GetLogger();
+        private Logging logging = Logging.GetLogger();
 
         /// <summary>
         /// Create new object type

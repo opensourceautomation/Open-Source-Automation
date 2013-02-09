@@ -15,11 +15,6 @@
         HttpServer.HttpServer server = new HttpServer.HttpServer();
 
         /// <summary>
-        /// Gives access OSA API functionality
-        /// </summary>
-        OSAE osae = new OSAE("Web Server");
-
-        /// <summary>
         /// Provides access to logging
         /// </summary>
         Logging logging = Logging.GetLogger("Web Server");

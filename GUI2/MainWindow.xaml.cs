@@ -11,19 +11,19 @@
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using MySql.Data.MySqlClient;
-    using OSAE.UI.Controls;   
+    using OSAE.UI.Controls;
+    using OSAE;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        OSAE.OSAE OSAEApi = new OSAE.OSAE("GUI");
-
-        OSAE.Logging logging = OSAE.Logging.GetLogger("GUI");
+        private const string sourceName = "GUI";
+        Logging logging = Logging.GetLogger(sourceName);
         
-        String gAppName = "";
-        String gCurrentScreen = "";
+        String gAppName = string.Empty;
+        String gCurrentScreen = string.Empty;
 
         List<StateImage> stateImages = new List<StateImage>();
         List<NavigationImage> navImages = new List<NavigationImage>();
@@ -63,7 +63,7 @@
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Load_App_Name();
-            gCurrentScreen = OSAE.ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
+            gCurrentScreen = ObjectPopertiesManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
             if (gCurrentScreen == "")
             {
                 Set_Default_Screen();
@@ -83,8 +83,8 @@
             logging.AddToLog("Loading screen: " + sScreen, false);
             gCurrentScreen = sScreen;
             String sPath = "";
-            OSAE.ObjectPopertiesManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
-            sPath = OSAE.Common.ApiPath + OSAE.ObjectPopertiesManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
+            ObjectPopertiesManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, sourceName);
+            sPath = Common.ApiPath + ObjectPopertiesManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
             if (File.Exists(sPath))
             {
                 byte[] byteArray = File.ReadAllBytes(sPath);
@@ -109,17 +109,17 @@
             String sStateMatch = "";
             String sImage = "";
 
-            OSAE.OSAEObjectManager objectManager = new OSAE.OSAEObjectManager();
-            List<OSAE.OSAEObject> screenObjects = objectManager.GetObjectsByContainer(sScreen);
+            OSAEObjectManager objectManager = new OSAEObjectManager();
+            List<OSAEObject> screenObjects = objectManager.GetObjectsByContainer(sScreen);
 
-            foreach (OSAE.OSAEObject obj in screenObjects)
+            foreach (OSAEObject obj in screenObjects)
             {
                 #region CONTROL STATE IMAGE
                 if (obj.Type == "CONTROL STATE IMAGE")
                 {
                     StateImage stateImageControl = new StateImage(obj);
 
-                    foreach (OSAE.ObjectProperty p in obj.Properties)
+                    foreach (ObjectProperty p in obj.Properties)
                     {
                         if (p.Value.ToLower() == stateImageControl.CurState.ToLower())
                         {
@@ -165,8 +165,8 @@
                     String sBackColor = obj.Property("Back Color").Value;
                     String sForeColor = obj.Property("Fore Color").Value;
                     Label dsl = new Label();
-                    OSAE.ObjectProperty pX = obj.Property("X");
-                    OSAE.ObjectProperty pY = obj.Property("Y");
+                    ObjectProperty pX = obj.Property("X");
+                    ObjectProperty pY = obj.Property("Y");
                     canGUI.Children.Add(dsl);
                     Double dX = Convert.ToDouble(pX.Value);
                     Canvas.SetLeft(dsl, dX);
@@ -183,7 +183,7 @@
                                 SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
                                 dsl.Background = brush;
                             }
-                            catch (Exception myerror)
+                            catch (Exception)
                             {
                             }
                         }
@@ -195,7 +195,7 @@
                                 SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
                                 dsl.Foreground = brush;
                             }
-                            catch (Exception myerror)
+                            catch (Exception)
                             {
                             }
                         }
@@ -212,12 +212,12 @@
                 //else if (obj.Type == "CONTROL TIMER LABEL")
                 //{
                 //    sObj.Object_Name = obj.Property("Object Name").Value;
-                //    OSAE.OSAEObject timerObject = OSAEApi.GetObjectByName(sObj.Object_Name);
+                //    OSAEObject timerObject = OSAEApi.GetObjectByName(sObj.Object_Name);
                 //    String sBackColor = obj.Property("Back Color").Value;
                 //    String sForeColor = obj.Property("Font Color").Value;
                 //    Label dtl = new Label();
-                //    OSAE.ObjectProperty pX = obj.Property("X");
-                //    OSAE.ObjectProperty pY = obj.Property("Y");
+                //    ObjectProperty pX = obj.Property("X");
+                //    ObjectProperty pY = obj.Property("Y");
                 //    canGUI.Children.Add(dtl);
                 //    Double dX = Convert.ToDouble(pX.Value);
                 //    Canvas.SetLeft(dtl, dX);
@@ -299,9 +299,9 @@
                         navImageControl.MouseLeftButtonUp += new MouseButtonEventHandler(Navigaton_Image_MouseLeftButtonUp); 
                         canGUI.Children.Add(navImageControl);
 
-                        OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.ObjectProperty pX = obj.Property("X");
-                        OSAE.ObjectProperty pY = obj.Property("Y");
+                        ObjectProperty pZOrder = obj.Property("ZOrder");
+                        ObjectProperty pX = obj.Property("X");
+                        ObjectProperty pY = obj.Property("Y");
                         Double dX = Convert.ToDouble(pX.Value);
                         Canvas.SetLeft(navImageControl, dX);
                         Double dY = Convert.ToDouble(pY.Value);
@@ -326,12 +326,12 @@
                 {
                     try
                     {
-                        string stream = OSAE.ObjectPopertiesManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
+                        string stream = ObjectPopertiesManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
                         VideoStreamViewer vsv = new VideoStreamViewer(stream);
                         canGUI.Children.Add(vsv);
-                        OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.ObjectProperty pX = obj.Property("X");
-                        OSAE.ObjectProperty pY = obj.Property("Y");
+                        ObjectProperty pZOrder = obj.Property("ZOrder");
+                        ObjectProperty pX = obj.Property("X");
+                        ObjectProperty pY = obj.Property("Y");
                         Double dX = Convert.ToDouble(pX.Value);
                         Canvas.SetLeft(vsv, dX);
                         Double dY = Convert.ToDouble(pY.Value);
@@ -359,9 +359,9 @@
                     {
                         Weather wc = new Weather(obj);
                         canGUI.Children.Add(wc);
-                        OSAE.ObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.ObjectProperty pX = obj.Property("X");
-                        OSAE.ObjectProperty pY = obj.Property("Y");
+                        ObjectProperty pZOrder = obj.Property("ZOrder");
+                        ObjectProperty pX = obj.Property("X");
+                        ObjectProperty pY = obj.Property("Y");
                         Double dX = Convert.ToDouble(pX.Value);
                         Canvas.SetLeft(wc, dX);
                         Double dY = Convert.ToDouble(pY.Value);
@@ -390,9 +390,9 @@
                 {
                     logging.AddToLog("Entering Update_Objects", false);
                     
-                    List<OSAE.OSAEScreenControl> controls = OSAE.OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
+                    List<OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
 
-                    foreach (OSAE.OSAEScreenControl newCtrl in controls)
+                    foreach (OSAEScreenControl newCtrl in controls)
                     {
                         #region CONTROL STATE IMAGE
                         if (newCtrl.ControlType == "CONTROL STATE IMAGE")
@@ -435,7 +435,7 @@
                         #region CONTROL TIMER LABEL
                         else if (newCtrl.ControlType == "CONTROL TIMER LABEL")
                         {
-                            //foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
+                            //foreach (UI.Controls.TimerLabel tl in timerLabels)
                             //{
                             //    if (newCtrl.Object_Name == tl.ObjectName)
                             //    {
@@ -453,29 +453,29 @@
         
         private void Load_App_Name()
         {
-            OSAE.OSAEObjectManager objectManager = new OSAE.OSAEObjectManager();
-            List<OSAE.OSAEObject> screens = objectManager.GetObjectsByType("GUI CLIENT");
-            foreach (OSAE.OSAEObject obj in screens)
+            OSAEObjectManager objectManager = new OSAEObjectManager();
+            List<OSAEObject> screens = objectManager.GetObjectsByType("GUI CLIENT");
+            foreach (OSAEObject obj in screens)
             {
-                if (obj.Property("Computer Name").Value == OSAEApi.ComputerName)
+                if (obj.Property("Computer Name").Value == Common.ComputerName)
                     gAppName = obj.Name;
             }
             if (gAppName == "")
             {
-                gAppName = "GUI CLIENT-" + OSAEApi.ComputerName;
+                gAppName = "GUI CLIENT-" + Common.ComputerName;
                 objectManager.ObjectAdd(gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
-                OSAE.ObjectPopertiesManager.ObjectPropertySet(gAppName, "Computer Name", OSAE.Common.ComputerName, "GUI");
+                ObjectPopertiesManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, sourceName);
             }
         }
 
         private void Set_Default_Screen()
         {
-            OSAE.OSAEObjectManager objectManager = new OSAE.OSAEObjectManager();
-            List<OSAE.OSAEObject> screens = objectManager.GetObjectsByType("SCREEN");
+            OSAEObjectManager objectManager = new OSAEObjectManager();
+            List<OSAEObject> screens = objectManager.GetObjectsByType("SCREEN");
             if (screens.Count > 0)
             {
                 gCurrentScreen = screens[0].Name;
-                OSAE.ObjectPopertiesManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, "GUI");
+                ObjectPopertiesManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, sourceName);
             }
         }
 
@@ -663,14 +663,14 @@
 
         private void updateObjectCoords(string name, string X, string Y)
         {
-            OSAE.ObjectPopertiesManager.ObjectPropertySet(name, "X", X, "GUI");
-            OSAE.ObjectPopertiesManager.ObjectPropertySet(name, "Y", Y, "GUI");
+            ObjectPopertiesManager.ObjectPropertySet(name, "X", X, sourceName);
+            ObjectPopertiesManager.ObjectPropertySet(name, "Y", Y, sourceName);
         }
 
         private void updateObjectCoordsStateImg(string name, string state, string X, string Y)
         {
-            OSAE.ObjectPopertiesManager.ObjectPropertySet(name, state + " X", X, "GUI");
-            OSAE.ObjectPopertiesManager.ObjectPropertySet(name, state + " Y", Y, "GUI");
+            ObjectPopertiesManager.ObjectPropertySet(name, state + " X", X, sourceName);
+            ObjectPopertiesManager.ObjectPropertySet(name, state + " Y", Y, sourceName);
         }
         #endregion
     }

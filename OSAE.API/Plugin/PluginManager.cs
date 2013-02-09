@@ -51,7 +51,9 @@
                 dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
+                {
                     return dataset.Tables[0].Rows[0]["object_name"].ToString();
+                }
                 else
                 {
                     command = new MySqlCommand();
@@ -60,9 +62,13 @@
                     dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
+                    {
                         return objectType;
+                    }
                     else
-                        return "";
+                    {
+                        return string.Empty;
+                    }
                 }
             }
             catch (Exception ex)

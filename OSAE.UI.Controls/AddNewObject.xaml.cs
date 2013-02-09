@@ -11,11 +11,6 @@
     public partial class AddNewObject : UserControl
     {
         /// <summary>
-        /// OSAE API to interact with OSA DB
-        /// </summary>
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
-
-        /// <summary>
         /// Default constructor
         /// </summary>
         public AddNewObject()

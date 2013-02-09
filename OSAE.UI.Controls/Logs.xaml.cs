@@ -10,10 +10,6 @@
     /// </summary>
     public partial class Logs : UserControl
     {        
-        /// <summary>
-        /// OSAE API to interact with OSA DB
-        /// </summary>
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
         Logging logging = Logging.GetLogger();
 
         /// <summary>

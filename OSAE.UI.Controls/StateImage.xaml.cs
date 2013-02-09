@@ -13,7 +13,6 @@ namespace OSAE.UI.Controls
     public partial class StateImage : UserControl
     {
         private const string sourceName = "GUI";
-        OSAE osae = new OSAE(sourceName);
         public OSAEObject screenObject { get; set; }
         public Point Location;
         public DateTime LastUpdated;
@@ -106,9 +105,7 @@ namespace OSAE.UI.Controls
         }
 
         private void State_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
-        {
-            bool iResults = false;
-
+        {           
             if (CurState == "ON")
             {
                 OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", string.Empty, string.Empty, sourceName);
@@ -118,10 +115,7 @@ namespace OSAE.UI.Controls
             {
                 OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", string.Empty, string.Empty, sourceName);
                 ObjectStateManager.ObjectStateSet(ObjectName, "ON", sourceName);
-            }
-            
-        }
-
-        
+            }            
+        }        
     }
 }
