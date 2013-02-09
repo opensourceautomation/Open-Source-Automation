@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Timers;
-using InTheHand.Net;
-using InTheHand.Net.Bluetooth;
-using InTheHand.Net.Sockets;
-
-namespace OSAE.Bluetooth
+﻿namespace OSAE.Bluetooth
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Timers;
+    using InTheHand.Net;
+    using InTheHand.Net.Bluetooth;
+    using InTheHand.Net.Sockets;
+
     public class Bluetooth : OSAEPluginBase
     {
         #region OSAEPlugin Members
-
-        OSAE osae = new OSAE("Bluetooth");
-        Logging logging = new Logging("Bluetooth");
+      
+        Logging logging = Logging.GetLogger("Bluetooth");
         BluetoothClient bc;
         BluetoothDeviceInfo[] nearosaeDevices;
         System.Timers.Timer Clock;
@@ -30,7 +29,7 @@ namespace OSAE.Bluetooth
             pName = pluginName;
             logging.AddToLog("Running Interface!", true);
             Clock = new System.Timers.Timer();
-            Clock.Interval = Int32.Parse(osae.GetObjectPropertyValue(pName, "Scan Interval").Value) * 1000;
+            Clock.Interval = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Scan Interval").Value) * 1000;
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
 
@@ -75,27 +74,27 @@ namespace OSAE.Bluetooth
 
                 bc = new BluetoothClient();
 
-                bc.InquiryLength = new TimeSpan(0, 0, 0, Int32.Parse(osae.GetObjectPropertyValue(pName, "Discover Length").Value), 0);
+                bc.InquiryLength = new TimeSpan(0, 0, 0, Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Discover Length").Value), 0);
                 nearosaeDevices = bc.DiscoverDevices(10, false, false, true);
 
                 for (int j = 0; j < nearosaeDevices.Length; j++)
                 {
                     string addr = nearosaeDevices[j].DeviceAddress.ToString();
 
-                    Object obj = osae.GetObjectByAddress(addr);
+                    Object obj = OSAEObjectManager.GetObjectByAddress(addr);
 
                     if (obj == null)
                     {
-                        if (osae.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+                        if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
                         {
-                            osae.ObjectAdd(nearosaeDevices[j].DeviceName, nearosaeDevices[j].DeviceName, "BLUETOOTH DEVICE", nearosaeDevices[j].DeviceAddress.ToString(), "", true);
-                            osae.ObjectPropertySet(nearosaeDevices[j].DeviceName, "Discover Type", "0");
+                            OSAEObjectManager.ObjectAdd(nearosaeDevices[j].DeviceName, nearosaeDevices[j].DeviceName, "BLUETOOTH DEVICE", nearosaeDevices[j].DeviceAddress.ToString(), "", true);
+                            OSAEObjectPropertyManager.ObjectPropertySet(nearosaeDevices[j].DeviceName, "Discover Type", "0", pName);
                             logging.AddToLog(addr + " - " + nearosaeDevices[j].DeviceName + ": added to OSA", true);
                         }
                     }
                 }
 
-                List<OSAEObject> objects = osae.GetObjectsByType("BLUETOOTH DEVICE");
+                List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("BLUETOOTH DEVICE");
 
                 foreach (OSAEObject obj in objects)
                 {
@@ -131,7 +130,7 @@ namespace OSAE.Bluetooth
 
                     try
                     {
-                        if (!found && (Int32.Parse(osae.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 2 || Int32.Parse(osae.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
+                        if (!found && (Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 2 || Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
                         {
                             logging.AddToLog(address + " - " + obj.Name + ": attempting GetServiceRecords", false);
 
@@ -149,7 +148,7 @@ namespace OSAE.Bluetooth
 
                     try
                     {
-                        if (!found && (Int32.Parse(osae.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 3 || Int32.Parse(osae.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
+                        if (!found && (Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 3 || Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
                         {
                             logging.AddToLog(address + " - " + obj.Name + ": attempting Connection", false);
                             //attempt a connect
@@ -171,12 +170,12 @@ namespace OSAE.Bluetooth
 
                     if (found)
                     {
-                        osae.ObjectStateSet(obj.Name, "ON");
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
                         logging.AddToLog("Status Updated in osae", false);
                     }
                     else
                     {
-                        osae.ObjectStateSet(obj.Name, "OFF");
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
                         logging.AddToLog("Status Updated in osae", false);
                     }
 
