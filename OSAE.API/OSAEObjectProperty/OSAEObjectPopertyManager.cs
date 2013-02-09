@@ -5,7 +5,7 @@
     using System.Data;
     using MySql.Data.MySqlClient;
 
-    public class OSAEObjectPopertyManager
+    public class OSAEObjectPropertyManager
     {
         /// <summary>
         /// Returns an OSAEObjectProperty whcih contains the value, type, ID, last updated, and name

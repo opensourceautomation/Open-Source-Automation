@@ -176,7 +176,7 @@
 
         public void SetProperty(string prop, string value, string source)
         {
-            OSAEObjectPopertyManager.ObjectPropertySet(Name, prop, value, source);
+            OSAEObjectPropertyManager.ObjectPropertySet(Name, prop, value, source);
             foreach (OSAEObjectProperty p in Properties)
             {
                 if (p.Name == prop)

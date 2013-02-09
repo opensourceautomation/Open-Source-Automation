@@ -54,7 +54,7 @@ namespace OSAE.UI.Controls
 
             screenName = "Screen - " + txtName.Text;
             OSAEObjectManager.ObjectAdd(screenName, screenName, "SCREEN", "", screenName, true);
-            OSAEObjectPopertyManager.ObjectPropertySet(screenName, "Background Image", fileName, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(screenName, "Background Image", fileName, "GUI");
 
             OnLoadScreen();
 

@@ -107,16 +107,16 @@ namespace OSAE.UI.Controls
 
             string sName = currentScreen + " - " + objectComboBox.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "State 1 Name", "ON", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "State 1 Image", fileName1, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "State 1 X", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "State 1 Y", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "State 2 Name", "OFF", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "State 2 Image", fileName2, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "State 2 X", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "State 2 Y", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", "ON", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", fileName1, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", "OFF", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", fileName2, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
 

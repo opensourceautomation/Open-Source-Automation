@@ -226,7 +226,7 @@
 
         public Boolean SetProperty(string objName, string propName, string propValue)
         {
-            OSAEObjectPopertyManager.ObjectPropertySet(objName, propName, propValue, sourceName);
+            OSAEObjectPropertyManager.ObjectPropertySet(objName, propName, propValue, sourceName);
 
             return true;
         }

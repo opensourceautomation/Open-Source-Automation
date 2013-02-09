@@ -90,17 +90,17 @@ namespace OSAE.UI.Controls
         {
             string sName = "Screen - " + currentScreen + " - " + objectComboBox.Text + ": " + propertyComboBox.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Property Name", propertyComboBox.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", propertyComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
 

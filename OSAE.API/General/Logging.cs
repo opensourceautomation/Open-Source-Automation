@@ -58,7 +58,7 @@
         {
             try
             {
-                if (OSAEObjectPopertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE" || alwaysLog)
+                if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE" || alwaysLog)
                 {
                     lock (logLocker)
                     {
@@ -71,7 +71,7 @@
                         sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + "ST:" + sb.ToString() + "\r\n\r\n - " + audit);
                         sw.Close();
 
-                        if (OSAEObjectPopertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
+                        if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
                         {
                             if (file.Length > 1000000)
                             {

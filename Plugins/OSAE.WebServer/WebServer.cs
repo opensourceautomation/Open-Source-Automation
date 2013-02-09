@@ -61,7 +61,7 @@
                 
                 server.Add(afm);                
                 logging.AddToLog("starting server...", true);
-                server.Start(IPAddress.Any, Int32.Parse(OSAEObjectPopertyManager.GetObjectPropertyValue(pName, "Port").Value));
+                server.Start(IPAddress.Any, Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value));
 
             }
             catch (Exception ex)

@@ -29,7 +29,7 @@ namespace OSAE.NetworkMonitor
             pName = pluginName;
             logging.AddToLog("Running Interface!", true);
             int interval;
-            bool isNum = Int32.TryParse(OSAEObjectPopertyManager.GetObjectPropertyValue(pName, "Poll Interval").Value, out interval);
+            bool isNum = Int32.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Poll Interval").Value, out interval);
             Clock = new System.Timers.Timer();
             if(isNum)
                 Clock.Interval = interval * 1000;

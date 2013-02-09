@@ -66,7 +66,7 @@
     <Compile Include="OSAEObjectProperty\OSAEObjectPopertyManager.cs" />
     <Compile Include="OSAEObjectState\OSAEObjectStateManager.cs" />
     <Compile Include="OSAEObjectType\OSAEObjectTypeManager.cs" />
-    <Compile Include="OSAEScreenControls\OSAEScreenControlManager.cs" />
+    <Compile Include="OSAEScreenControl\OSAEScreenControlManager.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginDescription.cs" />
     <Compile Include="Plugin\PluginFinder.cs" />
@@ -80,7 +80,7 @@
     <Compile Include="OSAEMethod\OSAEMethodManager.cs" />
     <Compile Include="OSAEObject\OSAEObject.cs" />
     <Compile Include="Plugin\OSAEPluginBase.cs" />
-    <Compile Include="OSAEScreenControls\OSAEScreenControl.cs" />
+    <Compile Include="OSAEScreenControl\OSAEScreenControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="General\ModifyRegistry.cs" />
     <Compile Include="OSAEScript\OSAEScriptManager.cs" />

@@ -72,7 +72,7 @@
             canGUI.Width = 200;//bitmapImage.Width;
 
             Load_App_Name();
-            gCurrentScreen = OSAEObjectPopertyManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
+            gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
             if (gCurrentScreen == "")
             {
                 Set_Default_Screen();
@@ -99,9 +99,9 @@
                 loadingScreen = true;
                 logging.AddToLog("Loading screen: " + sScreen, false);
                 gCurrentScreen = sScreen;
-                OSAEObjectPopertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
                 OSAE.OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
-                string imgID = OSAEObjectPopertyManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
+                string imgID = OSAEObjectPropertyManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
                 OSAE.OSAEImage img = imgMgr.GetImage(imgID);
 
                 //sPath = OSAEApi.APIpath + OSAEApi.GetObjectPropertyValue(sScreen, "Background Image").Value;
@@ -445,7 +445,7 @@
                 {
                     try
                     {
-                        string stream = OSAEObjectPopertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
+                        string stream = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
                         VideoStreamViewer vsv = new VideoStreamViewer(stream, obj);
                         canGUI.Children.Add(vsv);
                         OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
@@ -512,7 +512,7 @@
             {
                 gAppName = "GUI CLIENT-" + Common.ComputerName;
                 OSAEObjectManager.ObjectAdd(gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
-                OSAEObjectPopertyManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, "GUI");
             }
         }
 
@@ -522,7 +522,7 @@
             if (screens.Count > 0)
             {
                 gCurrentScreen = screens[0].Name;
-                OSAEObjectPopertyManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, "GUI");
             }
         }
 
@@ -694,8 +694,8 @@
 
         private void updateObjectCoords(OSAE.OSAEObject obj, string X, string Y)
         {
-            OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, "X", X, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, "Y", Y, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "X", X, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Y", Y, "GUI");
 
             obj.Property("X").Value = X;
             obj.Property("Y").Value = Y;
@@ -703,8 +703,8 @@
 
         private void updateObjectCoordsStateImg(OSAE.OSAEObject obj, string state, string X, string Y)
         {
-            OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, state + " X", X, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, state + " Y", Y, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, state + " X", X, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, state + " Y", Y, "GUI");
 
             obj.Property(state + " X").Value = X; 
             obj.Property(state + " Y").Value = Y;

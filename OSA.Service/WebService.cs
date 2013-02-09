@@ -191,7 +191,7 @@
 
         public Boolean SetObjectProperty(string objName, string propName, string propVal)
         {
-            OSAEObjectPopertyManager.ObjectPropertySet(objName, propName, propVal, "WebService");
+            OSAEObjectPropertyManager.ObjectPropertySet(objName, propName, propVal, "WebService");
 
             return true;
         }
@@ -199,7 +199,7 @@
         public List<string> getPropertyList(string objName, string propName)
         {            
             List<string> list = new List<string>();
-            DataSet ds = OSAEObjectPopertyManager.ObjectPropertyArrayGetAll(objName, propName);
+            DataSet ds = OSAEObjectPropertyManager.ObjectPropertyArrayGetAll(objName, propName);
 
             foreach (DataRow dr in ds.Tables[0].Rows)
             {

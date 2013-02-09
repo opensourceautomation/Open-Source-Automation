@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using OpenZWaveDotNet;
-using System.Threading;
-
-namespace OSAE.Zwave
+﻿namespace OSAE.Zwave
 {
+    using System;
+    using System.Collections.Generic;
+    using OpenZWaveDotNet;
+    using OSAE;
+
     public class Zwave : OSAEPluginBase
     {
-        static private OSAE osae = new OSAE("ZWave");
-        static private Logging logging = new Logging("ZWave");
+        static private Logging logging = Logging.GetLogger("ZWave");
         static private ManagedControllerStateChangedHandler m_controllerStateChangedHandler = new ManagedControllerStateChangedHandler(Zwave.MyControllerStateChangedHandler);
         static private ZWManager m_manager = null;
         ZWOptions m_options = null;
@@ -24,10 +20,10 @@ namespace OSAE.Zwave
         {
             pName = pluginName;
             int poll = 60;
-            if (osae.GetObjectPropertyValue(pName, "Polling Interval").Value != "")
-                poll = Int32.Parse(osae.GetObjectPropertyValue(pName, "Polling Interval").Value);
+            if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value != string.Empty)
+                poll = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value);
 
-            string port = osae.GetObjectPropertyValue(pName, "Port").Value;
+            string port = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value;
 
             logging.AddToLog("Port: " + port, true);
             try
@@ -36,7 +32,7 @@ namespace OSAE.Zwave
                 {
                     // Create the Options
                     m_options = new ZWOptions();
-                    m_options.Create(osae.APIpath + @"\Plugins\ZWave\config\", osae.APIpath + @"\Plugins\ZWave\", @"");
+                    m_options.Create(Common.ApiPath + @"\Plugins\ZWave\config\", Common.ApiPath + @"\Plugins\ZWave\", @"");
 
                     // Add any app specific options here...
                     m_options.AddOptionBool("ConsoleOutput", false);
@@ -57,17 +53,17 @@ namespace OSAE.Zwave
 
                     //logging.AddToLog("Setting poll interval: " + poll.ToString(), true);
                     //m_manager.SetPollInterval(poll);
-                    logging.AddToLog(osae.APIpath + @"\Plugins\ZWave\Config", true);
+                    logging.AddToLog(Common.ApiPath + @"\Plugins\ZWave\Config", true);
                     logging.AddToLog("Zwave plugin initialized", true);
                 }
 
-                osae.ObjectTypeUpdate("ZWAVE DIMMER", "ZWAVE DIMMER", "ZWave Dimmer", pName, "MULTILEVEL SWITCH", 0, 0, 0, 1);
-                osae.ObjectTypeUpdate("ZWAVE BINARY SWITCH", "ZWAVE BINARY SWITCH", "ZWave Binary Switch", pName, "BINARY SWITCH", 0, 0, 0, 1);
-                osae.ObjectTypeUpdate("ZWAVE THERMOSTAT", "ZWAVE THERMOSTAT", "ZWave Thermostat", pName, "THERMOSTAT", 0, 0, 0, 1);
-                osae.ObjectTypeUpdate("ZWAVE REMOTE", "ZWAVE REMOTE", "ZWave Remote", pName, "ZWAVE REMOTE", 0, 0, 0, 1);
-                osae.ObjectTypeUpdate("ZWAVE MULTISENSOR", "ZWAVE MULTISENSOR", "ZWave MultiSensor", pName, "ZWAVE MULTISENSOR", 0, 0, 0, 1);
-                osae.ObjectTypeUpdate("ZWAVE HOME ENERGY METER", "ZWAVE HOME ENERGY METER", "ZWave Home Energy Meter", pName, "ZWAVE HOME ENERGY METER", 0, 0, 0, 1);
-                osae.ObjectTypeUpdate("ZWAVE SMART ENERGY SWITCH", "ZWAVE SMART ENERGY SWITCH", "ZWave Smart Energy Switch", pName, "ZWAVE SMART ENERGY SWITCH", 0, 0, 0, 1);
+                OSAEObjectTypeManager.ObjectTypeUpdate("ZWAVE DIMMER", "ZWAVE DIMMER", "ZWave Dimmer", pName, "MULTILEVEL SWITCH", 0, 0, 0, 1);
+                OSAEObjectTypeManager.ObjectTypeUpdate("ZWAVE BINARY SWITCH", "ZWAVE BINARY SWITCH", "ZWave Binary Switch", pName, "BINARY SWITCH", 0, 0, 0, 1);
+                OSAEObjectTypeManager.ObjectTypeUpdate("ZWAVE THERMOSTAT", "ZWAVE THERMOSTAT", "ZWave Thermostat", pName, "THERMOSTAT", 0, 0, 0, 1);
+                OSAEObjectTypeManager.ObjectTypeUpdate("ZWAVE REMOTE", "ZWAVE REMOTE", "ZWave Remote", pName, "ZWAVE REMOTE", 0, 0, 0, 1);
+                OSAEObjectTypeManager.ObjectTypeUpdate("ZWAVE MULTISENSOR", "ZWAVE MULTISENSOR", "ZWave MultiSensor", pName, "ZWAVE MULTISENSOR", 0, 0, 0, 1);
+                OSAEObjectTypeManager.ObjectTypeUpdate("ZWAVE HOME ENERGY METER", "ZWAVE HOME ENERGY METER", "ZWave Home Energy Meter", pName, "ZWAVE HOME ENERGY METER", 0, 0, 0, 1);
+                OSAEObjectTypeManager.ObjectTypeUpdate("ZWAVE SMART ENERGY SWITCH", "ZWAVE SMART ENERGY SWITCH", "ZWave Smart Energy Switch", pName, "ZWAVE SMART ENERGY SWITCH", 0, 0, 0, 1);
 
                 #region Screen Init
                 //osae.ObjectPropertySet("Screen - ZWave Manager - ZWave - ADD CONTROLLER", "Object Name", pName);
@@ -106,11 +102,11 @@ namespace OSAE.Zwave
 
                     if (method.MethodName == "NODE NEIGHBOR UPDATE")
                     {
-                        logging.AddToLog("Requesting Node Neighbor Update: " + osae.GetObjectByAddress("Z" + nid.ToString()).Name, true);
+                        logging.AddToLog("Requesting Node Neighbor Update: " + OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).Name, true);
                         m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
                         if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RequestNodeNeighborUpdate, false, nid))
                         {
-                            logging.AddToLog("Request Node Neighbor Update Failed: " + osae.GetObjectByAddress("Z" + nid.ToString()).Name, true);
+                            logging.AddToLog("Request Node Neighbor Update Failed: " + OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).Name, true);
                             m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                         }
                     }
@@ -136,7 +132,7 @@ namespace OSAE.Zwave
                                     }
                                     else
                                         m_manager.SetNodeOn(m_homeId, nid);
-                                    osae.ObjectStateSet(method.ObjectName, "ON");
+                                    OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
                                     logging.AddToLog("Turned light on: " + method.ObjectName, false);
                                 }
                                 else
@@ -152,7 +148,7 @@ namespace OSAE.Zwave
                                     }
                                     else
                                         m_manager.SetNodeOff(m_homeId, nid);
-                                    osae.ObjectStateSet(method.ObjectName, "OFF");
+                                    OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
                                     logging.AddToLog("Turned light off: " + method.ObjectName, false);
                                 }
                                 break;
@@ -167,19 +163,19 @@ namespace OSAE.Zwave
                                     byte lvl;
                                     if (method.Parameter1 != "")
                                         lvl = (byte)Int32.Parse(method.Parameter1);
-                                    else if (osae.GetObjectPropertyValue(method.ObjectName, "Default Dim").Value != "")
-                                        lvl = (byte)Int32.Parse(osae.GetObjectPropertyValue(method.ObjectName, "Default Dim").Value);
+                                    else if (OSAEObjectPropertyManager.GetObjectPropertyValue(method.ObjectName, "Default Dim").Value != "")
+                                        lvl = (byte)Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(method.ObjectName, "Default Dim").Value);
                                     else
                                         lvl = (byte)100;
 
                                     m_manager.SetNodeLevel(m_homeId, nid, lvl);
-                                    osae.ObjectStateSet(method.ObjectName, "ON");
+                                    OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
                                     logging.AddToLog("Turned light on: " + method.ObjectName + "|" + method.Parameter1, false);
                                 }
                                 else
                                 {
                                     m_manager.SetNodeOff(m_homeId, nid);
-                                    osae.ObjectStateSet(method.ObjectName, "OFF");
+                                    OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
                                     logging.AddToLog("Turned light off: " + method.ObjectName, false);
                                 }
                                 break;
@@ -190,13 +186,13 @@ namespace OSAE.Zwave
                                 if (method.MethodName == "ON")
                                 {
                                     m_manager.SetNodeOn(m_homeId, nid);
-                                    osae.ObjectStateSet(method.ObjectName, "ON");
+                                    OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
                                     logging.AddToLog("Turned thermostat on: " + method.ObjectName, false);
                                 }
                                 else if (method.MethodName == "OFF")
                                 {
                                     m_manager.SetNodeOff(m_homeId, nid);
-                                    osae.ObjectStateSet(method.ObjectName, "OFF");
+                                    OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
                                     logging.AddToLog("Turned thermostat off: " + nid.ToString(), false);
                                 }
                                 else if (method.MethodName == "COOLSP")
@@ -361,7 +357,7 @@ namespace OSAE.Zwave
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
                                 if (m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RemoveDevice, false, nid))
                                 {
-                                    osae.ObjectDelete(osae.GetObjectByAddress("Z" + nid.ToString()).Name);
+                                    OSAEObjectManager.ObjectDelete(OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).Name);
                                 }
                                 else
                                 {
@@ -374,7 +370,7 @@ namespace OSAE.Zwave
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
                                 if (m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RemoveFailedNode, false, nid))
                                 {
-                                    osae.ObjectDelete(osae.GetObjectByAddress("Z" + nid.ToString()).Name);
+                                    OSAEObjectManager.ObjectDelete(OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).Name);
                                 }
                                 else
                                 {
@@ -437,7 +433,7 @@ namespace OSAE.Zwave
 
         public override void Shutdown()
         {
-            m_manager.RemoveDriver(@"\\.\COM" + osae.GetObjectPropertyValue(pName, "Port").Value);
+            m_manager.RemoveDriver(@"\\.\COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value);
             m_manager = null;
         }
 
@@ -570,7 +566,7 @@ namespace OSAE.Zwave
                             ZWValueID vid = m_notification.GetValueID();
                             Value value = node.GetValue(vid);
                             logging.AddToLog("value:" + value.Val, false);
-                            OSAEObject nodeObject = osae.GetObjectByAddress("Z" + m_notification.GetNodeId());
+                            OSAEObject nodeObject = OSAEObjectManager.GetObjectByAddress("Z" + m_notification.GetNodeId());
                             string v;
                             m_manager.GetValueAsString(vid, out v);
                             value.Val = v;
@@ -581,9 +577,9 @@ namespace OSAE.Zwave
                                     if (value.Label == "Switch")
                                     {
                                         if (value.Val == "True")
-                                            osae.ObjectStateSet(nodeObject.Name, "ON");
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON", pName);
                                         else
-                                            osae.ObjectStateSet(nodeObject.Name, "OFF");
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF", pName);
                                     }
                                     break;
                                 case "Multilevel Switch":
@@ -593,105 +589,105 @@ namespace OSAE.Zwave
                                     {
                                         node.Level = value.Val;
                                         if (Int32.Parse(value.Val) > 0)
-                                            osae.ObjectStateSet(nodeObject.Name, "ON");
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON", pName);
                                         else
-                                            osae.ObjectStateSet(nodeObject.Name, "OFF");
-                                        osae.ObjectPropertySet(nodeObject.Name, "Level", node.Level);
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF", pName);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Level", node.Level, pName);
                                     }
                                     else if (value.Label == "Power")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Power", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Power", node.Level, pName);
                                     }
                                     break;
                                 case "General Thermostat V2":
                                     if (value.Label == "Temperature")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Temperature", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Temperature", node.Level, pName);
                                     }
                                     else if (value.Label == "Operating State")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Operating Mode", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Operating Mode", node.Level, pName);
                                     }
                                     else if (value.Label == "Fan State")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Fan State", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Fan State", node.Level, pName);
                                     }
                                     else if (value.Label == "Fan Mode")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Fan Mode", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Fan Mode", node.Level, pName);
                                     }
                                     else if (value.Label == "Heating 1")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Heat Setpoint", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Heat Setpoint", node.Level, pName);
                                     }
                                     else if (value.Label == "Cooling 1")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Cool Setpoint", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Cool Setpoint", node.Level, pName);
                                     }
                                     else if (value.Label == "Battery Level")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Battery Level", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Battery Level", node.Level, pName);
                                     }
                                     else if (value.Label == "Override State")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Override State", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Override State", node.Level, pName);
                                     }
                                     break;
                                 case "Routing Multilevel Sensor":
                                     if (value.Label == "Temperature")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Temperature", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Temperature", node.Level, pName);
                                     }
                                     else if (value.Label == "Luminance")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Luminance", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Luminance", node.Level, pName);
                                     }
                                     else if (value.Label == "Battery Level")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Battery Level", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Battery Level", node.Level, pName);
                                     }
                                     else if (value.Label == "Power")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Power", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Power", node.Level, pName);
                                     }
                                     else if (value.Label == "General")
                                     {
                                         node.Level = value.Val;
                                         if (Int32.Parse(node.Level) == 0)
-                                            osae.ObjectStateSet(nodeObject.Name, "OFF");
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF", pName);
                                         else
-                                            osae.ObjectStateSet(nodeObject.Name, "ON");
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON", pName);
                                     }
                                     break;
                                 case "Routing Binary Sensor":
                                     if (value.Label == "Sensor")
                                     {
                                         if (value.Val == "True")
-                                            osae.ObjectStateSet(nodeObject.Name, "ON");
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON", pName);
                                         else
-                                            osae.ObjectStateSet(nodeObject.Name, "OFF");
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF", pName);
                                     }
                                     if (value.Label == "Battery Level")
                                     {
                                         node.Level = value.Val;
-                                        osae.ObjectPropertySet(nodeObject.Name, "Battery Level", node.Level);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Battery Level", node.Level, pName);
                                     }
                                     if (value.Label == "Alarm Level")
                                     {
-                                        osae.ObjectPropertySet(nodeObject.Name, "Alarm Level", value.Val);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, "Alarm Level", value.Val, pName);
                                     }
                                     break;
 
@@ -761,52 +757,52 @@ namespace OSAE.Zwave
                             node.Label = m_manager.GetNodeType(m_homeId, node.ID);
                         }
 
-                        if (osae.GetObjectByAddress("Z" + node.ID.ToString()) == null)
+                        if (OSAEObjectManager.GetObjectByAddress("Z" + node.ID.ToString()) == null)
                         {
                             switch (node.Label)
                             {
                                 case "Binary Switch":
                                 case "Binary Power Switch":
                                     if (m_manager.GetNodeProductName(m_homeId, node.ID) == "Smart Engery Switch")
-                                        osae.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE SMART ENERGY SWITCH", "Z" + node.ID.ToString(), "", true);
+                                        OSAEObjectManager.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE SMART ENERGY SWITCH", "Z" + node.ID.ToString(), "", true);
                                     else
-                                        osae.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE BINARY SWITCH", "Z" + node.ID.ToString(), "", true);
-                                    osae.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString());
-                                    osae.ObjectStateSet(node.Label + " - Z" + node.ID.ToString(), "OFF");
+                                        OSAEObjectManager.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE BINARY SWITCH", "Z" + node.ID.ToString(), "", true);
+                                    OSAEObjectPropertyManager.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString(), pName);
+                                    OSAEObjectStateManager.ObjectStateSet(node.Label + " - Z" + node.ID.ToString(), "OFF", pName);
                                     break;
                                 case "Multilevel Switch":
                                 case "Multilevel Power Switch":
                                 case "Multilevel Scene Switch":
                                     if (m_manager.GetNodeProductName(m_homeId, node.ID) == "Smart Energy Illuminator")
-                                        osae.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE SMART ENERGY DIMMER", "Z" + node.ID.ToString(), "", true);
+                                        OSAEObjectManager.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE SMART ENERGY DIMMER", "Z" + node.ID.ToString(), "", true);
                                     else
-                                        osae.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE DIMMER", "Z" + node.ID.ToString(), "", true);
+                                        OSAEObjectManager.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE DIMMER", "Z" + node.ID.ToString(), "", true);
 
-                                    osae.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString());
-                                    osae.ObjectStateSet(node.Label + " - Z" + node.ID.ToString(), "OFF");
+                                    OSAEObjectPropertyManager.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString(), pName);
+                                    OSAEObjectStateManager.ObjectStateSet(node.Label + " - Z" + node.ID.ToString(), "OFF", pName);
                                     break;
                                 case "General Thermostat V2":
-                                    osae.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE THERMOSTAT", "Z" + node.ID.ToString(), "", true);
-                                    osae.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString());
-                                    osae.ObjectStateSet(node.Label + " - Z" + node.ID.ToString(), "OFF");
+                                    OSAEObjectManager.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE THERMOSTAT", "Z" + node.ID.ToString(), "", true);
+                                    OSAEObjectPropertyManager.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString(), pName);
+                                    OSAEObjectStateManager.ObjectStateSet(node.Label + " - Z" + node.ID.ToString(), "OFF", pName);
                                     break;
                                 case "Portable Remote Controller":
-                                    osae.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE REMOTE", "Z" + node.ID.ToString(), "", true);
-                                    osae.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString());
+                                    OSAEObjectManager.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE REMOTE", "Z" + node.ID.ToString(), "", true);
+                                    OSAEObjectPropertyManager.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString(), pName);
                                     break;
                                 case "Routing Multilevel Sensor":
                                     if (m_manager.GetNodeProductName(m_homeId, node.ID) == "Home Energy Meter")
-                                        osae.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE HOME ENERGY METER", "Z" + node.ID.ToString(), "", true);
+                                        OSAEObjectManager.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE HOME ENERGY METER", "Z" + node.ID.ToString(), "", true);
                                     else
-                                        osae.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE MULTISENSOR", "Z" + node.ID.ToString(), "", true);
+                                        OSAEObjectManager.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE MULTISENSOR", "Z" + node.ID.ToString(), "", true);
 
-                                    osae.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString());
+                                    OSAEObjectPropertyManager.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString(), pName);
                                     m_manager.AddAssociation(m_homeId, node.ID, 1, m_manager.GetControllerNodeId(m_homeId));
                                     break;
                                 case "Routing Binary Sensor":
-                                    osae.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE BINARY SENSOR", "Z" + node.ID.ToString(), "", true);
-                                    osae.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString());
-                                    osae.ObjectStateSet(node.Label + " - Z" + node.ID.ToString(), "OFF");
+                                    OSAEObjectManager.ObjectAdd(node.Label + " - Z" + node.ID.ToString(), node.Label, "ZWAVE BINARY SENSOR", "Z" + node.ID.ToString(), "", true);
+                                    OSAEObjectPropertyManager.ObjectPropertySet(node.Label + " - Z" + node.ID.ToString(), "Home ID", node.HomeID.ToString(), pName);
+                                    OSAEObjectStateManager.ObjectStateSet(node.Label + " - Z" + node.ID.ToString(), "OFF", pName);
                                     m_manager.AddAssociation(m_homeId, node.ID, 1, m_manager.GetControllerNodeId(m_homeId));
                                     break;
                             }
@@ -863,7 +859,7 @@ namespace OSAE.Zwave
 
                             ZWValueID vid = m_notification.GetValueID();
                             Value value = node.GetValue(vid);
-                            OSAEObject nodeObject = osae.GetObjectByAddress("Z" + m_notification.GetNodeId());
+                            OSAEObject nodeObject = OSAEObjectManager.GetObjectByAddress("Z" + m_notification.GetNodeId());
                             string v;
                             m_manager.GetValueAsString(vid, out v);
                             value.Val = v;
@@ -873,12 +869,12 @@ namespace OSAE.Zwave
                                 case "Routing Binary Sensor":
                                     if (m_notification.GetEvent().ToString() == "255" || m_notification.GetEvent().ToString() == "99")
                                     {
-                                        osae.ObjectStateSet(nodeObject.Name, "ON");
+                                        OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON", pName);
                                         logging.AddToLog("Sensor turned ON: " + nodeObject.Name, false);
                                     }
                                     else if (m_notification.GetEvent().ToString() == "0")
                                     {
-                                        osae.ObjectStateSet(nodeObject.Name, "OFF");
+                                        OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF", pName);
                                         logging.AddToLog("Sensor turned OFF: " + nodeObject.Name, false);
                                     }
 
@@ -886,13 +882,13 @@ namespace OSAE.Zwave
                                     //{
                                     //    if (value.Val == "True")
                                     //    {
-                                    //        osae.ObjectStateSet(nodeObject.Name, "ON");
+                                    //        OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON");
                                     //        logging.AddToLog("Sensor turned ON: " + nodeObject.Name, false);
                                     //    }
 
                                     //    else
                                     //    {
-                                    //        osae.ObjectStateSet(nodeObject.Name, "OFF");
+                                    //        OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF");
                                     //        logging.AddToLog("Sensor turned OFF: " + nodeObject.Name, false);
                                     //    }
                                     //}
@@ -900,12 +896,12 @@ namespace OSAE.Zwave
                                 case "Routing Multilevel Sensor":
                                     if (m_notification.GetEvent().ToString() == "255" || m_notification.GetEvent().ToString() == "99")
                                     {
-                                        osae.ObjectStateSet(nodeObject.Name, "ON");
+                                        OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON", pName);
                                         logging.AddToLog("Sensor turned ON: " + nodeObject.Name, false);
                                     }
                                     else if (m_notification.GetEvent().ToString() == "0")
                                     {
-                                        osae.ObjectStateSet(nodeObject.Name, "OFF");
+                                        OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF", pName);
                                         logging.AddToLog("Sensor turned OFF: " + nodeObject.Name, false);
                                     }
                                     break;
@@ -933,7 +929,7 @@ namespace OSAE.Zwave
                 #region PollingEnabled
                 case ZWNotification.Type.PollingEnabled:
                     {
-                        logging.AddToLog("Polling Enabled: " + osae.GetObjectByAddress("Z" + m_notification.GetNodeId().ToString()).Name, true);
+                        logging.AddToLog("Polling Enabled: " + OSAEObjectManager.GetObjectByAddress("Z" + m_notification.GetNodeId().ToString()).Name, true);
                         break;
                     }
                 #endregion
@@ -942,7 +938,7 @@ namespace OSAE.Zwave
                 case ZWNotification.Type.DriverReady:
                     {
                         m_homeId = m_notification.GetHomeId();
-                        osae.ObjectPropertySet(pName, "Home ID", m_homeId.ToString());
+                        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Home ID", m_homeId.ToString(), pName);
                         logging.AddToLog("Driver Ready.  Home ID: " + m_homeId.ToString(), true);
                         break;
                     }
@@ -983,10 +979,10 @@ namespace OSAE.Zwave
                         logging.AddToLog("All nodes queried", true);
                         foreach (Node n in m_nodeList)
                         {
-                            OSAEObject obj = osae.GetObjectByAddress("Z" + n.ID.ToString());
+                            OSAEObject obj = OSAEObjectManager.GetObjectByAddress("Z" + n.ID.ToString());
                             if (obj != null)
                             {
-                                if (osae.GetObjectPropertyValue(osae.GetObjectByAddress("Z" + n.ID.ToString()).Name, "Poll").Value == "TRUE")
+                                if (OSAEObjectPropertyManager.GetObjectPropertyValue(OSAEObjectManager.GetObjectByAddress("Z" + n.ID.ToString()).Name, "Poll").Value == "TRUE")
                                     enablePolling(n.ID);
                             }
                         }
@@ -1000,10 +996,10 @@ namespace OSAE.Zwave
                         logging.AddToLog("Awake nodes queried (but some sleeping nodes have not been queried)", true);
                         foreach (Node n in m_nodeList)
                         {
-                            OSAEObject obj = osae.GetObjectByAddress("Z" + n.ID.ToString());
+                            OSAEObject obj = OSAEObjectManager.GetObjectByAddress("Z" + n.ID.ToString());
                             if (obj != null)
                             {
-                                if (osae.GetObjectPropertyValue(osae.GetObjectByAddress("Z" + n.ID.ToString()).Name, "Poll").Value == "TRUE")
+                                if (OSAEObjectPropertyManager.GetObjectPropertyValue(OSAEObjectManager.GetObjectByAddress("Z" + n.ID.ToString()).Name, "Poll").Value == "TRUE")
                                 {
                                     logging.AddToLog("Enabling polling for: " + obj.Name, true);
                                     enablePolling(n.ID);
@@ -1089,7 +1085,7 @@ namespace OSAE.Zwave
 
         private void enablePolling(byte nid)
         {
-            logging.AddToLog("Attempting to Enable Polling: " + osae.GetObjectByAddress("Z" + nid.ToString()).Name, true);
+            logging.AddToLog("Attempting to Enable Polling: " + OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).Name, true);
             try
             {
                 Node n = GetNode(m_homeId, nid);

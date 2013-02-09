@@ -304,7 +304,7 @@
                     List<OSAEObject> objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                     foreach (OSAEObject o in objs)
                     {
-                        if (OSAEObjectPopertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
+                        if (OSAEObjectPropertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
                         {
                             desc.Name = o.Name;
                             if (o.Enabled == 1)

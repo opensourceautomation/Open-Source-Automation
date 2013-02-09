@@ -1,13 +1,11 @@
 ﻿namespace OSAE
 {
-    using MySql.Data.MySqlClient;
     using System;
     using System.Data;
+    using MySql.Data.MySqlClient;
 
     public class OSAEObjectTypeManager
-    {
-        private Logging logging = Logging.GetLogger();
-
+    {       
         /// <summary>
         /// Create new object type
         /// </summary>
@@ -18,7 +16,7 @@
         /// <param name="TypeOwner"></param>
         /// <param name="System"></param>
         /// <param name="Container"></param>
-        public void ObjectTypeAdd(string Name, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
+        public static void ObjectTypeAdd(string Name, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -38,7 +36,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -47,7 +45,7 @@
         /// Delete an object type
         /// </summary>
         /// <param name="Name"></param>
-        public void ObjectTypeDelete(string Name)
+        public static void ObjectTypeDelete(string Name)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -59,7 +57,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -75,7 +73,7 @@
         /// <param name="TypeOwner"></param>
         /// <param name="System"></param>
         /// <param name="Container"></param>
-        public void ObjectTypeUpdate(string oldName, string newName, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
+        public static void ObjectTypeUpdate(string oldName, string newName, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -96,7 +94,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -107,7 +105,7 @@
         /// <param name="Name"></param>
         /// <param name="Label"></param>
         /// <param name="ObjectType"></param>
-        public void ObjectTypeEventAdd(string Name, string Label, string ObjectType)
+        public static void ObjectTypeEventAdd(string Name, string Label, string ObjectType)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -121,7 +119,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -131,7 +129,7 @@
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="ObjectType"></param>
-        public void ObjectTypeEventDelete(string Name, string ObjectType)
+        public static void ObjectTypeEventDelete(string Name, string ObjectType)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -144,7 +142,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -156,7 +154,7 @@
         /// <param name="newName"></param>
         /// <param name="label"></param>
         /// <param name="objectType"></param>
-        public void ObjectTypeEventUpdate(string oldName, string newName, string label, string objectType)
+        public static void ObjectTypeEventUpdate(string oldName, string newName, string label, string objectType)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -171,7 +169,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -182,7 +180,7 @@
         /// <param name="Name"></param>
         /// <param name="Label"></param>
         /// <param name="ObjectType"></param>
-        public void ObjectTypeMethodAdd(string Name, string Label, string ObjectType, string ParamLabel1, string ParamLabel2, string ParamDefault1, string ParamDefault2)
+        public static void ObjectTypeMethodAdd(string Name, string Label, string ObjectType, string ParamLabel1, string ParamLabel2, string ParamDefault1, string ParamDefault2)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -200,7 +198,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -210,7 +208,7 @@
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="ObjectType"></param>
-        public void ObjectTypeMethodDelete(string Name, string ObjectType)
+        public static void ObjectTypeMethodDelete(string Name, string ObjectType)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -223,7 +221,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -237,7 +235,7 @@
         /// <param name="objectType"></param>
         /// <param name="ParamLabel1"></param>
         /// <param name="ParamLabel2"></param>
-        public void ObjectTypeMethodUpdate(string oldName, string newName, string label, string objectType, string paramLabel1, string paramLabel2, string ParamDefault1, string ParamDefault2)
+        public static void ObjectTypeMethodUpdate(string oldName, string newName, string label, string objectType, string paramLabel1, string paramLabel2, string ParamDefault1, string ParamDefault2)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -256,8 +254,8 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                    logging.AddToLog("osae_sp_object_type_method_update (" + oldName + "," + newName + "," + label + "," + objectType + "," + paramLabel1 + "," + paramLabel2 + ")", true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("osae_sp_object_type_method_update (" + oldName + "," + newName + "," + label + "," + objectType + "," + paramLabel1 + "," + paramLabel2 + ")", true);
                 }
             }
         }
@@ -268,7 +266,7 @@
         /// <param name="Name"></param>
         /// <param name="ParameterType"></param>
         /// <param name="ObjectType"></param>
-        public void ObjectTypePropertyAdd(string Name, string ParameterType, string ParameterDefault, string ObjectType, bool TrackHistory)
+        public static void ObjectTypePropertyAdd(string Name, string ParameterType, string ParameterDefault, string ObjectType, bool TrackHistory)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -284,7 +282,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypePropertyAAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyAAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -294,7 +292,7 @@
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="ObjectType"></param>
-        public void ObjectTypePropertyDelete(string Name, string ObjectType)
+        public static void ObjectTypePropertyDelete(string Name, string ObjectType)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -307,7 +305,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -319,7 +317,7 @@
         /// <param name="newName"></param>
         /// <param name="ParameterType"></param>
         /// <param name="objectType"></param>
-        public void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterDefault, string objectType, bool TrackHistory)
+        public static void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterDefault, string objectType, bool TrackHistory)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -336,12 +334,12 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
 
-        public void ObjectTypePropertyOptionAdd(string objectType, string propertyName, string option)
+        public static void ObjectTypePropertyOptionAdd(string objectType, string propertyName, string option)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -355,12 +353,12 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
 
-        public void ObjectTypePropertyOptionDelete(string objectType, string propertyName, string option)
+        public static void ObjectTypePropertyOptionDelete(string objectType, string propertyName, string option)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -374,12 +372,12 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
 
-        public void ObjectTypePropertyOptionUpdate(string objectType, string propertyName, string newoption, string oldoption)
+        public static void ObjectTypePropertyOptionUpdate(string objectType, string propertyName, string newoption, string oldoption)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -394,7 +392,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -405,7 +403,7 @@
         /// <param name="Name"></param>
         /// <param name="Label"></param>
         /// <param name="ObjectType"></param>
-        public void ObjectTypeStateAdd(string Name, string Label, string ObjectType)
+        public static void ObjectTypeStateAdd(string Name, string Label, string ObjectType)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -419,7 +417,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -429,7 +427,7 @@
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="ObjectType"></param>
-        public void ObjectTypeStateDelete(string Name, string ObjectType)
+        public static void ObjectTypeStateDelete(string Name, string ObjectType)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -442,7 +440,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -454,7 +452,7 @@
         /// <param name="newName"></param>
         /// <param name="label"></param>
         /// <param name="objectType"></param>
-        public void ObjectTypeStateUpdate(string oldName, string newName, string newLabel, string objectType)
+        public static void ObjectTypeStateUpdate(string oldName, string newName, string newLabel, string objectType)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -469,7 +467,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -480,7 +478,7 @@
         /// <param name="objType"></param>
         /// <param name="propName"></param>
         /// <returns></returns>
-        public DataSet GetObjectTypePropertyOptions(string objType, string propName)
+        public static DataSet GetObjectTypePropertyOptions(string objType, string propName)
         {
             DataSet dataset = new DataSet();
             try
@@ -497,7 +495,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("API - GetObjectTypePropertyOptions error: " + ex.Message, true);
+                Logging.GetLogger().AddToLog("API - GetObjectTypePropertyOptions error: " + ex.Message, true);
                 return dataset;
             }
         }

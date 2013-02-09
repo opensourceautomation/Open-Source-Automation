@@ -36,10 +36,10 @@ namespace OSAE.UI.Controls
             {
                 string sName = currentScreen + " - " + objectsComboBox.Text;
                 OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
-                OSAEObjectPopertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
-                OSAEObjectPopertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-                OSAEObjectPopertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-                OSAEObjectPopertyManager.ObjectPropertySet(sName, "ZOrder", "1", "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", "1", "GUI");
 
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
 

@@ -106,7 +106,7 @@
 
                 System.IO.FileInfo file = new System.IO.FileInfo(Common.ApiPath + "/Logs/");
                 file.Directory.Create();
-                if (OSAEObjectPopertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
+                if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
                 {
                     string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
                     foreach (string f in files)
@@ -141,24 +141,24 @@
                 if (obj == null)
                 {
                     OSAEObjectManager.ObjectAdd(Common.ComputerName, Common.ComputerName, "COMPUTER", _computerIP, "", true);
-                    OSAEObjectPopertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
+                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
                 }
                 else if (obj.Type == "COMPUTER")
                 {
                     OSAEObjectManager.ObjectUpdate(obj.Name, Common.ComputerName, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                    OSAEObjectPopertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
+                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
                 }
                 else
                 {
                     OSAEObjectManager.ObjectAdd(Common.ComputerName + "." + _computerIP, Common.ComputerName, "COMPUTER", _computerIP, "", true);
-                    OSAEObjectPopertyManager.ObjectPropertySet(Common.ComputerName + "." + _computerIP, "Host Name", Common.ComputerName, sourceName);
+                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName + "." + _computerIP, "Host Name", Common.ComputerName, sourceName);
                 }
             }
             else
             {
                 OSAEObject obj = OSAEObjectManager.GetObjectByName(Common.ComputerName);
                 OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                OSAEObjectPopertyManager.ObjectPropertySet(obj.Name, "Host Name", Common.ComputerName, sourceName);
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Host Name", Common.ComputerName, sourceName);
             }
 
             try
@@ -451,7 +451,7 @@
                                 plugin.PluginName = plugin.PluginType;
                             logging.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
                             OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
-                            OSAEObjectPopertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
+                            OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
 
                             logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
                             sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
@@ -718,7 +718,7 @@
             }
             try
             {
-                checkForUpdates("Service", OSAEObjectPopertyManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value);
+                checkForUpdates("Service", OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value);
             }
             catch { }
             

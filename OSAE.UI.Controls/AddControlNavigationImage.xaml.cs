@@ -99,11 +99,11 @@ namespace OSAE.UI.Controls
 
             string sName = "Screen - Nav - " + txtName.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Image", fileName, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Screen", screenComboBox.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", fileName, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", screenComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, screenComboBox.Text, sName);
 

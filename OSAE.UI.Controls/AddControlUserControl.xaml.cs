@@ -30,10 +30,10 @@ namespace OSAE.UI.Controls
         {
             string sName = "Screen - " + currentScreen + " - " + txtName.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "USER CONTROL", "", currentScreen, true);
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Control Type", typesComboBox.Text, "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-            OSAEObjectPopertyManager.ObjectPropertySet(sName, "ZOrder", "1", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", typesComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", "1", "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, currentScreen, sName);
 
