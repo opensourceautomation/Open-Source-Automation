@@ -60,10 +60,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ObjectProperties\ObjectPopertiesManager.cs" />
-    <Compile Include="ObjectProperties\ObjectPropertyCollection.cs" />
     <Compile Include="ObjectState\ObjectStateManager.cs" />
     <Compile Include="ObjectType\ObjectTypeManager.cs" />
-    <Compile Include="OSAEObjects\OSAEObjectCollection.cs" />
     <Compile Include="OSAEScreenControls\OSAEScreenControlManager.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginDescription.cs" />
