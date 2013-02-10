@@ -25,12 +25,11 @@
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
         ServiceController myService = new ServiceController();
         WCFServiceReference.WCFServiceClient wcfObj;
-        OSAE osae = null;
 
         /// <summary>
         /// Used to get access to the logging facility
         /// </summary>
-        private Logging logging = new Logging("Manager_WPF");
+        private Logging logging = Logging.GetLogger("Manager_WPF");
 
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
@@ -92,9 +91,6 @@
                 MessageBox.Show("The OSA DB could not be contacted, Please ensure the correct address is specified and the DB is available");
                 return;
             }
-
-            // don't initialise this until we know we can get a connection
-            osae = new OSAE("Manager_WPF");
 
             loadPlugins();
 
@@ -175,11 +171,11 @@
             try
             {
                 if (wcfObj.State == CommunicationState.Opened)
-                    wcfObj.messageHost(msgType, message, osae.ComputerName);
+                    wcfObj.messageHost(msgType, message, Common.ComputerName);
                 else
                 {
                     if (connectToService())
-                        wcfObj.messageHost(msgType, message, osae.ComputerName);
+                        wcfObj.messageHost(msgType, message, Common.ComputerName);
                 }
             }
             catch (Exception ex)
@@ -201,22 +197,26 @@
                 lblPluginName.Content = p.Type;
                 lblVersion.Content = p.Version;
 
-                if (p.WikiUrl != "")
+                if (p.WikiUrl != string.Empty)
                 {
                     hypWiki.NavigateUri = new Uri(p.WikiUrl);
                     txblWiki.Visibility = System.Windows.Visibility.Visible;
                 }
                 else
+                {
                     txblWiki.Visibility = System.Windows.Visibility.Hidden;
+                }
 
-                if (p.Upgrade != "")
+                if (p.Upgrade != string.Empty)
                 {
                     imgUpdate.Visibility = System.Windows.Visibility.Visible;
                     Uri u = new Uri("http://www.opensourceautomation.com/plugin_details.php?pid=" + p.ID);
                     hypUpdate.NavigateUri = u;
                 }
                 else
+                {
                     imgUpdate.Visibility = System.Windows.Visibility.Hidden;
+                }
 
                 string pluginPath = Common.ApiPath + "\\Plugins\\" + p.Path + "\\";
                 string[] paths = System.IO.Directory.GetFiles(pluginPath, "Screenshot*");
@@ -297,13 +297,14 @@
                 if (!string.IsNullOrEmpty(path))
                 {
                     PluginDescription desc = new PluginDescription();
+                 
                     desc.Deserialize(path);
                     desc.Status = "Stopped";
                     desc.Enabled = false;
-                    List<OSAEObject> objs = osae.GetObjectsByType(desc.Type);
+                    List<OSAEObject> objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                     foreach (OSAEObject o in objs)
                     {
-                        if (osae.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
+                        if (OSAEObjectPropertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
                         {
                             desc.Name = o.Name;
                             if (o.Enabled == 1)
@@ -312,9 +313,9 @@
                         }
                     }
                     pluginList.Add(desc);
+                    logging.AddToLog("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID, true);
                 }
-            }
-
+            }            
             dgLocalPlugins.ItemsSource = pluginList;
         }
 
@@ -385,7 +386,10 @@
                         string[] split = message.Message.Split('|');
                         bool enabled = false;
                         if (split[1].Trim() == "True")
+                        {
                             enabled = true;
+                        }
+
                         foreach (PluginDescription plugin in pluginList)
                         {
                             if ((plugin.Type == split[5].Trim() && Common.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
@@ -396,7 +400,9 @@
                                 if (split[4].Trim() != "")
                                     plugin.Upgrade = split[4].Trim();
                                 else
-                                    plugin.Upgrade = "";
+                                {
+                                    plugin.Upgrade = string.Empty;
+                                }
                                 logging.AddToLog("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString(), true);
                                 break;
                             }
@@ -427,8 +433,9 @@
         private void btnService_Click(object sender, RoutedEventArgs e)
         {
             if (btnService.Content.ToString() == "Stop")
+            {
                 clicked = true;
-
+            }
 
             setButton(btnService.Content.ToString(), false);
             if (btnService.Content.ToString() == "Stop")
@@ -449,8 +456,10 @@
                 setLabel(Brushes.Green, "STARTING...");
                 foreach (PluginDescription pd in pluginList)
                 {
-                    if (pd.Enabled) 
+                    if (pd.Enabled)
+                    {
                         pd.Status = "Starting...";
+                    }
                 }
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
@@ -543,8 +552,9 @@
                         }
                     }
                 }
-                OSAEObject obj = osae.GetObjectByName(pd.Name);
-                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);                
+
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);                
             }
             catch (Exception ex)
             {
@@ -576,8 +586,9 @@
                         }
                     }
                 }
-                OSAEObject obj = osae.GetObjectByName(pd.Name);
-                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);                
+
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);                
             }
             catch (Exception ex)
             {
@@ -614,7 +625,7 @@
         {
             // Configure open file dialog box 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = ""; // Default file name 
+            dlg.FileName = string.Empty; // Default file name 
             dlg.DefaultExt = ".osapp"; // Default file extension 
             dlg.Filter = "Open Source Automation Plugin Pakages (.osapp)|*.osapp"; // Filter files by extension 
 

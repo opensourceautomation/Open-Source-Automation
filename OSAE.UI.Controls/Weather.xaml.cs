@@ -13,12 +13,10 @@
     /// </summary>
     public partial class Weather : UserControl
     {
-        OSAE osae = new OSAE("GUI");
-
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("GUI");
+        Logging logging = Logging.GetLogger("GUI");
 
         OSAEObject weatherObj;
         string sMode = "Max";
@@ -41,7 +39,7 @@
 
         private void Load_All_Weather()
 	    {
-		    weatherObj = osae.GetObjectByName("Weather Data");
+            weatherObj = OSAEObjectManager.GetObjectByName("Weather Data");
 		    lblCurTemp.Content = weatherObj.Property("Temp").Value + "°";
 		    lblConditions.Content = weatherObj.Property("Today Forecast").Value;
 		    lblLastUpd.Content = weatherObj.Property("Last Updated").Value;
@@ -131,17 +129,23 @@
 		    Uri url = new Uri(imageName);
             string path = string.Format("{0}\\images\\Weather\\{1}", Common.ApiPath, System.IO.Path.GetFileName(url.LocalPath));
 		    Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
-		    if (File.Exists(path)) {
+		    if (File.Exists(path)) 
+            {
 			    ImageSource imageSource = new BitmapImage(new Uri(path));
                 imageBox.Source = imageSource;
-		    } else {
-			    try {
+		    } 
+            else 
+            {
+			    try
+                {
                     WebClient webClient = new WebClient();
                     webClient.DownloadFile(url.OriginalString, path);
 				    ImageSource imageSource = new BitmapImage(new Uri(path));
                 imageBox.Source = imageSource;
 
-			    } catch (Exception ex) {
+			    } 
+                catch (Exception) 
+                {
 				    logging.AddToLog("Unable to download weather image " + url.OriginalString, true);
 			    }
 		    }
@@ -149,7 +153,8 @@
 
         private void Grid_MouseUp_1(object sender, MouseButtonEventArgs e)
         {
-              if (sMode == "Max") {
+              if (sMode == "Max") 
+              {
                   sMode = "Min";
                   this.Width = 110;
                   lblLastUpd.Visibility = System.Windows.Visibility.Hidden;

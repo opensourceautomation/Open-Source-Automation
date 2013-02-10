@@ -10,36 +10,33 @@
     using System.Security;
     using System.Security.Policy;
     using System.ServiceModel;
-    using System.ServiceModel.Web;
     using System.ServiceProcess;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Timers;
     using System.Xml.Linq;
     using MySql.Data.MySqlClient;
-    using API;
 
     class OSAEService : ServiceBase
     {
+        private const string sourceName = "OSAE Service";
         private ServiceHost sHost;
         private WCF.WCFService wcfService;
         private List<Plugin> plugins = new List<Plugin>();
         private List<Plugin> masterPlugins = new List<Plugin>();
         private string _computerIP;
         private bool goodConnection = false;
-        private WebServiceHost serviceHost = new WebServiceHost(typeof(OSAERest.api));
-        private OSAE osae = new OSAE("OSAE Service");
 
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("OSAE Service");
+        Logging logging = Logging.GetLogger(sourceName);
 
         private bool running = true;
         
-        //System.Timers.Timer timer = new System.Timers.Timer();
+        private System.Timers.Timer timer = new System.Timers.Timer();
         private System.Timers.Timer updates = new System.Timers.Timer();
-        //System.Timers.Timer checkPlugins = new System.Timers.Timer();
+        private System.Timers.Timer checkPlugins = new System.Timers.Timer();
 
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
@@ -48,13 +45,10 @@
         {          
             if (args.Length > 0)
             {
-                OSAE osacl = new OSAE("OSACL");
-                Logging commandLineLogging = new Logging("OSACL");
-
-                string pattern = osacl.MatchPattern(args[0]);
-                commandLineLogging.AddToLog("Processing command: " + args[0] + ", Named Script: " + pattern, true);
+                string pattern = Common.MatchPattern(args[0]);
+                Logging.AddToLog("Processing command: " + args[0] + ", Named Script: " + pattern, true, "OSACL");
                 if (pattern != "")
-                    osacl.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, "");
+                    OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, "", "OSACL");
             }
             else
             {
@@ -112,7 +106,7 @@
 
                 System.IO.FileInfo file = new System.IO.FileInfo(Common.ApiPath + "/Logs/");
                 file.Directory.Create();
-                if (osae.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
+                if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
                 {
                     string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
                     foreach (string f in files)
@@ -128,19 +122,11 @@
             }
 
             logging.AddToLog("OnStart", true);
-            
             logging.AddToLog("Removing orphaned methods", true);
 
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
-                {
-                    connection.Open();
-                    MySqlCommand command = new MySqlCommand();
-                    command.Connection = connection;
-                    command.CommandText = "SET sql_safe_updates=0; DELETE FROM osae_method_queue;";
-                    osae.RunQuery(command);
-                }
+                OSAEMethodManager.ClearMethodQueue();
             }
             catch (Exception ex)
             {
@@ -148,59 +134,53 @@
             }
 
             logging.AddToLog("Creating Computer object", true);
-            if (osae.GetObjectByName(osae.ComputerName) == null)
+            if (OSAEObjectManager.GetObjectByName(Common.ComputerName) == null)
             {
-                OSAEObject obj = osae.GetObjectByAddress(_computerIP);
+
+                OSAEObject obj = OSAEObjectManager.GetObjectByAddress(_computerIP);
                 if (obj == null)
                 {
-                    osae.ObjectAdd(osae.ComputerName, osae.ComputerName, "COMPUTER", _computerIP, "", true);
-                    osae.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName);
+                    OSAEObjectManager.ObjectAdd(Common.ComputerName, Common.ComputerName, "COMPUTER", _computerIP, "", true);
+                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
                 }
                 else if (obj.Type == "COMPUTER")
                 {
-                    osae.ObjectUpdate(obj.Name, osae.ComputerName, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                    osae.ObjectPropertySet(osae.ComputerName, "Host Name", osae.ComputerName);
+                    OSAEObjectManager.ObjectUpdate(obj.Name, Common.ComputerName, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
+                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
                 }
                 else
                 {
-                    osae.ObjectAdd(osae.ComputerName + "." + _computerIP, osae.ComputerName, "COMPUTER", _computerIP, "", true);
-                    osae.ObjectPropertySet(osae.ComputerName + "." + _computerIP, "Host Name", osae.ComputerName);
+                    OSAEObjectManager.ObjectAdd(Common.ComputerName + "." + _computerIP, Common.ComputerName, "COMPUTER", _computerIP, "", true);
+                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName + "." + _computerIP, "Host Name", Common.ComputerName, sourceName);
                 }
             }
             else
             {
-                OSAEObject obj = osae.GetObjectByName(osae.ComputerName);
-                osae.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                osae.ObjectPropertySet(obj.Name, "Host Name", osae.ComputerName);
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(Common.ComputerName);
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Host Name", Common.ComputerName, sourceName);
             }
 
             try
             {
                 logging.AddToLog("Creating Service object", true);
-                OSAEObject svcobj = osae.GetObjectByName("SERVICE-" + osae.ComputerName);
+                OSAEObject svcobj = OSAEObjectManager.GetObjectByName("SERVICE-" + Common.ComputerName);
                 if (svcobj == null)
-                    osae.ObjectAdd("SERVICE-" + osae.ComputerName, "SERVICE-" + osae.ComputerName, "SERVICE", "", "SYSTEM", true);
-                osae.ObjectStateSet("SERVICE-" + osae.ComputerName, "ON");
+                {
+                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "", "SYSTEM", true);
+                }
+                OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", "OSAE Service");
             }
             catch (Exception ex)
             {
                 logging.AddToLog("Error creating service object - " + ex.Message, true);
-            }
-
+            }                      
+                        
             try
             {
-                serviceHost.Open();
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Error starting RESTful web service: " + ex.Message, true);
-            }
-            
-            wcfService = new WCF.WCFService();
-            sHost = new ServiceHost(wcfService);
-            wcfService.MessageReceived += new EventHandler<WCF.CustomEventArgs>(wcfService_MessageReceived);
-            try
-            {
+                wcfService = new WCF.WCFService();
+                sHost = new ServiceHost(wcfService);
+                wcfService.MessageReceived += new EventHandler<WCF.CustomEventArgs>(wcfService_MessageReceived);
                 sHost.Open();
             }
             catch (Exception ex)
@@ -210,7 +190,7 @@
 
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
             QueryCommandQueueThread.Start(); 
-            
+
             updates.Interval = 86400000;
             updates.Enabled = true;
             updates.Elapsed += new ElapsedEventHandler(getPluginUpdates_tick);
@@ -218,9 +198,9 @@
             Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
             loadPluginsThread.Start();
 
-            //checkPlugins.Interval = 60000;
-            //checkPlugins.Enabled = true;
-            //checkPlugins.Elapsed += new ElapsedEventHandler(checkPlugins_tick);
+            checkPlugins.Interval = 60000;
+            checkPlugins.Enabled = true;
+            checkPlugins.Elapsed += new ElapsedEventHandler(checkPlugins_tick);
 
             Thread updateThread = new Thread(() => getPluginUpdates());
             updateThread.Start();
@@ -245,11 +225,10 @@
                 // as we can't guarantee the quality of a third party plugin
                 var taskA = new Task(() =>
                 {
-                    //checkPlugins.Enabled = false;
+                    checkPlugins.Enabled = false;
                     running = false;
                     if (sHost.State == CommunicationState.Opened)
-                        sHost.Close();
-                    serviceHost.Close();
+                        sHost.Close();                    
                     logging.AddToLog("shutting down plugins", true);
                     foreach (Plugin p in plugins)
                     {
@@ -290,13 +269,13 @@
                     DataSet dataset = new DataSet();
                     MySqlCommand command = new MySqlCommand();
                     command.CommandText = "SELECT method_queue_id, object_name, address, method_name, parameter_1, parameter_2, object_owner FROM osae_v_method_queue ORDER BY entry_time";
-                    dataset = osae.RunQuery(command);
+                    dataset = OSAESql.RunQuery(command);
 
                     foreach (DataRow row in dataset.Tables[0].Rows)
                     {
                         OSAEMethod method = new OSAEMethod(row["method_name"].ToString(), row["object_name"].ToString(), row["parameter_1"].ToString(), row["parameter_2"].ToString(), row["address"].ToString(), row["object_owner"].ToString());
                         
-                        sendMessageToClients(WCF.OSAEWCFMessageType.LOG, "found method in queue: " + method.ObjectName +
+                        sendMessageToClients("log", "found method in queue: " + method.ObjectName +
                             "(" + method.MethodName + ")   p1: " + method.Parameter1 +
                             "  p2: " + method.Parameter2);
                         logging.AddToLog("Found method in queue: " + method.MethodName, false);
@@ -305,12 +284,12 @@
                         logging.AddToLog("-- param 2: " + method.Parameter2, false);
                         logging.AddToLog("-- object owner: " + method.Owner, false);
 
-                        if (method.ObjectName == "SERVICE-" + osae.ComputerName)
+                        if (method.ObjectName == "SERVICE-" + Common.ComputerName)
                         {
                             if (method.MethodName == "EXECUTE")
                             {
-                                sendMessageToClients(WCF.OSAEWCFMessageType.CMDLINE, method.Parameter1
-                                    + " | " + method.Parameter2 + " | " + osae.ComputerName);
+                                sendMessageToClients("command", method.Parameter1
+                                    + " | " + method.Parameter2 + " | " + Common.ComputerName);
                             }
                             else if (method.MethodName == "START PLUGIN")
                             {
@@ -318,7 +297,7 @@
                                 {
                                     if (p.PluginName == method.Parameter1)
                                     {
-                                        OSAEObject obj = osae.GetObjectByName(p.PluginName);
+                                        OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
                                         if (obj != null)
                                         {
                                             enablePlugin(p);
@@ -332,7 +311,7 @@
                                 {
                                     if (p.PluginName == method.Parameter1)
                                     {
-                                        OSAEObject obj = osae.GetObjectByName(p.PluginName);
+                                        OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
                                         if (obj != null)
                                         {
                                             disablePlugin(p);
@@ -346,7 +325,7 @@
                             }
                             command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
                             logging.AddToLog("Removing method from queue: " + command.CommandText, false);
-                            osae.RunQuery(command);
+                            OSAESql.RunQuery(command);
                         }
                         else
                         {
@@ -357,7 +336,7 @@
                                 {
                                     command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
                                     logging.AddToLog("Removing method from queue: " + command.CommandText, false);
-                                    osae.RunQuery(command);
+                                    OSAESql.RunQuery(command);
                                    
                                     plugin.ExecuteCommand(method);
                                     processed = true;
@@ -367,14 +346,14 @@
 
                             if (!processed)
                             {
-                                sendMessageToClients(WCF.OSAEWCFMessageType.METHOD, method.ObjectName + " | " + method.Owner + " | "
+                                sendMessageToClients("method", method.ObjectName + " | " + method.Owner + " | "
                                     + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | " 
                                     + method.Address + " | " + row["method_queue_id"].ToString());
 
                                 
                                 command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
                                 logging.AddToLog("Removing method from queue: " + command.CommandText, false);
-                                osae.RunQuery(command);
+                                OSAESql.RunQuery(command);
                                 processed = true;
                             }
                         }
@@ -383,15 +362,17 @@
                 catch (Exception ex)
                 {
                     logging.AddToLog("Error in QueryCommandQueue: " + ex.Message, true);
+                    //timer.Enabled = true;
                 }
                 System.Threading.Thread.Sleep(100);
             }
+            //timer.Enabled = true;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private void LoadPlugins()
+        public void LoadPlugins()
         {
             var pluginAssemblies = new List<OSAEPluginBase>();
             var types = PluginFinder.FindPlugins();
@@ -409,11 +390,7 @@
             }
 
             logging.AddToLog("Found " + plugins.Count.ToString() + " plugins", true);
-            MySqlConnection connection = new MySqlConnection("SERVER=" + Common.DBConnection + ";" +
-                            "DATABASE=" + osae.DBName + ";" +
-                            "PORT=" + osae.DBPort + ";" +
-                            "UID=" + osae.DBUsername + ";" +
-                            "PASSWORD=" + osae.DBPassword + ";");
+            MySqlConnection connection = new MySqlConnection(Common.ConnectionString);
 
             foreach (Plugin plugin in plugins)
             {
@@ -438,7 +415,8 @@
                     {
                         if (plugin.PluginName != "")
                         {
-                            OSAEObject obj = osae.GetObjectByName(plugin.PluginName);
+                            OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
+
                             if (obj != null)
                             {
                                 logging.AddToLog("Plugin Object found: " + obj.Name + " - Enabled: " + obj.Enabled.ToString(), true);
@@ -460,6 +438,7 @@
                             MySqlDataAdapter adapter;
                             DataSet dataset = new DataSet();
                             MySqlCommand command = new MySqlCommand();
+                         
                             command.Connection = connection;
                             command.CommandText = "SELECT * FROM osae_object_type_property p inner join osae_object_type t on p.object_type_id = t.object_type_id WHERE object_type=@type AND property_name='Computer Name'";
                             command.Parameters.AddWithValue("@type", plugin.PluginType);
@@ -467,15 +446,15 @@
                             adapter.Fill(dataset);
 
                             if (dataset.Tables[0].Rows.Count > 0)
-                                plugin.PluginName = plugin.PluginType + "-" + osae.ComputerName;
+                                plugin.PluginName = plugin.PluginType + "-" + Common.ComputerName;
                             else
                                 plugin.PluginName = plugin.PluginType;
                             logging.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
-                            osae.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
-                            osae.ObjectPropertySet(plugin.PluginName, "Computer Name", osae.ComputerName);
+                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
+                            OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
 
                             logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
-                            sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
+                            sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
 
                         }
                         masterPlugins.Add(plugin);
@@ -507,16 +486,16 @@
             try
             {
                 logging.AddToLog("received message: " + e.Message, false);
-                if (e.Message.Type == WCF.OSAEWCFMessageType.CONNECT)
+                if (e.Message == "connected")
                 {
                     try
                     {
                         logging.AddToLog("client connected", false);
                         foreach (Plugin p in masterPlugins)
                         {
-                            string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName;
+                            string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName;
 
-                            sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, msg);
+                            sendMessageToClients("plugin", msg);
                         }
                     }
                     catch (Exception ex)
@@ -526,20 +505,26 @@
                 }
                 else
                 {
-                    string[] arguments = e.Message.Message.Split('|');
+                    string[] arguments = e.Message.Split('|');
                     if (arguments[0] == "ENABLEPLUGIN")
                     {
                         bool local = false;
                         if (arguments[2] == "True")
-                            osae.ObjectStateSet(arguments[1], "ON");
+                        {
+                            OSAEObjectStateManager.ObjectStateSet(arguments[1], "ON", sourceName);
+                        }
                         else if (arguments[2] == "False")
-                            osae.ObjectStateSet(arguments[1], "OFF");
+                        {
+                            OSAEObjectStateManager.ObjectStateSet(arguments[1], "OFF", sourceName);
+                        }
+
                         foreach (Plugin p in plugins)
                         {
                             if (p.PluginName == arguments[1])
                             {
                                 local = true;
-                                OSAEObject obj = osae.GetObjectByName(p.PluginName);
+
+                                OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
                                 if (obj != null)
                                 {
                                     if (arguments[2] == "True")
@@ -555,7 +540,7 @@
                         }
                         if (!local)
                         {
-                            sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, e.Message.Message);
+                            sendMessageToClients("enablePlugin", e.Message);
                         }
                     }
                     else if (arguments[0] == "plugin")
@@ -618,17 +603,12 @@
         /// </summary>
         /// <param name="msgType"></param>
         /// <param name="message"></param>
-        private void sendMessageToClients(WCF.OSAEWCFMessageType msgType, string message)
+        private void sendMessageToClients(string msgType, string message)
         {
             try
             {
                 logging.AddToLog("Sending message to clients: " + msgType + " - " + message, false);
-                WCF.OSAEWCFMessage msg = new WCF.OSAEWCFMessage();
-                msg.Type = msgType;
-                msg.Message = message;
-                msg.From = osae.ComputerName;
-                msg.TimeSent = DateTime.Now;
-                Thread thread = new Thread(() => wcfService.SendMessageToClients(msg));
+                Thread thread = new Thread(() => wcfService.SendMessageToClients(msgType, message, Common.ComputerName));
                 thread.Start();
             }
             catch(Exception ex)
@@ -703,7 +683,7 @@
                             if (!plug)
                             {
                                 msg = version + "|" + latestMajor + "." + latestMinor + "." + latestRevision;
-                                sendMessageToClients(WCF.OSAEWCFMessageType.SERVICE, msg);
+                                sendMessageToClients("service", msg);
                             }
                         }
                     }
@@ -713,8 +693,8 @@
 
                 if (plug)
                 {
-                    string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName;
-                    sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, msg);
+                    string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName;
+                    sendMessageToClients("plugin", msg);
                 }
             }
             catch (Exception ex)
@@ -738,7 +718,7 @@
             }
             try
             {
-                checkForUpdates("Service", osae.GetObjectPropertyValue("SYSTEM", "DB Version").Value);
+                checkForUpdates("Service", OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value);
             }
             catch { }
             
@@ -799,16 +779,17 @@
 
         public void enablePlugin(Plugin plugin)
         {
-            OSAEObject obj = osae.GetObjectByName(plugin.PluginName);
-            osae.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+            OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
+
+            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
             try
             {
                 if (plugin.ActivatePlugin())
                 {
                     plugin.Enabled = true;
                     plugin.RunInterface();
-                    osae.ObjectStateSet(plugin.PluginName, "ON");
-                    sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + osae.ComputerName);
+                    OSAEObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", sourceName);
+                    sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
                     logging.AddToLog("Plugin enabled: " + plugin.PluginName, true);
                 }
             }
@@ -825,14 +806,15 @@
         public void disablePlugin(Plugin p)
         {
             logging.AddToLog("Disabling Plugin: " + p.PluginName,true);
-            OSAEObject obj = osae.GetObjectByName(p.PluginName);
-            osae.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
+           
+            OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
+            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
             try
             {
                 p.Shutdown();
                 p.Enabled = false;
                 p.Domain = CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet);
-                sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + osae.ComputerName);
+                sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName);
             }
             catch (Exception ex)
             {

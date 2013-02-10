@@ -15,7 +15,6 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class AddControlPropertyLabel : UserControl
     {
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
         private string currentScreen;
 
         public AddControlPropertyLabel(string screen)
@@ -31,7 +30,7 @@ namespace OSAE.UI.Controls
         /// </summary>
         private void LoadObjects()
         {
-            DataSet dataSet = osae.RunSQL("SELECT object_name FROM osae_v_object order by object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object order by object_name");
             objectComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -62,7 +61,7 @@ namespace OSAE.UI.Controls
 
         private void objectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DataSet dataSet = osae.RunSQL("select property_name from osae_v_object_property where object_name='" + (sender as ComboBox).SelectedValue.ToString() + "'");
+            DataSet dataSet = OSAESql.RunSQL("select property_name from osae_v_object_property where object_name='" + (sender as ComboBox).SelectedValue.ToString() + "'");
             propertyComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -90,20 +89,20 @@ namespace OSAE.UI.Controls
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             string sName = "Screen - " + currentScreen + " - " + objectComboBox.Text + ": " + propertyComboBox.Text;
-            osae.ObjectAdd(sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
-            osae.ObjectPropertySet(sName, "Font Name", txtFont.Text);
-            osae.ObjectPropertySet(sName, "Font Size", txtSize.Text);
-            osae.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text);
-            osae.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text);
-            osae.ObjectPropertySet(sName, "Object Name", objectComboBox.Text);
-            osae.ObjectPropertySet(sName, "Property Name", propertyComboBox.Text);
-            osae.ObjectPropertySet(sName, "Prefix", txtPrefix.Text);
-            osae.ObjectPropertySet(sName, "Suffix", txtSuffix.Text);
-            osae.ObjectPropertySet(sName, "X", "100");
-            osae.ObjectPropertySet(sName, "Y", "100");
-            osae.ObjectPropertySet(sName, "Zorder", "1");
+            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", propertyComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
-            osae.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
+            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
 
 
             NotifyParentFinished();

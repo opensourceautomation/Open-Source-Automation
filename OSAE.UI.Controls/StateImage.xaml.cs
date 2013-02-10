@@ -12,7 +12,7 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class StateImage : UserControl
     {
-        OSAE osae = new OSAE("GUI");
+        private const string sourceName = "GUI";
         public OSAEObject screenObject { get; set; }
         public Point Location;
         public DateTime LastUpdated;
@@ -21,8 +21,6 @@ namespace OSAE.UI.Controls
         public string CurState;
 
         private string ObjectName;
-        private string ObjectStateTime;
-        private ImageManager imgMgr = new ImageManager();
         
         public StateImage(OSAEObject sObject)
         {
@@ -30,7 +28,7 @@ namespace OSAE.UI.Controls
 
             screenObject = sObject;
             ObjectName = screenObject.Property("Object Name").Value;
-            CurState = osae.GetObjectStateValue(ObjectName).Value;
+            CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
 
             Image.Tag = ObjectName;
             Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
@@ -38,20 +36,20 @@ namespace OSAE.UI.Controls
             //ObjectStateTime = stateObject.LastUpd;
 
             string imgPath;
-            foreach (ObjectProperty p in screenObject.Properties)
+            foreach (OSAEObjectProperty p in screenObject.Properties)
             {
                 if (p.Value.ToLower() == CurState.ToLower())
                 {
                     StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
                 }
             }
-            
-            string imgName = screenObject.Property(StateMatch + " Image").Value;
-            OSAEImage img = imgMgr.GetImage(imgName);
 
-            if (img.Data != null)
+            imgPath = Common.ApiPath + screenObject.Property(StateMatch + " Image").Value;
+
+            if (File.Exists(imgPath))
             {
-                var imageStream = new MemoryStream(img.Data);
+                byte[] byteArray = File.ReadAllBytes(imgPath);
+                var imageStream = new MemoryStream(byteArray);
                 var bitmapImage = new BitmapImage();
 
                 bitmapImage.BeginInit();
@@ -69,9 +67,9 @@ namespace OSAE.UI.Controls
 
         public void Update()
         {
-            CurState = osae.GetObjectStateValue(ObjectName).Value;
+            CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
 
-            foreach (ObjectProperty p in screenObject.Properties)
+            foreach (OSAEObjectProperty p in screenObject.Properties)
             {
                 if (p.Value.ToLower() == CurState.ToLower())
                 {
@@ -82,12 +80,17 @@ namespace OSAE.UI.Controls
             Location.X = Double.Parse(screenObject.Property(StateMatch + " X").Value);
             Location.Y = Double.Parse(screenObject.Property(StateMatch + " Y").Value);
 
-            string imgName = screenObject.Property(StateMatch + " Image").Value;
-            OSAEImage img = imgMgr.GetImage(imgName);
-
-            if (img.Data != null)
+            String imagePath = screenObject.Property(StateMatch + " Image").Value;
+            if (File.Exists(Common.ApiPath + imagePath))
             {
-                var imageStream = new MemoryStream(img.Data);
+                imagePath = Common.ApiPath + imagePath;
+            }
+
+            if (File.Exists(imagePath))
+            {
+                
+                byte[] byteArray = File.ReadAllBytes(imagePath);
+                var imageStream = new MemoryStream(byteArray);
 
 
                 this.Dispatcher.Invoke((Action)(() =>
@@ -102,22 +105,17 @@ namespace OSAE.UI.Controls
         }
 
         private void State_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
-        {
-            bool iResults = false;
-
+        {           
             if (CurState == "ON")
             {
-                osae.MethodQueueAdd(ObjectName, "OFF", "", "");
-                osae.ObjectStateSet(ObjectName, "OFF");
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", string.Empty, string.Empty, sourceName);
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", sourceName);
             }
             else
             {
-                osae.MethodQueueAdd(ObjectName, "ON", "", "");
-                osae.ObjectStateSet(ObjectName, "ON");
-            }
-            
-        }
-
-        
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", string.Empty, string.Empty, sourceName);
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", sourceName);
+            }            
+        }        
     }
 }

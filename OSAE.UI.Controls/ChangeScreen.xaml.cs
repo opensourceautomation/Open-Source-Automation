@@ -12,9 +12,8 @@
     /// Interaction logic for ChangeScreen.xaml
     /// </summary>
     public partial class ctrlChangeScreen : UserControl
-    {
-        OSAE osae = new OSAE("OSAE.UI.Controls");
-        ImageManager imgMgr = new ImageManager();
+    {      
+        OSAEImageManager imgMgr = new OSAEImageManager();
         public ctrlChangeScreen()
         {
             InitializeComponent();
@@ -29,7 +28,7 @@
         {
             try
             {
-                List<OSAEObject> screens = osae.GetObjectsByBaseType("SCREEN");
+                List<OSAEObject> screens = OSAEObjectManager.GetObjectsByBaseType("SCREEN");
                 List<OSAEImage> images = new List<OSAEImage>();
                 foreach (OSAEObject obj in screens)
                 {

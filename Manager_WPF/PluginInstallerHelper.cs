@@ -41,8 +41,7 @@
 
         public static bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
-            OSAE osae = new OSAE("Plugin Installer");
-            Logging logging = new Logging("Plugin Installer");
+            Logging logging = Logging.GetLogger("Plugin Installer");
 
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
             if (Directory.Exists(exePath + "/tempDir/"))
@@ -101,23 +100,10 @@
                     string pluginFolder = desc.Path;
                     if (!string.IsNullOrEmpty(pluginFolder))  //only extract valid plugins
                     {
-                        //Directory.CreateDirectory(exePath + "/Plugins/" + pluginFolder);
-
                         string[] files = System.IO.Directory.GetFiles(tempfolder);
 
-                        // Copy the files and overwrite destination files if they already exist.
-                        //foreach (string s in files)
-                        //{
-                        //    string fileName = System.IO.Path.GetFileName(s);
-                        //    if (desc.AdditionalAssemblies.Contains(fileName))
-                        //    {
-                        //        string destFile = System.IO.Path.Combine(exePath + "/", fileName);
-                        //        System.IO.File.Copy(s, destFile, true);
-                        //    }
-                        //}
-
                         string ConnectionString = string.Format("Uid={0};Pwd={1};Server={2};Port={3};Database={4};allow user variables=true",
-                            osae.DBUsername, osae.DBPassword, osae.DBConnection, osae.DBPort, osae.DBName);
+                            Common.DBUsername, Common.DBPassword, Common.DBConnection, Common.DBPort, Common.DBName);
                         MySql.Data.MySqlClient.MySqlConnection connection = new MySql.Data.MySqlClient.MySqlConnection(ConnectionString);
                         connection.Open();
                         foreach (string s in sqlFile)
@@ -173,7 +159,7 @@
                         using (MySql.Data.MySqlClient.MySqlCommand command = new MySql.Data.MySqlClient.MySqlCommand())
                         {
                             command.CommandText = "CALL osae_sp_method_queue_add (@pobject,@pmethod,@pparameter1,@pparameter2,@pfromobject,@pdebuginfo);";
-                            command.Parameters.AddWithValue("@pobject", "SERVICE-" + osae.ComputerName);
+                            command.Parameters.AddWithValue("@pobject", "SERVICE-" + Common.ComputerName);
                             command.Parameters.AddWithValue("@pmethod", "LOAD PLUGIN");
                             command.Parameters.AddWithValue("@pparameter1", "");
                             command.Parameters.AddWithValue("@pparameter2", "");
@@ -181,7 +167,7 @@
                             command.Parameters.AddWithValue("@pdebuginfo", "");
                             try
                             {
-                                osae.RunQuery(command);
+                                OSAESql.RunQuery(command);
                             }
                             catch (Exception ex)
                             {
@@ -203,7 +189,7 @@
                     deleteFolder(exePath + "/tempDir/");
                 }
 
-                osae.MethodQueueAdd("SERVICE-" + osae.ComputerName, "RELOAD PLUGINS", "", "");
+                OSAEMethodManager.MethodQueueAdd("SERVICE-" + Common.ComputerName, "RELOAD PLUGINS", "", "", "Plugin Installer");
             return NoError;
         }
 
@@ -229,7 +215,6 @@
             return returnValue;
         }
 
-        
         /// <summary>
         /// Deletes a folder and its contents on disk
         /// </summary>
@@ -251,5 +236,4 @@
             dir.Delete(true);
         }
     }
-
 }

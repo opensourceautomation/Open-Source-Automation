@@ -14,7 +14,6 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class AddControlNavigationImage : UserControl
     {
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
         private string currentScreen;
 
         public AddControlNavigationImage(string screen)
@@ -29,7 +28,7 @@ namespace OSAE.UI.Controls
         /// </summary>
         private void LoadScreens()
         {
-            DataSet dataSet = osae.RunSQL("SELECT object_name FROM osae_v_object where object_type = 'SCREEN' order by object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object where object_type = 'SCREEN' order by object_name");
             screenComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -77,7 +76,7 @@ namespace OSAE.UI.Controls
             string fileName = Path.GetFileName(txtPath.Text).Split('.')[0];
             string ext = Path.GetFileName(txtPath.Text).Split('.')[1];
 
-            ImageManager imgMgr = new ImageManager();
+            OSAEImageManager imgMgr = new OSAEImageManager();
 
             int imgID = 0;
             byte[] byt;
@@ -99,14 +98,14 @@ namespace OSAE.UI.Controls
             }
 
             string sName = "Screen - Nav - " + txtName.Text;
-            osae.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
-            osae.ObjectPropertySet(sName, "Image", fileName);
-            osae.ObjectPropertySet(sName, "Screen", screenComboBox.Text);
-            osae.ObjectPropertySet(sName, "X", "100");
-            osae.ObjectPropertySet(sName, "Y", "100");
-            osae.ObjectPropertySet(sName, "Zorder", "1");
+            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", fileName, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", screenComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
-            osae.ScreenObjectAdd(currentScreen, screenComboBox.Text, sName);
+            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, screenComboBox.Text, sName);
 
             NotifyParentFinished();
         }

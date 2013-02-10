@@ -44,6 +44,7 @@
       <HintPath>..\Assemblies\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,28 +55,40 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common.cs" />
+    <Compile Include="General\Common.cs" />
     <Compile Include="Enums\DaysOfWeek.cs" />
-    <Compile Include="Images\ImageManager.cs" />
-    <Compile Include="Images\OSAEImage.cs" />
-    <Compile Include="Logging.cs">
+    <Compile Include="General\OSAESql.cs" />
+    <Compile Include="OSAEImage\OSAEImageManager.cs" />
+    <Compile Include="OSAEImage\OSAEImage.cs" />
+    <Compile Include="General\Logging.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectProperty.cs" />
-    <Compile Include="ObjectState.cs" />
-    <Compile Include="OSAE.cs" />
-    <Compile Include="OSAE.Obselete.cs" />
-    <Compile Include="OSAEMethods\OSAEMethod.cs" />
-    <Compile Include="OSAEMethods\OSAEMethodManager.cs" />
-    <Compile Include="OSAEObject.cs" />
-    <Compile Include="OSAEPluginBase.cs" />
-    <Compile Include="OSAEScreenControl.cs" />
+    <Compile Include="OSAEObjectProperty\OSAEObjectPopertyManager.cs" />
+    <Compile Include="OSAEObjectState\OSAEObjectStateManager.cs" />
+    <Compile Include="OSAEObjectType\OSAEObjectTypeManager.cs" />
+    <Compile Include="OSAEScreenControl\OSAEScreenControlManager.cs" />
+    <Compile Include="Plugin\Plugin.cs" />
+    <Compile Include="Plugin\PluginDescription.cs" />
+    <Compile Include="Plugin\PluginFinder.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Plugin\TypeLocator.cs" />
+    <Compile Include="OSAESchedule.cs\OSAEScheduleManager.cs" />
+    <Compile Include="OSAEObjectProperty\OSAEObjectProperty.cs" />
+    <Compile Include="OSAEObjectState\OSAEObjectState.cs" />
+    <Compile Include="OSAEObject\OSAEObjectManager.cs" />
+    <Compile Include="OSAEMethod\OSAEMethod.cs" />
+    <Compile Include="OSAEMethod\OSAEMethodManager.cs" />
+    <Compile Include="OSAEObject\OSAEObject.cs" />
+    <Compile Include="Plugin\OSAEPluginBase.cs" />
+    <Compile Include="OSAEScreenControl\OSAEScreenControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ModifyRegistry.cs" />
+    <Compile Include="General\ModifyRegistry.cs" />
+    <Compile Include="OSAEScript\OSAEScriptManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile.snk" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

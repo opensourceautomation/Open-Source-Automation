@@ -3,7 +3,7 @@
     /// <summary>
     /// Days of week...
     /// </summary>
-    enum DaysOfWeek
+    public enum DaysOfWeek
     {
         Sunday = 1,
         Monday = 2,

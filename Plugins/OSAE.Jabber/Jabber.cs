@@ -6,7 +6,6 @@ namespace OSAE.Jabber
 {
     public class Jabber : OSAEPluginBase
     {
-        OSAE osae = new OSAE("Jabber");
         XmppClientConnection xmppCon = new XmppClientConnection();
         string pName;
         bool shuttingDown = false;
@@ -14,7 +13,7 @@ namespace OSAE.Jabber
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Jabber");
+        Logging logging = Logging.GetLogger("Jabber");
 
         #region OSAPlugin Methods
         public override void RunInterface(string pluginName)
@@ -45,7 +44,7 @@ namespace OSAE.Jabber
                 logging.AddToLog("Process command: " + method.MethodName, false);
                 logging.AddToLog("Message: " + method.Parameter2, false);
                 logging.AddToLog("To: " + method.Parameter1, false);
-                ObjectProperty prop = osae.GetObjectPropertyValue(method.Parameter1, "JabberID");
+                OSAEObjectProperty prop = OSAEObjectPropertyManager.GetObjectPropertyValue(method.Parameter1, "JabberID");
                 if(prop != null)
                     to = prop.Value;
                     if (to == "")
@@ -59,11 +58,11 @@ namespace OSAE.Jabber
                 switch (method.MethodName)
                 {
                     case "SEND MESSAGE":
-                        sendMessage(osae.PatternParse(method.Parameter2), to);
+                        sendMessage(Common.PatternParse(method.Parameter2), to);
                         break;
 
                     case "SEND FROM LIST":
-                        sendMessage(osae.PatternParse(osae.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
+                        sendMessage(Common.PatternParse(OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
                         break;
                 }
             }
@@ -90,11 +89,11 @@ namespace OSAE.Jabber
 
             logging.AddToLog(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()), false);
             logging.AddToLog("Message: " + msg.Body, false);
-            string pattern = osae.MatchPattern(msg.Body);
-            if(pattern != "")
-                osae.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, msg.From.Bare);
-
-  
+            string pattern = Common.MatchPattern(msg.Body);
+            if (pattern != string.Empty)
+            {
+                OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, msg.From.Bare, "Jabber");
+            }             
         }
 
         void xmppCon_OnClose(object sender)
@@ -120,17 +119,19 @@ namespace OSAE.Jabber
         void xmppCon_OnPresence(object sender, agsXMPP.protocol.client.Presence pres)
         {
             logging.AddToLog(String.Format("Received Presence from:{0} show:{1} status:{2}", pres.From.ToString(), pres.Show.ToString(), pres.Status), false);
-            List<OSAEObject> objects = osae.GetObjectsByType("PERSON");
+
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
             {
-                OSAEObject obj = osae.GetObjectByName(oObj.Name);
-                if (osae.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
+
+                if (OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
                 {
                     if (pres.Show.ToString() == "away")
-                        osae.ObjectPropertySet(obj.Name, "JabberStatus", "Idle");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "JabberStatus", "Idle", "Jabber");
                     else if (pres.Show.ToString() == "NONE")
-                        osae.ObjectPropertySet(obj.Name, "JabberStatus", "Online");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "JabberStatus", "Online", "Jabber");
                     break;
                 }
             }
@@ -140,12 +141,13 @@ namespace OSAE.Jabber
         {
             bool found = false;
             logging.AddToLog(String.Format("Received Contact {0}", item.Jid.Bare), true);
-            List<OSAEObject> objects = osae.GetObjectsByType("PERSON");
+
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
             {
-                OSAEObject obj = osae.GetObjectByName(oObj.Name);
-                if (osae.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
+                if (OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
                 {
                     found = true;
                     break;
@@ -154,8 +156,8 @@ namespace OSAE.Jabber
 
             if (!found)
             {
-                osae.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "PERSON", "", "",true);
-                osae.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare);
+                OSAEObjectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "PERSON", "", "", true);
+                OSAEObjectPropertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
             }
         }
 
@@ -183,11 +185,11 @@ namespace OSAE.Jabber
         private void connect()
         {
             logging.AddToLog("Connecting to server", true);
-            Jid jidUser = new Jid(osae.GetObjectPropertyValue(pName, "Username").Value);
+            Jid jidUser = new Jid(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Username").Value);
 
             xmppCon.Username = jidUser.User;
             xmppCon.Server = jidUser.Server;
-            xmppCon.Password = osae.GetObjectPropertyValue(pName, "Password").Value;
+            xmppCon.Password = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Password").Value;
             xmppCon.AutoResolveConnectServer = true;
 
             try

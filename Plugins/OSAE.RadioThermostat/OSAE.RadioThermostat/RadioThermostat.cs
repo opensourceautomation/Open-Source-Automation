@@ -8,13 +8,13 @@ namespace OSAE.RadioThermostat
 {
     public class RadioThermostat : OSAEPluginBase
     {
-        OSAE osae = new OSAE("Radio Thermostat");
+        Logging logging = Logging.GetLogger("Radio Thermostat");
         string pName;
         System.Timers.Timer Clock;
 
         public override void ProcessCommand(OSAEMethod method)
         {
-            osae.AddToLog("Process command: " + method.MethodName, false);
+            logging.AddToLog("Process command: " + method.MethodName, false);
 
             switch (method.MethodName)
             {
@@ -46,23 +46,23 @@ namespace OSAE.RadioThermostat
 
         public override void RunInterface(string pluginName)
         {
-            osae.AddToLog("Running Interface!", true);
+            logging.AddToLog("Running Interface!", true);
             pName = pluginName;
-            osae.ObjectTypeUpdate("RADIO THERMOSTAT DEVICE", "RADIO THERMOSTAT DEVICE", "Radio Thermostat Device", pName, "RADIO THERMOSTAT DEVICE", 0, 0, 0, 1);
+            OSAEObjectTypeManager.ObjectTypeUpdate("RADIO THERMOSTAT DEVICE", "RADIO THERMOSTAT DEVICE", "Radio Thermostat Device", pName, "RADIO THERMOSTAT DEVICE", 0, 0, 0, 1);
             
-            List<OSAEObject> devices = osae.GetObjectsByType("Radio Thermostat Device");
+            List<OSAEObject> devices = OSAEObjectManager.GetObjectsByType("Radio Thermostat Device");
 
             foreach (OSAEObject obj in devices)
             {   
                 ThermostatLib.SystemInfo si = ThermostatLib.SystemInfo.Load(obj.Address);
-                osae.AddToLog("---------------------------------",true);
-                osae.AddToLog("Device Name: " + ThermostatLib.SystemInfo.LoadSystemName(obj.Address), true);
-                osae.AddToLog("API Version: " + si.ApiVersion.ToString(), true);
-                osae.AddToLog("Firmware Version: " + si.FirmwareVersion, true);
-                osae.AddToLog("UUID: " + si.UUID, true);
-                osae.AddToLog("WLAN Version: " + si.WlanFirmwareVersion, true);
-                osae.AddToLog("Model: " + ThermostatLib.SystemInfo.LoadModelName(obj.Address), true);
-                osae.AddToLog("Operating Mode: " + ThermostatLib.SystemInfo.LoadOperatingMode(obj.Address), true); 
+                logging.AddToLog("---------------------------------", true);
+                logging.AddToLog("Device Name: " + ThermostatLib.SystemInfo.LoadSystemName(obj.Address), true);
+                logging.AddToLog("API Version: " + si.ApiVersion.ToString(), true);
+                logging.AddToLog("Firmware Version: " + si.FirmwareVersion, true);
+                logging.AddToLog("UUID: " + si.UUID, true);
+                logging.AddToLog("WLAN Version: " + si.WlanFirmwareVersion, true);
+                logging.AddToLog("Model: " + ThermostatLib.SystemInfo.LoadModelName(obj.Address), true);
+                logging.AddToLog("Operating Mode: " + ThermostatLib.SystemInfo.LoadOperatingMode(obj.Address), true); 
                 
                 ThermostatLib.Services services = ThermostatLib.Services.Load(obj.Address);
                 string service = "";
@@ -77,13 +77,13 @@ namespace OSAE.RadioThermostat
                         if (handler.AllowsPost) service += "POST";
                     }
                     service += ")";
-                    osae.AddToLog("Service: " + service, true);
+                    logging.AddToLog("Service: " + service, true);
                 }
 
             }
 
             Clock = new System.Timers.Timer();
-            Clock.Interval = Int32.Parse(osae.GetObjectPropertyValue(pName, "Poll Interval").Value) * 60000;
+            Clock.Interval = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Poll Interval").Value) * 60000;
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick); 
         }
@@ -100,39 +100,39 @@ namespace OSAE.RadioThermostat
 
         private void PollDevices()
         {
-            List<OSAEObject> devices = osae.GetObjectsByType("Radio Thermostat Device");
+            List<OSAEObject> devices = OSAEObjectManager.GetObjectsByType("Radio Thermostat Device");
 
             foreach (OSAEObject obj in devices)
             {
                 ThermostatLib.ThermostatInfo status = ThermostatLib.ThermostatInfo.Load(obj.Address);
 
-                osae.ObjectPropertySet(obj.Name, "Current Temperature", status.Temperature.ToString());
-                osae.AddToLog("Current Temperature: " + status.Temperature.ToString(), false);
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Current Temperature", status.Temperature.ToString(), pName);
+                logging.AddToLog("Current Temperature: " + status.Temperature.ToString(), false);
 
-                osae.ObjectPropertySet(obj.Name, "Thermostat State", status.ThermostatState);
-                osae.AddToLog("Thermostat State: " + status.ThermostatState, false);
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Thermostat State", status.ThermostatState, pName);
+                logging.AddToLog("Thermostat State: " + status.ThermostatState, false);
 
-                osae.ObjectPropertySet(obj.Name, "Fan State", status.FanState);
-                osae.AddToLog("Fan State: " + status.FanState, false);
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Fan State", status.FanState, pName);
+                logging.AddToLog("Fan State: " + status.FanState, false);
 
                 if (status.TemporaryCool > 0)
                 {
-                    osae.ObjectPropertySet(obj.Name, "Set Temperature", status.TemporaryCool.ToString());
-                    osae.AddToLog("Set Temperature: " + status.TemporaryCool.ToString(), false);
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Set Temperature", status.TemporaryCool.ToString(), pName);
+                    logging.AddToLog("Set Temperature: " + status.TemporaryCool.ToString(), false);
                 }
                 else
                 {
-                    osae.ObjectPropertySet(obj.Name, "Set Temperature", status.TemporaryHeat.ToString());
-                    osae.AddToLog("Set Temperature: " + status.TemporaryHeat.ToString(), false);
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Set Temperature", status.TemporaryHeat.ToString(), pName);
+                    logging.AddToLog("Set Temperature: " + status.TemporaryHeat.ToString(), false);
                 }
-                osae.ObjectPropertySet(obj.Name, "Thermostat Mode", status.ThermostatMode);
-                osae.AddToLog("Thermostat Mode: " + status.ThermostatMode, false);
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Thermostat Mode", status.ThermostatMode, pName);
+                logging.AddToLog("Thermostat Mode: " + status.ThermostatMode, false);
 
-                osae.ObjectPropertySet(obj.Name, "Fan Mode", status.FanMode);
-                osae.AddToLog("Fan Mode: " + status.FanMode, false);
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Fan Mode", status.FanMode, pName);
+                logging.AddToLog("Fan Mode: " + status.FanMode, false);
 
-                if (status.Hold) osae.ObjectPropertySet(obj.Name, "Hold", "Yes"); else osae.ObjectPropertySet(obj.Name, "Hold", "No");
-                if (status.Override) osae.ObjectPropertySet(obj.Name, "Override", "Yes"); else osae.ObjectPropertySet(obj.Name, "Override", "No");
+                if (status.Hold) OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Hold", "Yes", pName); else OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Hold", "No", pName);
+                if (status.Override) OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Override", "Yes", pName); else OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Override", "No", pName);
             }
         }
     }

@@ -14,7 +14,6 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class AddControlStateImage : UserControl
     {
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
         private string currentScreen;
 
         public AddControlStateImage(string screen)
@@ -29,7 +28,7 @@ namespace OSAE.UI.Controls
         /// </summary>
         private void LoadObjects()
         {
-            DataSet dataSet = osae.RunSQL("SELECT object_name FROM osae_v_object order by object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object order by object_name");
             objectComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -77,7 +76,7 @@ namespace OSAE.UI.Controls
             string ext1 = Path.GetFileName(txtState1Path.Text).Split('.')[1];
             string ext2 = Path.GetFileName(txtState2Path.Text).Split('.')[1];
 
-            ImageManager imgMgr = new ImageManager();
+            OSAEImageManager imgMgr = new OSAEImageManager();
 
             int imgID1 = 0;
             int imgID2 = 0;
@@ -107,19 +106,19 @@ namespace OSAE.UI.Controls
             }
 
             string sName = currentScreen + " - " + objectComboBox.Text;
-            osae.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
-            osae.ObjectPropertySet(sName, "Object Name", objectComboBox.Text);
-            osae.ObjectPropertySet(sName, "State 1 Name", "ON");
-            osae.ObjectPropertySet(sName, "State 1 Image", fileName1);
-            osae.ObjectPropertySet(sName, "State 1 X", "100");
-            osae.ObjectPropertySet(sName, "State 1 Y", "100");
-            osae.ObjectPropertySet(sName, "State 2 Name", "OFF");
-            osae.ObjectPropertySet(sName, "State 2 Image", fileName2);
-            osae.ObjectPropertySet(sName, "State 2 X", "100");
-            osae.ObjectPropertySet(sName, "State 2 Y", "100");
-            osae.ObjectPropertySet(sName, "Zorder", "1");
+            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", "ON", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", fileName1, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", "OFF", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", fileName2, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
-            osae.ScreenObjectAdd(currentScreen,objectComboBox.Text,sName);
+            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
 
             NotifyParentFinished();
         }

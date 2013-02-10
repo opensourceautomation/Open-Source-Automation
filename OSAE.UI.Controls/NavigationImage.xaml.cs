@@ -25,24 +25,19 @@ namespace OSAE.UI.Controls
         public OSAEObject screenObject { get; set; }
 
         private string imgPath;
-        private OSAE osae = new OSAE("GUI");
-        private ImageManager imgMgr = new ImageManager();
 
         public NavigationImage(string Name, string path, OSAEObject sObj)
         {
             InitializeComponent();
             screenObject = sObj;
             screenName = Name;
-            imgPath = osae.APIpath + path;
+            imgPath = Common.ApiPath + path;
 
             Image.Tag = screenName;
-
-            string imgName = screenObject.Property("Image").Value;
-            OSAEImage img = imgMgr.GetImage(imgName);
-
-            if (img.Data != null)
+            if (File.Exists(imgPath))
             {
-                var imageStream = new MemoryStream(img.Data);
+                byte[] byteArray = File.ReadAllBytes(imgPath);
+                var imageStream = new MemoryStream(byteArray);
                 var bitmapImage = new BitmapImage();
 
                 bitmapImage.BeginInit();

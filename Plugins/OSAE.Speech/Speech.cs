@@ -8,9 +8,8 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("SPEECH");
+        Logging logging = Logging.GetLogger("SPEECH");
 
-        OSAE OSAEApi = new OSAE("SPEECH");
         SpeechSynthesizer oSpeech = new SpeechSynthesizer();
         WMPLib.WindowsMediaPlayer wmPlayer = new WMPLib.WindowsMediaPlayer();
         String gAppName = "";
@@ -24,22 +23,24 @@
         }
 
         public override void ProcessCommand(OSAEMethod method)
-        {
+        {          
             string sMethod = method.MethodName;
             string sParam1 = method.Parameter1;
             string sParam2 = method.Parameter2;
+
             logging.AddToLog("Received Command to: " + sMethod + " (" + sParam1 + ", " + sParam2 + ")", true);
+
             if (sMethod == "SPEAK")
             {
-                string sText = OSAEApi.PatternParse(sParam1);
+                string sText = Common.PatternParse(sParam1);
                 oSpeech.Speak(sText);
                 logging.AddToLog("Said " + sText, true);
             }
             else if (sMethod == "SPEAKFROM")
             {
                 logging.AddToLog("--Speak From Object: " + sParam1 + " and pick From list: " + sParam2, true);
-                string sText = OSAEApi.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
-                sText = OSAEApi.PatternParse(sText);
+                string sText = OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
+                sText = Common.PatternParse(sText);
                 oSpeech.Speak(sText);
                 logging.AddToLog("Said " + sText, true);
             }
@@ -51,7 +52,7 @@
             }
             else if (sMethod == "PLAYFROM")
             {
-                string sFile = OSAEApi.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
+                string sFile = OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
                 wmPlayer.URL = sFile;
                 wmPlayer.controls.play();
                 logging.AddToLog("Played " + sFile, true);
@@ -77,7 +78,7 @@
                 if (Convert.ToInt16(sParam1) > 0 && Convert.ToInt16(sParam1) <= 100)
                 {
                     oSpeech.Volume = Convert.ToInt16(sParam1);
-                    OSAEApi.ObjectPropertySet(gAppName, "TTS Volume", sParam1);
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", sParam1, "SPEECH");
                     logging.AddToLog("TTS Volume Set to " + Convert.ToInt16(sParam1), true);
                 }
             }
@@ -86,7 +87,7 @@
                 if (Convert.ToInt16(sParam1) > -11 && Convert.ToInt16(sParam1) < 11)
                 {
                     oSpeech.Rate = Convert.ToInt16(sParam1);
-                    OSAEApi.ObjectPropertySet(gAppName, "TTS Rate", sParam1);
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", sParam1, "SPEECH");
                     logging.AddToLog("TTS Rate Set to " + Convert.ToInt16(sParam1), true);
                 }
             }
@@ -104,21 +105,21 @@
         }
 
         private void Load_Settings()
-        {
+        {        
             try
             {
-                gSelectedVoice = OSAEApi.GetObjectPropertyValue(gAppName, "Voice").Value;
-                OSAEApi.ObjectPropertyArrayDeleteAll(gAppName, "Voices");
+                gSelectedVoice = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Voice").Value;
+                OSAEObjectPropertyManager.ObjectPropertyArrayDeleteAll(gAppName, "Voices");
                 foreach (System.Speech.Synthesis.InstalledVoice i in oSpeech.GetInstalledVoices())
                 {
                     if (gSelectedVoice == "")
                     {
                         gSelectedVoice = i.VoiceInfo.Name;
-                        OSAEApi.ObjectPropertySet(gAppName, "Voice", gSelectedVoice);
+                        OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Voice", gSelectedVoice, "SPEECH");
                         logging.AddToLog("Default Voice Set to " + gSelectedVoice, true);
                     }
                     logging.AddToLog("Adding Voice: " + i.VoiceInfo.Name, false);
-                    OSAEApi.ObjectPropertyArrayAdd(gAppName, "Voices", i.VoiceInfo.Name, "Voice");
+                    OSAEObjectPropertyManager.ObjectPropertyArrayAdd(gAppName, "Voices", i.VoiceInfo.Name, "Voice");
                 }
 
                 if (gSelectedVoice != "")
@@ -127,14 +128,14 @@
                     logging.AddToLog("Current Voice Set to " + gSelectedVoice, true);
                 }
 
-                Int16 iTTSRate = Convert.ToInt16(OSAEApi.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
+                Int16 iTTSRate = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
                 if (iTTSRate > 0 && iTTSRate <= 100)
                 {
                     oSpeech.Rate = iTTSRate;
                     logging.AddToLog("TTS Rate Set to " + iTTSRate.ToString(), true);
                 }
 
-                Int16 iTTSVolume = Convert.ToInt16(OSAEApi.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
+                Int16 iTTSVolume = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
                 if (iTTSVolume > -11 && iTTSVolume <= 11)
                 {
                     oSpeech.Rate = iTTSVolume;
