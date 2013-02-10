@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Timers;
-using System.IO;
-using System.Runtime.InteropServices;
-
-using com.dalsemi.onewire;
-using com.dalsemi.onewire.adapter;
-using com.dalsemi.onewire.container;
-using com.dalsemi.onewire.utils;
-
-namespace OSAE.OneWire
+﻿namespace OSAE.OneWire
 {
+    using System;
+    using System.IO;
+    using System.Runtime.InteropServices;
+
+    using com.dalsemi.onewire;
+    using com.dalsemi.onewire.adapter;
+    using com.dalsemi.onewire.container;
+
     public class OneWire : OSAEPluginBase
     {
         [DllImport("kernel32", SetLastError = true)]
@@ -20,7 +15,8 @@ namespace OSAE.OneWire
 
         string pName;
         string uom;
-        OSAE osae = new OSAE("1Wire");
+
+        Logging logging = Logging.GetLogger("1Wire");
         private DSPortAdapter adapter = null;
         System.Threading.Timer Clock;
         Object thisLock = new Object();
@@ -36,37 +32,37 @@ namespace OSAE.OneWire
 
         public override void RunInterface(string pluginName)
         {
-            osae.AddToLog("Loading (0.2.4)...", true);
-            osae.AddToLog("Current Environment Version: " + Environment.Version.Major.ToString(), true);
+            logging.AddToLog("Loading (0.2.4)...", true);
+            logging.AddToLog("Current Environment Version: " + Environment.Version.Major.ToString(), true);
             if (Environment.Version.Major >= 4)
             {
                 string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework64\v2.0.50727");
                 if (!Directory.Exists(folder))
                     folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework\v2.0.50727");
-                osae.AddToLog("vjsnativ.dll path: " + folder, false);
+                logging.AddToLog("vjsnativ.dll path: " + folder, false);
                 folder = Path.GetFullPath(folder);
                 LoadLibrary(Path.Combine(folder, "vjsnativ.dll"));
             }
             pName = pluginName;
-            string adapterProp = osae.GetObjectPropertyValue(pName, "Adapter").Value;
-            string port = osae.GetObjectPropertyValue(pName, "Port").Value;
-            uom = osae.GetObjectPropertyValue(pName, "Unit of Measure").Value;
-            osae.AddToLog("adapterProp: " + adapterProp, false);
-            osae.AddToLog("port: " + port, false);
-            osae.AddToLog("uom: " + uom, false);
+            string adapterProp = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Adapter").Value;
+            string port = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value;
+            uom = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Unit of Measure").Value;
+            logging.AddToLog("adapterProp: " + adapterProp, false);
+            logging.AddToLog("port: " + port, false);
+            logging.AddToLog("uom: " + uom, false);
             try
             {
                 adapter = OneWireAccessProvider.getAdapter(adapterProp, "COM" + port);
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Failed to GetAdapter - " + ex.Message + " - " + ex.InnerException.Message, true);
+                logging.AddToLog("Failed to GetAdapter - " + ex.Message + " - " + ex.InnerException.Message, true);
             }
 
 
             if (adapter.adapterDetected())
             {
-                osae.AddToLog("Adapter Detected", true);
+                logging.AddToLog("Adapter Detected", true);
                 adapter.setSearchAllDevices();
 
                 Clock = new System.Threading.Timer(poll, null, 0, 10000);
@@ -77,14 +73,14 @@ namespace OSAE.OneWire
                 }
             }
             else
-                osae.AddToLog("Adapter(" + adapterProp + ") not found on port " + port, true);
+                logging.AddToLog("Adapter(" + adapterProp + ") not found on port " + port, true);
 
         }
 
         private void poll(object nothing)
         {
             threadCount++;
-            osae.AddToLog("Thread Started.  Threads running: " + threadCount, false);
+            logging.AddToLog("Thread Started.  Threads running: " + threadCount, false);
             if (threadCount < 2)
             {
                 lock (thisLock)
@@ -92,7 +88,7 @@ namespace OSAE.OneWire
                     try
                     {
                         adapter.beginExclusive(true);
-                        osae.AddToLog("polling...", false);
+                        logging.AddToLog("polling...", false);
                         double temp;
                         OneWireContainer owc = null;
 
@@ -111,10 +107,10 @@ namespace OSAE.OneWire
                             addr = owc.getAddressAsString();
                             desc = owc.getDescription();
 
-                            osae.AddToLog("- Device Name: " + owc.getName(), false);
-                            osae.AddToLog(" - Type: " + owcType, false);
-                            osae.AddToLog(" - Address: " + addr, false);
-                            osae.AddToLog(" - Description: " + desc, false);
+                            logging.AddToLog("- Device Name: " + owc.getName(), false);
+                            logging.AddToLog(" - Type: " + owcType, false);
+                            logging.AddToLog(" - Address: " + addr, false);
+                            logging.AddToLog(" - Description: " + desc, false);
 
                             switch (owcType)
                             {
@@ -130,11 +126,11 @@ namespace OSAE.OneWire
                                         //Changes the resultion that that will be read
                                         owc10.setTemperatureResolution(OneWireContainer10.RESOLUTION_NORMAL, state);
 
-                                        obj = osae.GetObjectByAddress(owc10.getAddressAsString());
+                                        obj = OSAEObjectManager.GetObjectByAddress(owc10.getAddressAsString());
                                         if (obj == null)
                                         {
-                                            osae.ObjectAdd("Temp Sensor-" + addr, "Temp Sensor-" + addr, "1WIRE TEMP SENSOR", addr, "", true);
-                                            obj = osae.GetObjectByAddress(addr);
+                                            OSAEObjectManager.ObjectAdd("Temp Sensor-" + addr, "Temp Sensor-" + addr, "1WIRE TEMP SENSOR", addr, "", true);
+                                            obj = OSAEObjectManager.GetObjectByAddress(addr);
                                         }
 
 
@@ -145,12 +141,12 @@ namespace OSAE.OneWire
 
 
 
-                                        osae.AddToLog(" - Temperature: " + temp, false);
-                                        osae.ObjectPropertySet(obj.Name, "Temperature", temp.ToString());
+                                        logging.AddToLog(" - Temperature: " + temp, false);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", temp.ToString(), pName);
                                     }
                                     catch (Exception ex)
                                     {
-                                        osae.AddToLog("Container type 10 poll error: " + ex.Message, true);
+                                        logging.AddToLog("Container type 10 poll error: " + ex.Message, true);
                                     }
                                     break;
 
@@ -162,7 +158,7 @@ namespace OSAE.OneWire
                                     }
                                     catch (Exception ex)
                                     {
-                                        osae.AddToLog("Container type 22 poll error: " + ex.Message, true);
+                                        logging.AddToLog("Container type 22 poll error: " + ex.Message, true);
                                     }
                                     break;
 
@@ -177,11 +173,11 @@ namespace OSAE.OneWire
                                         ////Changes the resolution that that will be read
                                         owc28.setTemperatureResolution(OneWireContainer28.RESOLUTION_12_BIT, state);
 
-                                        obj = osae.GetObjectByAddress(addr);
+                                        obj = OSAEObjectManager.GetObjectByAddress(addr);
                                         if (obj == null)
                                         {
-                                            osae.ObjectAdd("Temp Sensor-" + addr, "Temp Sensor-" + addr, "1WIRE TEMP SENSOR", addr, "", true);
-                                            obj = osae.GetObjectByAddress(addr);
+                                            OSAEObjectManager.ObjectAdd("Temp Sensor-" + addr, "Temp Sensor-" + addr, "1WIRE TEMP SENSOR", addr, "", true);
+                                            obj = OSAEObjectManager.GetObjectByAddress(addr);
                                         }
 
                                         //Reads the temperature
@@ -191,12 +187,12 @@ namespace OSAE.OneWire
 
 
 
-                                        osae.AddToLog(" - Temperature: " + temp, false);
-                                        osae.ObjectPropertySet(obj.Name, "Temperature", temp.ToString());
+                                        logging.AddToLog(" - Temperature: " + temp, false);
+                                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", temp.ToString(), pName);
                                     }
                                     catch (Exception ex)
                                     {
-                                        osae.AddToLog("Container type 28 poll error: " + ex.Message, true);
+                                        logging.AddToLog("Container type 28 poll error: " + ex.Message, true);
                                     }
                                     break;
 
@@ -207,23 +203,23 @@ namespace OSAE.OneWire
                     }
                     catch (Exception ex)
                     {
-                        osae.AddToLog("Cannot get exclusive use of the 1-wire adapter: " + ex.Message, true);
+                        logging.AddToLog("Cannot get exclusive use of the 1-wire adapter: " + ex.Message, true);
                     }
                 }
 
                 threadCount--;
-                osae.AddToLog("Thread Ended.  Threads running: " + threadCount, false);
+                logging.AddToLog("Thread Ended.  Threads running: " + threadCount, false);
                 abortCount = 0;
 
             }
             else
             {
                 threadCount--;
-                osae.AddToLog("Thread aborted.  Threads running: " + threadCount, false);
+                logging.AddToLog("Thread aborted.  Threads running: " + threadCount, false);
                 abortCount++;
                 if (abortCount > 2 && !restarting)
                 {
-                    osae.AddToLog("Restarting plugin", false);
+                    logging.AddToLog("Restarting plugin", false);
                     restarting = true;
                     Shutdown();
                     RunInterface(pName);
@@ -241,7 +237,7 @@ namespace OSAE.OneWire
 
         public override void Shutdown()
         {
-            osae.AddToLog("Running shutdown logic", true);
+            logging.AddToLog("Running shutdown logic", true);
             adapter.freePort();
             adapter = null;
         }

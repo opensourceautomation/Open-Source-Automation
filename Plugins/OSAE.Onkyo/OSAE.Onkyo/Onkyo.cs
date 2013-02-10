@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
-using System.Net.Sockets;
-using System.IO;
-using System.Data;
-using System.Threading;
-
-namespace OSAE.Onkyo
+﻿namespace OSAE.Onkyo
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Net.Sockets;
+    using System.Threading;
+
     public class Onkyo : OSAEPluginBase
     {
         public delegate void AddDeviceDelegate(Device ODevDele);
-        
-        OSAE osae = new OSAE("Onkyo");
-        Logging logging = new Logging("Onkyo");
+       
+        Logging logging = Logging.GetLogger("Onkyo");
         string pName;
         List<Receiver> receivers = new List<Receiver>();
         int _ctr = 1;
@@ -45,11 +40,11 @@ namespace OSAE.Onkyo
                         {
                             case "ON":
                                 SendCommand_Network(r, "!1PWR01");
-                                osae.ObjectStateSet(r.Name, "ON");
+                                OSAEObjectStateManager.ObjectStateSet(r.Name, "ON", pName);
                                 break;
                             case "OFF":
                                 SendCommand_Network(r, "!1PWR00");
-                                osae.ObjectStateSet(r.Name, "OFF");
+                                OSAEObjectStateManager.ObjectStateSet(r.Name, "OFF", pName);
                                 break;
                             case "MUTE":
                                 SendCommand_Network(r, "!1AMT01");
@@ -161,7 +156,7 @@ namespace OSAE.Onkyo
         {
             logging.AddToLog("Running interface", false);
             pName = pluginName;
-            osae.ObjectTypeUpdate("ONKYO RECEIVER", "ONKYO RECEIVER", "Onkyo Receiver", pluginName, "ONKYO RECEIVER", 0, 0, 0, 1);
+            OSAEObjectTypeManager.ObjectTypeUpdate("ONKYO RECEIVER", "ONKYO RECEIVER", "Onkyo Receiver", pluginName, "ONKYO RECEIVER", 0, 0, 0, 1);
 
             _UDPListen = new UDPListen();
             _UDPSend = new UDPSend();
@@ -170,12 +165,12 @@ namespace OSAE.Onkyo
             _UDPListen.Listen();
             _UDPSend.Send();
 
-            List<OSAEObject> objects = osae.GetObjectsByType("ONKYO RECEIVER");
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("ONKYO RECEIVER");
 
             foreach (OSAEObject obj in objects)
             {
                 Receiver r = new Receiver(obj.Name);
-                foreach (ObjectProperty prop in obj.Properties)
+                foreach (OSAEObjectProperty prop in obj.Properties)
                 {
                     switch (prop.Name)
                     {
@@ -335,12 +330,12 @@ namespace OSAE.Onkyo
         {
             try
             {
-                if (osae.GetObjectByName(oDevice.ModelName) == null)
+                if (OSAEObjectManager.GetObjectByName(oDevice.ModelName) == null)
                 {
-                    osae.ObjectAdd(oDevice.ModelName, oDevice.ModelName, "ONKYO RECEIVER", "", "", true);
-                    osae.ObjectPropertySet(oDevice.ModelName, "IP", oDevice.IP);
-                    osae.ObjectPropertySet(oDevice.ModelName, "Network Port", oDevice.Port.ToString());
-                    osae.ObjectPropertySet(oDevice.ModelName, "Communication Type", "Network");
+                    OSAEObjectManager.ObjectAdd(oDevice.ModelName, oDevice.ModelName, "ONKYO RECEIVER", "", "", true);
+                    OSAEObjectPropertyManager.ObjectPropertySet(oDevice.ModelName, "IP", oDevice.IP, pName);
+                    OSAEObjectPropertyManager.ObjectPropertySet(oDevice.ModelName, "Network Port", oDevice.Port.ToString(), pName);
+                    OSAEObjectPropertyManager.ObjectPropertySet(oDevice.ModelName, "Communication Type", "Network", pName);
 
                 }
                 logging.AddToLog(_ctr.ToString() + " - " + oDevice.Region + Environment.NewLine +
@@ -372,8 +367,7 @@ namespace OSAE.Onkyo
         public TcpClient tcpClient = null;
         public NetworkStream clientSockStream = null;
 
-        private OSAE osae = new OSAE("Onkyo");
-        private Logging logging = new Logging("Onkyo");
+        private Logging logging = Logging.GetLogger("Onkyo");
         public string Type
         {
             get { return _type; }
@@ -420,9 +414,9 @@ namespace OSAE.Onkyo
                     string curLine = clientStreamReader.ReadLine();
                     logging.AddToLog("Received data from receiver: " + curLine, false);
                     if (curLine.IndexOf("!1PWR00") > -1)
-                        osae.ObjectStateSet(_name, "OFF");
+                        OSAEObjectStateManager.ObjectStateSet(_name, "OFF", "Onkyo");
                     if (curLine.IndexOf("!1PWR01") > -1)
-                        osae.ObjectStateSet(_name, "ON");
+                        OSAEObjectStateManager.ObjectStateSet(_name, "ON", "Onkyo");
                 }
                 catch (Exception ex)
                 {
