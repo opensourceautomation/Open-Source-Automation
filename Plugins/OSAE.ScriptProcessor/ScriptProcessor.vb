@@ -4,8 +4,8 @@ Imports System.Text.RegularExpressions
 
 Public Class ScriptProcessor
     Inherits OSAEPluginBase
-    Private OSAEApi As New OSAE("Script Processor")
-    Private logging As New Logging("Script Processor")
+    'Private OSAEApi As New OSAE("Script Processor")
+    Private Shared logging As Logging = Logging.GetLogger("Script Processor")
     Private gAppName As String = ""
     Private scriptArray() As String
 
@@ -15,7 +15,7 @@ Public Class ScriptProcessor
         Dim sScript As String = "", sEvent As String = "", sObject As String = ""
         If method.MethodName = "EVENT SCRIPT" Then
             Try
-                Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT event_script,object_name,event_name FROM osae_v_object_event_script WHERE event_script_id=" & method.Parameter1)
+                Dim dsResults As DataSet = OSAESql.RunSQL("SELECT event_script,object_name,event_name FROM osae_v_object_event_script WHERE event_script_id=" & method.Parameter1)
                 sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("event_script"))
                 sEvent = Convert.ToString(dsResults.Tables(0).Rows(0)("event_name"))
                 sObject = Convert.ToString(dsResults.Tables(0).Rows(0)("object_name"))
@@ -28,7 +28,7 @@ Public Class ScriptProcessor
         ElseIf method.MethodName = "NAMED SCRIPT" Then
             logging.AddToLog("NAMED SCRIPT Found", True)
             Try
-                Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT pattern,script FROM osae_pattern WHERE pattern='" & method.Parameter1 & "'")
+                Dim dsResults As DataSet = OSAESql.RunSQL("SELECT pattern,script FROM osae_pattern WHERE pattern='" & method.Parameter1 & "'")
                 sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("script"))
                 sEvent = Convert.ToString(dsResults.Tables(0).Rows(0)("pattern"))
                 logging.AddToLog("Found Script for: " & sEvent, True)
@@ -60,7 +60,7 @@ Public Class ScriptProcessor
         Dim sValue As String, sState As String
         Dim sConditionResults As String = ""
         Dim dtStartTime As Date, dtEndTime As Date
-        Dim sWorking As String, sProperty As String = "", pProperty As New ObjectProperty
+        Dim sWorking As String, sProperty As String = "", pProperty As New OSAEObjectProperty
         Dim sNesting(20) As String, iNestingLevel As Integer = 0
         Dim sScript As String
         Dim sSubScript As String = "", sSubScriptName As String = ""
@@ -75,7 +75,7 @@ Public Class ScriptProcessor
                 iEmbeddedScriptEnd = sScript.IndexOf(vbCrLf, iEmbeddedScriptStart)
                 sTempLine = sScript.Substring(iEmbeddedScriptStart, (iEmbeddedScriptEnd - iEmbeddedScriptStart))
                 sSubScriptName = sScript.Substring(iEmbeddedScriptStart, (iEmbeddedScriptEnd - iEmbeddedScriptStart)).Replace("Script:", "")
-                Dim dsResults As DataSet = OSAEApi.RunSQL("SELECT Script FROM OSAE_Pattern WHERE Pattern='" & sSubScriptName & "'")
+                Dim dsResults As DataSet = OSAESql.RunSQL("SELECT Script FROM OSAE_Pattern WHERE Pattern='" & sSubScriptName & "'")
                 sSubScript = Convert.ToString(dsResults.Tables(0).Rows(0)("Script"))
                 sScript = sScript.Replace(sTempLine, sSubScript)
                 iEmbeddedScriptStart = sScript.IndexOf("Script:", iEmbeddedScriptEnd)
@@ -121,7 +121,7 @@ Public Class ScriptProcessor
                         sObject = scriptArray(iLoop).Substring(0, iObjectPos)
                         sWorking = scriptArray(iLoop).Substring(iObjectPos + 1, scriptArray(iLoop).Length - (iObjectPos + 1))
                         If sObject.ToUpper = "SQL" Then
-                            OSAEApi.RunSQL(sWorking)
+                            OSAESql.RunSQL(sWorking)
                         Else
                             iOptionPos = sWorking.IndexOf(".")
                             If iOptionPos > 0 Then
@@ -183,10 +183,10 @@ Public Class ScriptProcessor
                                     sParam2 = sParam2.Replace(Chr(34), "")
                                 End If
                                 If sOption.ToUpper = "RUN METHOD" Then
-                                    OSAEApi.MethodQueueAdd(sObject, sMethod, sParam1, sParam2)
+                                    OSAEMethodManager.MethodQueueAdd(sObject, sMethod, sParam1, sParam2, gAppName)
                                     Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Ran Method: " & sObject & "." & sMethod & " (" & sParam1 & "," & sParam2 & ")")
                                 ElseIf sOption.ToUpper = "SET STATE" Then
-                                    OSAEApi.ObjectStateSet(sObject, sParam1)
+                                    OSAEObjectStateManager.ObjectStateSet(sObject, sParam1, gAppName)
                                     Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Set State: " & sObject & "." & sParam1)
                                 ElseIf sOption.ToUpper = "SET PROPERTY" Then
                                     iOptionPos = sWorking.IndexOf("+=")
@@ -200,11 +200,11 @@ Public Class ScriptProcessor
                                             sWorking = sWorking.Substring(iOptionPos + 1, sWorking.Length - (iOptionPos + 1))
                                             sValue = sWorking
                                             If sMethod = "=" Then
-                                                OSAEApi.ObjectPropertySet(sObject, sParam1, sValue)
+                                                OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, sValue, gAppName)
                                                 Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Set Property: " & sParam1 & " = " & sValue)
                                             ElseIf sMethod = "+=" Then
-                                                sWorking = OSAEApi.GetObjectPropertyValue(sObject, sParam1).Value
-                                                OSAEApi.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue))
+                                                sWorking = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sParam1).Value
+                                                OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue), gAppName)
                                                 Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Set Property: " & sParam1 & " = " & sValue)
                                             End If
                                         End If
@@ -227,11 +227,11 @@ Public Class ScriptProcessor
                                         sWorking = sWorking.Substring(iOptionPos + 1, sWorking.Length - (iOptionPos + 1))
                                         sValue = sWorking
                                         If sMethod = "=" Then
-                                            OSAEApi.ObjectPropertySet(sObject, sParam1, sValue)
+                                            OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, sValue, gAppName)
                                             Display_Results(iLoop & ": Set Property: " & sObject & "." & sParam1)
                                         ElseIf sMethod = "+=" Then
-                                            sWorking = OSAEApi.GetObjectPropertyValue(sObject, sParam1).Value
-                                            OSAEApi.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue))
+                                            sWorking = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sParam1).Value
+                                            OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue), gAppName)
                                         End If
                                     End If
 
@@ -274,12 +274,12 @@ Public Class ScriptProcessor
                         If sOperator = "=" Then
                             Try
                                 If sOption.ToUpper = "STATE" Then
-                                    sState = OSAEApi.GetObjectStateValue(sObject).Value
+                                    sState = OSAEObjectStateManager.GetObjectStateValue(sObject).Value
 
 
                                     If sState.ToUpper <> sValue.ToUpper Then sNesting(iNestingLevel) = "FAIL"
                                 Else
-                                    pProperty = OSAEApi.GetObjectPropertyValue(sObject, sOption)
+                                    pProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sOption)
                                     If pProperty.DataType = "String" Then pProperty.Value = pProperty.Value.ToUpper
                                     If Not IsNumeric(sValue) Then sValue = sValue.ToUpper
                                     If pProperty.Value <> sValue Then
@@ -294,12 +294,12 @@ Public Class ScriptProcessor
                         ElseIf sOperator = "<>" Or sOperator = "!=" Then
                             Try
                                 If sOption.ToUpper = "STATE" Then
-                                    sState = OSAEApi.GetObjectStateValue(sObject).Value
+                                    sState = OSAEObjectStateManager.GetObjectStateValue(sObject).Value
                                     If sState.ToUpper = sValue.ToUpper Then
                                         sNesting(iNestingLevel) = "FAIL"
                                     End If
                                 Else
-                                    pProperty = OSAEApi.GetObjectPropertyValue(sObject, sOption)
+                                    pProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sOption)
                                     If pProperty.DataType = "String" Then pProperty.Value = pProperty.Value.ToUpper
                                     If Not IsNumeric(sValue) Then sValue = sValue.ToUpper
                                     If pProperty.Value = sValue Then
@@ -313,9 +313,9 @@ Public Class ScriptProcessor
                             Try
                                 If sOption.ToUpper = "TIMEINSTATE" Then
                                     lSeconds = ReturnSeconds(sValue)
-                                    If lSeconds > OSAEApi.GetObjectStateValue(sObject).TimeInState Then sNesting(iNestingLevel) = "FAIL"
+                                    If lSeconds > OSAEObjectStateManager.GetObjectStateValue(sObject).TimeInState Then sNesting(iNestingLevel) = "FAIL"
                                 ElseIf sOption.ToUpper <> "STATE" Then
-                                    pProperty = OSAEApi.GetObjectPropertyValue(sObject, sOption)
+                                    pProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sOption)
                                     If pProperty.DataType = "String" Then pProperty.Value = pProperty.Value.ToUpper
                                     If Not IsNumeric(sValue) Then sValue = sValue.ToUpper
                                     If pProperty.DataType = "DateTime" Then
@@ -333,9 +333,9 @@ Public Class ScriptProcessor
                             Try
                                 If sOption.ToUpper = "TIMEINSTATE" Then
                                     lSeconds = ReturnSeconds(sValue)
-                                    If lSeconds < OSAEApi.GetObjectStateValue(sObject).TimeInState Then sNesting(iNestingLevel) = "FAIL"
+                                    If lSeconds < OSAEObjectStateManager.GetObjectStateValue(sObject).TimeInState Then sNesting(iNestingLevel) = "FAIL"
                                 ElseIf sOption.ToUpper <> "STATE" Then
-                                    pProperty = OSAEApi.GetObjectPropertyValue(sObject, sOption)
+                                    pProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sOption)
                                     If IsNothing(pProperty) = False Then
                                         If pProperty.DataType = "String" Then pProperty.Value = pProperty.Value.ToUpper
                                         If Not IsNumeric(sValue) Then sValue = sValue.ToUpper
@@ -358,9 +358,9 @@ Public Class ScriptProcessor
                                 If sOption.ToUpper = "TIMEINSTATE" Then
                                     'pState = OSAEApi.GetObjectStateValue(sObject)
                                     lSeconds = ReturnSeconds(sValue)
-                                    If lSeconds >= OSAEApi.GetObjectStateValue(sObject).TimeInState Then sNesting(iNestingLevel) = "FAIL"
+                                    If lSeconds >= OSAEObjectStateManager.GetObjectStateValue(sObject).TimeInState Then sNesting(iNestingLevel) = "FAIL"
                                 ElseIf sOption.ToUpper <> "STATE" Then
-                                    sProperty = OSAEApi.GetObjectPropertyValue(sObject, sOption).Value
+                                    sProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sOption).Value
                                     If sProperty.ToUpper < sValue.ToUpper Then sNesting(iNestingLevel) = "FAIL"
                                 End If
                             Catch ex As Exception
@@ -371,9 +371,9 @@ Public Class ScriptProcessor
                                 If sOption.ToUpper = "TIMEINSTATE" Then
                                     'pState = OSAEApi.GetObjectStateValue(sObject)
                                     lSeconds = ReturnSeconds(sValue)
-                                    If lSeconds <= OSAEApi.GetObjectStateValue(sObject).TimeInState Then sNesting(iNestingLevel) = "FAIL"
+                                    If lSeconds <= OSAEObjectStateManager.GetObjectStateValue(sObject).TimeInState Then sNesting(iNestingLevel) = "FAIL"
                                 ElseIf sOption.ToUpper <> "STATE" Then
-                                    sProperty = OSAEApi.GetObjectPropertyValue(sObject, sProperty).Value
+                                    sProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sProperty).Value
                                     If sProperty.ToUpper > sValue.ToUpper Then sNesting(iNestingLevel) = "FAIL"
                                 End If
                             Catch ex As Exception
