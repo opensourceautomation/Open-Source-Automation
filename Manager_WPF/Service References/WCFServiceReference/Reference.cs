@@ -155,9 +155,9 @@ namespace Manager_WPF.WCFServiceReference {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(Manager_WPF.WCFServiceReference.OSAEWCFMessage))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(Manager_WPF.WCFServiceReference.OSAEWCFMessageType))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.OSAEObject[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.ObjectState))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.ObjectProperty[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.ObjectProperty))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.OSAEObjectState))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.OSAEObjectProperty[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.OSAEObjectProperty))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(string[]))]
         OSAE.OSAEObject GetObject(string name);
         
@@ -165,9 +165,9 @@ namespace Manager_WPF.WCFServiceReference {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(Manager_WPF.WCFServiceReference.OSAEWCFMessage))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(Manager_WPF.WCFServiceReference.OSAEWCFMessageType))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.OSAEObject[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.ObjectState))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.ObjectProperty[]))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.ObjectProperty))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.OSAEObjectState))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.OSAEObjectProperty[]))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(OSAE.OSAEObjectProperty))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(string[]))]
         OSAE.OSAEObject GetObjectByAddress(string address);
         

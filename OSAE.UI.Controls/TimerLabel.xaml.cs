@@ -20,7 +20,6 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class TimerLabel : UserControl
     {
-        private OSAE osae = new OSAE("GUI"); 
         public OSAEObject screenObject { get; set; }
         public Point Location;
         public DateTime LastUpdated;
@@ -36,11 +35,10 @@ namespace OSAE.UI.Controls
         public TimerLabel(OSAEObject sObj)
         {
             InitializeComponent();
-            screenObject = sObj;
-            
+            screenObject = sObj;            
 
             ObjectName = screenObject.Property("Object Name").Value;
-            OSAEObject timerObj = osae.GetObjectByName(ObjectName);
+            OSAEObject timerObj = OSAEObjectManager.GetObjectByName(ObjectName);
             OffTimer = Int32.Parse(timerObj.Property("OFF TIMER").Value);
             CurrentState = timerObj.State.Value;
             TimeInState = (int)timerObj.State.TimeInState;
@@ -112,7 +110,7 @@ namespace OSAE.UI.Controls
             this.Dispatcher.Invoke((Action)(() =>
             {
                 string sValue;
-                ObjectState os = osae.GetObjectStateValue(ObjectName);
+                OSAEObjectState os = OSAEObjectStateManager.GetObjectStateValue(ObjectName);
                 CurrentState = os.Value;
 
                 TimeSpan ts = DateTime.Now - LastUpdated;

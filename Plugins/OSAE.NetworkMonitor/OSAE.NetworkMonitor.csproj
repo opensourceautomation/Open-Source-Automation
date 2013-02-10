@@ -65,6 +65,7 @@
   <ItemGroup>
     <None Include="Network Monitor.osapd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

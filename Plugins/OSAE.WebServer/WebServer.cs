@@ -15,14 +15,9 @@
         HttpServer.HttpServer server = new HttpServer.HttpServer();
 
         /// <summary>
-        /// Gives access OSA API functionality
-        /// </summary>
-        OSAE osae = new OSAE("Web Server");
-
-        /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Web Server");
+        Logging logging = Logging.GetLogger("Web Server");
 
         /// <summary>
         /// Used as part of the host site
@@ -66,7 +61,7 @@
                 
                 server.Add(afm);                
                 logging.AddToLog("starting server...", true);
-                server.Start(IPAddress.Any, Int32.Parse(osae.GetObjectPropertyValue(pName, "Port").Value));
+                server.Start(IPAddress.Any, Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value));
 
             }
             catch (Exception ex)

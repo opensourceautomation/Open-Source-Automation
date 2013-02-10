@@ -3,10 +3,8 @@ namespace OSAE.UI.Controls
 {
     using System;
     using System.IO;
-    using System.Data;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Collections.Generic;
     using System.Windows.Media.Imaging;
 
     /// <summary>
@@ -14,14 +12,12 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class CreateScreen : UserControl
     {
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
         private string screenName;
 
         public CreateScreen()
         {
             InitializeComponent();
         }
-
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
@@ -40,7 +36,7 @@ namespace OSAE.UI.Controls
             string fileName = Path.GetFileName(txtPath.Text).Split('.')[0];
             string ext = Path.GetFileName(txtPath.Text).Split('.')[1];
 
-            ImageManager imgMgr = new ImageManager();
+            OSAEImageManager imgMgr = new OSAEImageManager();
 
             int imgID = 0;
             byte[] byt;
@@ -57,8 +53,8 @@ namespace OSAE.UI.Controls
             }
 
             screenName = "Screen - " + txtName.Text;
-            osae.ObjectAdd(screenName, screenName, "SCREEN", "", screenName, true);
-            osae.ObjectPropertySet(screenName, "Background Image", fileName);
+            OSAEObjectManager.ObjectAdd(screenName, screenName, "SCREEN", "", screenName, true);
+            OSAEObjectPropertyManager.ObjectPropertySet(screenName, "Background Image", fileName, "GUI");
 
             OnLoadScreen();
 

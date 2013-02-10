@@ -14,11 +14,6 @@ namespace OSAE.UI.Controls
         public string currentScreen;
         private Window parentWindow;
 
-        /// <summary>
-        /// OSAE API to interact with OSA DB
-        /// </summary>
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
-
         public AddNewCameraViewer(string screen)
         {
             InitializeComponent();
@@ -31,7 +26,7 @@ namespace OSAE.UI.Controls
         /// </summary>
         private void LoadObjects()
         {
-            DataSet dataSet = osae.RunSQL("SELECT object_name FROM osae_v_object WHERE object_Type = 'IP CAMERA' ORDER BY object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_Type = 'IP CAMERA' ORDER BY object_name");
             objectsComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -40,13 +35,13 @@ namespace OSAE.UI.Controls
             if (ValidateForm())
             {
                 string sName = currentScreen + " - " + objectsComboBox.Text;
-                osae.ObjectAdd(sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
-                osae.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text);
-                osae.ObjectPropertySet(sName, "X", "100");
-                osae.ObjectPropertySet(sName, "Y", "100");
-                osae.ObjectPropertySet(sName, "ZOrder", "1");
+                OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", "1", "GUI");
 
-                osae.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
+                OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
 
 
                 NotifyParentFinished();

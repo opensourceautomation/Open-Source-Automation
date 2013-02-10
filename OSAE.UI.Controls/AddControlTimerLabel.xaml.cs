@@ -14,7 +14,6 @@
     /// </summary>
     public partial class AddControlTimerLabel : UserControl
     {
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
         private string currentScreen;
 
         public AddControlTimerLabel(string screen)
@@ -30,7 +29,7 @@
         /// </summary>
         private void LoadObjects()
         {
-            DataSet dataSet = osae.RunSQL("SELECT object_name FROM osae_v_object order by object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object order by object_name");
             objectComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -83,17 +82,17 @@
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             string sName = "Screen - " + currentScreen + " - " + objectComboBox.Text + "(Off Timer)";
-            osae.ObjectAdd(sName, sName, "CONTROL TIMER LABEL", "", currentScreen, true);
-            osae.ObjectPropertySet(sName, "Font Name", txtFont.Text);
-            osae.ObjectPropertySet(sName, "Font Size", txtSize.Text);
-            osae.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text);
-            osae.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text);
-            osae.ObjectPropertySet(sName, "Object Name", objectComboBox.Text);
-            osae.ObjectPropertySet(sName, "X", "100");
-            osae.ObjectPropertySet(sName, "Y", "100");
-            osae.ObjectPropertySet(sName, "Zorder", "1");
+            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL TIMER LABEL", "", currentScreen, true);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
-            osae.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
+            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
 
 
             NotifyParentFinished();

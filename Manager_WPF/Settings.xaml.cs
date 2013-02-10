@@ -19,8 +19,6 @@
     /// </summary>
     public partial class Settings : Window
     {
-        OSAE osae = new OSAE("Manager_WPF");
-
         public Settings()
         {
             InitializeComponent();
@@ -28,9 +26,9 @@
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            lblDBVersion.Content = osae.GetObjectPropertyValue("SYSTEM", "DB Version").Value;
-            txbxZipcode.Text = osae.GetObjectPropertyValue("SYSTEM", "ZIP Code").Value;
-            if (osae.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE")
+            lblDBVersion.Content = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value;
+            txbxZipcode.Text = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "ZIP Code").Value;
+            if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE")
                 cbDebugging.SelectedItem = cbDebugging.Items[0];
             else
                 cbDebugging.SelectedItem = cbDebugging.Items[1];
@@ -39,8 +37,8 @@
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             ComboBoxItem cbi = (ComboBoxItem)cbDebugging.SelectedItem;
-            osae.ObjectPropertySet("SYSTEM", "Debug", cbi.Content.ToString());
-            osae.ObjectPropertySet("SYSTEM", "ZIP Code", txbxZipcode.Text);
+            OSAEObjectPropertyManager.ObjectPropertySet("SYSTEM", "Debug", cbi.Content.ToString(), "Manager_WPF");
+            OSAEObjectPropertyManager.ObjectPropertySet("SYSTEM", "ZIP Code", txbxZipcode.Text, "Manager_WPF");
             this.Close();
         }
     }

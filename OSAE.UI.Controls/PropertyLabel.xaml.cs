@@ -10,7 +10,6 @@
     /// </summary>
     public partial class PropertyLabel : UserControl
     {
-        private OSAE osae = new OSAE("GUI"); 
         public OSAEObject screenObject { get; set; }
         public Point Location;
         public DateTime LastUpdated;
@@ -25,7 +24,7 @@
             ObjectName = screenObject.Property("Object Name").Value;
             PropertyName = screenObject.Property("Property Name").Value;
 
-            string sPropertyValue = osae.GetObjectPropertyValue(ObjectName, PropertyName).Value;
+            string sPropertyValue = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, PropertyName).Value;
             string sBackColor = screenObject.Property("Back Color").Value;
             string sForeColor = screenObject.Property("Fore Color").Value;
             string sPrefix = screenObject.Property("Prefix").Value;
@@ -43,7 +42,7 @@
                         SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
                         propLabel.Background = brush;
                     }
-                    catch (Exception myerror)
+                    catch (Exception)
                     {
                     }
                 }
@@ -55,7 +54,7 @@
                         SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
                         propLabel.Foreground = brush;
                     }
-                    catch (Exception myerror)
+                    catch (Exception)
                     {
                     }
                 }
@@ -65,7 +64,7 @@
                     {
                         propLabel.FontSize = Convert.ToDouble(iFontSize);
                     }
-                    catch (Exception myerror)
+                    catch (Exception)
                     {
                     }
                 }
@@ -82,7 +81,7 @@
         {
             this.Dispatcher.Invoke((Action)(() =>
             {
-                string sPropertyValue = osae.GetObjectPropertyValue(ObjectName, PropertyName).Value;
+                string sPropertyValue = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, PropertyName).Value;
                 string sPrefix = screenObject.Property("Prefix").Value;
                 string sSuffix = screenObject.Property("Suffix").Value;
                 propLabel.Content = sPrefix + sPropertyValue + sSuffix;

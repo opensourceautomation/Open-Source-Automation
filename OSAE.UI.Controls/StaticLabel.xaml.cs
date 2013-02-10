@@ -19,7 +19,6 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class StaticLabel : UserControl
     {
-        private OSAE osae = new OSAE("GUI"); 
         public OSAEObject screenObject { get; set; }
         public Point Location;
         public DateTime LastUpdated;

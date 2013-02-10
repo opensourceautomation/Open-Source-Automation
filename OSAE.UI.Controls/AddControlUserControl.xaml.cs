@@ -11,7 +11,6 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class AddControlUserControl : UserControl
     {
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
         string currentScreen;
 
         public AddControlUserControl(string screen)
@@ -23,20 +22,20 @@ namespace OSAE.UI.Controls
 
         private void LoadUserControls()
         {
-            DataSet dataSet = osae.RunSQL("SELECT object_type FROM osae_v_object_type WHERE base_type = 'USER CONTROL' order by object_type");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_type FROM osae_v_object_type WHERE base_type = 'USER CONTROL' order by object_type");
             typesComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
             string sName = "Screen - " + currentScreen + " - " + txtName.Text;
-            osae.ObjectAdd(sName, sName, "USER CONTROL", "", currentScreen, true);
-            osae.ObjectPropertySet(sName, "Control Type", typesComboBox.Text);
-            osae.ObjectPropertySet(sName, "X", "100");
-            osae.ObjectPropertySet(sName, "Y", "100");
-            osae.ObjectPropertySet(sName, "ZOrder", "1");
+            OSAEObjectManager.ObjectAdd(sName, sName, "USER CONTROL", "", currentScreen, true);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", typesComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", "1", "GUI");
 
-            osae.ScreenObjectAdd(currentScreen, currentScreen, sName);
+            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, currentScreen, sName);
 
             NotifyParentFinished();
         }

@@ -15,12 +15,11 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Weather");
+        Logging logging = Logging.GetLogger("Weather");
 
         Thread updateThread;
         Thread SunriseSunsetThread;
         string zipcode = "";
-        OSAE osae = new OSAE("Weather");
         int updateInterval = 60;
         System.Timers.Timer Clock, Clock2;
         string feedUrl = "";
@@ -37,9 +36,12 @@
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-            List<OSAEObject> objects = osae.GetObjectsByType("WEATHER");
+         
+            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("WEATHER");
             if (objects.Count == 0)
-                osae.ObjectAdd("Weather Data", "Weather Data", "WEATHER", "", "SYSTEM",true);
+            {
+                OSAEObjectManager.ObjectAdd("Weather Data", "Weather Data", "WEATHER", "", "SYSTEM", true);
+            }
             if (!Directory.Exists(Common.ApiPath + "/Images/Weather"))
             {
                 DirectoryInfo di = Directory.CreateDirectory(Common.ApiPath + "/Images/Weather");
@@ -47,7 +49,7 @@
 
             logging.AddToLog("Running Interface!", true);
             Clock = new System.Timers.Timer();
-            Clock.Interval = Int32.Parse(osae.GetObjectPropertyValue(pName, "Update Interval").Value) * 60000;
+            Clock.Interval = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Update Interval").Value) * 60000;
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
 
@@ -95,14 +97,14 @@
             logging.AddToLog("Starting Update", false);
             try
             {
-                string zipcode = osae.GetObjectPropertyValue(pName, "Zipcode").Value;
+                string zipcode = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Zipcode").Value;
                 logging.AddToLog("ZipCode: " + zipcode, false);
                 if (zipcode != "")
                 {
                     List<ObservationStation> stationList = new List<ObservationStation>();
                     PointF pt = GetLatLonFromZip(zipcode);
                     ObservationStation myStation = new ObservationStation();
-                    feedUrl = osae.GetObjectPropertyValue(pName, "Feed URL").Value;
+                    feedUrl = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Feed URL").Value;
                     logging.AddToLog("pt.X: " + pt.X.ToString(), false);
                     logging.AddToLog("pt.Y: " + pt.Y.ToString(), false);
                     if (pt.X != 0 || pt.Y != 0)
@@ -149,79 +151,79 @@
                             //update all the weather variables
                             try
                             {
-                                osae.ObjectPropertySet("Weather Data", "Temp", xml.SelectSingleNode("//temp_f").InnerText);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Temp", xml.SelectSingleNode("//temp_f").InnerText, "Weather");
                                 logging.AddToLog("Found Temp: " + xml.SelectSingleNode("//temp_f").InnerText, false);
                             }
                             catch 
                             { 
                                 logging.AddToLog("Error getting Temp", false);
-                                osae.ObjectPropertySet("Weather Data", "Temp", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Temp", "", "Weather");
                             }
 
                             try
                             {
-                                osae.ObjectPropertySet("Weather Data", "Conditions", xml.SelectSingleNode("//weather").InnerText);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Conditions", xml.SelectSingleNode("//weather").InnerText, "Weather");
                                 logging.AddToLog("Found Conditions: " + xml.SelectSingleNode("//weather").InnerText, false);
                             }
                             catch 
                             { 
                                 logging.AddToLog("Error getting Conditions", false);
-                                osae.ObjectPropertySet("Weather Data", "Conditions", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Conditions", "", "Weather");
                             }
 
                             try
                             {
-                                osae.ObjectPropertySet("Weather Data", "Wind Speed", xml.SelectSingleNode("//wind_mph").InnerText);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Wind Speed", xml.SelectSingleNode("//wind_mph").InnerText, "Weather");
                                 logging.AddToLog("Found Wind Speed: " + xml.SelectSingleNode("//wind_mph").InnerText, false);
                             }
                             catch 
                             { 
                                 logging.AddToLog("Error getting Wind Speed", false);
-                                osae.ObjectPropertySet("Weather Data", "Wind Speed", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Wind Speed", "", "Weather");
                             }
 
                             try
                             {
-                                osae.ObjectPropertySet("Weather Data", "Wind Direction", xml.SelectSingleNode("//wind_dir").InnerText);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Wind Direction", xml.SelectSingleNode("//wind_dir").InnerText, "Weather");
                                 logging.AddToLog("Found Wind Direction: " + xml.SelectSingleNode("//wind_dir").InnerText, false);
                             }
                             catch 
                             { 
                                 logging.AddToLog("Error getting Wind Direction", false);
-                                osae.ObjectPropertySet("Weather Data", "Wind Direction", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Wind Direction", "", "Weather");
                             }
 
                             try
                             {
-                                osae.ObjectPropertySet("Weather Data", "Humidity", xml.SelectSingleNode("//relative_humidity").InnerText);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Humidity", xml.SelectSingleNode("//relative_humidity").InnerText, "Weather");
                                 logging.AddToLog("Found Humidity: " + xml.SelectSingleNode("//relative_humidity").InnerText, false);
                             }
                             catch 
                             { 
                                 logging.AddToLog("Error getting Humidity", false);
-                                osae.ObjectPropertySet("Weather Data", "Humidity", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Humidity", "", "Weather");
                             }
 
                             try
                             {
-                                osae.ObjectPropertySet("Weather Data", "Pressure", xml.SelectSingleNode("//pressure_in").InnerText);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Pressure", xml.SelectSingleNode("//pressure_in").InnerText, "Weather");
                                 logging.AddToLog("Found Pressure: " + xml.SelectSingleNode("//pressure_in").InnerText, false);
                             }
                             catch 
                             { 
                                 logging.AddToLog("Error getting Pressure", false);
-                                osae.ObjectPropertySet("Weather Data", "Pressure", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Pressure", "", "Weather");
                             }
 
                             try
                             {
-                                osae.ObjectPropertySet("Weather Data", "Dewpoint", xml.SelectSingleNode("//dewpoint_f").InnerText);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Dewpoint", xml.SelectSingleNode("//dewpoint_f").InnerText, "Weather");
                                 logging.AddToLog("Found Dewpoint: " + xml.SelectSingleNode("//dewpoint_f").InnerText, false);
                             }
                             catch 
                             {
                                 logging.AddToLog("Error getting Dewpoint", false);
-                                osae.ObjectPropertySet("Weather Data", "Dewpoint", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Dewpoint", "", "Weather");
                             }
 
                             try
@@ -236,35 +238,35 @@
                                         di.SaveImage(Common.ApiPath + curpath, ImageFormat.Jpeg);
                                     }
 
-                                osae.ObjectPropertySet("Weather Data", "Image", curpath);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Image", curpath, "Weather");
                                 logging.AddToLog("Found Image: " + curpath, false);
                             }
                             catch 
                             { 
                                 logging.AddToLog("Error getting Image", false);
-                                osae.ObjectPropertySet("Weather Data", "Image", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Image", "", "Weather");
                             }
 
                             try
                             {
-                                osae.ObjectPropertySet("Weather Data", "Visibility", xml.SelectSingleNode("//visibility_mi").InnerText);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Visibility", xml.SelectSingleNode("//visibility_mi").InnerText, "Weather");
                                 logging.AddToLog("Found Visibility: " + xml.SelectSingleNode("//visibility_mi").InnerText, false);
                             }
                             catch 
                             {
                                 logging.AddToLog("Error getting Visibility", false);
-                                osae.ObjectPropertySet("Weather Data", "Visibility", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Visibility", "", "Weather");
                             }
 
                             try
                             {
-                                osae.ObjectPropertySet("Weather Data", "Windchill", xml.SelectSingleNode("//windchill_f").InnerText);
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Windchill", xml.SelectSingleNode("//windchill_f").InnerText, "Weather");
                                 logging.AddToLog("Found Windchill: " + xml.SelectSingleNode("//windchill_f").InnerText, false);
                             }
                             catch 
                             {
                                 logging.AddToLog("Error getting Windchill", false);
-                                osae.ObjectPropertySet("Weather Data", "Windchill", "");
+                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Windchill", "", "Weather");
                             }
 
                             #endregion 
@@ -309,12 +311,12 @@
                                         {
                                             if (day % 2 == 0)
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Day" + (day / 2).ToString() + " Label", xn.Attributes["period-name"].Value);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Day" + (day / 2).ToString() + " Label", xn.Attributes["period-name"].Value, "Weather");
                                                 logging.AddToLog("Day" + (day / 2).ToString() + " Label: " + xn.Attributes["period-name"].Value, false);
                                             }
                                             else
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Night" + (day / 2).ToString() + " Label", xn.Attributes["period-name"].Value);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Night" + (day / 2).ToString() + " Label", xn.Attributes["period-name"].Value, "Weather");
                                                 logging.AddToLog("Night" + (day / 2).ToString() + " Label: " + xn.Attributes["period-name"].Value, false);
 
                                             }
@@ -338,12 +340,12 @@
                                     {
                                         if (today == 1 && day == 1)
                                         {
-                                            osae.ObjectPropertySet("Weather Data", "Today High", xn.InnerText);
+                                            OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Today High", xn.InnerText, "Weather");
                                             logging.AddToLog("Found Today High: " + xn.InnerText, false);
                                         }
                                         else
                                         {
-                                            osae.ObjectPropertySet("Weather Data", "Day" + (day - today).ToString() + " High", xn.InnerText);
+                                            OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Day" + (day - today).ToString() + " High", xn.InnerText, "Weather");
                                             logging.AddToLog("Found Day" + (day - today).ToString() + " High: " + xn.InnerText, false);
                                         }
                                         day++;
@@ -364,12 +366,12 @@
                                     {
                                         if (day == 1)
                                         {
-                                            osae.ObjectPropertySet("Weather Data", "Tonight Low", xn.InnerText);
+                                            OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Tonight Low", xn.InnerText, "Weather");
                                             logging.AddToLog("Found Tonight Low: " + xn.InnerText, false);
                                         }
                                         else
                                         {
-                                            osae.ObjectPropertySet("Weather Data", "Night" + (day - 1).ToString() + " Low", xn.InnerText);
+                                            OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Night" + (day - 1).ToString() + " Low", xn.InnerText, "Weather");
                                             logging.AddToLog("Found Night" + (day - 1).ToString() + " Low: " + xn.InnerText, false);
                                         }
                                         day++;
@@ -393,12 +395,12 @@
                                         {
                                             if ((today == 0 && day == 2) || (today == 1 && day == 3))
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Tonight Precip", xn.InnerText);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Tonight Precip", xn.InnerText, "Weather");
                                                 logging.AddToLog("Tonight Precip: " + xn.InnerText, false);
                                             }
                                             else
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Night" + ((day / 2) - 1).ToString() + " Precip", xn.InnerText);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Night" + ((day / 2) - 1).ToString() + " Precip", xn.InnerText, "Weather");
                                                 logging.AddToLog("Night" + ((day / 2) - 1).ToString() + " Precip: " + xn.InnerText, false);
                                             }
                                         }
@@ -406,12 +408,12 @@
                                         {
                                             if (today == 1 && day == 2)
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Today Precip", xn.InnerText);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Today Precip", xn.InnerText, "Weather");
                                                 logging.AddToLog("Today Precip: " + xn.InnerText, false);
                                             }
                                             else
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Day" + ((day / 2)-today).ToString() + " Precip", xn.InnerText);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Day" + ((day / 2) - today).ToString() + " Precip", xn.InnerText, "Weather");
                                                 logging.AddToLog("Day" + ((day / 2)-today).ToString() + " Precip: " + xn.InnerText, false);
                                             }
                                         }
@@ -438,12 +440,12 @@
 
                                             if ((today == 0 && day == 2) || (today == 1 && day == 3))
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Tonight Forecast", xn.Attributes["weather-summary"].Value);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Tonight Forecast", xn.Attributes["weather-summary"].Value, "Weather");
                                                 logging.AddToLog("Tonight Forecast: " + xn.Attributes["weather-summary"].Value, false);
                                             }
                                             else
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Night" + ((day / 2) - 1).ToString() + " Forecast", xn.Attributes["weather-summary"].Value);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Night" + ((day / 2) - 1).ToString() + " Forecast", xn.Attributes["weather-summary"].Value, "Weather");
                                                 logging.AddToLog("Night" + ((day / 2) - 1).ToString() + " Forecast: " + xn.Attributes["weather-summary"].Value, false);
                                             }
                                         }
@@ -451,12 +453,12 @@
                                         {
                                             if (today == 1 && day == 2)
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Today Forecast", xn.Attributes["weather-summary"].Value);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Today Forecast", xn.Attributes["weather-summary"].Value, "Weather");
                                                 logging.AddToLog("Today Forecast: " + xn.Attributes["weather-summary"].Value, false);
                                             }
                                             else
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Day" + ((day / 2)-today).ToString() + " Forecast", xn.Attributes["weather-summary"].Value);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Day" + ((day / 2) - today).ToString() + " Forecast", xn.Attributes["weather-summary"].Value, "Weather");
                                                 logging.AddToLog("Day" + ((day / 2)-today).ToString() + " Forecast: " + xn.Attributes["weather-summary"].Value, false);
                                             }
                                         }
@@ -493,12 +495,12 @@
                                             if ((today == 0 && day == 2) || (today == 1 && day == 3))
                                             {
 
-                                                osae.ObjectPropertySet("Weather Data", "Tonight Image", path);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Tonight Image", path, "Weather");
                                                 logging.AddToLog("Tonight Image: " + xn.InnerText, false);
                                             }
                                             else
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Night" + ((day / 2) - 1).ToString() + " Image", path);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Night" + ((day / 2) - 1).ToString() + " Image", path, "Weather");
                                                 logging.AddToLog("Night" + ((day / 2) - 1).ToString() + " Image: " + xn.InnerText, false);
                                             }
                                         }
@@ -506,12 +508,12 @@
                                         {
                                             if (today == 1 && day == 2)
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Today Image", path);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Today Image", path, "Weather");
                                                 logging.AddToLog("Today Image: " + xn.InnerText, false);
                                             }
                                             else
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Day" + ((day / 2)-today).ToString() + " Image", path);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Day" + ((day / 2) - today).ToString() + " Image", path, "Weather");
                                                 logging.AddToLog("Day" + ((day / 2)-today).ToString() + " Image: " + xn.InnerText, false);
                                             }
                                         }
@@ -537,12 +539,12 @@
                                         {
                                             if ((today == 0 && day == 2) || (today == 1 && day == 3))
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Tonight Summary", xn.InnerText);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Tonight Summary", xn.InnerText, "Weather");
                                                 logging.AddToLog("Tonight Summary: " + xn.InnerText, false);
                                             }
                                             else
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Night" + ((day / 2) - 1).ToString() + " Summary", xn.InnerText);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Night" + ((day / 2) - 1).ToString() + " Summary", xn.InnerText, "Weather");
                                                 logging.AddToLog("Night" + ((day / 2) - 1).ToString() + " Summary: " + xn.InnerText, false);
                                             }
 
@@ -551,12 +553,12 @@
                                         {
                                             if (today == 1 && day == 2)
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Today Summary", xn.InnerText);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Today Summary", xn.InnerText, "Weather");
                                                 logging.AddToLog("Today Summary: " + xn.InnerText, false);
                                             }
                                             else
                                             {
-                                                osae.ObjectPropertySet("Weather Data", "Day" + ((day / 2)-today).ToString() + " Summary", xn.InnerText);
+                                                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Day" + ((day / 2) - today).ToString() + " Summary", xn.InnerText, "Weather");
                                                 logging.AddToLog("Day" + ((day / 2)-today).ToString() + " Summary: " + xn.InnerText, false);
                                             }
                                         }
@@ -580,8 +582,8 @@
                         #endregion
 
 
-                        osae.ObjectStateSet("Weather Data", "ON");
-                        osae.ObjectPropertySet("Weather Data", "Last Updated", DateTime.Now.ToString());
+                        OSAEObjectStateManager.ObjectStateSet("Weather Data", "ON", pName);
+                        OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Last Updated", DateTime.Now.ToString(), pName);
                     }
                 }
             }
@@ -596,7 +598,7 @@
             try
             {
                 logging.AddToLog("Starting sunrise and sunset update", false);
-                PointF pt = GetLatLonFromZip(osae.GetObjectPropertyValue(pName, "Zipcode").Value);
+                PointF pt = GetLatLonFromZip(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Zipcode").Value);
 
                 WebClient webClientTimezone = new WebClient();
                 string strSourceTimezone = webClientTimezone.DownloadString("http://www.earthtools.org/timezone/" + pt.X.ToString() + "/" + pt.Y.ToString());
@@ -623,9 +625,9 @@
                 webClientSunriseSunset.Dispose();
                 XmlDocument xmlSunriseSunset = new XmlDocument();
                 xmlSunriseSunset.LoadXml(strSourceSunriseSunset);
-                osae.ObjectPropertySet("Weather Data", "Sunrise", xmlSunriseSunset.SelectSingleNode("//sunrise").InnerText);
+                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Sunrise", xmlSunriseSunset.SelectSingleNode("//sunrise").InnerText, pName);
                 logging.AddToLog("Found sunrise: " + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd") + " " + xmlSunriseSunset.SelectSingleNode("//sunrise").InnerText).ToString(), false);
-                osae.ObjectPropertySet("Weather Data", "Sunset", xmlSunriseSunset.SelectSingleNode("//sunset").InnerText);
+                OSAEObjectPropertyManager.ObjectPropertySet("Weather Data", "Sunset", xmlSunriseSunset.SelectSingleNode("//sunset").InnerText, pName);
                 logging.AddToLog("Found sunset: " + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd") + " " + xmlSunriseSunset.SelectSingleNode("//sunset").InnerText).ToString(), false);
 
                 //osae.ScheduleQueueAdd(Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd") + " " + xmlSunriseSunset.SelectSingleNode("//sunrise").InnerText), "", "", "", "", "Sunrise", 0);
@@ -709,7 +711,6 @@
 
         private PointF GetLatLonFromZip(string zipString)
         {
-            OSAE osae = new OSAE("Weather");
             if (string.IsNullOrEmpty(zipString))
             {
                 throw new ArgumentNullException("zipString");

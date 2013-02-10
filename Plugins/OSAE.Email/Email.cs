@@ -7,12 +7,11 @@
     public class Email : OSAEPluginBase
     {
         string pName;
-        OSAE osae = new OSAE("Email");
 
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = new Logging("Email");
+        Logging logging = Logging.GetLogger("Email");
         
         public override void ProcessCommand(OSAEMethod method)
         {
@@ -23,7 +22,7 @@
                 string parameter2 = string.Empty;
                 string subject = string.Empty;
                 string body = string.Empty;
-                ObjectProperty prop = osae.GetObjectPropertyValue(method.Parameter1, "Email Address");
+                OSAEObjectProperty prop = OSAEObjectPropertyManager.GetObjectPropertyValue(method.Parameter1, "Email Address");
                 if (prop != null)
                 {
                     to = prop.Value;
@@ -39,13 +38,13 @@
                 mailMsg.To.Add(to);
 
                 // From
-                MailAddress mailAddress = new MailAddress(osae.GetObjectPropertyValue(pName, "From Address").Value);
+                MailAddress mailAddress = new MailAddress(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "From Address").Value);
                 mailMsg.From = mailAddress;
 
                 // Subject and Body
                 mailMsg.Subject = "Message from OSAE";
-                mailMsg.Body = osae.PatternParse(method.Parameter2);
-                parameter2 = osae.PatternParse(method.Parameter2);
+                mailMsg.Body = Common.PatternParse(method.Parameter2);
+                parameter2 = Common.PatternParse(method.Parameter2);
 
                 // Make sure there is a body of text.
                 if (parameter2.Equals(""))
@@ -78,8 +77,8 @@
                 }              
 
                 // Init SmtpClient and send
-                SmtpClient smtpClient = new SmtpClient(osae.GetObjectPropertyValue(pName, "SMTP Server").Value, Int32.Parse(osae.GetObjectPropertyValue(pName, "SMTP Port").Value));
-                if (osae.GetObjectPropertyValue(pName, "ssl").Value == "TRUE")
+                SmtpClient smtpClient = new SmtpClient(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Server").Value, Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Port").Value));
+                if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "ssl").Value == "TRUE")
                 {
                     smtpClient.EnableSsl = true;
                 }
@@ -91,17 +90,17 @@
                 smtpClient.Timeout = 10000;
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new NetworkCredential(osae.GetObjectPropertyValue(pName, "Username").Value, osae.GetObjectPropertyValue(pName, "Password").Value);
+                smtpClient.Credentials = new NetworkCredential(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Username").Value, OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Password").Value);
                 
                 logging.AddToLog("to: " + mailMsg.To, true);
                 logging.AddToLog("from: " + mailMsg.From, true);
                 logging.AddToLog("subject: " + mailMsg.Subject, true);
                 logging.AddToLog("body: " + mailMsg.Body, true);
-                logging.AddToLog("smtpServer: " + osae.GetObjectPropertyValue(pName, "SMTP Server").Value, true);
-                logging.AddToLog("smtpPort: " + osae.GetObjectPropertyValue(pName, "SMTP Port").Value, true);
-                logging.AddToLog("username: " + osae.GetObjectPropertyValue(pName, "Username").Value, true);
-                logging.AddToLog("password: " + osae.GetObjectPropertyValue(pName, "Password").Value, true);
-                logging.AddToLog("ssl: " + osae.GetObjectPropertyValue(pName, "ssl").Value, true);
+                logging.AddToLog("smtpServer: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Server").Value, true);
+                logging.AddToLog("smtpPort: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Port").Value, true);
+                logging.AddToLog("username: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Username").Value, true);
+                logging.AddToLog("password: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Password").Value, true);
+                logging.AddToLog("ssl: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "ssl").Value, true);
 
                 smtpClient.Send(mailMsg);
             }

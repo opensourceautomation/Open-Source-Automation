@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Timers;
-using System.Net;
-using System.Xml;
-using System.Data;
-using System.Text.RegularExpressions;
-
-namespace OSAE.RSS
+﻿namespace OSAE.RSS
 {
+    using System;
+    using System.Data;
+    using System.Net;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using System.Timers;
+    using System.Xml;
+
     public class RSS : OSAEPluginBase
     {
         string pName;
-        OSAE osae = new OSAE("RSS");
-        Logging logging = new Logging("RSS");
+        Logging logging = Logging.GetLogger("RSS");
         System.Timers.Timer Clock;
         Thread updateThread;
         int updateInterval=60;
@@ -31,7 +27,7 @@ namespace OSAE.RSS
             pName = pluginName;
             logging.AddToLog("Running Interface!", true);
             Clock = new System.Timers.Timer();
-            Clock.Interval = Int32.Parse(osae.GetObjectProperty(pName, "Update Interval")) * 60000;
+            Clock.Interval = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Update Interval").Value) * 60000;
             logging.AddToLog(updateInterval.ToString(), true);
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
             logging.AddToLog(Clock.Interval.ToString(), true);
@@ -69,7 +65,7 @@ namespace OSAE.RSS
             logging.AddToLog("Trying to get all feed Urls:" + pName, false);
             
                 DataSet ds = new DataSet();
-                ds = osae.ObjectPropertyArrayGetAll(pName, "Feeds");
+                ds = OSAEObjectPropertyManager.ObjectPropertyArrayGetAll(pName, "Feeds");
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     try
@@ -84,12 +80,12 @@ namespace OSAE.RSS
 
                         string feedTitle = xml.SelectSingleNode("/rss/channel/title").InnerText;
                         logging.AddToLog("Feeds title: " + feedTitle, false);
-                        if (osae.GetObjectProperty(pName, feedTitle) == "")
+                        if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, feedTitle).Value == "")
                         {
                             logging.AddToLog("Adding property to object type", false);
-                            osae.ObjectTypePropertyAdd(feedTitle, "List", "", "RSS", false);
+                            OSAEObjectTypeManager.ObjectTypePropertyAdd(feedTitle, "List", "", "RSS", false);
                         }
-                        osae.ObjectPropertyArrayDeleteAll(pName, feedTitle);
+                        OSAEObjectPropertyManager.ObjectPropertyArrayDeleteAll(pName, feedTitle);
                         logging.AddToLog("Cleared feed data", false);
 
                         XmlNodeList xnList = xml.SelectNodes("/rss/channel/item");
@@ -98,7 +94,7 @@ namespace OSAE.RSS
                             string content = xn.SelectSingleNode("title").InnerText + " - " + xn.SelectSingleNode("description").InnerText;
                             content = Regex.Replace(content, "<.*?>", string.Empty);
                             logging.AddToLog("Added item to feed data: " + content, false);
-                            osae.ObjectPropertyArrayAdd(pName, feedTitle, content, "");
+                            OSAEObjectPropertyManager.ObjectPropertyArrayAdd(pName, feedTitle, content, "");
                         }
                     }
                     catch(Exception ex)

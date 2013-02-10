@@ -5,14 +5,12 @@
     using System.Windows;
     using System.Windows.Controls;
     using OSAE;
-    using System.Threading;    
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private OSAE osae = new OSAE(null);
         /// <summary>
         /// Standard event don't interfere with it if we don't have to
         /// </summary>

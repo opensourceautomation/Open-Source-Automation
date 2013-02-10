@@ -11,11 +11,6 @@
     public partial class AddNewObject : UserControl
     {
         /// <summary>
-        /// OSAE API to interact with OSA DB
-        /// </summary>
-        private OSAE osae = new OSAE("OSAE.UI.Controls");
-
-        /// <summary>
         /// Default constructor
         /// </summary>
         public AddNewObject()
@@ -30,7 +25,7 @@
         /// </summary>
         private void LoadObjectTypes()
         {
-            DataSet dataSet = osae.RunSQL("SELECT object_type FROM osae_v_object_type WHERE base_type<>'CONTROL' ORDER BY object_type");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_type FROM osae_v_object_type WHERE base_type<>'CONTROL' ORDER BY object_type");
             objectTypesComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -39,7 +34,7 @@
         /// </summary>
         private void LoadContainers()
         {
-            DataSet dataSet = osae.RunSQL("SELECT object_name FROM osae_v_object WHERE container=1 ORDER BY object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE container=1 ORDER BY object_name");
             containersComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -52,7 +47,7 @@
         {
             if (ValidateForm())
             {
-                osae.ObjectAdd(
+                OSAEObjectManager.ObjectAdd(
                     nameTextBox.Text,
                     descriptionTextBox.Text,
                     objectTypesComboBox.SelectedValue.ToString(),
