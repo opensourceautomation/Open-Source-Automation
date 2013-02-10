@@ -42,6 +42,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.UI.Controls", "OSAE.UI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogViewer", "LogViewer\LogViewer.csproj", "{66385FF8-1FF8-4495-B1BF-81A963855517}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebUI", "http://localhost:53994", "{E730B38F-5144-4AA2-9369-5287A3667CB0}"
+	ProjectSection(WebsiteProperties) = preProject
+		UseIISExpress = "true"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_53994"
+		Debug.AspNetCompiler.PhysicalPath = "WebUI\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53994\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_53994"
+		Release.AspNetCompiler.PhysicalPath = "WebUI\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53994\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		SlnRelativePath = "WebUI\"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -238,6 +260,16 @@ Global
 		{66385FF8-1FF8-4495-B1BF-81A963855517}.Release|Mixed Platforms.Build.0 = Release|x86
 		{66385FF8-1FF8-4495-B1BF-81A963855517}.Release|x86.ActiveCfg = Release|x86
 		{66385FF8-1FF8-4495-B1BF-81A963855517}.Release|x86.Build.0 = Release|x86
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E730B38F-5144-4AA2-9369-5287A3667CB0}.Release|x86.ActiveCfg = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -259,6 +291,6 @@ Global
 		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 		{503092C1-23FE-4AD8-B855-CF1D24D632A9} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 		{66385FF8-1FF8-4495-B1BF-81A963855517} = {2A452081-FFE5-43C4-82D1-7202917BC509}
-		{770F99D6-26C6-495A-905D-0EA3ACC5D5D2} = {2A452081-FFE5-43C4-82D1-7202917BC509}
+		{E730B38F-5144-4AA2-9369-5287A3667CB0} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 	EndGlobalSection
 EndGlobal

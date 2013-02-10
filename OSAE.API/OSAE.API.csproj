@@ -43,10 +43,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Assemblies\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -69,7 +72,6 @@
     <Compile Include="OSAEScreenControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModifyRegistry.cs" />
-    <Compile Include="Property.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile.snk" />
