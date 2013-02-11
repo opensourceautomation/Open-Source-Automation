@@ -4,6 +4,7 @@ Imports OSAE
 
 Public Class CM11
     Inherits OSAEPluginBase
+
     Private Shared logging As Logging = logging.GetLogger("CM11A")
     Private pName As String = ""
     Private gPort As Integer

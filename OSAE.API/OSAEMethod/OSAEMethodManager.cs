@@ -2,6 +2,8 @@
 {
     using System;
     using MySql.Data.MySqlClient;
+    using System.Collections.Generic;
+    using System.Data;
 
     public class OSAEMethodManager
     {
@@ -67,6 +69,24 @@
                     Logging.GetLogger().AddToLog("API - MethodQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
-        }       
+        }  
+     
+        public static List<OSAEMethod> GetMethodsInQueue()
+        {
+            List<OSAEMethod> methods = new List<OSAEMethod>();
+
+            DataSet dataset = new DataSet();
+            MySqlCommand command = new MySqlCommand();
+            command.CommandText = "SELECT method_queue_id, object_name, address, method_name, parameter_1, parameter_2, object_owner FROM osae_v_method_queue ORDER BY entry_time";
+            dataset = OSAESql.RunQuery(command);
+
+            foreach (DataRow row in dataset.Tables[0].Rows)
+            {
+                OSAEMethod method = new OSAEMethod(row["method_name"].ToString(), row["object_name"].ToString(), row["parameter_1"].ToString(), row["parameter_2"].ToString(), row["address"].ToString(), row["object_owner"].ToString());
+                methods.Add(method);
+            }
+
+            return methods;
+        }
     }
 }
