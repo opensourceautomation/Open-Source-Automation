@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.IO;
-using OpenSourceAutomation;
-using RoombaSCI;
-
-namespace OSAE.Roomba
+﻿namespace OSAE.Roomba
 {
-    [AddIn("Roomba", Version = "0.0.1")]
-    public class Roomba : IOpenSourceAutomationAddIn
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Data;
+    using System.IO;
+    using RoombaSCI;
+    using OSAE;
+
+    public class Roomba : OSAEPluginBase
     {
-        OSAE osae = new OSAE("Roomba");
+        Logging logging = Logging.GetLogger("Roomba");
         RoombaAPI roomba = new RoombaAPI("COM8", 115200);
         short speed;
         List<RoombaAPI> roombas = new List<RoombaAPI>();
-
-        
 
         public void ProcessCommand(System.Data.DataTable table)
         {
