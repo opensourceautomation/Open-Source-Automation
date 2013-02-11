@@ -8,8 +8,8 @@ namespace OSAE.SSH
 {
     public class SSH : OSAEPluginBase
     {
-        OSAE osae = new OSAE("SSH");
-        Logging logging = new Logging("SSH");
+        Logging logging = Logging.GetLogger("SSH");
+        
         string pName;
         string server = "";
         string username = "";
