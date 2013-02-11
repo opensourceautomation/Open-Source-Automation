@@ -18,10 +18,10 @@ Public Class CM11
         'Dim sObjectName As String = ""
         'Dim sCommand As Integer
         'Try
-        '    OSAEApi.AddToLog("---------------------------")
-        '    OSAEApi.AddToLog("Single Event: Devices= " & devices)
-        '    OSAEApi.AddToLog("            : House Code= " & housecode)
-        '    ' OSAEApi.AddToLog("Single Event (Devices=" & devices & ", HouseCode=" & housecode & ", Command=" & command & ", Extra=" & extra & ")")
+        '    logging.AddToLog("---------------------------")
+        '    logging.AddToLog("Single Event: Devices= " & devices)
+        '    logging.AddToLog("            : House Code= " & housecode)
+        '    ' logging.AddToLog("Single Event (Devices=" & devices & ", HouseCode=" & housecode & ", Command=" & command & ", Extra=" & extra & ")")
         '    Select Case command
         '        'Case 0 : sCommand = "All Lights Off"
         '        'Case 1 : sCommand = "All Lights On"
@@ -30,7 +30,7 @@ Public Class CM11
         '        Case 4 : sCommand = "ON"  ' 4=Dim
         '        Case 5 : sCommand = "OFF" ' 5=Bright
         '        Case Else
-        '            OSAEApi.AddToLog("Unsupported Single Event (Command=" & command & ")")
+        '            logging.AddToLog("Unsupported Single Event (Command=" & command & ")")
         '            Exit Sub
         '            ' 6=All Lights Off
         '            ' 7=Extended
@@ -45,7 +45,7 @@ Public Class CM11
         '            '16=-1
         '    End Select
         'Catch myerror As Exception
-        '    OSAEApi.AddToLog("Error ctlCM11a_X10SingleEvent 1: " & myerror.Message)
+        '    logging.AddToLog("Error ctlCM11a_X10SingleEvent 1: " & myerror.Message)
         '    Exit Sub
         'End Try
         'Try
@@ -56,7 +56,7 @@ Public Class CM11
         '    sObjectName = dsResults.Tables(0).Rows(0).Item(0)
         '    OSAEApi.ObjectStateSet(sObjectName, sCommand)
         'Catch myerror As Exception
-        '    OSAEApi.AddToLog("Error ctlCM11a_X10SingleEvent 2: " & myerror.Message)
+        '    logging.AddToLog("Error ctlCM11a_X10SingleEvent 2: " & myerror.Message)
         'End Try
     End Sub
 
@@ -78,7 +78,7 @@ Public Class CM11
             End If
             logging.AddToLog(" House Code= " & housecode, True)
 
-            ' OSAEApi.AddToLog("Single Event (Devices=" & devices & ", HouseCode=" & housecode & ", Command=" & command & ", Extra=" & extra & ")")
+            ' logging.AddToLog("Single Event (Devices=" & devices & ", HouseCode=" & housecode & ", Command=" & command & ", Extra=" & extra & ")")
             Select Case command
                 'Case 0 : sCommand = "All Lights Off"
                 'Case 1 : sCommand = "All Lights On"
