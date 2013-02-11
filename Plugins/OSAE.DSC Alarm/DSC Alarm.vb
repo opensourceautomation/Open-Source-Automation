@@ -7,9 +7,9 @@ Imports System.Threading.Thread
 
 <AddIn("DSC Alarm", Version:="0.1.4")>
 Public Class DSCAlarm
-    Implements IOpenSourceAutomationAddInv2
-    Private OSAEApi As New OSAE("DSC Alarm")
-    Private AddInName As String
+    Inherits OSAEPluginBase
+    Private Shared logging As Logging = logging.GetLogger("DSC Alarm")
+    Private pName As String
     'Private ComputerName As String
     Private COMPort As String
     Private BaudRate, UpdateTime As Integer
@@ -90,25 +90,25 @@ Public Class DSCAlarm
     End Enum
 
 
-    Public Sub RunInterface(ByVal pluginName As String) Implements IOpenSourceAutomationAddInv2.RunInterface
+    Public Overrides Sub RunInterface(ByVal pluginName As String)
         Dim ZoneString As String
         Try
-            OSAEApi.AddToLog("Initializing plugin: " & pluginName, True)
-            AddInName = pluginName
+            logging.AddToLog("Initializing plugin: " & pluginName, True)
+            pName = pluginName
 
-            PartitionStatus = OSAEApi.GetObjectPropertyValue(AddInName, "PartitionStatus").Value
+            PartitionStatus = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "PartitionStatus").Value
             PartitionStatusLast = PartitionStatus
             For ZoneNumber = 1 To 16
                 ZoneString = ZoneNumber.ToString("D2")
-                ZoneArray(ZoneNumber) = OSAEApi.GetObjectPropertyValue(AddInName, "Zone" & ZoneString).Value
+                ZoneArray(ZoneNumber) = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Zone" & ZoneString).Value
                 ZoneArrayLast(ZoneNumber) = ZoneArray(ZoneNumber)
             Next
 
-            COMPort = "COM" + OSAEApi.GetObjectPropertyValue(pluginName, "Port").Value.ToString
-            BaudRate = CInt(OSAEApi.GetObjectPropertyValue(pluginName, "Baud").Value.ToString)
-            UpdateTime = CInt(OSAEApi.GetObjectPropertyValue(pluginName, "UpdateTime").Value.ToString)
+            COMPort = "COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "Port").Value.ToString()
+            BaudRate = CInt(OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "Baud").Value.ToString)
+            UpdateTime = CInt(OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "UpdateTime").Value.ToString)
             ControllerPort = New SerialPort(COMPort)
-            OSAEApi.AddToLog("Port is set to " & COMPort & " and baud to " & BaudRate.ToString, True)
+            logging.AddToLog("Port is set to " & COMPort & " and baud to " & BaudRate.ToString, True)
             ControllerPort.BaudRate = BaudRate
             ControllerPort.Parity = Parity.None
             ControllerPort.DataBits = 8
@@ -134,48 +134,48 @@ Public Class DSCAlarm
             UpdateTimer.Enabled = True
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error setting up plugin: " & ex.Message, True)
+            logging.AddToLog("Error setting up plugin: " & ex.Message, True)
         End Try
     End Sub
 
-    Public Sub ProcessCommand(method As OSAEMethod) Implements IOpenSourceAutomationAddInv2.ProcessCommand
+    Public Overrides Sub ProcessCommand(method As OSAEMethod)
         Try
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error Processing Command " & ex.Message, True)
+            logging.AddToLog("Error Processing Command " & ex.Message, True)
         End Try
 
     End Sub
 
-    Public Sub Shutdown() Implements OpenSourceAutomation.IOpenSourceAutomationAddInv2.Shutdown
+    Public Overrides Sub Shutdown()
         Try
-            OSAEApi.AddToLog("Shutting down plugin", True)
+            logging.AddToLog("Shutting down plugin", True)
             If ControllerPort.IsOpen Then
                 ControllerPort.Close()
             End If
-            OSAEApi.AddToLog("Finished shutting down plugin", True)
+            logging.AddToLog("Finished shutting down plugin", True)
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error shutting down: " & ex.Message, True)
+            logging.AddToLog("Error shutting down: " & ex.Message, True)
         End Try
     End Sub
 
     Protected Sub UpdateReceived(ByVal sender As Object, ByVal e As SerialDataReceivedEventArgs)
         Try
-            OSAEApi.AddToLog("Running serial port event handler", False)
+            logging.AddToLog("Running serial port event handler", False)
             ProcessReceived()
         Catch ex As Exception
-            OSAEApi.AddToLog("Error in UpdateReceived " & ex.Message, True)
+            logging.AddToLog("Error in UpdateReceived " & ex.Message, True)
         End Try
     End Sub
 
     Protected Sub TimerHandler(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         Try
-            OSAEApi.AddToLog("Timer Update", False)
+            logging.AddToLog("Timer Update", False)
             SendString = Int(Command.StatusRequest).ToString("D3")
             SendCommand(SendString)
         Catch ex As Exception
-            OSAEApi.AddToLog("Error in TimerHandler " & ex.Message, True)
+            logging.AddToLog("Error in TimerHandler " & ex.Message, True)
         End Try
     End Sub
 
@@ -183,9 +183,9 @@ Public Class DSCAlarm
         Try
             message &= CalcChecksum(message) & vbCrLf
             ControllerPort.Write(message)
-            OSAEApi.AddToLog("Sending message:" & message.TrimEnd & "| Message Lenght= " & message.Length.ToString, False)
+            logging.AddToLog("Sending message:" & message.TrimEnd & "| Message Lenght= " & message.Length.ToString, False)
         Catch ex As Exception
-            OSAEApi.AddToLog("Error Sending Command " & ex.Message, True)
+            logging.AddToLog("Error Sending Command " & ex.Message, True)
         End Try
     End Sub
 
@@ -194,7 +194,7 @@ Public Class DSCAlarm
         Dim MyIndex As Integer
         Try
             Message = ControllerPort.ReadExisting()
-            OSAEApi.AddToLog("Received: " & Message.TrimEnd, False)
+            logging.AddToLog("Received: " & Message.TrimEnd, False)
 
             If Message.Length > 0 Then
                 ReceivedMessage += Message
@@ -211,7 +211,7 @@ Public Class DSCAlarm
             End If
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error receiving on com port:" & ex.Message, True)
+            logging.AddToLog("Error receiving on com port:" & ex.Message, True)
         End Try
     End Sub
 
@@ -221,15 +221,15 @@ Public Class DSCAlarm
         Dim SoftwareVersion As String
 
         Try
-            OSAEApi.AddToLog("Processing message:" & message, False)
+            logging.AddToLog("Processing message:" & message, False)
             RecCommand = CInt(message.Substring(0, 3))
 
             If Not Command.IsDefined(GetType(Command), RecCommand) Then
-                OSAEApi.AddToLog("Unrecognized Command:" & message, True)
+                logging.AddToLog("Unrecognized Command:" & message, True)
             Else
                 Select Case RecCommand
                     Case Command.CommandAcknowledge
-                        OSAEApi.AddToLog("Command Acknowleged by Alarm", False)
+                        logging.AddToLog("Command Acknowleged by Alarm", False)
 
                         'Partion Status
                     Case Command.PartitionReady
@@ -277,15 +277,15 @@ Public Class DSCAlarm
 
                         'Trouble LED Commands
                     Case Command.TroubleLEDOn
-                        OSAEApi.ObjectPropertySet(AddInName, "TroubleLED", "On")
+                        OSAEObjectPropertyManager.ObjectPropertySet(pName, "TroubleLED", "On", pName)
                     Case Command.TroubleLEDOff
-                        OSAEApi.ObjectPropertySet(AddInName, "TroubleLED", "Off")
+                        OSAEObjectPropertyManager.ObjectPropertySet(pName, "TroubleLED", "Off", pName)
 
                         'Keybus
                     Case Command.KeybusFault
-                        OSAEApi.ObjectPropertySet(AddInName, "Keybus", "Fault")
+                        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Keybus", "Fault", pName)
                     Case Command.KeybusFaultRestore
-                        OSAEApi.ObjectPropertySet(AddInName, "Keybus", "Restore")
+                        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Keybus", "Restore", pName)
 
                         'LCDUpdate
                     Case Command.LCDUpdate
@@ -325,7 +325,7 @@ Public Class DSCAlarm
                                 LEDStatus = "Flashing"
                         End Select
 
-                        OSAEApi.ObjectPropertySet(AddInName, "LED" & LED, LEDStatus)
+                        OSAEObjectPropertyManager.ObjectPropertySet(pName, "LED" & LED, LEDStatus, pName)
 
                     Case Command.ZoneOpen, Command.ZoneRestored
                         Zone = message.Substring(4, 2)
@@ -334,14 +334,14 @@ Public Class DSCAlarm
                             If RecCommand = Command.ZoneOpen Then
                                 ZoneArray(ZoneInt) = "Open"
                                 If ZoneArray(ZoneInt) <> ZoneArrayLast(ZoneInt) Then
-                                    OSAEApi.EventLogAdd(AddInName, "Zone" & Zone & " Open")
-                                    OSAEApi.ObjectPropertySet(AddInName, "Zone" & Zone, "Open")
+                                    logging.EventLogAdd(pName, "Zone" & Zone & " Open")
+                                    OSAEObjectPropertyManager.ObjectPropertySet(pName, "Zone" & Zone, "Open", pName)
                                 End If
                             Else
                                 ZoneArray(ZoneInt) = "Closed"
                                 If ZoneArray(ZoneInt) <> ZoneArrayLast(ZoneInt) Then
-                                    OSAEApi.EventLogAdd(AddInName, "Zone" & Zone & " Closed")
-                                    OSAEApi.ObjectPropertySet(AddInName, "Zone" & Zone, "Closed")
+                                    logging.EventLogAdd(pName, "Zone" & Zone & " Closed")
+                                    OSAEObjectPropertyManager.ObjectPropertySet(pName, "Zone" & Zone, "Closed", pName)
                                 End If
                             End If
                             ZoneArrayLast(Zone) = ZoneArray(Zone)
@@ -349,29 +349,29 @@ Public Class DSCAlarm
 
                     Case Command.SoftwareVersion
                         SoftwareVersion = message.Substring(3, 6)
-                        OSAEApi.ObjectPropertySet(AddInName, "SoftwareVersion", "SoftwareVersion")
+                        OSAEObjectPropertyManager.ObjectPropertySet(pName, "SoftwareVersion", "SoftwareVersion", pName)
 
                     Case Else
-                        OSAEApi.AddToLog("Command not configured for message:" & message, True)
+                        logging.AddToLog("Command not configured for message:" & message, True)
                 End Select
                 If PartitionStatus <> PartitionStatusLast Then
                     'Trigger Event
                     Select Case RecCommand
                         Case Command.PartitionArmed, Command.PartitionInAlarm, Command.ExitDelayInProgress, Command.EntryDelayInProgress
-                            OSAEApi.AddToLog("Partition status`changed to " & PartitionStatus, True)
-                            OSAEApi.EventLogAdd(AddInName, "Partition " & PartitionStatus)
+                            logging.AddToLog("Partition status`changed to " & PartitionStatus, True)
+                            logging.EventLogAdd(pName, "Partition " & PartitionStatus)
                     End Select
                     PartitionStatusLast = PartitionStatus
                 End If
             End If
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error parsing message:" & ex.Message, True)
+            logging.AddToLog("Error parsing message:" & ex.Message, True)
         End Try
     End Sub
 
     Sub SetPartitionStatus(PartitionStatus As String)
-        OSAEApi.ObjectPropertySet(AddInName, "PartitionStatus", PartitionStatus)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "PartitionStatus", PartitionStatus, pName)
     End Sub
 
     Function CalcChecksum(ByVal SendString As String) As String
@@ -387,7 +387,7 @@ Public Class DSCAlarm
             Return (CheckSum >> 4).ToString("X") & (CheckSum And &HF).ToString("X")
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error in CalcChecksum " & ex.Message, True)
+            logging.AddToLog("Error in CalcChecksum " & ex.Message, True)
             Return "00"
         End Try
     End Function
