@@ -24,20 +24,23 @@ namespace OSAE.UI.Controls
         public Point Location;
         public OSAEObject screenObject { get; set; }
 
-        private string imgPath;
+
+        private OSAEImageManager imgMgr = new OSAEImageManager();
 
         public NavigationImage(string Name, string path, OSAEObject sObj)
         {
             InitializeComponent();
             screenObject = sObj;
             screenName = Name;
-            imgPath = Common.ApiPath + path;
 
             Image.Tag = screenName;
-            if (File.Exists(imgPath))
+
+            string imgName = screenObject.Property("Image").Value;
+            OSAEImage img = imgMgr.GetImage(imgName);
+
+            if (img.Data != null)
             {
-                byte[] byteArray = File.ReadAllBytes(imgPath);
-                var imageStream = new MemoryStream(byteArray);
+                var imageStream = new MemoryStream(img.Data);
                 var bitmapImage = new BitmapImage();
 
                 bitmapImage.BeginInit();

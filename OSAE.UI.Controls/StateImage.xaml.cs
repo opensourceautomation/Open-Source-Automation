@@ -12,7 +12,6 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class StateImage : UserControl
     {
-        private const string sourceName = "GUI";
         public OSAEObject screenObject { get; set; }
         public Point Location;
         public DateTime LastUpdated;
@@ -21,7 +20,9 @@ namespace OSAE.UI.Controls
         public string CurState;
 
         private string ObjectName;
-        
+        private string ObjectStateTime;
+        private OSAEImageManager imgMgr = new OSAEImageManager();
+
         public StateImage(OSAEObject sObject)
         {
             InitializeComponent();
@@ -44,12 +45,12 @@ namespace OSAE.UI.Controls
                 }
             }
 
-            imgPath = Common.ApiPath + screenObject.Property(StateMatch + " Image").Value;
+            string imgName = screenObject.Property(StateMatch + " Image").Value;
+            OSAEImage img = imgMgr.GetImage(imgName);
 
-            if (File.Exists(imgPath))
+            if (img.Data != null)
             {
-                byte[] byteArray = File.ReadAllBytes(imgPath);
-                var imageStream = new MemoryStream(byteArray);
+                var imageStream = new MemoryStream(img.Data);
                 var bitmapImage = new BitmapImage();
 
                 bitmapImage.BeginInit();
@@ -76,21 +77,16 @@ namespace OSAE.UI.Controls
                     StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
                 }
             }
-            
+
             Location.X = Double.Parse(screenObject.Property(StateMatch + " X").Value);
             Location.Y = Double.Parse(screenObject.Property(StateMatch + " Y").Value);
 
-            String imagePath = screenObject.Property(StateMatch + " Image").Value;
-            if (File.Exists(Common.ApiPath + imagePath))
-            {
-                imagePath = Common.ApiPath + imagePath;
-            }
+            string imgName = screenObject.Property(StateMatch + " Image").Value;
+            OSAEImage img = imgMgr.GetImage(imgName);
 
-            if (File.Exists(imagePath))
+            if (img.Data != null)
             {
-                
-                byte[] byteArray = File.ReadAllBytes(imagePath);
-                var imageStream = new MemoryStream(byteArray);
+                var imageStream = new MemoryStream(img.Data);
 
 
                 this.Dispatcher.Invoke((Action)(() =>
@@ -105,17 +101,22 @@ namespace OSAE.UI.Controls
         }
 
         private void State_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
-        {           
+        {
+            bool iResults = false;
+
             if (CurState == "ON")
             {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", string.Empty, string.Empty, sourceName);
-                OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", sourceName);
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "", "", "GUI");
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", "GUI");
             }
             else
             {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", string.Empty, string.Empty, sourceName);
-                OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", sourceName);
-            }            
-        }        
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "", "", "GUI");
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", "GUI");
+            }
+
+        }
+
+
     }
 }
