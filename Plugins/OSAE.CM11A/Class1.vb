@@ -1,7 +1,5 @@
 ﻿Imports cm11a
 Imports MySql.Data.MySqlClient
-Imports System.AddIn
-Imports OpenSourceAutomation
 Imports OSAE
 
 Public Class CM11

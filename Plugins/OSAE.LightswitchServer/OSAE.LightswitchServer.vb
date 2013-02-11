@@ -1,26 +1,14 @@
-﻿Imports System
-Imports System.Web
-Imports System.Net
+﻿Imports System.Net
 Imports System.Net.Sockets
-Imports System.Text
-Imports System.Threading
-Imports Microsoft.VisualBasic
 Imports System.Security.Cryptography
-Imports System.AddIn
-Imports OpenSourceAutomation
-Imports System.Timers
-Imports System.IO.Ports
-Imports System.Threading.Thread
-Imports MySql.Data.MySqlClient
+Imports System.Text
 
-
-<AddIn("Lightswitch Server", Version:="0.1.0")>
 Public Class LightswitchServer
-    Implements OSAEPluginBase
+    Inherits OSAEPluginBase
 
-    Public OSAEApi As New OSAE("Lightswitch Server")
+    Private Shared logging As Logging = logging.GetLogger("Lightswitch Server")
     Public pluginVersion As String = "0.1.0"
-    Private Shared AddInName As String
+    Private Shared pName As String
     Private Shared port As Int32
     ' Attributes
     Private m_aryClients As New ArrayList()
@@ -35,15 +23,15 @@ Public Class LightswitchServer
     Dim objRandom As New System.Random(CType(System.DateTime.Now.Ticks Mod System.Int32.MaxValue, Integer))
 
 
-    Public Sub Overrides ProcessCommand(ByVal table As System.Data.DataTable)
+    Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
         'process start and stop commands here
     End Sub
 
-    Public Sub Overrides RunInterface(ByVal pluginName As String)
+    Public Overrides Sub RunInterface(ByVal pluginName As String)
         Dim app As New LightswitchServer()
         Try
-            OSAEApi.AddToLog("Initializing plugin: " & pluginName, True)
-            AddInName = pluginName
+            logging.AddToLog("Initializing plugin: " & pluginName, True)
+            pName = pluginName
 
             port = GetProperty("TCP Port")
 
@@ -66,30 +54,30 @@ Public Class LightswitchServer
 
             Dim localEndPoint As New IPEndPoint(ipAddress, port)
 
-            OSAEApi.AddToLog("Using IP address " & ipAddress.ToString & " on port " & port, True)
+            logging.AddToLog("Using IP address " & ipAddress.ToString & " on port " & port, True)
 
             ' Bind the socket to the local endpoint and listen for incoming connections.
             listener.Bind(localEndPoint)
             listener.Listen(100)
 
             ' Start an asynchronous socket to listen for connections.
-            OSAEApi.AddToLog("Waiting for a connection...", True)
+            logging.AddToLog("Waiting for a connection...", True)
             ' Setup a callback to be notified of connection requests
             listener.BeginAccept(New AsyncCallback(AddressOf app.OnConnectRequest), listener)
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error setting up plugin: " & ex.Message, True)
+            logging.AddToLog("Error setting up plugin: " & ex.Message, True)
         End Try
 
     End Sub
 
 
-    Public Sub Shutdown() Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.Shutdown
-        OSAEApi.AddToLog("Shutting down plugin", True)
+    Public Overrides Sub Shutdown()
+        logging.AddToLog("Shutting down plugin", True)
         listener.Close()
         GC.Collect()
         GC.WaitForPendingFinalizers()
-        OSAEApi.AddToLog("Finished shutting down plugin", True)
+        logging.AddToLog("Finished shutting down plugin", True)
     End Sub
 
 
@@ -106,7 +94,7 @@ Public Class LightswitchServer
         ' Program blocks on Accept() until a client connects.
         Dim client As New SocketClient(sockClient)
         m_aryClients.Add(client)
-        OSAEApi.AddToLog("Client " & client.Sock.RemoteEndPoint.ToString & ", joined", True)
+        logging.AddToLog("Client " & client.Sock.RemoteEndPoint.ToString & ", joined", True)
 
         client.authenticationLevel = 1
 
@@ -131,7 +119,7 @@ Public Class LightswitchServer
         ' If no data was recieved then the connection is probably dead
         If aryRet.Length < 1 Then
 
-            OSAEApi.AddToLog("Client " & client.Sock.RemoteEndPoint.ToString & ", disconnected", True)
+            logging.AddToLog("Client " & client.Sock.RemoteEndPoint.ToString & ", disconnected", True)
             client.Sock.Close()
             m_aryClients.Remove(client)
             Return
@@ -152,7 +140,7 @@ Public Class LightswitchServer
             If eol > -1 Then
                 buffer += received.Substring(0, eol)
                 'process buffer
-                OSAEApi.AddToLog("Processing buffer: " & buffer, False)
+                logging.AddToLog("Processing buffer: " & buffer, False)
                 'ProcessBuffer(clientSend, buffer)
                 ProcessBuffer(client, buffer)
                 'Clear the buffer
@@ -163,7 +151,7 @@ Public Class LightswitchServer
 
         Catch
             ' If the send fails the close the connection
-            OSAEApi.AddToLog("Send to client " & client.Sock.RemoteEndPoint.ToString & " failed", True)
+            logging.AddToLog("Send to client " & client.Sock.RemoteEndPoint.ToString & " failed", True)
             'clientSend.Sock.Close()
             client.Sock.Close()
             m_aryClients.Remove(client)
@@ -187,7 +175,7 @@ Public Class LightswitchServer
             If text.StartsWith(connectString) Then
                 'If the connect string is not the first thing sent from the client, then disconnect them
                 If client.authenticationLevel <> 1 Then
-                    OSAEApi.AddToLog("Connect string error: String sent [" & text & "] does not match  [" & connectString & "]", True)
+                    logging.AddToLog("Connect string error: String sent [" & text & "] does not match  [" & connectString & "]", True)
                     client.Sock.Close()
                     m_aryClients.Remove(client)
                     Return
@@ -197,14 +185,14 @@ Public Class LightswitchServer
                     ' Send the salt cookie string string
                     send(client, "COOKIE~" & client.cookie.ToString & vbLf)
 
-                    OSAEApi.AddToLog("Sending cookie " & client.cookie.ToString & " to client " & client.Sock.RemoteEndPoint.ToString, False)
+                    logging.AddToLog("Sending cookie " & client.cookie.ToString & " to client " & client.Sock.RemoteEndPoint.ToString, False)
 
                     'Increment the authentication level
                     client.authenticationLevel += 1
                 End If
             ElseIf text.StartsWith("PASSWORD") Then
                 If client.authenticationLevel <> 2 Then
-                    OSAEApi.AddToLog("Password authentication failed", True)
+                    logging.AddToLog("Password authentication failed", True)
                     client.Sock.Close()
                     m_aryClients.Remove(client)
                     Return
@@ -216,14 +204,14 @@ Public Class LightswitchServer
                     'Verify the transmitted password
                     If pwd(1) <> hash Then
                         send(client, "ERR~Passwords do not match" & vbLf)
-                        OSAEApi.AddToLog("Client: " & pwd(1), False)
-                        OSAEApi.AddToLog("Server: " & hash, False)
-                        OSAEApi.AddToLog("Authentication failure from client " & client.Sock.RemoteEndPoint.ToString, False)
+                        logging.AddToLog("Client: " & pwd(1), False)
+                        logging.AddToLog("Server: " & hash, False)
+                        logging.AddToLog("Authentication failure from client " & client.Sock.RemoteEndPoint.ToString, False)
                         client.authenticationLevel = 1
                         Return
                     Else
                         send(client, "VER~OSA Plugin version " & pluginVersion & vbLf)
-                        OSAEApi.AddToLog("Client " & client.Sock.RemoteEndPoint.ToString & " has successfully authenticated to the server", False)
+                        logging.AddToLog("Client " & client.Sock.RemoteEndPoint.ToString & " has successfully authenticated to the server", False)
                     End If
 
                     'Increment the authentication level
@@ -261,11 +249,11 @@ Public Class LightswitchServer
             Try
                 Select Case deviceType.ToUpper
                     Case "BINARYSWITCH"
-                        OSAEApi.MethodQueueAdd(node, state, param1, param2)
-                        OSAEApi.AddToLog("Set address " & node & "'s state to " & state, False)
+                        OSAEMethodManager.MethodQueueAdd(node, state, param1, param2, pName)
+                        logging.AddToLog("Set address " & node & "'s state to " & state, False)
                     Case "MULTILEVELSWITCH"
-                        OSAEApi.MethodQueueAdd(node, state, level, param2)
-                        OSAEApi.AddToLog("Set address " & node & "'s state to " & state & " and level to " & level, False)
+                        OSAEMethodManager.MethodQueueAdd(node, state, level, param2, pName)
+                        logging.AddToLog("Set address " & node & "'s state to " & state & " and level to " & level, False)
                     Case "THERMOSTAT"
                         'Thermostat control logic
                     Case "THERMOMETER"
@@ -278,7 +266,7 @@ Public Class LightswitchServer
                         'Thermostat read logic
                 End Select
             Catch ex As Exception
-                OSAEApi.AddToLog("Error setting object state: " & ex.Message, True)
+                logging.AddToLog("Error setting object state: " & ex.Message, True)
             End Try
         ElseIf text.StartsWith("THERMMODE") Then
             Dim tstatMode As String() = text.Split(New Char() {"~"c})
@@ -308,8 +296,8 @@ Public Class LightswitchServer
                 Case "7" 'Comfort
                     cmd = ""
             End Select
-            OSAEApi.AddToLog("Manage thermostat: tstat - " & tstat & " | cmd -  " & cmd & " | param - " & param1, False)
-            OSAEApi.MethodQueueAdd(tstat, cmd, param1, param2)
+            logging.AddToLog("Manage thermostat: tstat - " & tstat & " | cmd -  " & cmd & " | param - " & param1, False)
+            OSAEMethodManager.MethodQueueAdd(tstat, cmd, param1, param2, pName)
         ElseIf text.StartsWith("THERMTEMP") Then
             Dim tstatMode As String() = text.Split(New Char() {"~"c})
             Dim tstat As String = tstatMode(1)
@@ -324,18 +312,18 @@ Public Class LightswitchServer
                 Case "3" 'Cool
                     cmd = "SETCOOLSP"
             End Select
-            OSAEApi.AddToLog("Manage thermostat: tstat - " & tstat & " | cmd -  " & cmd & " | temp - " & param1, False)
-            OSAEApi.MethodQueueAdd(tstat, cmd, param1, param2)
+            logging.AddToLog("Manage thermostat: tstat - " & tstat & " | cmd -  " & cmd & " | temp - " & param1, False)
+            OSAEMethodManager.MethodQueueAdd(tstat, cmd, param1, param2, pName)
         ElseIf text.StartsWith("ZONE") Then
 
         Else
-            OSAEApi.AddToLog("Unrecognized command: " & text, True)
+            logging.AddToLog("Unrecognized command: " & text, True)
         End If
     End Sub
 
 
     Private Sub listDevices(ByVal objectType As String, ByVal deviceType As String, ByVal client As SocketClient)
-        Dim objects As List(Of OSAEObject) = OSAEApi.GetObjectsByType(objectType)
+        Dim objects As List(Of OSAEObject) = OSAEObjectManager.GetObjectsByType(objectType)
         Dim level As String
         Dim device As String
 
@@ -344,14 +332,14 @@ Public Class LightswitchServer
             Dim name As String = obj.Name
             Dim state As String = obj.State.Value.ToString
             Try
-                level = OSAEApi.GetObjectPropertyValue(name, "level").Value.ToString
+                level = OSAEObjectPropertyManager.GetObjectPropertyValue(name, "level").Value
             Catch
                 level = If(state.ToUpper = "ON", "100", "0")
             End Try
             level = If(state.ToUpper = "ON", "100", "0")
             device = "DEVICE~" & name & "~" & name & "~" & level & "~" & deviceType
 
-            OSAEApi.AddToLog("Found device: " & device & " at state " & state.ToUpper, False)
+            logging.AddToLog("Found device: " & device & " at state " & state.ToUpper, False)
 
             send(client, device & vbLf)
         Next
@@ -359,7 +347,7 @@ Public Class LightswitchServer
 
 
     Private Sub listZones(ByVal objectType As String, ByVal deviceType As String, ByVal client As SocketClient)
-        Dim objects As List(Of OSAEObject) = OSAEApi.GetObjectsByType(objectType)
+        Dim objects As List(Of OSAEObject) = OSAEObjectManager.GetObjectsByType(objectType)
         Dim level As String
         Dim device As String
 
@@ -368,7 +356,7 @@ Public Class LightswitchServer
             level = 0
             device = "ZONE~" & name & "~" & name & "~" & level & "~" & deviceType
 
-            OSAEApi.AddToLog("Found zone: " & name, False)
+            logging.AddToLog("Found zone: " & name, False)
 
             send(client, device & vbLf)
         Next
@@ -381,25 +369,25 @@ Public Class LightswitchServer
             Dim byteTxString As [Byte]() = System.Text.Encoding.ASCII.GetBytes(text.ToCharArray())
             client.Sock.Send(byteTxString, byteTxString.Length, 0)
         Catch ex As Exception
-            OSAEApi.AddToLog("Error sending to socket: " & ex.Message, True)
+            logging.AddToLog("Error sending to socket: " & ex.Message, True)
         End Try
     End Sub
 
 
     Private Sub SetProperty(ByVal PropertyName As String, ByVal Data As String)
         Try
-            OSAEApi.ObjectPropertySet(AddInName, PropertyName, Data)
+            OSAEObjectPropertyManager.ObjectPropertySet(pName, PropertyName, Data, pName)
         Catch ex As Exception
-            OSAEApi.AddToLog("Error setting property value: " & ex.Message, True)
+            logging.AddToLog("Error setting property value: " & ex.Message, True)
         End Try
     End Sub
 
 
     Private Function GetProperty(ByVal PropertyName As String) As String
         Try
-            Return OSAEApi.GetObjectPropertyValue(AddInName, PropertyName).Value()
+            Return OSAEObjectPropertyManager.GetObjectPropertyValue(pName, PropertyName).Value()
         Catch ex As Exception
-            OSAEApi.AddToLog("Error getting property value: " & ex.Message, True)
+            logging.AddToLog("Error getting property value: " & ex.Message, True)
             Return ""
         End Try
     End Function
@@ -467,7 +455,7 @@ Friend Class SocketClient
             Dim recieveData As New AsyncCallback(AddressOf app.OnRecievedData)
             m_sock.BeginReceive(m_byBuff, 0, m_byBuff.Length, SocketFlags.None, recieveData, Me)
         Catch ex As Exception
-            app.OSAEApi.AddToLog("Recieve callback setup failed! " & ex.Message, True)
+            Logging.AddToLog("Recieve callback setup failed! " & ex.Message, True, "Lightswitch Server")
         End Try
     End Sub
 
