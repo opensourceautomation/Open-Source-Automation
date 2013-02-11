@@ -12,7 +12,7 @@
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public static  bool ObjectExists(string address)
+        public static bool ObjectExists(string address)
         {           
             try
             {

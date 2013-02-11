@@ -1,14 +1,8 @@
-﻿Imports System.AddIn
-Imports OpenSourceAutomation
-<AddIn("PHIDGET-IK", Version:="1.0.0")>
-Public Class PhidgetIK
-    Implements IOpenSourceAutomationAddIn
-
+﻿Public Class PhidgetIK
+    Inherits OSAEPluginBase
     Dim WithEvents phidgetIFK As Phidgets.InterfaceKit
-    'Private CN As MySqlConnection
-    Private OSAEApi As New OSAE("PHIDGET-IK")
-
-    Private gAppName As String = ""
+    Private Shared logging As Logging = logging.GetLogger("PHIDGET-IK")
+    Private pName As String = ""
     Private gAttached As Boolean
     Private gName As String = ""
     Private gSerial As String = ""
@@ -24,58 +18,56 @@ Public Class PhidgetIK
     Private gIsLoading As Boolean = True
     Private tmrStartup As New Timers.Timer
 
-    Public Sub ProcessCommand(ByVal table As System.Data.DataTable) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.ProcessCommand
+    Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
         Dim sAddress As String, iState As Integer
-        Dim row As System.Data.DataRow
-        For Each row In table.Rows
-            Try
-                If row("method_name").ToString = "SET SENSITIVITY" Then
-                    Try
-                        Dim i As Integer
-                        For i = 0 To phidgetIFK.sensors.Count - 1
-                            phidgetIFK.sensors(i).Sensitivity = row("parameter_1").ToString
-                        Next
-                    Catch ex As Exception
-                        OSAEApi.AddToLog("Error SET SENSITIVITY - " & ex.Message, True)
-                    End Try
-                ElseIf row("method_name").ToString = "SET RADIOMETERIC" Then
-                    Try
-                        If phidgetIFK.Attached Then
-                            phidgetIFK.ratiometric = row("parameter_1").ToString
-                        End If
-                    Catch ex As Exception
-                        OSAEApi.AddToLog("Error SET RADIOMETERIC - " & ex.Message, True)
-                    End Try
-                Else
-                    sAddress = row("address").ToString.Replace((gSerial & "-DO"), "")
-                    If row("method_name").ToString = "ON" Then iState = 1
-                    If row("method_name").ToString = "OFF" Then iState = 0
-                    phidgetIFK.outputs(sAddress) = iState
-                    OSAEApi.ObjectStateSet(row("object_name").ToString, row("method_name").ToString)
-                    OSAEApi.AddToLog("Executed " & row("object_name").ToString & " " & row("method_name").ToString & "(" & row("address").ToString & " " & row("method_name").ToString & ")", True)
-                End If
-            Catch ex As Exception
-                OSAEApi.AddToLog("Error ProcessCommand - " & ex.Message, True)
-            End Try
-        Next
+
+        Try
+            If method.MethodName = "SET SENSITIVITY" Then
+                Try
+                    Dim i As Integer
+                    For i = 0 To phidgetIFK.sensors.Count - 1
+                        phidgetIFK.sensors(i).Sensitivity = method.Parameter1
+                    Next
+                Catch ex As Exception
+                    logging.AddToLog("Error SET SENSITIVITY - " & ex.Message, True)
+                End Try
+            ElseIf method.MethodName = "SET RADIOMETERIC" Then
+                Try
+                    If phidgetIFK.Attached Then
+                        phidgetIFK.ratiometric = method.Parameter1
+                    End If
+                Catch ex As Exception
+                    logging.AddToLog("Error SET RADIOMETERIC - " & ex.Message, True)
+                End Try
+            Else
+                sAddress = method.Address.Replace((gSerial & "-DO"), "")
+                If method.MethodName = "ON" Then iState = 1
+                If method.MethodName = "OFF" Then iState = 0
+                phidgetIFK.outputs(sAddress) = iState
+                OSAEObjectStateManager.ObjectStateSet(method.ObjectName, method.MethodName, pName)
+                logging.AddToLog("Executed " & method.ObjectName & " " & method.MethodName & "(" & method.Address & " " & method.MethodName & ")", True)
+            End If
+        Catch ex As Exception
+            logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
+        End Try
     End Sub
 
-    Public Sub RunInterface(ByVal pluginName As String) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.RunInterface
-        gAppName = pluginName
-        OSAEApi.AddToLog("Found my Object: " & gAppName, True)
+    Public Overrides Sub RunInterface(ByVal pluginName As String)
+        pName = pluginName
+        logging.AddToLog("Found my Object: " & pName, True)
         Try
             phidgetIFK = New Phidgets.InterfaceKit
             phidgetIFK.open()
         Catch ex As Exception
-            OSAEApi.AddToLog(gAppName & " Error: Form1_Load: " & ex.ToString(), True)
+            logging.AddToLog(pName & " Error: Form1_Load: " & ex.ToString(), True)
         End Try
         tmrStartup.Interval = 5000
         AddHandler tmrStartup.Elapsed, AddressOf ResetStartupFlag
         tmrStartup.Enabled = True
-        OSAEApi.AddToLog("Finished Loading", True)
+        logging.AddToLog("Finished Loading", True)
     End Sub
 
-    Public Sub Shutdown() Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.Shutdown
+    Public Overrides Sub Shutdown()
         RemoveHandler phidgetIFK.Attach, AddressOf phidgetIFK_Attach
         RemoveHandler phidgetIFK.Detach, AddressOf phidgetIFK_Detach
         RemoveHandler phidgetIFK.Error, AddressOf phidgetIFK_Error
@@ -91,80 +83,80 @@ Public Class PhidgetIK
 
     Private Sub phidgetIFK_Attach(ByVal sender As Object, ByVal e As Phidgets.Events.AttachEventArgs) Handles phidgetIFK.Attach
         gAttached = phidgetIFK.Attached.ToString()
-        OSAEApi.ObjectPropertySet(gAppName, "Attached", gAttached)
-        OSAEApi.AddToLog("Attached set to: " & gAttached, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Attached", gAttached, pName)
+        logging.AddToLog("Attached set to: " & gAttached, True)
 
         gName = phidgetIFK.Name
-        OSAEApi.ObjectPropertySet(gAppName, "Name", gName)
-        OSAEApi.AddToLog("Name set to: " & gName, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Name", gName, pName)
+        logging.AddToLog("Name set to: " & gName, True)
 
         gVersion = sender.Version.ToString
-        OSAEApi.ObjectPropertySet(gAppName, "Version", gVersion)
-        OSAEApi.AddToLog("Version set to: " & gVersion, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Version", gVersion, pName)
+        logging.AddToLog("Version set to: " & gVersion, True)
 
         gSerial = sender.SerialNumber.ToString()
-        OSAEApi.ObjectPropertySet(gAppName, "Serial", gSerial)
-        OSAEApi.AddToLog("Serial set to: " & gSerial, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Serial", gSerial, pName)
+        logging.AddToLog("Serial set to: " & gSerial, True)
 
         gDigitalInputs = phidgetIFK.inputs.Count.ToString()
-        OSAEApi.ObjectPropertySet(gAppName, "Digital Inputs", gDigitalInputs)
-        OSAEApi.AddToLog("Digital Inputs set to: " & gDigitalInputs, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Digital Inputs", gDigitalInputs, pName)
+        logging.AddToLog("Digital Inputs set to: " & gDigitalInputs, True)
 
         gDigitalOutputs = sender.outputs.Count.ToString()
-        OSAEApi.ObjectPropertySet(gAppName, "Digital Outputs", gDigitalOutputs)
-        OSAEApi.AddToLog("Digital Outputs set to: " & gDigitalOutputs, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Digital Outputs", gDigitalOutputs, pName)
+        logging.AddToLog("Digital Outputs set to: " & gDigitalOutputs, True)
 
         gAnalogInputs = sender.sensors.Count.ToString()
-        OSAEApi.ObjectPropertySet(gAppName, "Analog Inputs", gAnalogInputs)
-        OSAEApi.AddToLog("Analog Inputs set to: " & gAnalogInputs, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Analog Inputs", gAnalogInputs, pName)
+        logging.AddToLog("Analog Inputs set to: " & gAnalogInputs, True)
 
         Dim i As Integer
         For i = 0 To gDigitalInputs - 1
             Try
-                Dim bExists = OSAEApi.ObjectExists(gSerial & "-DI" & i)
+                Dim bExists = OSAEObjectManager.ObjectExists(gSerial & "-DI" & i)
                 If Not bExists = True Then
-                    OSAEApi.ObjectAdd("Unknown Phidget " & gSerial & "-DI" & i, "Unknown Phidget " & gSerial & "-DI" & i, "PHIDGET DIGITAL INPUT", gSerial & "-DI" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("Unknown Phidget " & gSerial & "-DI" & i, "Unknown Phidget " & gSerial & "-DI" & i, "PHIDGET DIGITAL INPUT", gSerial & "-DI" & i, "", True)
                 End If
-                Dim oObject As OSAEObject = OSAEApi.GetObjectByAddress(gSerial & "-DI" & i)
+                Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-DI" & i)
                 gDINames(i) = oObject.Name.ToString()
-                OSAEApi.AddToLog("Digital Input " & i & " Object: " & gDINames(i), True)
+                logging.AddToLog("Digital Input " & i & " Object: " & gDINames(i), True)
             Catch ex As Exception
-                OSAEApi.AddToLog("Error loading Object for Digital Input: " & ex.ToString(), True)
+                logging.AddToLog("Error loading Object for Digital Input: " & ex.ToString(), True)
             End Try
         Next i
 
         For i = 0 To phidgetIFK.outputs.Count - 1
             Try
-                Dim bExists = OSAEApi.ObjectExists(gSerial & "-DO" & i)
+                Dim bExists = OSAEObjectManager.ObjectExists(gSerial & "-DO" & i)
                 If Not bExists = True Then
-                    OSAEApi.ObjectAdd("Unknow Phidget " & gSerial & "-DO" & i, "Unknow Phidget " & gSerial & "-DO" & i, "PHIDGET DIGITAL OUTPUT", gSerial & "-DO" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("Unknow Phidget " & gSerial & "-DO" & i, "Unknow Phidget " & gSerial & "-DO" & i, "PHIDGET DIGITAL OUTPUT", gSerial & "-DO" & i, "", True)
                 End If
-                Dim oObject As OSAEObject = OSAEApi.GetObjectByAddress(gSerial & "-DO" & i)
+                Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-DO" & i)
                 gDONames(i) = oObject.Name.ToString()
-                OSAEApi.AddToLog("Digital Output " & i & " Object: " & gDONames(i), True)
+                logging.AddToLog("Digital Output " & i & " Object: " & gDONames(i), True)
             Catch ex As Exception
-                OSAEApi.AddToLog("Error loading Object for Digital Output: " & ex.ToString(), True)
+                logging.AddToLog("Error loading Object for Digital Output: " & ex.ToString(), True)
             End Try
         Next i
 
         For i = 0 To phidgetIFK.sensors.Count - 1
             Try
-                Dim bExists = OSAEApi.ObjectExists(gSerial & "-AI" & i)
+                Dim bExists = OSAEObjectManager.ObjectExists(gSerial & "-AI" & i)
                 If Not bExists = True Then
-                    OSAEApi.ObjectAdd("Unknow Phidget " & gSerial & "-AI" & i, "Unknow Phidget " & gSerial & "-AI" & i, "PHIDGET ANALOG INPUT", gSerial & "-AI" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("Unknow Phidget " & gSerial & "-AI" & i, "Unknow Phidget " & gSerial & "-AI" & i, "PHIDGET ANALOG INPUT", gSerial & "-AI" & i, "", True)
                 End If
-                Dim oObject As OSAEObject = OSAEApi.GetObjectByAddress(gSerial & "-AI" & i)
+                Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-AI" & i)
                 gAINames(i) = oObject.Name.ToString()
-                OSAEApi.AddToLog("Analog Input " & i & " Object: " & gAINames(i), True)
+                logging.AddToLog("Analog Input " & i & " Object: " & gAINames(i), True)
             Catch ex As Exception
-                OSAEApi.AddToLog("Error loading Object for Analog Input: " & ex.ToString(), True)
+                logging.AddToLog("Error loading Object for Analog Input: " & ex.ToString(), True)
             End Try
         Next i
 
         If phidgetIFK.sensors.Count > 0 Then
             gSensitivity = phidgetIFK.sensors(0).Sensitivity
-            OSAEApi.ObjectPropertySet(gAppName, "Sensitivity", gSensitivity)
-            OSAEApi.AddToLog("Sensitivity set to: " & gSensitivity, True)
+            OSAEObjectPropertyManager.ObjectPropertySet(pName, "Sensitivity", gSensitivity, pName)
+            logging.AddToLog("Sensitivity set to: " & gSensitivity, True)
             gRatiometric = phidgetIFK.ratiometric
         End If
     End Sub
@@ -182,45 +174,45 @@ Public Class PhidgetIK
     End Sub
 
     Private Sub phidgetIFK_Error(ByVal sender As Object, ByVal e As Phidgets.Events.ErrorEventArgs) Handles phidgetIFK.Error
-        OSAEApi.AddToLog("Error: phidgetIFK_Error: " & e.Description, True)
+        logging.AddToLog("Error: phidgetIFK_Error: " & e.Description, True)
     End Sub
 
     Private Sub phidgetIFK_InputChange(ByVal sender As Object, ByVal e As Phidgets.Events.InputChangeEventArgs) Handles phidgetIFK.InputChange
         If gIsLoading = True Then Exit Sub
-        OSAEApi.AddToLog("Digital Input Changed", True)
+        logging.AddToLog("Digital Input Changed", True)
         Dim sState As String
         If e.Value = True Then sState = "ON" Else sState = "OFF"
-        OSAEApi.AddToLog(gDINames(e.Index) & " " & sState, True)
-        OSAEApi.ObjectStateSet(gDINames(e.Index), sState)
+        logging.AddToLog(gDINames(e.Index) & " " & sState, True)
+        OSAEObjectStateManager.ObjectStateSet(gDINames(e.Index), sState, pName)
     End Sub
 
     Private Sub phidgetIFK_OutputChange(ByVal sender As Object, ByVal e As Phidgets.Events.OutputChangeEventArgs) Handles phidgetIFK.OutputChange
         If gIsLoading = True Then Exit Sub
-        OSAEApi.AddToLog("Digital Output Changed", True)
+        logging.AddToLog("Digital Output Changed", True)
         Dim sState As String
         If e.Value = True Then sState = "ON" Else sState = "OFF"
-        OSAEApi.AddToLog(gDONames(e.Index) & " " & sState, True)
-        OSAEApi.ObjectStateSet(gDONames(e.Index), sState)
+        logging.AddToLog(gDONames(e.Index) & " " & sState, True)
+        OSAEObjectStateManager.ObjectStateSet(gDONames(e.Index), sState, pName)
     End Sub
 
     Private Sub phidgetIFK_SensorChange(ByVal sender As Object, ByVal e As Phidgets.Events.SensorChangeEventArgs) Handles phidgetIFK.SensorChange
         If gIsLoading = True Then Exit Sub
-        OSAEApi.AddToLog("Analog Input Changed", True)
+        logging.AddToLog("Analog Input Changed", True)
         Dim sState As String
         If e.Value > 0 Then sState = "ON" Else sState = "OFF"
-        OSAEApi.AddToLog(gAINames(e.Index) & " " & sState, True)
-        OSAEApi.ObjectStateSet(gDONames(e.Index), sState)
+        logging.AddToLog(gAINames(e.Index) & " " & sState, True)
+        OSAEObjectStateManager.ObjectStateSet(gDONames(e.Index), sState, pName)
         Dim SC As New MSScriptControl.ScriptControl
         SC.Language = "VBSCRIPT"
         Dim iResults As Integer
-        Dim sFormula As String = OSAEApi.GetObjectPropertyValue(gDONames(e.Index), "Formula").Value.ToString()
+        Dim sFormula As String = OSAEObjectPropertyManager.GetObjectPropertyValue(gDONames(e.Index), "Formula").Value.ToString()
         sFormula = sFormula.Replace("Analog Value", e.Value.ToString())
         If sFormula = "" Then
             iResults = e.Value.ToString()
         Else
             iResults = SC.Eval(sFormula)
         End If
-        OSAEApi.ObjectPropertySet(gAINames(e.Index), "Analog Value", iResults)
+        OSAEObjectPropertyManager.ObjectPropertySet(gAINames(e.Index), "Analog Value", iResults, pName)
     End Sub
 
     'Modify the sensitivity of the analog inputs. In other words, the amount that the inputs must change between sensorchange events.

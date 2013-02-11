@@ -4,9 +4,8 @@ Imports System.IO.Ports
 
 Public Class W800RF
     Inherits OSAEPluginBase
-    Private OSAEApi As New OSAE("W800RF")
-    Private logging As New Logging("W800RF")
-    Private gAppName As String = ""
+    Private Shared logging As Logging = logging.GetLogger("W800RF")
+    Private pName As String = ""
 
     Private _baudRate As String = "4800"
     Private _parity As String = "None"
@@ -20,14 +19,14 @@ Public Class W800RF
     Dim ByteDetail(4) As ByteDetails
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
-        gAppName = pluginName
-        logging.AddToLog("Found my Object Name: " & gAppName, True)
+        pName = pluginName
+        logging.AddToLog("Found my Object Name: " & pName, True)
         Load_App_Name()
 
         Set_Codes()
         OpenPort()
 
-        logging.AddToLog("Finished Loading: " & gAppName, True)
+        logging.AddToLog("Finished Loading: " & pName, True)
     End Sub
 
     Public Overrides Sub Shutdown()
@@ -36,9 +35,9 @@ Public Class W800RF
 
     Private Sub Load_App_Name()
         logging.AddToLog("W800RF Plugin Version: 1.0.4", True)
-        _portName = "COM" & OSAEApi.GetObjectPropertyValue(gAppName, "Port").Value
+        _portName = "COM" & OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
         logging.AddToLog("Port is set to: " & _portName, True)
-        _Debounce = OSAEApi.GetObjectPropertyValue(gAppName, "Debounce").Value
+        _Debounce = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Debounce").Value
         logging.AddToLog("Debounce is set to: " & _Debounce, True)
     End Sub
 
@@ -187,22 +186,22 @@ Public Class W800RF
             logging.AddToLog("---------------------------------------------------------------------", True)
             logging.AddToLog("GetObjectByAddress: " & gDevice.House_Code & gDevice.Device_Code, False)
             Try
-                oObject = OSAEApi.GetObjectByAddress(gDevice.House_Code & gDevice.Device_Code)
+                oObject = OSAEObjectManager.GetObjectByAddress(gDevice.House_Code & gDevice.Device_Code)
                 If IsNothing(oObject) Then
-                    gLearning = OSAEApi.GetObjectPropertyValue(gAppName, "Learning Mode").Value
+                    gLearning = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value
                     If gLearning.ToUpper = "TRUE" Then
                         If gDevice.Device_Type = "X10_SECURITY_DS10" Then
                             logging.AddToLog("Adding new DS10A: " & gDevice.Device_Code, True)
                             logging.AddToLog("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)", False)
-                            OSAEApi.ObjectAdd("X10-" & gDevice.Device_Code, "Unknown DS10A found by W800RF", "X10 SENSOR", gDevice.Device_Code, "", True)
+                            OSAEObjectManager.ObjectAdd("X10-" & gDevice.Device_Code, "Unknown DS10A found by W800RF", "X10 SENSOR", gDevice.Device_Code, "", True)
                         Else
                             logging.AddToLog("Adding new X10: " & gDevice.House_Code & gDevice.Device_Code, True)
                             logging.AddToLog("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)", False)
-                            OSAEApi.ObjectAdd("X10-" & gDevice.House_Code & gDevice.Device_Code, "Unknown X10 found by W800RF", "X10 SENSOR", gDevice.House_Code & gDevice.Device_Code, "", True)
+                            OSAEObjectManager.ObjectAdd("X10-" & gDevice.House_Code & gDevice.Device_Code, "Unknown X10 found by W800RF", "X10 SENSOR", gDevice.House_Code & gDevice.Device_Code, "", True)
                         End If
                     End If
                 Else
-                    OSAEApi.ObjectStateSet(oObject.Name, gDevice.Current_Command)
+                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, gDevice.Current_Command, pName)
                     logging.AddToLog("Set: " & oObject.Name & " to " & gDevice.Current_Command, True)
                 End If
             Catch ex As Exception
