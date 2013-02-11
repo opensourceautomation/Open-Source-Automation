@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.IO.Ports;
-using System.Collections.Generic;
-
-namespace OSAE.KillAWatt
+﻿namespace OSAE.KillAWatt
 {
+    using System;
+    using System.Collections.Generic;
+
     public class KillAWatt : OSAEPluginBase
     {
-        OSAE osae = new OSAE("KillAWatt");
+        Logging logging = Logging.GetLogger("KillAWatt");
         int portNumber = 0;
         string pName = "";
         xbee xb;
@@ -29,9 +25,9 @@ namespace OSAE.KillAWatt
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-            osae.ObjectTypeUpdate("KILLAWATT MODULE", "KILLAWATT MODULE", "Kill-A-Watt Module", pName, "KILLAWATT MODULE", 0, 0, 0, 1);
+            OSAEObjectTypeManager.ObjectTypeUpdate("KILLAWATT MODULE", "KILLAWATT MODULE", "Kill-A-Watt Module", pName, "KILLAWATT MODULE", 0, 0, 0, 1);
 
-            xb = new xbee(Int32.Parse(osae.GetObjectProperty(pName, "Port")));
+            xb = new xbee(Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value));
             xb.xbeePacketReceived += new xbee.xbeePacketReceivedEventHandler(xb_xbeePacketReceived);
         }
 
@@ -57,8 +53,8 @@ namespace OSAE.KillAWatt
             {
                 try
                 {
-                    osae.AddToLog("Received Packet: " + packet.Address, false);
-                    VREF = Int32.Parse(osae.GetObjectProperty(pName, "VREF"));
+                    logging.AddToLog("Received Packet: " + packet.Address, false);
+                    VREF = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "VREF").Value);
                     double watts = 0;
                     int max = 0;
                     int min = 1024;
@@ -77,7 +73,7 @@ namespace OSAE.KillAWatt
 
                         avgv = (min + max) / 2;
                         vpp = max - min;
-                        osae.AddToLog("  avgv: " + avgv, false);
+                        logging.AddToLog("  avgv: " + avgv, false);
 
                         for (int i = 0; i < 19; i++)
                         {
@@ -97,35 +93,35 @@ namespace OSAE.KillAWatt
                         try
                         {
                             PowerCollection pc = GetPowerCollection(packet.Address);
-                            osae.AddToLog("  watts: " + watts.ToString(), false);
+                            logging.AddToLog("  watts: " + watts.ToString(), false);
                             pc.DataWattBuffer = pc.DataWattBuffer + watts;
                             pc.PacketCount = pc.PacketCount + 1;
                             pc.RSSI = packet.RSSI;
-                            osae.AddToLog("  RSSI: " + pc.RSSI.ToString(), false);
+                            logging.AddToLog("  RSSI: " + pc.RSSI.ToString(), false);
                         }
 
                         catch (Exception ex)
                         {
-                            osae.AddToLog("  error updating object statuses: " + ex.ToString(), false);
+                            logging.AddToLog("  error updating object statuses: " + ex.ToString(), false);
                         }
                     }
                     else
                     {
-                        osae.AddToLog("  bad checksum", false);
+                        logging.AddToLog("  bad checksum", false);
                     }
                     //addToLog("- parse packet ended");
                 }
                 catch (Exception ex)
                 {
-                    osae.AddToLog("- Error parsing packet:" + ex.Message, true);
+                    logging.AddToLog("- Error parsing packet:" + ex.Message, true);
                 }
             }
         }
 
         private void interval()
         {
-            osae.AddToLog("--- interval started", false);
-            intervalLength = Int32.Parse(osae.GetObjectPropertyValue(pName, "Interval").Value);
+            logging.AddToLog("--- interval started", false);
+            intervalLength = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Interval").Value);
             foreach(PowerCollection pc in pcList)
             {
                 try
@@ -133,8 +129,8 @@ namespace OSAE.KillAWatt
                     if (pc.PacketCount >= intervalLength)
                     {
                         
-                        string errorStr = osae.GetObjectPropertyValue(osae.GetObjectByAddress("KAW" + pc.Address).Name, "Error Correction").Value;
-                        osae.AddToLog("  errorStr: " + errorStr, false); 
+                        string errorStr = OSAEObjectPropertyManager.GetObjectPropertyValue(OSAEObjectManager.GetObjectByAddress("KAW" + pc.Address).Name, "Error Correction").Value;
+                        logging.AddToLog("  errorStr: " + errorStr, false); 
                         Double errorCorrection = 0, currentWatts;
                         System.Globalization.NumberStyles styles = System.Globalization.NumberStyles.AllowTrailingSign | System.Globalization.NumberStyles.Float;
 
@@ -150,19 +146,19 @@ namespace OSAE.KillAWatt
                         if (currentWatts < 0)
                             currentWatts = 0;
 
-                        osae.AddToLog("  device address: " + pc.Address, false);
-                        osae.AddToLog("  dataWattBuffer: " + pc.DataWattBuffer, false);
-                        osae.AddToLog("  dataWattCount: " + pc.PacketCount, false);
-                        osae.AddToLog("  errorStr: " + errorStr, false);
-                        osae.ObjectPropertySet(osae.GetObjectByAddress("KAW" + pc.Address).Name, "RSSI", pc.RSSI.ToString());
-                        osae.ObjectPropertySet(osae.GetObjectByAddress("KAW" + pc.Address).Name, "Current Watts", currentWatts.ToString());
+                        logging.AddToLog("  device address: " + pc.Address, false);
+                        logging.AddToLog("  dataWattBuffer: " + pc.DataWattBuffer, false);
+                        logging.AddToLog("  dataWattCount: " + pc.PacketCount, false);
+                        logging.AddToLog("  errorStr: " + errorStr, false);
+                        OSAEObjectPropertyManager.ObjectPropertySet(OSAEObjectManager.GetObjectByAddress("KAW" + pc.Address).Name, "RSSI", pc.RSSI.ToString(), pName);
+                        OSAEObjectPropertyManager.ObjectPropertySet(OSAEObjectManager.GetObjectByAddress("KAW" + pc.Address).Name, "Current Watts", currentWatts.ToString(), pName);
                         pc.DataWattBuffer = 0;
                         pc.PacketCount = 0;
                     }
                 }
                 catch (Exception ex)
                 {
-                    osae.AddToLog("  error inserting data: " + ex.ToString(), false);
+                    logging.AddToLog("  error inserting data: " + ex.ToString(), false);
                     break;
                 }
             }
@@ -179,8 +175,8 @@ namespace OSAE.KillAWatt
                     return pc;
             }
             pcList.Add(new PowerCollection(address));
-            if(osae.GetObjectByAddress("KAW" + address.ToString()) == null)
-                osae.ObjectAdd("KillAWatt - " + address.ToString(), "Kill-A-Watt device", "KILLAWATT MODULE", "KAW" + address.ToString(), "", true);
+            if(OSAEObjectManager.GetObjectByAddress("KAW" + address.ToString()) == null)
+                OSAEObjectManager.ObjectAdd("KillAWatt - " + address.ToString(), "Kill-A-Watt device", "KILLAWATT MODULE", "KAW" + address.ToString(), "", true);
 
             return GetPowerCollection(address);
         }
