@@ -55,6 +55,9 @@
     <Compile Include="OSAEService.HelperCode.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="OSAEService.PluginsCode.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="OSAEService.WCFCode.cs">
       <SubType>Component</SubType>
     </Compile>

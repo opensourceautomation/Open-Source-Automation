@@ -3,16 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Security;
     using System.ServiceModel;
     using System.ServiceProcess;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Timers;
-    using System.Xml.Linq;
     using MySql.Data.MySqlClient;
 
     /// <summary>
@@ -103,7 +95,7 @@
 
             try
             {
-                GetComputerIP();
+                computerIP = GetComputerIP();
                 InitialiseLogFolder();
                 DeleteStoreFiles();
             }
@@ -117,7 +109,13 @@
             RemoveOrphanedMethods();
             CreateComputerObject();
             CreateServiceObject();
+
+            // Start the WCF service so messages can be sent 
+            // and received by the service
             StartWCFService();
+
+            // Start the threads that monitor the plugin 
+            // updates check the method queue and so on
             StartThreads();
         }                            
 
@@ -128,389 +126,12 @@
         protected override void OnStop()
         {
             ShutDownSystems();
-        }
-
-        private void ShutDownSystems()
-        {
-            int waitPeriod = 15000; // Milliseconds
-            logging.AddToLog("stopping...", true);
-            try
-            {
-                // run the shutdown as a task so that the plugins don't prevent us from closing
-                // as we can't guarantee the quality of a third party plugin
-                var taskA = new Task(() =>
-                {
-                    checkPlugins.Enabled = false;
-                    running = false;
-                    if (sHost.State == CommunicationState.Opened)
-                        sHost.Close();                    
-                    logging.AddToLog("shutting down plugins", true);
-                    foreach (Plugin p in plugins)
-                    {
-                        if (p.Enabled)
-                        {
-                            p.Shutdown();
-                        }
-                    }
-                });
-
-                if (!taskA.Wait(15000))
-                {
-                    logging.AddToLog("Failed to shutdown plugins after: " + (waitPeriod / 1000) + " seconds shutting down anyway", true);
-                }
-            }
-            catch { }
-        }
+        }        
 
         protected override void OnShutdown() 
         {
             ShutDownSystems();
         }
-        #endregion
-
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="e"></param>
-        private void QueryCommandQueue()
-        {
-            while (running)
-            {
-                try
-                {
-                    DataSet dataset = new DataSet();
-                    MySqlCommand command = new MySqlCommand();
-                    command.CommandText = "SELECT method_queue_id, object_name, address, method_name, parameter_1, parameter_2, object_owner FROM osae_v_method_queue ORDER BY entry_time";
-                    dataset = OSAESql.RunQuery(command);
-
-                    foreach (DataRow row in dataset.Tables[0].Rows)
-                    {
-                        OSAEMethod method = new OSAEMethod(row["method_name"].ToString(), row["object_name"].ToString(), row["parameter_1"].ToString(), row["parameter_2"].ToString(), row["address"].ToString(), row["object_owner"].ToString());
-                        
-                        sendMessageToClients("log", "found method in queue: " + method.ObjectName +
-                            "(" + method.MethodName + ")   p1: " + method.Parameter1 +
-                            "  p2: " + method.Parameter2);
-
-                        logging.AddToLog("Found method in queue: " + method.MethodName, false);
-                        logging.AddToLog("-- object name: " + method.ObjectName, false);
-                        logging.AddToLog("-- param 1: " + method.Parameter1, false);
-                        logging.AddToLog("-- param 2: " + method.Parameter2, false);
-                        logging.AddToLog("-- object owner: " + method.Owner, false);
-
-                        if (method.ObjectName == "SERVICE-" + Common.ComputerName)
-                        {
-                            if (method.MethodName == "EXECUTE")
-                            {
-                                sendMessageToClients("command", method.Parameter1
-                                    + " | " + method.Parameter2 + " | " + Common.ComputerName);
-                            }
-                            else if (method.MethodName == "START PLUGIN")
-                            {
-                                foreach (Plugin p in plugins)
-                                {
-                                    if (p.PluginName == method.Parameter1)
-                                    {
-                                        OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
-                                        if (obj != null)
-                                        {
-                                            enablePlugin(p);
-                                        }
-                                    }
-                                }
-                            }
-                            else if (method.MethodName == "STOP PLUGIN")
-                            {
-                                foreach (Plugin p in plugins)
-                                {
-                                    if (p.PluginName == method.Parameter1)
-                                    {
-                                        OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
-                                        if (obj != null)
-                                        {
-                                            disablePlugin(p);
-                                        }
-                                    }
-                                }
-                            }
-                            else if (method.MethodName == "LOAD PLUGIN")
-                            {
-                                LoadPlugins();
-                            }
-                            command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
-                            logging.AddToLog("Removing method from queue: " + command.CommandText, false);
-                            OSAESql.RunQuery(command);
-                        }
-                        else
-                        {
-                            bool processed = false;
-                            int methodQueueId = int.Parse(row["method_queue_id"].ToString());
-
-                            foreach (Plugin plugin in plugins)
-                            {
-                                if (plugin.Enabled == true && (method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower()))
-                                {
-                                    command.CommandText = "DELETE FROM osae_method_queue WHERE method_queue_id=" + row["method_queue_id"].ToString();
-                                    logging.AddToLog("Removing method from queue with ID: " + methodQueueId, false);
-                                    OSAEMethodManager.MethodQueueDelete(methodQueueId);
-                                    processed = true;
-                                    break;
-                                }
-                            }
-
-                            if (!processed)
-                            {
-                                sendMessageToClients("method", method.ObjectName + " | " + method.Owner + " | "
-                                    + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | " 
-                                    + method.Address + " | " + row["method_queue_id"].ToString());                                
-
-                                logging.AddToLog("Removing method from queue with ID: " + methodQueueId, false);
-                                OSAEMethodManager.MethodQueueDelete(methodQueueId);                                
-                                processed = true;
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logging.AddToLog("Error in QueryCommandQueue: " + ex.Message, true);
-                }
-                System.Threading.Thread.Sleep(100);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void LoadPlugins()
-        {
-            var pluginAssemblies = new List<OSAEPluginBase>();
-            var types = PluginFinder.FindPlugins();
-
-            logging.AddToLog("Loading Plugins", true);
-
-            foreach (var type in types)
-            {
-                logging.AddToLog("type.TypeName: " + type.TypeName, false);
-                logging.AddToLog("type.AssemblyName: " + type.AssemblyName, false);
-
-                var domain = CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet);
-
-                plugins.Add(new Plugin(type.AssemblyName, type.TypeName, domain, type.Location));
-            }
-
-            logging.AddToLog("Found " + plugins.Count.ToString() + " plugins", true);
-            MySqlConnection connection = new MySqlConnection(Common.ConnectionString);
-
-            foreach (Plugin plugin in plugins)
-            {
-                try
-                {
-                    logging.AddToLog("---------------------------------------", true);
-                    logging.AddToLog("Plugin name: " + plugin.PluginName, true);
-                    logging.AddToLog("Testing connection", true);
-                    if (!goodConnection)
-                    {
-                        try
-                        {
-                            connection.Open();
-                            goodConnection = true;
-                        }
-                        catch
-                        {
-                        }
-                    }
-
-                    if (goodConnection)
-                    {
-                        if (plugin.PluginName != "")
-                        {
-                            OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
-
-                            if (obj != null)
-                            {
-                                logging.AddToLog("Plugin Object found: " + obj.Name + " - Enabled: " + obj.Enabled.ToString(), true);
-                                if (obj.Enabled == 1)
-                                {
-                                    enablePlugin(plugin);
-                                }
-                                else
-                                    plugin.Enabled = false;
-
-                                logging.AddToLog("Status: " + plugin.Enabled.ToString(), true);
-                                logging.AddToLog("PluginVersion: " + plugin.PluginVersion, true);
-                            }
-                        }
-                        else
-                        {
-                            //add code to create the object.  We need the plugin to specify the type though
-
-                            MySqlDataAdapter adapter;
-                            DataSet dataset = new DataSet();
-                            MySqlCommand command = new MySqlCommand();
-                         
-                            command.Connection = connection;
-                            command.CommandText = "SELECT * FROM osae_object_type_property p inner join osae_object_type t on p.object_type_id = t.object_type_id WHERE object_type=@type AND property_name='Computer Name'";
-                            command.Parameters.AddWithValue("@type", plugin.PluginType);
-                            adapter = new MySqlDataAdapter(command);
-                            adapter.Fill(dataset);
-
-                            if (dataset.Tables[0].Rows.Count > 0)
-                                plugin.PluginName = plugin.PluginType + "-" + Common.ComputerName;
-                            else
-                                plugin.PluginName = plugin.PluginType;
-                            logging.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
-                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
-                            OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
-
-                            logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
-                            sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
-
-                        }
-                        masterPlugins.Add(plugin);
-                    }
-
-
-                }
-                catch (Exception ex)
-                {
-                    logging.AddToLog("Error loading plugin: " + ex.Message, true);
-                }            
-            }
-        }
-
-        #region Check For Plugin Updates
-
-        private void getPluginUpdates_tick(object source, EventArgs e)
-        {
-            //getPluginUpdates();
-            Thread usageThread = new Thread(() => getPluginUpdates());
-            usageThread.Start();
-        }
-
-        private void checkForUpdates(string name, string version)
-        {
-            try
-            {
-                Plugin p = new Plugin();
-                bool plug = false;
-                foreach (Plugin plugin in plugins)
-                {
-                    if (plugin.PluginType == name)
-                    {
-                        p = plugin;
-                        plug = true;
-                    }
-                }
-                int curMajor, curMinor, curRevion, latestMajor = 0, latestMinor = 0, latestRevision = 0;
-                string[] split = version.Split('.');
-                curMajor = Int32.Parse(split[0]);
-                curMinor = Int32.Parse(split[1]);
-                curRevion = Int32.Parse(split[2]);
-
-                string url = "http://www.opensourceautomation.com/pluginUpdates.php?app=" + name + "&ver=" + version;
-                logging.AddToLog("Checking for plugin updates: " + url, false);
-                WebRequest request = HttpWebRequest.Create(url);
-                WebResponse response = request.GetResponse();
-                Stream responseStream = response.GetResponseStream();
-                //XmlReader rdr = XmlReader.Create(responseStream);
-                
-                XElement xml  = XElement.Load(responseStream);
-                logging.AddToLog("XML retreived", false);
-
-                var query = from e in xml.Elements("plugin")
-                            select new { B = e.Element("major").Value, C = e.Element("minor").Value, D = e.Element("revision").Value };
-
-                foreach (var e in query)
-                {
-                    latestMajor = Int32.Parse(e.B);
-                    latestMinor = Int32.Parse(e.C);
-                    latestRevision = Int32.Parse(e.D);
-                }
-                
-                
-                if (latestMajor >= curMajor)
-                {
-                    if (latestMinor >= curMinor)
-                    {
-                        if (latestRevision > curRevion)
-                        {
-                            p.LatestAvailableVersion = latestMajor + "." + latestMinor + "." + latestRevision;
-                            logging.AddToLog("current version: " + curMajor + "." + curMinor + "." + curRevion, false);
-                            logging.AddToLog("latest version: " + p.LatestAvailableVersion, false);
-                            string msg;
-
-                            if (!plug)
-                            {
-                                msg = version + "|" + latestMajor + "." + latestMinor + "." + latestRevision;
-                                sendMessageToClients("service", msg);
-                            }
-                        }
-                    }
-                }
-                
-                response.Close();
-
-                if (plug)
-                {
-                    string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName;
-                    sendMessageToClients("plugin", msg);
-                }
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("plugin update error: " + ex.Message, true);
-            }
-        }
-
-        private void getPluginUpdates()
-        {
-            foreach (Plugin plugin in plugins)
-            {
-                logging.AddToLog("Checking for update: " + plugin.PluginName, false);
-                try
-                {
-                    //Thread usageThread = new Thread(() => checkForUpdates(plugin.PluginType, plugin.PluginVersion));
-                    //usageThread.Start();
-                    checkForUpdates(plugin.PluginType, plugin.PluginVersion);
-                }
-                catch { }
-            }
-            try
-            {
-                checkForUpdates("Service", OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value);
-            }
-            catch { }
-            
-        }
-
-        #endregion
-
-        #region Monitor Plugins
-
-        private void checkPlugins_tick(object source, EventArgs e)
-        {
-            //foreach (Plugin plugin in plugins)
-            //{
-            //    try
-            //    {
-            //        if (plugin.Enabled)
-            //        {
-            //            Process process = Process.GetProcessById(plugin.process.ProcessId);
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        logging.AddToLog(plugin.PluginName + " - Plugin has crashed. Attempting to restart.", true);
-            //        enablePlugin(plugin);
-            //        logging.AddToLog("New Process ID: " + plugin.process.ProcessId, true);
-            //    }
-            
-            //}
-
-        }
-
-        #endregion     
+        #endregion       
     }
 }
