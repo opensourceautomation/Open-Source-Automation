@@ -1,77 +1,74 @@
 ﻿Option Strict Off
 Option Explicit On
 
-Imports System.AddIn
-Imports OpenSourceAutomation
-'Imports System.Timers
 Imports System.IO.Ports
 Imports System.Threading.Thread
 
-<AddIn("CM17A", Version:="0.3.1")>
 Public Class CM17A
     Inherits OSAEPluginBase
-    Private OSAEApi As New OSAE("CM17A")
-    'Private ComputerName As String
+    Private Shared logging As Logging = logging.GetLogger("CM17A")
     Private COMPort As String
     Private ControllerPort As SerialPort
     Dim HouseByte As New Dictionary(Of String, Byte)
     Dim ByteArray(4) As Byte
     Dim UnitByte(16) As Byte
+    Private pName As String = ""
 
-    Public Sub Overrides RunInterface(ByVal pluginName As String)
+    Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
-            OSAEApi.AddToLog("Initializing plugin: " & pluginName, True)
+            pName = pluginName
+            logging.AddToLog("Initializing plugin: " & pluginName, True)
             'ComputerName = OSAEApi.ComputerName
-            COMPort = "COM" + OSAEApi.GetObjectPropertyValue(pluginName, "Port").Value.ToString
-            OSAEApi.AddToLog("Port is set to: " & COMPort, True)
+            COMPort = "COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "Port").Value.ToString
+            logging.AddToLog("Port is set to: " & COMPort, True)
             InitiArrays()
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error setting up plugin: " & ex.Message, True)
+            logging.AddToLog("Error setting up plugin: " & ex.Message, True)
         End Try
     End Sub
 
-    Public Sub Overrides ProcessCommand(method As OSAEMethod)
+    Public Overrides Sub ProcessCommand(method As OSAEMethod)
 
         Dim HouseCode As String
         Dim UnitCode As Integer
         Dim TargetObject As OSAEObject
 
         Try
-            'OSAEApi.AddToLog("Sending to address " & method.Address, True)
+            'logging.AddToLog("Sending to address " & method.Address, True)
             HouseCode = method.Address.Substring(0, 1)
             UnitCode = Convert.ToInt32(method.Address.Substring(1))
 
             If method.MethodName = "ON" Then
-                OSAEApi.AddToLog("Sending address " & method.Address & " " & method.MethodName & " command", True)
+                logging.AddToLog("Sending address " & method.Address & " " & method.MethodName & " command", True)
                 Transmitt(HouseCode, UnitCode, True)
-                OSAEApi.ObjectStateSet(method.ObjectName, method.MethodName)
+                OSAEObjectStateManager.ObjectStateSet(method.ObjectName, method.MethodName, pName)
 
             ElseIf method.MethodName = "OFF" Then
-                OSAEApi.AddToLog("Sending address " & method.Address & " " & method.MethodName & " command", True)
+                logging.AddToLog("Sending address " & method.Address & " " & method.MethodName & " command", True)
                 Transmitt(HouseCode, UnitCode, False)
-                OSAEApi.ObjectStateSet(method.ObjectName, method.MethodName)
+                OSAEObjectStateManager.ObjectStateSet(method.ObjectName, method.MethodName, pName)
             ElseIf method.MethodName = "TOGGLE" Then
-                TargetObject = OSAEApi.GetObjectByAddress(HouseCode & UnitCode.ToString)
-                OSAEApi.AddToLog("Target Object is " & TargetObject.State.Value, True)
+                TargetObject = OSAEObjectManager.GetObjectByAddress(HouseCode & UnitCode.ToString)
+                logging.AddToLog("Target Object is " & TargetObject.State.Value, True)
                 If TargetObject.State.Value.ToUpper = "ON" Then
-                    OSAEApi.AddToLog("Toggle address " & method.Address & " to OFF", True)
+                    logging.AddToLog("Toggle address " & method.Address & " to OFF", True)
                     Transmitt(HouseCode, UnitCode, False)
-                    OSAEApi.ObjectStateSet(method.ObjectName, "OFF")
+                    OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName)
                 Else
-                    OSAEApi.AddToLog("Toggle address " & method.Address & " to ON", True)
+                    logging.AddToLog("Toggle address " & method.Address & " to ON", True, pName)
                     Transmitt(HouseCode, UnitCode, True)
-                    OSAEApi.ObjectStateSet(method.ObjectName, "ON")
+                    OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName)
                 End If
             End If
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error Processing Command - " & ex.Message, True)
+            logging.AddToLog("Error Processing Command - " & ex.Message, True)
         End Try
     End Sub
 
-    Public Sub Shutdown() Implements OpenSourceAutomation.IOpenSourceAutomationAddInv2.Shutdown
-        OSAEApi.AddToLog("Shutting down plugin", True)
+    Public Overrides Sub Shutdown()
+        logging.AddToLog("Shutting down plugin", True)
     End Sub
 
     Sub InitiArrays()
@@ -153,7 +150,7 @@ Public Class CM17A
                     Wait()
                     Sleep(1)
                 Next
-                OSAEApi.AddToLog("Sent: " & BitString, False)
+                logging.AddToLog("Sent: " & BitString, False)
 
             Next
             Sleep(500)
@@ -161,7 +158,7 @@ Public Class CM17A
             ControllerPort.Close()
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error Transmitting Command - " & ex.Message, True)
+            logging.AddToLog("Error Transmitting Command - " & ex.Message, True)
         End Try
     End Sub
     Private Sub Send1()
