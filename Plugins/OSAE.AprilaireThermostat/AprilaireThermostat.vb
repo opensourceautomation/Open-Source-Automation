@@ -1,9 +1,6 @@
 ﻿Option Strict Off
 Option Explicit On
 
-Imports System.AddIn
-Imports OpenSourceAutomation
-'Imports System.IO.Ports
 Imports System.Threading
 Imports System.Threading.Thread
 Imports System.Timers
@@ -12,11 +9,10 @@ Imports System.Net.Sockets
 Imports System.DateTime
 Imports System.Text
 
-<AddIn("AprilaireThermostat", Version:="0.3.1")>
 Public Class AprilaireThermostat
     Inherits OSAEPluginBase
-    Private Shared OSAEApi As New OSAE("AprilaireThermostat")
-    Private Shared AddInName As String
+    Private Shared logging As Logging = Logging.GetLogger("Script Processor")
+    Private Shared pName As String
 
     Private Shared client_socket As New Socket(AddressFamily.InterNetwork, _
         SocketType.Stream, ProtocolType.Tcp)
@@ -54,56 +50,56 @@ Public Class AprilaireThermostat
     Private Shared IPAddress As String
     Dim ThermostatObjects As List(Of OSAEObject)
 
-    Public Sub Overrides RunInterface(ByVal pluginName As String)
+    Public Overrides Sub RunInterface(ByVal pluginName As String)
 
         Try
 
-            AddInName = pluginName
-            OSAEApi.AddToLog("Initializing plugin: " & AddInName, True)
+            pName = pluginName
+            logging.AddToLog("Initializing plugin: " & pName, True)
 
             'ComputerName = OSAEApi.ComputerName
 
-            ThermostatObjects = OSAEApi.GetObjectsByType("THERMOSTAT")
+            ThermostatObjects = OSAEObjectManager.GetObjectsByType("THERMOSTAT")
             If ThermostatObjects.Count = 0 Then
-                OSAEApi.ObjectAdd("THERMOSTAT", "Aprilaire Thermostat", "THERMOSTAT", "1", "", True)
-                OSAEApi.ObjectPropertySet(AddInName, "IPAddress", "192.168.1.11")
-                OSAEApi.ObjectPropertySet(AddInName, "Port", "10001")
+                OSAEObjectManager.ObjectAdd("THERMOSTAT", "Aprilaire Thermostat", "THERMOSTAT", "1", "", True)
+                OSAEObjectPropertyManager.ObjectPropertySet(pName, "IPAddress", "192.168.1.11", pName)
+                OSAEObjectPropertyManager.ObjectPropertySet(pName, "Port", "10001", pName)
                 ThermostatName = "THERMOSTAT"
             Else
                 ThermostatName = ThermostatObjects(0).Name
             End If
 
-            TSAddress = OSAEApi.GetObjectByName(ThermostatName).Address
+            TSAddress = OSAEObjectManager.GetObjectByName(ThermostatName).Address
 
 
-            If OSAEApi.GetObjectPropertyValue(ThermostatName, "Cooling").Value = "TRUE" Then
+            If OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "Cooling").Value = "TRUE" Then
                 Cooling = True
             End If
-            If OSAEApi.GetObjectPropertyValue(ThermostatName, "Heating").Value = "TRUE" Then
+            If OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "Heating").Value = "TRUE" Then
                 Heating = True
             End If
-            If OSAEApi.GetObjectPropertyValue(ThermostatName, "Fan").Value = "TRUE" Then
+            If OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "Fan").Value = "TRUE" Then
                 Fan = True
             End If
 
 
-            IPAddress = OSAEApi.GetObjectPropertyValue(AddInName, "IPAddress").Value
-            Port = OSAEApi.GetObjectPropertyValue(AddInName, "Port").Value
+            IPAddress = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "IPAddress").Value()
+            Port = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
 
 
-            If Not Integer.TryParse(OSAEApi.GetObjectPropertyValue(ThermostatName, "CoolSP").Value, CoolSP) Then
+            If Not Integer.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "CoolSP").Value, CoolSP) Then
                 CoolSP = 78
             End If
-            If Not Integer.TryParse(OSAEApi.GetObjectPropertyValue(ThermostatName, "HeatSP").Value, HeatSP) Then
+            If Not Integer.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "HeatSP").Value, HeatSP) Then
                 HeatSP = 68
             End If
-            If Not Integer.TryParse(OSAEApi.GetObjectPropertyValue(ThermostatName, "Temperature").Value, Temperature) Then
+            If Not Integer.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "Temperature").Value, Temperature) Then
                 Temperature = 75
             End If
-            FanMode = OSAEApi.GetObjectPropertyValue(ThermostatName, "FANMODE").Value
+            FanMode = OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "FANMODE").Value
 
 
-            OSAEApi.AddToLog("Finished setting properties", False)
+            logging.AddToLog("Finished setting properties", False)
 
             ControlSocket = True
 
@@ -111,10 +107,10 @@ Public Class AprilaireThermostat
             client_socket.Connect(IPAddress, Port)
             'client_socket.ReceiveTimeout = 200
 
-            OSAEApi.AddToLog("Connection made", False)
+            logging.AddToLog("Connection made", False)
 
             Receive(client_socket)
-            OSAEApi.AddToLog("Receive routine complete", False)
+            logging.AddToLog("Receive routine complete", False)
             InitThermostat()
             SetDateTime()
             GetInitialValues()
@@ -125,78 +121,76 @@ Public Class AprilaireThermostat
 
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error setting up plugin: " & ex.Message, True)
+            logging.AddToLog("Error setting up plugin: " & ex.Message, True)
         End Try
 
     End Sub
 
-    Public Sub Overrides ProcessCommand(ByVal CommandTable As System.Data.DataTable)
-        Dim CommandRow As DataRow
+    Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
         Dim Command, Parameter1 As String
-        CommandRow = CommandTable.Rows(0)
 
         Try
-            Command = CommandRow("method_name")
-            Parameter1 = CommandRow("parameter_1")
+            Command = method.MethodName
+            Parameter1 = method.Parameter1
 
             Select Case Command
                 Case "INIT"
-                    OSAEApi.AddToLog("Init Termostat", True)
+                    logging.AddToLog("Init Termostat", True)
                     InitThermostat()
                 Case "NIGHTSP"
-                    OSAEApi.AddToLog("Change to night setpoint", True)
+                    logging.AddToLog("Change to night setpoint", True)
                     SendString("SN" + TSAddress + " SH=60" & vbCr)
                 Case "DAYSP"
-                    OSAEApi.AddToLog("Change to day setpoint", True)
+                    logging.AddToLog("Change to day setpoint", True)
                     SendString("SN" + TSAddress + " SH=68" & vbCr)
                 Case "AWAYSP"
-                    OSAEApi.AddToLog("Change to away setpoint", True)
+                    logging.AddToLog("Change to away setpoint", True)
                     SendString("SN" + TSAddress + " SH=66" & vbCr)
                 Case "CHECKSTATUS"
-                    OSAEApi.AddToLog("Check status", True)
+                    logging.AddToLog("Check status", True)
                     GetInitialValues()
                 Case "CHECKTEMP"
-                    OSAEApi.AddToLog("Check temperature", True)
+                    logging.AddToLog("Check temperature", True)
                     SendString("SN" + TSAddress + " TEMP?" & vbCr)
                 Case "COOLSP"
                     If Int(Parameter1) >= 70 And Int(Parameter1) <= 90 Then
                         SendString("SN" + TSAddress + " SC=" & Int(Parameter1) & vbCr)
-                        OSAEApi.AddToLog("Command sent to change cooling setpoint to " & Parameter1, True)
+                        logging.AddToLog("Command sent to change cooling setpoint to " & Parameter1, True)
                     End If
                 Case "HEATSP"
                     If Int(Parameter1) >= 60 And Int(Parameter1) <= 80 Then
                         SendString("SN" + TSAddress + " SH=" & Int(Parameter1) & vbCr)
-                        OSAEApi.AddToLog("Command sent to change heating setpoint to " & Parameter1, True)
+                        logging.AddToLog("Command sent to change heating setpoint to " & Parameter1, True)
                     End If
                 Case "FANAUTO"
-                    OSAEApi.AddToLog("Change Fan to Auto", True)
+                    logging.AddToLog("Change Fan to Auto", True)
                     SendString("SN" + TSAddress + " FAN=AUTO" & vbCr)
                 Case "FANON"
-                    OSAEApi.AddToLog("Change Fan to On", True)
+                    logging.AddToLog("Change Fan to On", True)
                     SendString("SN" + TSAddress + " FAN=ON" & vbCr)
                 Case "COOLSPRAISE"
-                    OSAEApi.AddToLog("Raise Cool Setpoint", True)
+                    logging.AddToLog("Raise Cool Setpoint", True)
                     SendString("SN" + TSAddress + " SC=" & (CoolSP + 1).ToString & vbCr)
                 Case "COOLSPLOWER"
-                    OSAEApi.AddToLog("Lower Cool Setpoint", True)
+                    logging.AddToLog("Lower Cool Setpoint", True)
                     SendString("SN" + TSAddress + " SC=" & (CoolSP - 1).ToString & vbCr)
                 Case "HEATSPRAISE"
-                    OSAEApi.AddToLog("Raise Heat Setpoint", True)
+                    logging.AddToLog("Raise Heat Setpoint", True)
                     SendString("SN" + TSAddress + " SH=" & (HeatSP + 1).ToString & vbCr)
                 Case "HEATSPLOWER"
-                    OSAEApi.AddToLog("Lower Heat Setpoint", True)
+                    logging.AddToLog("Lower Heat Setpoint", True)
                     SendString("SN" + TSAddress + " SH=" & (HeatSP - 1).ToString & vbCr)
             End Select
 
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error Processing Command - " & ex.Message, True)
+            logging.AddToLog("Error Processing Command - " & ex.Message, True)
         End Try
 
     End Sub
 
-    Sub Shutdown() Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.Shutdown
-        OSAEApi.AddToLog("Starting Shutdown", True)
+    Public Overrides Sub Shutdown()
+        logging.AddToLog("Starting Shutdown", True)
         ShutdownNow = True
         Try
             'ReceiveThead.Abort()
@@ -219,10 +213,10 @@ Public Class AprilaireThermostat
 
             CheckTempTimer.Dispose()
 
-            OSAEApi.AddToLog("Shutdown complete", True)
+            logging.AddToLog("Shutdown complete", True)
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error during shutdown " & ex.ToString, True)
+            logging.AddToLog("Error during shutdown " & ex.ToString, True)
         End Try
 
     End Sub
@@ -240,7 +234,7 @@ Public Class AprilaireThermostat
                 Sleep(100)
             End While
 
-            OSAEApi.AddToLog("Timer Update", False)
+            logging.AddToLog("Timer Update", False)
             SendString("SN" + TSAddress + " C1?" & vbCr)
             Sleep(500)
             If InitNeeded Then
@@ -262,7 +256,7 @@ Public Class AprilaireThermostat
         'OSAEApi.AddToLog("Received: " & Data & " :Length " & Data.Length.ToString, False)
         Found = False
         Data = Mid(Data, 5).TrimEnd
-        OSAEApi.AddToLog("Processing string:" & Data, False)
+        logging.AddToLog("Processing string:" & Data, False)
 
 
         If Left(Data, 2) = "T=" Then
@@ -271,48 +265,48 @@ Public Class AprilaireThermostat
                 TempNew = Mid(Data, 3, 2)
                 If Temperature <> TempNew Then
                     Temperature = TempNew
-                    OSAEApi.ObjectPropertySet(ThermostatName, "Temperature", Temperature)
-                    OSAEApi.EventLogAdd(ThermostatName, "TEMPCHANGE")
-                    OSAEApi.AddToLog("Temp = " & Temperature, False)
+                    OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Temperature", Temperature, pName)
+                    logging.EventLogAdd(ThermostatName, "TEMPCHANGE")
+                    logging.AddToLog("Temp = " & Temperature, False)
                 End If
             Catch
-                OSAEApi.AddToLog("Unrecognized temperature string received " & Data, True)
+                logging.AddToLog("Unrecognized temperature string received " & Data, True)
             End Try
 
         ElseIf Left(Data, 5) = "HVAC=" Then
             Valid = False
             If Mid(Data, 10, 1) = "+" Then
                 Valid = True
-                OSAEApi.ObjectPropertySet(ThermostatName, "Cooling", "TRUE")
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Cooling", "TRUE", pName)
                 If Not Cooling Then
-                    OSAEApi.EventLogAdd(ThermostatName, "COOLON")
-                    OSAEApi.AddToLog("Cool On", False)
+                    logging.EventLogAdd(ThermostatName, "COOLON")
+                    logging.AddToLog("Cool On", False)
                 End If
                 Cooling = True
             ElseIf Mid(Data, 10, 1) = "-" Then
                 Valid = True
-                OSAEApi.ObjectPropertySet(ThermostatName, "Cooling", "FALSE")
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Cooling", "FALSE", pName)
                 If Cooling Then
-                    OSAEApi.EventLogAdd(ThermostatName, "COOLOFF")
-                    OSAEApi.AddToLog("Cool Off", False)
+                    logging.EventLogAdd(ThermostatName, "COOLOFF")
+                    logging.AddToLog("Cool Off", False)
                 End If
                 Cooling = False
             End If
 
             If Mid(Data, 13, 1) = "+" Then
                 Valid = True
-                OSAEApi.ObjectPropertySet(ThermostatName, "Heating", "TRUE")
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Heating", "TRUE", pName)
                 If Not Heating Then
-                    OSAEApi.EventLogAdd(ThermostatName, "HEATON")
-                    OSAEApi.AddToLog("Heat On", False)
+                    logging.EventLogAdd(ThermostatName, "HEATON")
+                    logging.AddToLog("Heat On", False)
                 End If
                 Heating = True
             ElseIf Mid(Data, 13, 1) = "-" Then
                 Valid = True
-                OSAEApi.ObjectPropertySet(ThermostatName, "Heating", "FALSE")
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Heating", "FALSE", pName)
                 If Heating Then
-                    OSAEApi.EventLogAdd(ThermostatName, "HEATOFF")
-                    OSAEApi.AddToLog("Heat off", False)
+                    logging.EventLogAdd(ThermostatName, "HEATOFF")
+                    logging.AddToLog("Heat off", False)
                 End If
                 Heating = False
             End If
@@ -320,25 +314,25 @@ Public Class AprilaireThermostat
             If Mid(Data, 7, 1) = "+" And Not (Heating Or Cooling) Then
                 Valid = True
                 If Not Heating And Not Cooling Then
-                    OSAEApi.ObjectPropertySet(ThermostatName, "Fan", "TRUE")
+                    OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Fan", "TRUE", pName)
                     If Not Fan Then
-                        OSAEApi.EventLogAdd(ThermostatName, "FANON")
-                        OSAEApi.AddToLog("Fan On", False)
+                        logging.EventLogAdd(ThermostatName, "FANON")
+                        logging.AddToLog("Fan On", False)
                     End If
                     Fan = True
                 End If
             ElseIf Mid(Data, 7, 1) = "-" Or (Heating Or Cooling) Then
                 Valid = True
-                OSAEApi.ObjectPropertySet(ThermostatName, "Fan", "FALSE")
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Fan", "FALSE", pName)
                 If Fan Then
-                    OSAEApi.EventLogAdd(ThermostatName, "FANOFF")
-                    OSAEApi.AddToLog("Fan Off", False)
+                    logging.EventLogAdd(ThermostatName, "FANOFF")
+                    logging.AddToLog("Fan Off", False)
                 End If
                 Fan = False
             End If
 
             If Not Valid Then
-                OSAEApi.AddToLog("Unrecognized HVAC string received " & Data, True)
+                logging.AddToLog("Unrecognized HVAC string received " & Data, True)
             End If
 
 
@@ -346,30 +340,30 @@ Public Class AprilaireThermostat
             HeatSPNew = Mid(Data, 4, 2)
             If HeatSPNew <> HeatSP Then
                 HeatSP = HeatSPNew
-                OSAEApi.ObjectPropertySet(ThermostatName, "HeatSP", HeatSP)
-                OSAEApi.EventLogAdd(ThermostatName, "HEATSPCHANGE")
-                OSAEApi.AddToLog("New heat setpoint " & HeatSP, True)
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "HeatSP", HeatSP, pName)
+                logging.EventLogAdd(ThermostatName, "HEATSPCHANGE")
+                logging.AddToLog("New heat setpoint " & HeatSP, True)
             End If
 
         ElseIf Left(Data, 3) = "SC=" Then
             CoolSPNew = Mid(Data, 4, 2)
             If CoolSPNew <> CoolSP Then
                 CoolSP = CoolSPNew
-                OSAEApi.ObjectPropertySet(ThermostatName, "CoolSP", CoolSP)
-                OSAEApi.EventLogAdd(ThermostatName, "COOLSPCHANGE")
-                OSAEApi.AddToLog("New cool setpoint " & CoolSP, True)
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "CoolSP", CoolSP, pName)
+                logging.EventLogAdd(ThermostatName, "COOLSPCHANGE")
+                logging.AddToLog("New cool setpoint " & CoolSP, True)
             End If
         ElseIf Left(Data, 2) = "F=" Then
             FanModeNew = Mid(Data, 3)
             If FanModeNew <> FanMode Then
                 FanMode = FanModeNew
-                OSAEApi.ObjectPropertySet(ThermostatName, "FANMODE", FanMode)
-                OSAEApi.EventLogAdd(ThermostatName, "FANMODECHANGE")
-                OSAEApi.AddToLog("Fan mode has changed to " & FanMode, True)
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "FANMODE", FanMode, pName)
+                logging.EventLogAdd(ThermostatName, "FANMODECHANGE")
+                logging.AddToLog("Fan mode has changed to " & FanMode, True)
             End If
 
         ElseIf Left(Data, 6) = "C1=OFF" Then
-            OSAEApi.AddToLog("Detected thermostat reset, re-initialize", True)
+            logging.AddToLog("Detected thermostat reset, re-initialize", True)
             InitNeeded = True
         Else
             For Each IgnoreString In Ignore
@@ -380,7 +374,7 @@ Public Class AprilaireThermostat
             Next
 
             If Not Found Then
-                OSAEApi.AddToLog("Unrecognized string received " & Data, True)
+                logging.AddToLog("Unrecognized string received " & Data, True)
             End If
 
         End If
@@ -451,23 +445,23 @@ Public Class AprilaireThermostat
     Sub GetInitialValues()
 
         SendString("SN" + TSAddress + " SH?" & vbCr)
-        OSAEApi.AddToLog("Sent : SN " + TSAddress + "SH?", False)
+        logging.AddToLog("Sent : SN " + TSAddress + "SH?", False)
         Sleep(200)
 
         SendString("SN" + TSAddress + " SC?" & vbCr)
-        OSAEApi.AddToLog("Sent : SN " + TSAddress + "SC?", False)
+        logging.AddToLog("Sent : SN " + TSAddress + "SC?", False)
         Sleep(200)
 
         SendString("SN" + TSAddress + " HVAC?" & vbCr)
-        OSAEApi.AddToLog("Sent : SN " + TSAddress + "HVAC?", False)
+        logging.AddToLog("Sent : SN " + TSAddress + "HVAC?", False)
         Sleep(200)
 
         SendString("SN" + TSAddress + " TEMP?" & vbCr)
-        OSAEApi.AddToLog("Sent : SN " + TSAddress + "TEMP?", False)
+        logging.AddToLog("Sent : SN " + TSAddress + "TEMP?", False)
         Sleep(200)
 
         SendString("SN" + TSAddress + " FAN?" & vbCr)
-        OSAEApi.AddToLog("Sent : SN " + TSAddress + "FAN?", False)
+        logging.AddToLog("Sent : SN " + TSAddress + "FAN?", False)
         Sleep(200)
 
 
@@ -482,12 +476,12 @@ Public Class AprilaireThermostat
             client.BeginReceive(state.buffer, 0, state.BufferSize, 0, _
                 New AsyncCallback(AddressOf ReceiveCallback), state)
         Catch ex As Exception
-            OSAEApi.AddToLog("Error setting up receive buffer " & ex.Message, True)
+            logging.AddToLog("Error setting up receive buffer " & ex.Message, True)
         End Try
     End Sub 'Receive
 
     Private Shared Sub ReceiveCallback(ByVal ar As IAsyncResult)
-        OSAEApi.AddToLog("Starting Receive Callback", False)
+        logging.AddToLog("Starting Receive Callback", False)
 
         'ReceiveThead = Thread.CurrentThread
         Try
@@ -499,7 +493,7 @@ Public Class AprilaireThermostat
             ' Read data from the remote device.
             Dim bytesRead As Integer = client.EndReceive(ar)
 
-            OSAEApi.AddToLog("Received: " & Encoding.ASCII.GetString(state.buffer, 0, _
+            logging.AddToLog("Received: " & Encoding.ASCII.GetString(state.buffer, 0, _
                     bytesRead).TrimEnd(vbCr), True) ' & " :Length " & bytesRead.ToString, True)
 
             'If bytesRead > 0 Then
@@ -523,7 +517,7 @@ Public Class AprilaireThermostat
             End If
 
         Catch ex As Exception
-            OSAEApi.AddToLog("Error receiving data " & ex.Message, True)
+            logging.AddToLog("Error receiving data " & ex.Message, True)
 
         End Try
     End Sub 'ReceiveCallback
