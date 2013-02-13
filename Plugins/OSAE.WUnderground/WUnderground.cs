@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Timers;
-using System.Threading;
-using System.Net;
-using System.Xml;
-
-namespace OSAE.WUnderground
+﻿namespace OSAE.WUnderground
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Threading;
+    using System.Timers;
+    using System.Xml;
+
     public class WUnderground : OSAEPluginBase
     {
         string pName;
         Logging logging = Logging.GetLogger("WUnderground");
+
         Thread updateConditionsThread, updateForecastThread, updateDayNightThread;
         string pws = "";
         System.Timers.Timer ConditionsUpdateTimer, ForecastUpdateTimer, DayNightUpdateTimer;

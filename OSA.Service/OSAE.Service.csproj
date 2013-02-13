@@ -52,6 +52,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OSAEService.HelperCode.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OSAEService.PluginsCode.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OSAEService.WCFCode.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="WCF\IMessageCallback.cs" />
     <Compile Include="WCF\IWCFService.cs" />
     <Compile Include="OSAEService.cs">
@@ -62,7 +71,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WCF\WCFService.cs" />
-    <Compile Include="WebService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

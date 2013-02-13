@@ -11,7 +11,7 @@ Imports System.Text
 
 Public Class AprilaireThermostat
     Inherits OSAEPluginBase
-    Private Shared logging As Logging = Logging.GetLogger("Script Processor")
+    Private Shared logging As Logging = logging.GetLogger("Aprilaire Thermostat")
     Private Shared pName As String
 
     Private Shared client_socket As New Socket(AddressFamily.InterNetwork, _
@@ -253,7 +253,7 @@ Public Class AprilaireThermostat
         'Data = ReceiveString()
         'If Data <> "" Then
         'CurrentDateTime = DateTime.Now()
-        'OSAEApi.AddToLog("Received: " & Data & " :Length " & Data.Length.ToString, False)
+        'logging.AddToLog("Received: " & Data & " :Length " & Data.Length.ToString, False)
         Found = False
         Data = Mid(Data, 5).TrimEnd
         logging.AddToLog("Processing string:" & Data, False)

@@ -1,11 +1,7 @@
-﻿Imports System.AddIn
-Imports OpenSourceAutomation
-<AddIn("Phidget-RFID", Version:="0.3.0")>
-Public Class PhidgetRFID
-    Implements IOpenSourceAutomationAddIn
-    Private OSAEApi As New OSAE("Phidget-RFID")
+﻿Public Class PhidgetRFID
+    Inherits OSAEPluginBase
     Private WithEvents phidgetRFID As Phidgets.RFID
-    Private gAppName As String = ""
+    Private pName As String = ""
     Private gAttached As Boolean
     Private gName As String = ""
     Private gSerial As String = ""
@@ -14,23 +10,24 @@ Public Class PhidgetRFID
     Private gLED As Boolean
     Private gOutput1 As Boolean
     Private gOutput2 As Boolean
+    Private Shared logging As Logging = logging.GetLogger("Script Processor")
 
     Private Sub phidgetRFID_Attach(ByVal sender As Object, ByVal e As Phidgets.Events.AttachEventArgs) Handles phidgetRFID.Attach
         gAttached = sender.Attached.ToString
-        OSAEApi.ObjectPropertySet(gAppName, "Attached", gAttached)
-        OSAEApi.AddToLog("RFID Controller Attached = " & gAttached, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Attached", gAttached, pName)
+        logging.AddToLog("RFID Controller Attached = " & gAttached, True)
 
         gName = sender.Name
-        OSAEApi.ObjectPropertySet(gAppName, "Name", gName)
-        OSAEApi.AddToLog("RFID Controller Nam = " & gName, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Name", gName, pName)
+        logging.AddToLog("RFID Controller Nam = " & gName, True)
 
         gSerial = sender.SerialNumber.ToString
-        OSAEApi.ObjectPropertySet(gAppName, "Serial", gSerial)
-        OSAEApi.AddToLog("Serial Number = " & gSerial, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Serial", gSerial, pName)
+        logging.AddToLog("Serial Number = " & gSerial, True)
 
         gVersion = sender.Version.ToString()
-        OSAEApi.ObjectPropertySet(gAppName, "Version", gVersion)
-        OSAEApi.AddToLog("Version Number = " & gVersion, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Version", gVersion, pName)
+        logging.AddToLog("Version Number = " & gVersion, True)
         ' outputsTxt.Text = sender.outputs.Count.ToString()
         ' antennaChk.Checked = True
         'phidgetRFID.Antenna = True
@@ -38,32 +35,32 @@ Public Class PhidgetRFID
 
     Private Sub phidgetRFID_Detach(ByVal sender As Object, ByVal e As Phidgets.Events.DetachEventArgs) Handles phidgetRFID.Detach
         gAttached = sender.Attached.ToString
-        OSAEApi.ObjectPropertySet(gAppName, "Attached", gAttached)
-        OSAEApi.AddToLog("RFID Controller Attached = " & gAttached, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Attached", gAttached, pName)
+        logging.AddToLog("RFID Controller Attached = " & gAttached, True)
         gName = sender.Name
     End Sub
 
     Private Sub phidgetRFID_Error(ByVal sender As Object, ByVal e As Phidgets.Events.ErrorEventArgs) Handles phidgetRFID.Error
-        OSAEApi.AddToLog("phidgetRFID_Error: " & e.Description, True)
+        logging.AddToLog("phidgetRFID_Error: " & e.Description, True)
     End Sub
 
     Private Sub phidgetRFID_Tag(ByVal sender As Object, ByVal e As Phidgets.Events.TagEventArgs) Handles phidgetRFID.Tag
         Dim oObject As OSAEObject
-        OSAEApi.ObjectPropertySet(gAppName, "Last Tag Read", e.Tag)
-        OSAEApi.AddToLog("Read Tag = " & e.Tag, True)
-        OSAEApi.AddToLog("GetObjectByAddress: " & e.Tag, True)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Last Tag Read", e.Tag, pName)
+        logging.AddToLog("Read Tag = " & e.Tag, True)
+        logging.AddToLog("GetObjectByAddress: " & e.Tag, True)
         Try
-            oObject = OSAEApi.GetObjectByAddress(e.Tag)
+            oObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
             If IsNothing(oObject) Then
-                OSAEApi.AddToLog("Adding new RFID Tag: " & e.Tag, True)
-                OSAEApi.ObjectAdd("RFID-" & e.Tag, "Unknown RFID Tag", "PHIDGET RFID TAG", e.Tag, "", True)
+                logging.AddToLog("Adding new RFID Tag: " & e.Tag, True)
+                OSAEObjectManager.ObjectAdd("RFID-" & e.Tag, "Unknown RFID Tag", "PHIDGET RFID TAG", e.Tag, "", True)
             End If
-            oObject = OSAEApi.GetObjectByAddress(e.Tag)
-            OSAEApi.ObjectStateSet(oObject.Name, "ON")
-            OSAEApi.AddToLog("Detected: " & oObject.Name, True)
+            oObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
+            OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+            logging.AddToLog("Detected: " & oObject.Name, True)
         Catch ex As Exception
-            OSAEApi.AddToLog("Object Not Found for: " & e.Tag, True)
-            OSAEApi.AddToLog("Error Msg: " & ex.Message, True)
+            logging.AddToLog("Object Not Found for: " & e.Tag, True)
+            logging.AddToLog("Error Msg: " & ex.Message, True)
         End Try
     End Sub
 
@@ -93,40 +90,40 @@ Public Class PhidgetRFID
 
     'When the application is being terminated, close the Phidget.
 
-    Public Sub ProcessCommand(ByVal table As System.Data.DataTable) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.ProcessCommand
+    Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
         'Dim sAddress As String, iState As Integer
         'Try
         '    sAddress = row("address").ToString.Replace((gSerial & "-DO"), "")
         '    If row("method_name").ToString = "ON" Then iState = 1
         '    If row("method_name").ToString = "OFF" Then iState = 0
         '    phidgetIFK.outputs(sAddress) = iState
-        '    OSAEApi.ObjectStateSet(row("object_name").ToString, row("method_name").ToString)
-        '    OSAEApi.AddToLog("Executed " & row("object_name").ToString & " " & row("method_name").ToString & "(" & row("address").ToString & " " & row("method_name").ToString & ")")
+        '    OSAEObjectStateManager.ObjectStateSet(row("object_name").ToString, row("method_name").ToString)
+        '    logging.AddToLog("Executed " & row("object_name").ToString & " " & row("method_name").ToString & "(" & row("address").ToString & " " & row("method_name").ToString & ")")
         'Catch ex As Exception
-        '    OSAEApi.AddToLog("Error ProcessCommand - " & ex.Message)
+        '    logging.AddToLog("Error ProcessCommand - " & ex.Message)
         'End Try
     End Sub
 
-    Public Sub RunInterface(ByVal pluginName As String) Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.RunInterface
+    Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
-            gAppName = pluginName
-            OSAEApi.AddToLog("Found my Object: " & gAppName, True)
-            gAntenna = Val(OSAEApi.GetObjectPropertyValue(gAppName, "Antenna Enabled").Value)
-            OSAEApi.AddToLog("Antenna Enabled = " & gAntenna, True)
-            gLED = Val(OSAEApi.GetObjectPropertyValue(gAppName, "LED Enabled").Value)
-            OSAEApi.AddToLog("LED Enabled = " & gLED, True)
-            gOutput1 = Val(OSAEApi.GetObjectPropertyValue(gAppName, "Output 1 ON").Value)
-            OSAEApi.AddToLog("Output 1 ON = " & gOutput1, True)
-            gOutput2 = Val(OSAEApi.GetObjectPropertyValue(gAppName, "Output 2 ON").Value)
-            OSAEApi.AddToLog("Output 2 ON = " & gOutput2, True)
+            pName = pluginName
+            logging.AddToLog("Found my Object: " & pName, True)
+            gAntenna = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Antenna Enabled").Value)
+            logging.AddToLog("Antenna Enabled = " & gAntenna, True)
+            gLED = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "LED Enabled").Value)
+            logging.AddToLog("LED Enabled = " & gLED, True)
+            gOutput1 = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Output 1 ON").Value)
+            logging.AddToLog("Output 1 ON = " & gOutput1, True)
+            gOutput2 = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Output 2 ON").Value)
+            logging.AddToLog("Output 2 ON = " & gOutput2, True)
             phidgetRFID = New Phidgets.RFID
             phidgetRFID.open()
         Catch ex As Exception
-            OSAEApi.AddToLog("Error in InitializePlugin: " & ex.Message, True)
+            logging.AddToLog("Error in InitializePlugin: " & ex.Message, True)
         End Try
     End Sub
 
-    Public Sub Shutdown() Implements OpenSourceAutomation.IOpenSourceAutomationAddIn.Shutdown
+    Public Overrides Sub Shutdown()
         phidgetRFID.close()
     End Sub
 End Class

@@ -46,17 +46,9 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AddInView">
-      <HintPath>..\..\AddInView\obj\Debug\AddInView.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="MySql.Data, Version=6.3.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\output\lib\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\output\lib\OSAE.API.dll</HintPath>
     </Reference>
     <Reference Include="Phidget21.NET, Version=2.1.8.102, Culture=neutral, PublicKeyToken=c2b1f2a3594bce52, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -120,6 +112,12 @@
     <None Include="Phidget-Servo.osapd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
+      <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
+      <Name>OSAE.API</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
