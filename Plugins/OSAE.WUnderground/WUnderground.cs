@@ -12,7 +12,7 @@ namespace OSAE.WUnderground
     public class WUnderground : OSAEPluginBase
     {
         string pName;
-        OSAE osae = new OSAE("WUnderground");
+        Logging logging = Logging.GetLogger("WUnderground");
         Thread updateConditionsThread, updateForecastThread, updateDayNightThread;
         string pws = "";
         System.Timers.Timer ConditionsUpdateTimer, ForecastUpdateTimer, DayNightUpdateTimer;
@@ -30,13 +30,13 @@ namespace OSAE.WUnderground
             try
             {
                 FirstRun = true;
-                osae.AddToLog("Running Interface", true);
+                logging.AddToLog("Running Interface", true);
                 pName = pluginName;
 
-                List<OSAEObject> objects = osae.GetObjectsByType("WEATHER");
+                List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("WEATHER");
                 if (objects.Count == 0)
                 {
-                    osae.ObjectAdd("Weather", "Weather Data", "WEATHER", "", "", true);
+                    OSAEObjectManager.ObjectAdd("Weather", "Weather Data", "WEATHER", "", "", true);
                     WeatherObjName = "Weather";
                 }
                 else
@@ -45,18 +45,18 @@ namespace OSAE.WUnderground
 
                 try
                 {
-                    if (Boolean.Parse(osae.GetObjectPropertyValue(pName, "Metric").Value))
+                    if (Boolean.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Metric").Value))
                     {
                         Metric = true;
-                        osae.AddToLog("Using metric units", true);
+                        logging.AddToLog("Using metric units", true);
                     }
                 }
                 catch
                 {
                 }
-                 
 
-                Conditionsupdatetime = Int32.Parse(osae.GetObjectPropertyValue(pName, "Conditions Interval").Value);
+
+                Conditionsupdatetime = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Conditions Interval").Value);
                 if (Conditionsupdatetime > 0)
                 {
                     ConditionsUpdateTimer = new System.Timers.Timer();
@@ -71,11 +71,11 @@ namespace OSAE.WUnderground
                 }
                 else
                 {
-                    latitude = osae.GetObjectPropertyValue(WeatherObjName, "latitude").Value;
-                    longitude = osae.GetObjectPropertyValue(WeatherObjName, "longitude").Value;
+                    latitude = OSAEObjectPropertyManager.GetObjectPropertyValue(WeatherObjName, "latitude").Value;
+                    longitude = OSAEObjectPropertyManager.GetObjectPropertyValue(WeatherObjName, "longitude").Value;
                 }
 
-                Forecastupdatetime = Int32.Parse(osae.GetObjectPropertyValue(pName, "Forecast Interval").Value);
+                Forecastupdatetime = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Forecast Interval").Value);
                 if (Forecastupdatetime > 0)
                 {
                     ForecastUpdateTimer = new System.Timers.Timer();
@@ -98,7 +98,7 @@ namespace OSAE.WUnderground
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error initializing the plugin " + ex.Message, true);
+                logging.AddToLog("Error initializing the plugin " + ex.Message, true);
             }
 
         
@@ -114,7 +114,7 @@ namespace OSAE.WUnderground
 
         public override void Shutdown()
         {
-            osae.AddToLog("Shutting down", true);
+            logging.AddToLog("Shutting down", true);
             if (Forecastupdatetime > 0)
                 ForecastUpdateTimer.Stop();
             if (Conditionsupdatetime > 0)
@@ -177,14 +177,14 @@ namespace OSAE.WUnderground
         {
             if (fieldValue.Length > 0)
             {
-                osae.ObjectPropertySet(WeatherObjName, fieldName, fieldValue);
+                OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, fieldName, fieldValue, pName);
                 if (fieldName == "Temp")
                 {
-                    osae.AddToLog("Found " + fieldName + ": " + fieldValue, true);
+                    logging.AddToLog("Found " + fieldName + ": " + fieldValue, true);
                 }
                 else
                 {
-                    osae.AddToLog("Found " + fieldName + ": " + fieldValue, false);
+                    logging.AddToLog("Found " + fieldName + ": " + fieldValue, false);
                     //System.Diagnostics.Debug.WriteLine("Found " + fieldName + ": " + fieldValue);
                 }
             }
@@ -192,7 +192,7 @@ namespace OSAE.WUnderground
             {
                 if (fieldName != "Windchill" & fieldName != "Visibility" & fieldName != "Conditions")
                 {
-                    osae.AddToLog("NOT FOUND " + fieldName, true);
+                    logging.AddToLog("NOT FOUND " + fieldName, true);
                 }
 
             }
@@ -222,7 +222,7 @@ namespace OSAE.WUnderground
 
             try
             {
-                pws = osae.GetObjectPropertyValue(pName, "PWS").Value;
+                pws = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "PWS").Value;
                 if (pws != "")
                 {
                     feedUrl = "http://api.wunderground.com/weatherstation/WXCurrentObXML.asp?ID=" + pws;
@@ -263,8 +263,8 @@ namespace OSAE.WUnderground
                     {
                         latitude = GetNodeValue(xml,"current_observation/location/latitude");
                         longitude = GetNodeValue(xml, "current_observation/location/longitude");
-                        osae.ObjectPropertySet(WeatherObjName, "latitude", latitude);
-                        osae.ObjectPropertySet(WeatherObjName, "logitude", longitude);
+                        OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "latitude", latitude, pName);
+                        OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "logitude", longitude, pName);
                         FirstRun = false;
                     }
                     //ForecastUrl = GetNodeValue(xml, "current_observation/ob_url");
@@ -274,7 +274,7 @@ namespace OSAE.WUnderground
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error updating current weather - " + ex.Message, true);
+                logging.AddToLog("Error updating current weather - " + ex.Message, true);
             }
         }
 
@@ -290,7 +290,7 @@ namespace OSAE.WUnderground
             {
                 if (latitude != "" && longitude != "")
                 {
-                    osae.AddToLog("Update Forecast", true);
+                    logging.AddToLog("Update Forecast", true);
                    // Now get the forecast.
                     feedUrl = "http://api.wunderground.com/auto/wui/geo/ForecastXML/index.xml?query=" + latitude + "," + longitude;
                     sXml = webClient.DownloadString(feedUrl);
@@ -487,7 +487,7 @@ namespace OSAE.WUnderground
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error updating forecasted weather - " + ex.Message, true);
+                logging.AddToLog("Error updating forecasted weather - " + ex.Message, true);
             }
         }
         public void updateDayNight()
@@ -513,10 +513,10 @@ namespace OSAE.WUnderground
             try
             {
                 Now = DateTime.Now.TimeOfDay;
-                Sunrise = DateTime.Parse(osae.GetObjectPropertyValue(WeatherObjName, "Sunrise").Value).TimeOfDay;
-                Sunset = DateTime.Parse(osae.GetObjectPropertyValue(WeatherObjName, "Sunset").Value).TimeOfDay;
+                Sunrise = DateTime.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(WeatherObjName, "Sunrise").Value).TimeOfDay;
+                Sunset = DateTime.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(WeatherObjName, "Sunset").Value).TimeOfDay;
 
-                DawnPreString= osae.GetObjectPropertyValue(pName, "DawnPre").Value;
+                DawnPreString = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "DawnPre").Value;
                 if (Int32.TryParse(DawnPreString, out Number))
                 {
                     DawnPre = Number;                   
@@ -527,7 +527,7 @@ namespace OSAE.WUnderground
                 }
 
 
-                DawnPostString = osae.GetObjectPropertyValue(pName, "DawnPost").Value;
+                DawnPostString = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "DawnPost").Value;
                 if (Int32.TryParse(DawnPostString, out Number))
                 {
                     DawnPost = Number;
@@ -538,7 +538,7 @@ namespace OSAE.WUnderground
                 }
 
 
-                DuskPreString = osae.GetObjectPropertyValue(pName, "DuskPre").Value;
+                DuskPreString = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "DuskPre").Value;
                 if (Int32.TryParse(DuskPreString, out Number))
                 {
                     DuskPre = Number;
@@ -549,7 +549,7 @@ namespace OSAE.WUnderground
                 }
 
 
-                DuskPostString = osae.GetObjectPropertyValue(pName, "DuskPost").Value;
+                DuskPostString = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "DuskPost").Value;
                 if (Int32.TryParse(DuskPostString, out Number))
                 {
                     DuskPost = Number;
@@ -567,19 +567,19 @@ namespace OSAE.WUnderground
 
                 String John = " " + " " + Convert.ToString(DuskStart);
 
-                osae.AddToLog(Convert.ToString(DawnStart) + " " + Convert.ToString(DawnEnd) + " " + Convert.ToString(DuskStart) + " " + Convert.ToString(DuskEnd) + " ", false);
+                logging.AddToLog(Convert.ToString(DawnStart) + " " + Convert.ToString(DawnEnd) + " " + Convert.ToString(DuskStart) + " " + Convert.ToString(DuskEnd) + " ", false);
                
                 if (Now >= DawnEnd & Now < DuskStart)
                 {
                     if (DayNight != "Day")
                     {
-                        osae.ObjectPropertySet(WeatherObjName, "DayNight", "Day");
+                        OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Day", pName);
                         if (DayNight == "Night" | DayNight == "Dawn")
                         {
-                            osae.EventLogAdd(WeatherObjName, "Day");
+                            logging.EventLogAdd(WeatherObjName, "Day");
                         }
                         DayNight = "Day";
-                        osae.AddToLog("Day", false);
+                        logging.AddToLog("Day", false);
                         
                     }
                 }
@@ -587,26 +587,26 @@ namespace OSAE.WUnderground
                 {
                     if (DayNight != "Night")
                     {
-                        osae.ObjectPropertySet(WeatherObjName, "DayNight", "Night");
+                        OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Night",pName);
                         if (DayNight == "Day" | DayNight == "Dusk")
                         {
-                            osae.EventLogAdd(WeatherObjName, "Night");
+                            logging.EventLogAdd(WeatherObjName, "Night");
                         }
                         DayNight = "Night";
-                         osae.AddToLog("Night", true);
+                         logging.AddToLog("Night", true);
                     }
                 }
                 else if (Now >= DawnStart & Now < DawnEnd)
                 {
                     if (DayNight != "Dawn")
                     {
-                        osae.ObjectPropertySet(WeatherObjName, "DayNight", "Dawn");
+                        OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Dawn", pName);
                         if (DayNight == "Night")
                         {
-                            osae.EventLogAdd(WeatherObjName, "Dawn");
+                            logging.EventLogAdd(WeatherObjName, "Dawn");
                         }
                         DayNight = "Dawn";
-                        osae.AddToLog("Dawn", true);
+                        logging.AddToLog("Dawn", true);
 
                     }
 
@@ -616,13 +616,13 @@ namespace OSAE.WUnderground
                 {
                     if (DayNight != "Dusk")
                     {
-                        osae.ObjectPropertySet(WeatherObjName, "DayNight", "Dusk");
+                        OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Dusk", pName);
                         if (DayNight == "Day")
                         {
-                            osae.EventLogAdd(WeatherObjName, "Dusk");
+                            logging.EventLogAdd(WeatherObjName, "Dusk");
                         }
                         DayNight = "Dusk";
-                        osae.AddToLog("Dusk", true);
+                        logging.AddToLog("Dusk", true);
                     }
 
                 }
@@ -630,7 +630,7 @@ namespace OSAE.WUnderground
             }
             catch (Exception ex)
             {
-                osae.AddToLog("Error updating day/night " + ex.Message, true);
+                logging.AddToLog("Error updating day/night " + ex.Message, true);
             }
 
         }
