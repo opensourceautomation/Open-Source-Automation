@@ -18,13 +18,19 @@ public partial class home : System.Web.UI.Page
         {
             hdnSelectedRow.Text = args[1];
             panelEditForm.Visible = true;
+            panelPropForm.Visible = false;
+            hdnSelectedPropRow.Text = "";
             hdnSelectedObjectName.Text = gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString();
             loadDDLs();
             loadProperties();
         }
         else if (args[0] == "gvProperties")
         {
-
+            hdnSelectedPropRow.Text = args[1];
+            panelPropForm.Visible = true;
+            hdnSelectedPropName.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_name"].ToString();
+            lblPropName.Text = hdnSelectedPropName.Text;
+            txtPropValue.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
         }
     }
 
@@ -40,6 +46,11 @@ public partial class home : System.Web.UI.Page
         {
             gvObjects.Rows[Int32.Parse(hdnSelectedRow.Text)].Attributes.Remove("onmouseout");
             gvObjects.Rows[Int32.Parse(hdnSelectedRow.Text)].Style.Add("background", "lightblue");
+        }
+        if (hdnSelectedPropRow.Text != "")
+        {
+            gvProperties.Rows[Int32.Parse(hdnSelectedPropRow.Text)].Attributes.Remove("onmouseout");
+            gvProperties.Rows[Int32.Parse(hdnSelectedPropRow.Text)].Style.Add("background", "lightblue");
         }
     }
 
@@ -123,5 +134,10 @@ public partial class home : System.Web.UI.Page
     {
         gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
         gvProperties.DataBind();
+    }
+    protected void btnPropSave_Click(object sender, EventArgs e)
+    {
+        OSAEObjectPropertyManager.ObjectPropertySet(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtPropValue.Text, "Web UI");
+        loadProperties();
     }
 }

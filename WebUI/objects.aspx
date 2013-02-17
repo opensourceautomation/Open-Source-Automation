@@ -3,7 +3,19 @@
 
 <asp:Content runat="server" ContentPlaceHolderID="ContentPlaceHolder">
     <script type="text/javascript">
-       
+        window.onload = function () {
+            var strCook = document.cookie;
+            if (strCook.indexOf("!~") != 0) {
+                var intS = strCook.indexOf("!~");
+                var intE = strCook.indexOf("~!");
+                var strPos = strCook.substring(intS + 2, intE);
+                document.getElementById("ObjGrid").scrollTop = strPos;
+            }
+        }
+        function SetDivPosition() {
+            var intY = document.getElementById("ObjGrid").scrollTop;
+            document.cookie = "yPos=!~" + intY + "~!";
+        }
     </script> 
     <style>
         #EditForm {
@@ -26,12 +38,12 @@
         }
     </style>
     <div class="row-fluid">
-        <div class="span8" ID="ObjGrid" >
+        <div class="span8" ID="ObjGrid"  onscroll="SetDivPosition()">
             <asp:GridView runat="server" ID="gvObjects"
                 AutoGenerateColumns="False"  
                 GridLines="None"  
                 CssClass="mGrid"  
-                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name">  
+                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" style="overflow: auto; ">  
                 <Columns>  
                     <asp:BoundField DataField="container_name" HeaderText="Container" />  
                     <asp:BoundField DataField="object_name" HeaderText="Object" />  
@@ -80,18 +92,24 @@
                     <div class="row-fluid">
                         <div class="span1"></div>
                         <div class="span10">
-                        <asp:GridView runat="server" ID="gvProperties"
-                            AutoGenerateColumns="False"  
-                            GridLines="None"  
-                            CssClass="mGrid"  
-                            AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name">  
-                            <Columns>  
-                                <asp:BoundField DataField="property_name" HeaderText="Property" /> 
-                                <asp:BoundField DataField="property_value" HeaderText="Value" /> 
-                            </Columns>  
+                            <asp:GridView runat="server" ID="gvProperties"
+                                AutoGenerateColumns="False"  
+                                GridLines="None"  
+                                CssClass="mGrid"  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value">  
+                                <Columns>  
+                                    <asp:BoundField DataField="property_name" HeaderText="Property" /> 
+                                    <asp:BoundField DataField="property_value" HeaderText="Value" /> 
+                                </Columns>  
 
-                        </asp:GridView>
-
+                            </asp:GridView>
+                            <asp:Panel runat="server" ID="panelPropForm" Visible ="false">
+                                <form class="form-inline">
+                                    <asp:Label  runat="server" ID="lblPropName"></asp:Label>
+                                    <asp:Textbox class="input-xlarge" runat="server" ID="txtPropValue"></asp:Textbox>
+                                    <asp:Button class="btn btn-primary" runat="server" ID="btnPropSave" OnClick="btnPropSave_Click" Text="Save" />
+                                </form>
+                            </asp:Panel>
                         </div>
                         <div class="span1"></div>
                     </div>
@@ -104,4 +122,6 @@
     
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
+    <asp:Label runat="server" ID="hdnSelectedPropRow" Visible="false"></asp:Label>
+    <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>
 </asp:Content>
