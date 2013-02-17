@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2010
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.Jabber", "Plugins\OSAE.Jabber\OSAE.Jabber.csproj", "{589EDA2C-421D-40F1-9682-D4360E02897A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.API", "OSAE.API\OSAE.API.csproj", "{022F45F1-C988-41A1-A203-39E97BE928B6}"
@@ -52,7 +52,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.RSS", "Plugins\OSAE.RS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.RadioThermostat", "Plugins\OSAE.RadioThermostat\OSAE.RadioThermostat\OSAE.RadioThermostat.csproj", "{DF40F291-A1B3-4E4C-AE80-3D8DCD4A0DDE}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "localhost", "http://localhost:53994", "{E730B38F-5144-4AA2-9369-5287A3667CB0}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebUI", "http://localhost:53994", "{E730B38F-5144-4AA2-9369-5287A3667CB0}"
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"

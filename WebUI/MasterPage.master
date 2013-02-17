@@ -12,37 +12,7 @@
 
     <!-- Le styles -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 0 0 0 0;
-      }
-      
-      .hero-unit {
-        padding: 10px 10px 50px 10px;
-      }
-      
-      .well {
-        padding: 20px 10px 20px 20px;
-      }
-      
-      .accordion-heading {
-        background-color: whiteSmoke;
-      }  
-      
-      .twrap {
-          overflow: hidden;
-          padding: 0 4px 0 12px
-      }
-      textarea {
-          width: 98%;
-          height: 300px;
-      }
-          
-    </style>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
     <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="bootstrap/js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="includes/osae.js"></script>
@@ -65,8 +35,12 @@
           <a class="brand" href="home.php">Open Source Automation</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li><a href="home.aspx">Home</a></li>
               <li><a href="screens.aspx">Screens</a></li>
+              <li><a href="objects.aspx">Objects</a></li>
+              <li><a href="objtypes.aspx">Object Types</a></li>
+              <li><a href="scripts.aspx">Named Scripts</a></li>
+              <li><a href="editor.aspx">Script Editor</a></li>
+              <li><a href="schedules.aspx">Schedules</a></li>
               <li><a href="plugins.aspx">Plugins</a></li>
               <li><a href="analytics.aspx">Analytics</a></li>
             </ul>
@@ -75,10 +49,28 @@
       </div>
     </div>
     <form id="form2" runat="server">
-    <div>
-        <asp:ContentPlaceHolder id="ContentPlaceHolder2" runat="server">
+        <div class="container-fluid">
+
+            <div>
+                <asp:ContentPlaceHolder id="ContentPlaceHolder" runat="server">
         
-        </asp:ContentPlaceHolder>
-    </div>
+                </asp:ContentPlaceHolder>
+            </div>
+            <hr>
+
+            <footer>
+            <p>&copy; Open Source Automation 2013</p>
+            </footer>
+
+        </div><!--/.fluid-container-->
+
     </form>
-</body>
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="bootstrap/js/bootstrap-transition.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap-collapse.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap-dropdown.js"></script>
+  </body>
+</html>
+

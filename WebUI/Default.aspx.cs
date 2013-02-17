@@ -10,8 +10,7 @@ using OSAE;
 
 public partial class _Default : System.Web.UI.Page
 {
-    OSAE.OSAE osae = new OSAE.OSAE("Web UI");
-    OSAE.Logging logging = new Logging("Web UI");
+    Logging logging = Logging.GetLogger("Web UI");
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -20,7 +19,7 @@ public partial class _Default : System.Web.UI.Page
 
     protected void imgSubmit_Click(object sender, EventArgs e)
     {
-        OSAE.OSAEObject obj = osae.GetObjectByName(txtUserName.Text);
+        OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(txtUserName.Text);
         
 
         if (obj != null)
@@ -41,7 +40,7 @@ public partial class _Default : System.Web.UI.Page
                 // the login is successful
                 if (Request.QueryString["ReturnUrl"] == null)
                 {
-                    returnUrl1 = "home.aspx";
+                    returnUrl1 = "objects.aspx";
                 }
 
                 //login not unsuccessful 
