@@ -14,14 +14,13 @@ public partial class _Default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        
+        // Response.Redirect("~/firstrun.aspx");        
     }
 
     protected void imgSubmit_Click(object sender, EventArgs e)
     {
-        OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(txtUserName.Text);
-        
-
+        OSAEObject obj = OSAEObjectManager.GetObjectByName(txtUserName.Text);        
+                        
         if (obj != null)
         {
             string pass = obj.Property("Password").Value;
