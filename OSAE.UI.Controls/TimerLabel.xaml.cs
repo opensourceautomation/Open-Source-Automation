@@ -69,6 +69,7 @@ namespace OSAE.UI.Controls
                     }
                     catch (Exception myerror)
                     {
+                        
                     }
                 }
                 if (sForeColor != "")

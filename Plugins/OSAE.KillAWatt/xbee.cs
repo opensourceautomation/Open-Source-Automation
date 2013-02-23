@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO.Ports;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO.Ports;
 
 namespace OSAE.KillAWatt
 {
@@ -11,11 +9,8 @@ namespace OSAE.KillAWatt
     {
         private SerialPort _port = new SerialPort();
         Queue buffer = new Queue();
-        int fetchcount = 0;
-        bool clock2Tick;
         byte[] gpacket = new byte[88];
         List<PowerCollection> pcList = new List<PowerCollection>();
-        string pName = "";
         int VREF = 498;
 
         public delegate void xbeePacketReceivedEventHandler(xbeePacket xbp);
@@ -41,8 +36,7 @@ namespace OSAE.KillAWatt
             }
 
             if (buffer.Count >= 88)
-                fetch();
-
+                fetch();   
         }
 
         private void fetch()

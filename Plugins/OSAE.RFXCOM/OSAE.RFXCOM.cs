@@ -17,15 +17,11 @@
         private int trxType = 0;
         private byte[] recbuf = new byte[40];
         private byte recbytes;
-        private int bytecnt = 0;
-        private string message;
         private byte bytSeqNbr = 0;
-        private byte bytRemoteToggle = 0;
 
         private byte bytFWversion;
         private bool tcp;
         private byte maxticks = 0;
-        private bool LogActive = false;
         private byte[] TCPData = new byte[1025];
 
         public override void ProcessCommand(OSAEMethod method)

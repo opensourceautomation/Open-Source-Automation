@@ -5,13 +5,11 @@
     using System.Data;
     using System.Diagnostics;
     using System.IO;
-    using System.Net;
     using System.Security;
     using System.Security.Policy;
     using System.ServiceModel;
     using System.ServiceProcess;
     using System.Threading;
-    using Microsoft.Win32;
     using OSAE;    
 
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
@@ -24,9 +22,7 @@
         Logging logging = Logging.GetLogger(sourceName);
 
         private WCFServiceReference.WCFServiceClient wcfObj;
-        private List<Plugin> plugins = new List<Plugin>();
-        private string _computerIP;
-        private ModifyRegistry myRegistry = new ModifyRegistry();
+        private OSAEPluginCollection plugins = new OSAEPluginCollection();
         System.Timers.Timer Clock = new System.Timers.Timer();
 
         static void Main(string[] args)
@@ -35,8 +31,10 @@
             {
                 string pattern = Common.MatchPattern(args[0]);
                 Logging.AddToLog("Processing command: " + args[0] + ", Pattern: " + pattern, true, "OSACL");
-                if (pattern != "")
+                if (pattern != string.Empty)
+                {
                     OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, "", "OSACL");
+                }
             }
             else
             {
@@ -69,62 +67,20 @@
         }
 
         protected override void OnStart(string[] args)
-        {
-            try
-            {               
-                IPHostEntry ipEntry = Dns.GetHostByName(Common.ComputerName);
-                IPAddress[] addr = ipEntry.AddressList;
-                _computerIP = addr[0].ToString();
-
-                System.IO.FileInfo file = new System.IO.FileInfo(Common.ApiPath + "/Logs/");
-                file.Directory.Create();
-                if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
-                {
-                    string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
-                    foreach (string f in files)
-                        File.Delete(f);
-                }
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Error getting registry settings and/or deleting logs: " + ex.Message, true);
-            }
+        {          
+            Common.InitialiseLogFolder();
 
             logging.AddToLog("OnStart", true);
-            logging.AddToLog("Creating Computer object: " + Common.ComputerName, true);
-
-            if (OSAEObjectManager.GetObjectByName(Common.ComputerName) == null)
-            {
-                OSAEObject obj = OSAEObjectManager.GetObjectByAddress(_computerIP);
-                if (obj == null)
-                {
-                    OSAEObjectManager.ObjectAdd(Common.ComputerName, Common.ComputerName, "COMPUTER", _computerIP, "", true);
-                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
-                }
-                else if (obj.Type == "COMPUTER")
-                {
-                    OSAEObjectManager.ObjectUpdate(obj.Name, Common.ComputerName, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
-                }
-                else
-                {
-                    OSAEObjectManager.ObjectAdd(Common.ComputerName + "." + _computerIP, Common.ComputerName, "COMPUTER", _computerIP, "", true);
-                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName + "." + _computerIP, "Host Name", Common.ComputerName, sourceName);
-                }
-            }
-            else
-            {
-                OSAEObject obj = OSAEObjectManager.GetObjectByName(Common.ComputerName);
-                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", _computerIP, obj.Container, obj.Enabled);
-                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Host Name", Common.ComputerName, sourceName);
-            }
+            Common.CreateComputerObject(sourceName);            
 
             try
             {
                 logging.AddToLog("Creating Service object", true);
                 OSAEObject svcobj = OSAEObjectManager.GetObjectByName("SERVICE-" + Common.ComputerName);
                 if (svcobj == null)
+                {
                     OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "", "SYSTEM", true);
+                }
                 OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", sourceName);
             }
             catch (Exception ex)
@@ -133,9 +89,7 @@
             }
 
             if (connectToService())
-            {
-
-                //LoadPlugins();
+            {                 
                 Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
                 loadPluginsThread.Start();
             }
@@ -162,15 +116,16 @@
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                logging.AddToLog("Error occured during stop, details: " + ex.Message, true);
+            }
         }
 
         public void LoadPlugins()
         {
             logging.AddToLog("Entered LoadPlugins", true);
-            string path = Common.ApiPath;
 
-            var pluginAssemblies = new List<OSAEPluginBase>();
             var types = PluginFinder.FindPlugins();
 
             logging.AddToLog("Loading Plugins", true);
@@ -180,7 +135,7 @@
                 logging.AddToLog("type.TypeName: " + type.TypeName, false);
                 logging.AddToLog("type.AssemblyName: " + type.AssemblyName, false);
 
-                var domain = CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet);
+                var domain = Common.CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet, typeof(ClientService));
 
                 plugins.Add(new Plugin(type.AssemblyName, type.TypeName, domain, type.Location));
             }
@@ -223,13 +178,11 @@
                                 {
                                     logging.AddToLog("Error activating plugin (" + plugin.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
                                 }
-                                catch
-                                {
-                                    logging.AddToLog("Error activating plugin", true);
-                                }
                             }
                             else
+                            {
                                 plugin.Enabled = false;
+                            }
 
                             logging.AddToLog("status: " + plugin.Enabled.ToString(), true);
                             logging.AddToLog("PluginName: " + plugin.PluginName, true);
@@ -237,9 +190,7 @@
                             Thread thread = new Thread(() => messageHost("plugin", "plugin|" + plugin.PluginName + "|" + plugin.Status
                                 + "|" + plugin.PluginVersion + "|" + plugin.Enabled));
                             thread.Start(); 
-                        }
-                        //else
-                        //    plugins.Remove(plugin);
+                        }                       
                     }
                     else
                     {
@@ -263,17 +214,11 @@
                             thread.Start(); 
                         }
 
-                    }
-                    
-                    
+                    }                                        
                 }
                 catch (Exception ex)
                 {
                     logging.AddToLog("Error loading plugin: " + ex.Message, true);
-                }
-                catch
-                {
-                    logging.AddToLog("Error loading plugin", true);
                 }
             }
             logging.AddToLog("Done loading plugins", true);
@@ -300,6 +245,21 @@
 
         public void OnMessageReceived(string msgType, string message, string from, DateTime timestamp)
         {
+            if(string.IsNullOrEmpty(msgType))
+            {
+                throw new ArgumentNullException("msgType");               
+            }
+
+            if (string.IsNullOrEmpty(message))
+            {
+                throw new ArgumentNullException("message");
+            }
+
+            if (string.IsNullOrEmpty(from))
+            {
+                throw new ArgumentNullException("from");
+            }
+
             logging.AddToLog("received message: " + msgType + " | " + message, false);
             switch (msgType)
             {
@@ -314,7 +274,7 @@
                     foreach (Plugin p in plugins)
                     {                        
                         if (p.PluginName == arguments[0])
-                        {
+                        {                             
                             OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
 
                             if (obj != null)
@@ -361,37 +321,9 @@
                     break;
                 case "method":
                     string[] items = message.Split('|');
-                    DataTable dt = new DataTable();
-                    DataColumn col1 = new DataColumn("object_name");
-                    DataColumn col2 = new DataColumn("object_owner");
-                    DataColumn col3 = new DataColumn("method_name");
-                    DataColumn col4 = new DataColumn("parameter_1");
-                    DataColumn col5 = new DataColumn("parameter_2");
-                    DataColumn col6 = new DataColumn("address");
-                    col1.DataType = System.Type.GetType("System.String");
-                    col2.DataType = System.Type.GetType("System.String");
-                    col3.DataType = System.Type.GetType("System.String");
-                    col4.DataType = System.Type.GetType("System.String");
-                    col5.DataType = System.Type.GetType("System.String");
-                    col6.DataType = System.Type.GetType("System.String");
-                    dt.Columns.Add(col1);
-                    dt.Columns.Add(col2);
-                    dt.Columns.Add(col3);
-                    dt.Columns.Add(col4);
-                    dt.Columns.Add(col5);
-                    dt.Columns.Add(col6);
-                    DataRow row = dt.NewRow();
-                    row[col1] = items[0].Trim();
-                    row[col2] = items[1].Trim();
-                    row[col3] = items[2].Trim();
-                    row[col4] = items[3].Trim();
-                    row[col5] = items[4].Trim();
-                    row[col6] = items[5].Trim();
-                    dt.Rows.Add(row);
-                    
-                    OSAEMethod method = new OSAEMethod(row["method_name"].ToString(), row["object_name"].ToString(), row["parameter_1"].ToString(), row["parameter_2"].ToString(), row["address"].ToString(), row["object_owner"].ToString());
-                    dt = null;
 
+                    OSAEMethod method = new OSAEMethod(items[2].Trim(), items[0].Trim(), items[3].Trim(), items[4].Trim(), items[5].Trim(), items[1].Trim());
+                    
                     if (method.ObjectName == "SERVICE-" + Common.ComputerName)
                     {
                         if (method.MethodName == "RESTART PLUGIN")
@@ -400,7 +332,6 @@
                             {
                                 if (p.PluginName == method.Parameter1)
                                 {
-                                    OSAEObjectManager objectManager = new OSAEObjectManager();
                                     OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
 
                                     if (obj != null)
@@ -415,11 +346,8 @@
                     else
                     {
                         foreach (Plugin plugin in plugins)
-                        {
-                            string x = row["object_owner"].ToString().ToLower();
-                            string y = row["object_name"].ToString().ToLower();
-
-                            if (plugin.Enabled == true && (row["object_owner"].ToString().ToLower() == plugin.PluginName.ToLower() || row["object_name"].ToString().ToLower() == plugin.PluginName.ToLower()))
+                        {                              
+                            if (plugin.Enabled == true && (method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower()))
                             {
                                 plugin.ExecuteCommand(method);
                             }
@@ -469,11 +397,15 @@
             try
             {
                 if (wcfObj.State == CommunicationState.Opened)
+                {
                     wcfObj.messageHost(msgType, message, Common.ComputerName);
+                }
                 else
                 {
                     if (connectToService())
+                    {
                         wcfObj.messageHost(msgType, message, Common.ComputerName);
+                    }
                 }
             }
             catch (Exception ex)
@@ -482,7 +414,7 @@
             }
         }
 
-        public void enablePlugin(Plugin plugin)
+        private void enablePlugin(Plugin plugin)
         {
             OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
 
@@ -499,14 +431,10 @@
             catch (Exception ex)
             {
                 logging.AddToLog("Error activating plugin (" + plugin.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
-            }
-            catch
-            {
-                logging.AddToLog("Error activating plugin", true);
-            }
+            }           
         }
 
-        public void disablePlugin(Plugin p)
+        private void disablePlugin(Plugin p)
         {
             OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
 
@@ -515,7 +443,7 @@
             {
                 p.Shutdown();
                 p.Enabled = false;
-                p.Domain = CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet);
+                p.Domain = Common.CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet, typeof(ClientService));
                 
             }
             catch (Exception ex)
@@ -523,105 +451,5 @@
                 logging.AddToLog("Error stopping plugin (" + p.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
             }
         }
-
-        public AppDomain CreateSandboxDomain(string name, string path, SecurityZone zone)
-        {
-            var setup = new AppDomainSetup { ApplicationBase = Common.ApiPath, PrivateBinPath = Path.GetFullPath(path) };
-
-            var evidence = new Evidence();
-            evidence.AddHostEvidence(new Zone(zone));
-            var permissions = SecurityManager.GetStandardSandbox(evidence);
-
-            var strongName = typeof(ClientService).Assembly.Evidence.GetHostEvidence<StrongName>();
-
-            return AppDomain.CreateDomain(name, null, setup);
-        }
-
-    }
-
-    public class ModifyRegistry
-    {
-        private string subKey;
-
-        public string SubKey
-        {
-            get { return subKey; }
-            set { subKey = value; }
-        }
-
-        private RegistryKey baseRegistryKey = Registry.LocalMachine;
-        /// <summary>
-        /// A property to set the BaseRegistryKey value.
-        /// (default = Registry.LocalMachine)
-        /// </summary>
-        public RegistryKey BaseRegistryKey
-        {
-            get { return baseRegistryKey; }
-            set { baseRegistryKey = value; }
-        }
-
-        /* **************************************************************************
-         * **************************************************************************/
-
-        /// <summary>
-        /// To read a registry key.
-        /// input: KeyName (string)
-        /// output: value (string) 
-        /// </summary>
-        public string Read(string KeyName)
-        {
-            // Opening the registry key
-            RegistryKey rk = baseRegistryKey;
-            // Open a subKey as read-only
-            RegistryKey sk1 = rk.OpenSubKey(subKey);
-            // If the RegistrySubKey doesn't exist -> (null)
-            if (sk1 == null)
-            {
-                return null;
-            }
-            else
-            {
-                try
-                {
-                    // If the RegistryKey exists I get its value
-                    // or null is returned.
-                    return (string)sk1.GetValue(KeyName.ToUpper());
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            }
-        }
-
-        /* **************************************************************************
-         * **************************************************************************/
-
-        /// <summary>
-        /// To write into a registry key.
-        /// input: KeyName (string) , Value (object)
-        /// output: true or false 
-        /// </summary>
-        public bool Write(string KeyName, object Value)
-        {
-            try
-            {
-                // Setting
-                RegistryKey rk = baseRegistryKey;
-                // I have to use CreateSubKey 
-                // (create or open it if already exits), 
-                // 'cause OpenSubKey open a subKey as read-only
-                RegistryKey sk1 = rk.CreateSubKey(subKey);
-                // Save the value
-                sk1.SetValue(KeyName.ToUpper(), Value);
-
-                return true;
-            }
-            catch (Exception)
-            {              
-                return false;
-            }
-        }
-    }
-
+    }    
 }

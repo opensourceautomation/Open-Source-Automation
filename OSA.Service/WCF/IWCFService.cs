@@ -28,7 +28,7 @@ namespace WCF
 
         [OperationContract]
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
-        List<OSAEObject> GetAllObjects();
+        OSAEObjectCollection GetAllObjects();
 
         [OperationContract]
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
@@ -56,19 +56,19 @@ namespace WCF
 
         [OperationContract]
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
-        List<OSAEObject> GetObjectsByType(string type);
+        OSAEObjectCollection GetObjectsByType(string type);
 
         [OperationContract]
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
-        List<OSAEObject> GetObjectsByBaseType(string type);
+        OSAEObjectCollection GetObjectsByBaseType(string type);
 
         [OperationContract]
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
-        List<OSAEObject> GetObjectsByContainer(string container);
+        OSAEObjectCollection GetObjectsByContainer(string container);
 
         [OperationContract]
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
-        List<OSAEObject> GetPlugins();
+        OSAEObjectCollection GetPlugins();
 
         [OperationContract]
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]

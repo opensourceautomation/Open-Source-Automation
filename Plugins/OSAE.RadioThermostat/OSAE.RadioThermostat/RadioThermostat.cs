@@ -49,8 +49,8 @@ namespace OSAE.RadioThermostat
             logging.AddToLog("Running Interface!", true);
             pName = pluginName;
             OSAEObjectTypeManager.ObjectTypeUpdate("RADIO THERMOSTAT DEVICE", "RADIO THERMOSTAT DEVICE", "Radio Thermostat Device", pName, "RADIO THERMOSTAT DEVICE", 0, 0, 0, 1);
-            
-            List<OSAEObject> devices = OSAEObjectManager.GetObjectsByType("Radio Thermostat Device");
+
+            OSAEObjectCollection devices = OSAEObjectManager.GetObjectsByType("Radio Thermostat Device");
 
             foreach (OSAEObject obj in devices)
             {   
@@ -100,7 +100,7 @@ namespace OSAE.RadioThermostat
 
         private void PollDevices()
         {
-            List<OSAEObject> devices = OSAEObjectManager.GetObjectsByType("Radio Thermostat Device");
+            OSAEObjectCollection devices = OSAEObjectManager.GetObjectsByType("Radio Thermostat Device");
 
             foreach (OSAEObject obj in devices)
             {

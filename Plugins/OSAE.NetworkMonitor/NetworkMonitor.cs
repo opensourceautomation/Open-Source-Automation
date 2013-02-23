@@ -29,7 +29,7 @@ namespace OSAE.NetworkMonitor
             pName = pluginName;
             logging.AddToLog("Running Interface!", true);
             int interval;
-            bool isNum = Int32.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Poll Interval").Value, out interval);
+            bool isNum = int.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Poll Interval").Value, out interval);
             Clock = new System.Timers.Timer();
             if(isNum)
                 Clock.Interval = interval * 1000;
@@ -66,7 +66,7 @@ namespace OSAE.NetworkMonitor
         {
             try
             {
-                List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("NETWORK DEVICE");
+                OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("NETWORK DEVICE");
                 logging.AddToLog("# NETWORK DEVICE: " + objects.Count.ToString(), false);
                 
                 foreach (OSAEObject obj in objects)

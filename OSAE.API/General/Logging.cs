@@ -66,9 +66,8 @@
                         System.IO.FileInfo file = new System.IO.FileInfo(filePath);
                         file.Directory.Create();
                         StreamWriter sw = File.AppendText(filePath);
-                        StringBuilder sb = new StringBuilder();
 
-                        sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + "ST:" + sb.ToString() + "\r\n\r\n - " + audit);
+                        sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - " + audit);
                         sw.Close();
 
                         if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")

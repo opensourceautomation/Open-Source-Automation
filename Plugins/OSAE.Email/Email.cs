@@ -47,7 +47,7 @@
                 parameter2 = Common.PatternParse(method.Parameter2);
 
                 // Make sure there is a body of text.
-                if (parameter2.Equals(""))
+                if (parameter2.Equals(string.Empty))
                 {
                     throw new ArgumentOutOfRangeException("Message body missing.");
                 }
@@ -65,7 +65,7 @@
                     }
                 }
 
-                if (subject.Equals(""))
+                if (subject.Equals(string.Empty))
                 {
                     mailMsg.Subject = "Message from OSAE";
                     mailMsg.Body = parameter2;
@@ -77,7 +77,7 @@
                 }              
 
                 // Init SmtpClient and send
-                SmtpClient smtpClient = new SmtpClient(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Server").Value, Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Port").Value));
+                SmtpClient smtpClient = new SmtpClient(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Server").Value, int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Port").Value));
                 if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "ssl").Value == "TRUE")
                 {
                     smtpClient.EnableSsl = true;

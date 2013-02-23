@@ -29,7 +29,7 @@
             pName = pluginName;
             logging.AddToLog("Running Interface!", true);
             Clock = new System.Timers.Timer();
-            Clock.Interval = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Scan Interval").Value) * 1000;
+            Clock.Interval = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Scan Interval").Value) * 1000;
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
 
@@ -74,7 +74,7 @@
 
                 bc = new BluetoothClient();
 
-                bc.InquiryLength = new TimeSpan(0, 0, 0, Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Discover Length").Value), 0);
+                bc.InquiryLength = new TimeSpan(0, 0, 0, int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Discover Length").Value), 0);
                 nearosaeDevices = bc.DiscoverDevices(10, false, false, true);
 
                 for (int j = 0; j < nearosaeDevices.Length; j++)
@@ -87,14 +87,14 @@
                     {
                         if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
                         {
-                            OSAEObjectManager.ObjectAdd(nearosaeDevices[j].DeviceName, nearosaeDevices[j].DeviceName, "BLUETOOTH DEVICE", nearosaeDevices[j].DeviceAddress.ToString(), "", true);
+                            OSAEObjectManager.ObjectAdd(nearosaeDevices[j].DeviceName, nearosaeDevices[j].DeviceName, "BLUETOOTH DEVICE", nearosaeDevices[j].DeviceAddress.ToString(), string.Empty, true);
                             OSAEObjectPropertyManager.ObjectPropertySet(nearosaeDevices[j].DeviceName, "Discover Type", "0", pName);
                             logging.AddToLog(addr + " - " + nearosaeDevices[j].DeviceName + ": added to OSA", true);
                         }
                     }
                 }
 
-                List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("BLUETOOTH DEVICE");
+                OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("BLUETOOTH DEVICE");
 
                 foreach (OSAEObject obj in objects)
                 {
@@ -130,7 +130,7 @@
 
                     try
                     {
-                        if (!found && (Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 2 || Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
+                        if (!found && (int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 2 || Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
                         {
                             logging.AddToLog(address + " - " + obj.Name + ": attempting GetServiceRecords", false);
 
@@ -148,7 +148,7 @@
 
                     try
                     {
-                        if (!found && (Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 3 || Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
+                        if (!found && (int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 3 || int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
                         {
                             logging.AddToLog(address + " - " + obj.Name + ": attempting Connection", false);
                             //attempt a connect
@@ -198,9 +198,7 @@
     {
         public HexEncoding()
         {
-            //
             // TODO: Add constructor logic here
-            //
         }
         public static int GetByteCount(string hexString)
         {
@@ -255,7 +253,7 @@
             int j = 0;
             for (int i = 0; i < bytes.Length; i++)
             {
-                hex = new String(new Char[] { newString[j], newString[j + 1] });
+                hex = new String(new char[] { newString[j], newString[j + 1] });
                 bytes[i] = HexToByte(hex);
                 j = j + 2;
             }
@@ -263,7 +261,7 @@
         }
         public static string ToString(byte[] bytes)
         {
-            string hexString = "";
+            string hexString = string.Empty;
             for (int i = 0; i < bytes.Length; i++)
             {
                 hexString += bytes[i].ToString("X2");
@@ -295,12 +293,12 @@
         /// </summary>
         /// <param name="c">Character to test</param>
         /// <returns>true if hex digit, false if not</returns>
-        public static bool IsHexDigit(Char c)
+        public static bool IsHexDigit(char c)
         {
             int numChar;
             int numA = Convert.ToInt32('A');
             int num1 = Convert.ToInt32('0');
-            c = Char.ToUpper(c);
+            c = char.ToUpper(c);
             numChar = Convert.ToInt32(c);
             if (numChar >= numA && numChar < (numA + 6))
                 return true;

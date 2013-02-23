@@ -79,6 +79,7 @@
                                     else if (arguments[2] == "False")
                                     {
                                         disablePlugin(p);
+                                        sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName);
                                     }
                                 }
                             }
@@ -92,8 +93,7 @@
                     {
                         bool found = false;
                         foreach (Plugin plugin in masterPlugins)
-                        {
-
+                        {                              
                             if (plugin.PluginName == arguments[1])
                             {
                                 if (arguments[4].ToLower() == "true")
@@ -130,6 +130,7 @@
                                 if (plugin.Status == "Running")
                                 {
                                     disablePlugin(plugin);
+                                    sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
                                 }
 
                                 //code for downloading and installing plugin

@@ -323,7 +323,7 @@ Public Class LightswitchServer
 
 
     Private Sub listDevices(ByVal objectType As String, ByVal deviceType As String, ByVal client As SocketClient)
-        Dim objects As List(Of OSAEObject) = OSAEObjectManager.GetObjectsByType(objectType)
+        Dim objects As OSAEObjectCollection = OSAEObjectManager.GetObjectsByType(objectType)
         Dim level As String
         Dim device As String
 
@@ -347,7 +347,7 @@ Public Class LightswitchServer
 
 
     Private Sub listZones(ByVal objectType As String, ByVal deviceType As String, ByVal client As SocketClient)
-        Dim objects As List(Of OSAEObject) = OSAEObjectManager.GetObjectsByType(objectType)
+        Dim objects As OSAEObjectCollection = OSAEObjectManager.GetObjectsByType(objectType)
         Dim level As String
         Dim device As String
 

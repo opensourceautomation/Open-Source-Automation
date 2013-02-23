@@ -132,7 +132,7 @@
 
         private void Load_Objects(String sScreen)
         {
-            List<OSAE.OSAEObject> screenObjects = OSAEObjectManager.GetObjectsByContainer(sScreen);
+            OSAEObjectCollection screenObjects = OSAEObjectManager.GetObjectsByContainer(sScreen);
 
             foreach (OSAE.OSAEObject obj in screenObjects)
             {
@@ -502,7 +502,7 @@
         private void Load_App_Name()
         {
 
-            List<OSAE.OSAEObject> screens = OSAEObjectManager.GetObjectsByType("GUI CLIENT");
+            OSAEObjectCollection screens = OSAEObjectManager.GetObjectsByType("GUI CLIENT");
             foreach (OSAE.OSAEObject obj in screens)
             {
                 if (obj.Property("Computer Name").Value == Common.ComputerName)
@@ -518,7 +518,7 @@
 
         private void Set_Default_Screen()
         {
-            List<OSAE.OSAEObject> screens = OSAEObjectManager.GetObjectsByType("SCREEN");
+            OSAEObjectCollection screens = OSAEObjectManager.GetObjectsByType("SCREEN");
             if (screens.Count > 0)
             {
                 gCurrentScreen = screens[0].Name;

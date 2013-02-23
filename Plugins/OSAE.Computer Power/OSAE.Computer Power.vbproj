@@ -24,6 +24,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -108,11 +109,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AddInView2\AddInView2.csproj">
-      <Project>{B9A17F32-4FD9-4834-840D-99AA8DEF72F1}</Project>
-      <Name>AddInView2</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
       <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
       <Name>OSAE.API</Name>

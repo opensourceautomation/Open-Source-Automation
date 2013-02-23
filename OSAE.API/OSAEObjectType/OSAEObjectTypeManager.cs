@@ -470,34 +470,6 @@
                     Logging.GetLogger().AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="objType"></param>
-        /// <param name="propName"></param>
-        /// <returns></returns>
-        public static DataSet GetObjectTypePropertyOptions(string objType, string propName)
-        {
-            DataSet dataset = new DataSet();
-            try
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.CommandText = "SELECT option_name FROM osae_v_object_type_property_option WHERE object_type=@ObjectType AND property_name=@PropertyName";
-                    command.Parameters.AddWithValue("@ObjectType", objType);
-                    command.Parameters.AddWithValue("@PropertyName", propName);
-                    dataset = OSAESql.RunQuery(command);
-                }
-
-                return dataset;
-            }
-            catch (Exception ex)
-            {
-                Logging.GetLogger().AddToLog("API - GetObjectTypePropertyOptions error: " + ex.Message, true);
-                return dataset;
-            }
-        }
+        }        
     }
 }

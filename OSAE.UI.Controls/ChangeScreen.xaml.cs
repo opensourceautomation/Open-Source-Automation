@@ -28,7 +28,7 @@
         {
             try
             {
-                List<OSAEObject> screens = OSAEObjectManager.GetObjectsByBaseType("SCREEN");
+                OSAEObjectCollection screens = OSAEObjectManager.GetObjectsByBaseType("SCREEN");
                 List<OSAEImage> images = new List<OSAEImage>();
                 foreach (OSAEObject obj in screens)
                 {

@@ -44,7 +44,7 @@
                 DataSet ds = OSAESql.RunQuery(command);
 
 
-                return Int32.Parse(ds.Tables[0].Rows[0][0].ToString());
+                return int.Parse(ds.Tables[0].Rows[0][0].ToString());
 
             }
         }
@@ -75,39 +75,6 @@
             {
                 using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
-                    //MySqlCommand command = new MySqlCommand("SELECT image_id, image_name, image_type FROM osae_images WHERE image_id = " + imageId, connection);
-                    //connection.Open();
-
-                    //MySqlDataReader reader = command.ExecuteReader();
-
-                    //if (reader.Read())
-                    //{
-                    //    osaeImage.ID = reader.GetUInt32("image_id");
-                    //    osaeImage.Name = reader.GetString("image_name");
-                    //    osaeImage.Type = reader.GetString("image_type");
-
-                    //    //Check if image exists locally
-                    //    if (File.Exists(osae.APIpath + @"\Images\" + osaeImage.Name + "." + osaeImage.Type))
-                    //    {
-                    //        Image img = Image.FromFile(osae.APIpath + @"\Images\" + osaeImage.Name + "." + osaeImage.Type);
-
-                    //        switch (osaeImage.Type.ToLower())
-                    //        {
-
-                    //            case "jpg":
-                    //                osaeImage.Data = jpgToByteArray(img);
-                    //                break;
-                    //            case "png":
-                    //                osaeImage.Data = pngToByteArray(img);
-                    //                break;
-                    //            case "gif":
-                    //                osaeImage.Data = gifToByteArray(img);
-                    //                break;
-                    //        }
-                    //        return osaeImage;
-                    //    }
-                    //}
-
                     MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images WHERE image_id = " + imageId, connection);
                     connection.Open();
 

@@ -2,7 +2,10 @@
 {
     using System;
     using System.Data;
+    using System.IO;
     using System.Net;
+    using System.Security;
+    using System.Security.Policy;
     using MySql.Data.MySqlClient;
 
     /// <summary>
@@ -202,6 +205,77 @@
                 Logging.GetLogger().AddToLog("API - MatchPattern error: " + ex.Message, true);
                 return string.Empty;
             }
+        }
+
+        public static void InitialiseLogFolder()
+        {
+            try
+            {
+                FileInfo file = new FileInfo(Common.ApiPath + "/Logs/");
+                file.Directory.Create();
+                if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
+                {
+                    string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
+                    foreach (string f in files)
+                        File.Delete(f);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("Error getting registry settings and/or deleting logs: " + ex.Message, true);
+            }
+        }
+
+        public static string GetComputerIP()
+        {
+            IPHostEntry ipEntry = Dns.GetHostByName(Common.ComputerName);
+            IPAddress[] addr = ipEntry.AddressList;
+            return addr[0].ToString();
+        }
+
+        public static void CreateComputerObject(string sourceName)
+        {
+            Logging.GetLogger().AddToLog("Creating Computer object", true);
+            string computerIp = Common.GetComputerIP();
+
+            if (OSAEObjectManager.GetObjectByName(Common.ComputerName) == null)
+            {                                  
+                OSAEObject obj = OSAEObjectManager.GetObjectByAddress(computerIp);
+                if (obj == null)
+                {
+                    OSAEObjectManager.ObjectAdd(Common.ComputerName, Common.ComputerName, "COMPUTER", computerIp, string.Empty, true);
+                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
+                }
+                else if (obj.Type == "COMPUTER")
+                {
+                    OSAEObjectManager.ObjectUpdate(obj.Name, Common.ComputerName, obj.Description, "COMPUTER", computerIp, obj.Container, obj.Enabled);
+                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
+                }
+                else
+                {
+                    OSAEObjectManager.ObjectAdd(Common.ComputerName + "." + computerIp, Common.ComputerName, "COMPUTER", computerIp, string.Empty, true);
+                    OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName + "." + computerIp, "Host Name", Common.ComputerName, sourceName);
+                }
+            }
+            else
+            {
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(Common.ComputerName);
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, "COMPUTER", computerIp, obj.Container, obj.Enabled);
+                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Host Name", Common.ComputerName, sourceName);
+            }
+        }
+
+        public static AppDomain CreateSandboxDomain(string name, string path, SecurityZone zone, Type item)
+        {
+            var setup = new AppDomainSetup { ApplicationBase = Common.ApiPath, PrivateBinPath = Path.GetFullPath(path) };
+
+            var evidence = new Evidence();
+            evidence.AddHostEvidence(new Zone(zone));
+            var permissions = SecurityManager.GetStandardSandbox(evidence);
+
+            StrongName strongName = item.Assembly.Evidence.GetHostEvidence<StrongName>();
+
+            return AppDomain.CreateDomain(name, null, setup);
         }
     }
 }

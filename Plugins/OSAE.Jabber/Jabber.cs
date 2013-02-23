@@ -120,7 +120,7 @@ namespace OSAE.Jabber
         {
             logging.AddToLog(String.Format("Received Presence from:{0} show:{1} status:{2}", pres.From.ToString(), pres.Show.ToString(), pres.Status), false);
 
-            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("PERSON");
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
             {
@@ -142,7 +142,7 @@ namespace OSAE.Jabber
             bool found = false;
             logging.AddToLog(String.Format("Received Contact {0}", item.Jid.Bare), true);
 
-            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("PERSON");
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
             {

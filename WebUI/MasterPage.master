@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 
 <html lang="en">
-  <head>
+<head runat="server">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Open Source Automation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,47 +22,61 @@
     <![endif]-->
 
     <!-- Le fav and touch icons -->
-  </head>  
+</head>
 <body>
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="http://www.opensourceautomation.com/">Open Source Automation</a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li><a href="screens.aspx">Screens</a></li>
-              <li><a href="objects.aspx">Objects</a></li>
-              <li><a href="objtypes.aspx">Object Types</a></li>
-              <li><a href="scripts.aspx">Named Scripts</a></li>
-              <li><a href="editor.aspx">Script Editor</a></li>
-              <li><a href="schedules.aspx">Schedules</a></li>
-              <li><a href="plugins.aspx">Plugins</a></li>
-              <li><a href="analytics.aspx">Analytics</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
     <form id="form2" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="http://www.opensourceautomation.com/">Open Source Automation</a>
+                    <div class="nav-collapse">
+                       <%-- <asp:Menu  class="nav" ID="primaryMenu" runat="server" Orientation="Horizontal" RenderingMode="List">
+                            <Items>
+                                <asp:MenuItem  Text="Logs" Value="Logs">
+                                    <asp:MenuItem Text="Event Logs" Value="Event Logs"></asp:MenuItem>
+                                    <asp:MenuItem Text="Server Logs" Value="Server Logs"></asp:MenuItem>
+                                </asp:MenuItem>
+                                <asp:MenuItem NavigateUrl="~/objtypes.aspx" Text="Object Types" Value="Object Types"></asp:MenuItem>
+                            </Items>
+                        </asp:Menu>--%>
+                        <ul class="nav">
+
+                            <li><a href="screens.aspx">Screens</a></li>
+                            <li><a href="objects.aspx">Objects</a></li>
+                            <li><a href="objtypes.aspx">Object Types</a></li>
+                            <li><a href="scripts.aspx">Named Scripts</a></li>
+                            <li><a href="editor.aspx">Script Editor</a></li>
+                            <li><a href="schedules.aspx">Schedules</a></li>
+                            <li><a href="plugins.aspx">Plugins</a></li>
+                            <li><a href="analytics.aspx">Analytics</a></li>                                                  
+                        </ul>
+                    </div>
+                    <!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+
         <div class="container-fluid">
 
             <div>
-                <asp:ContentPlaceHolder id="ContentPlaceHolder" runat="server">
-        
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder" runat="server">
                 </asp:ContentPlaceHolder>
             </div>
             <hr>
 
             <footer>
-            <p>&copy; Open Source Automation 2013</p>
+                <p>&copy; Open Source Automation 2013</p>
             </footer>
 
-        </div><!--/.fluid-container-->
+        </div>
+        <!--/.fluid-container-->
 
     </form>
     <!-- Le javascript
@@ -71,6 +85,6 @@
     <script type="text/javascript" src="bootstrap/js/bootstrap-transition.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap-dropdown.js"></script>
-  </body>
+</body>
 </html>
 

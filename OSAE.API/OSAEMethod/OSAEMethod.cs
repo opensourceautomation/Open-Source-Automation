@@ -8,6 +8,8 @@
     [Serializable]
     public class OSAEMethod
     {
+        public int Id { get; set; }
+
         /// <summary>
         /// The name of the method
         /// </summary>
@@ -33,6 +35,17 @@
        
         public OSAEMethod(string methodName, string objName, string param1, string param2, string address, string owner)
         {
+            MethodName = methodName;
+            ObjectName = objName;
+            Parameter1 = param1;
+            Parameter2 = param2;
+            Address = address;
+            Owner = owner;
+        }
+
+        public OSAEMethod(int id, string methodName, string objName, string param1, string param2, string address, string owner)
+        {
+            Id = id;
             MethodName = methodName;
             ObjectName = objName;
             Parameter1 = param1;

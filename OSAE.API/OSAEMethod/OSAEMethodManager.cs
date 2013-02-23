@@ -38,16 +38,23 @@
 
         public static void ClearMethodQueue()
         {
-            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+            try
             {
-                connection.Open();
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
-                    command.Connection = connection;
-                    command.CommandText = "SET sql_safe_updates=0; DELETE FROM osae_method_queue;";
-                    OSAESql.RunQuery(command);
+                    connection.Open();
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandText = "SET sql_safe_updates=0; DELETE FROM osae_method_queue;";
+                        OSAESql.RunQuery(command);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("Error clearing method queue details: \r\n" + ex.Message, true);
+            }            
         }
 
         /// <summary>
@@ -82,7 +89,7 @@
 
             foreach (DataRow row in dataset.Tables[0].Rows)
             {
-                OSAEMethod method = new OSAEMethod(row["method_name"].ToString(), row["object_name"].ToString(), row["parameter_1"].ToString(), row["parameter_2"].ToString(), row["address"].ToString(), row["object_owner"].ToString());
+                OSAEMethod method = new OSAEMethod((int)row["method_queue_id"], row["method_name"].ToString(), row["object_name"].ToString(), row["parameter_1"].ToString(), row["parameter_2"].ToString(), row["address"].ToString(), row["object_owner"].ToString());
                 methods.Add(method);
             }
 

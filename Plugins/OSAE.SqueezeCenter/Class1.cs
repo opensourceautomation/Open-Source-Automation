@@ -101,7 +101,7 @@ namespace OSAE.SqueezeboxServer
             sbs.mHost = sbsAddress;
             sbs.mPort = sbsPort;
             StringCollection players = sbs.GetPlayers();
-            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("SQUEEZEBOX");
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("SQUEEZEBOX");
             logging.AddToLog("Found " + sbs.GetPlayerCount().ToString() + " players", true);
             foreach (string player in players)
             {

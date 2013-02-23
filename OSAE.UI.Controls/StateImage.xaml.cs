@@ -20,7 +20,6 @@ namespace OSAE.UI.Controls
         public string CurState;
 
         private string ObjectName;
-        private string ObjectStateTime;
         private OSAEImageManager imgMgr = new OSAEImageManager();
 
         public StateImage(OSAEObject sObject)
@@ -34,9 +33,6 @@ namespace OSAE.UI.Controls
             Image.Tag = ObjectName;
             Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
 
-            //ObjectStateTime = stateObject.LastUpd;
-
-            string imgPath;
             foreach (OSAEObjectProperty p in screenObject.Properties)
             {
                 if (p.Value.ToLower() == CurState.ToLower())
@@ -101,9 +97,7 @@ namespace OSAE.UI.Controls
         }
 
         private void State_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
-        {
-            bool iResults = false;
-
+        {             
             if (CurState == "ON")
             {
                 OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "", "", "GUI");
@@ -113,10 +107,7 @@ namespace OSAE.UI.Controls
             {
                 OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "", "", "GUI");
                 OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", "GUI");
-            }
-
-        }
-
-
+            }        
+        }            
     }
 }

@@ -125,8 +125,8 @@ namespace VR2
                 if (gAppName == "")
                 {
                     gAppName = "VR CLIENT-" + OSAEApi.ComputerName;
-                    OSAEApi.ObjectAdd(gAppName, gAppName, "VR CLIENT", "", "SYSTEM", true);
-                    OSAEApi.ObjectPropertySet(gAppName, "Computer Name", OSAEApi.ComputerName);
+                    OSAEObjectManager.ObjectAdd(gAppName, gAppName, "VR CLIENT", "", "SYSTEM", true);
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", OSAEApi.ComputerName);
                 }
             }
             catch (Exception ex)
@@ -185,7 +185,7 @@ namespace VR2
             try
             {
                 
-                dsResults = OSAEApi.RunSQL("SELECT `match` FROM osae_pattern_match ORDER BY `match`");
+                dsResults = OSAESql.RunSQL("SELECT `match` FROM osae_pattern_match ORDER BY `match`");
                 grammerList.Add(gWakePhrase);
                 grammerList.Add(gSleepPhrase);
                 for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)

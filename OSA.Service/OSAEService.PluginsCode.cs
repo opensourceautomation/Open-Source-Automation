@@ -1,6 +1,8 @@
 ﻿namespace OSAE.Service
 {
     using System;
+    using System.Collections.Generic;
+    using System.Data;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -8,8 +10,6 @@
     using System.Threading;
     using System.Xml.Linq;
     using MySql.Data.MySqlClient;
-    using System.Data;
-    using System.Collections.Generic;
 
     partial class OSAEService
     {
@@ -32,11 +32,7 @@
             catch (Exception ex)
             {
                 logging.AddToLog("Error activating plugin (" + plugin.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
-            }
-            catch
-            {
-                logging.AddToLog("Error activating plugin", true);
-            }
+            }           
         }
 
         public void disablePlugin(Plugin p)
@@ -49,8 +45,7 @@
             {
                 p.Shutdown();
                 p.Enabled = false;
-                p.Domain = CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet);
-                sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName);
+                p.Domain = Common.CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet, typeof(OSAEService));                
             }
             catch (Exception ex)
             {
@@ -63,7 +58,9 @@
             foreach (Plugin p in plugins)
             {
                 if (p.PluginType == name)
+                {
                     return true;
+                }
             }
             return false;
         }
@@ -189,14 +186,20 @@
                     //usageThread.Start();
                     checkForUpdates(plugin.PluginType, plugin.PluginVersion);
                 }
-                catch { }
+                catch(Exception ex)
+                {
+                    logging.AddToLog("Error occurred checking for update, details: " + ex.Message, true);
+                }
             }
+
             try
             {
                 checkForUpdates("Service", OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value);
             }
-            catch { }
-
+            catch (Exception ex)
+            {
+                logging.AddToLog("Error occurred checking for update, details: " + ex.Message, true);
+            }      
         }
 
         #endregion    
@@ -216,7 +219,7 @@
                 logging.AddToLog("type.TypeName: " + type.TypeName, false);
                 logging.AddToLog("type.AssemblyName: " + type.AssemblyName, false);
 
-                var domain = CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet);
+                var domain = Common.CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet, typeof(OSAEService));
 
                 plugins.Add(new Plugin(type.AssemblyName, type.TypeName, domain, type.Location));
             }
@@ -278,9 +281,14 @@
                             adapter.Fill(dataset);
 
                             if (dataset.Tables[0].Rows.Count > 0)
+                            {
                                 plugin.PluginName = plugin.PluginType + "-" + Common.ComputerName;
+                            }
                             else
+                            {
                                 plugin.PluginName = plugin.PluginType;
+                            }
+
                             logging.AddToLog("Plugin object does not exist in DB: " + plugin.PluginName, true);
                             OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);

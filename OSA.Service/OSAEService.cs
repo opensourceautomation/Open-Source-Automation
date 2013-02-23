@@ -2,10 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.ServiceModel;
     using System.ServiceProcess;
-    using MySql.Data.MySqlClient;
 
     /// <summary>
     /// The primary server used in the OSA infrastructure to process information
@@ -19,13 +17,9 @@
               
         private ServiceHost sHost;
         private WCF.WCFService wcfService;
-        private List<Plugin> plugins = new List<Plugin>();
-        private List<Plugin> masterPlugins = new List<Plugin>();
+        private OSAEPluginCollection plugins = new OSAEPluginCollection();
+        private OSAEPluginCollection masterPlugins = new OSAEPluginCollection();
 
-        /// <summary>
-        /// The IP address of where the OSA DB & primary service run
-        /// </summary>
-        private string computerIP;
         private bool goodConnection = false;
 
         /// <summary>
@@ -35,7 +29,6 @@
 
         private bool running = true;
         
-        private System.Timers.Timer timer = new System.Timers.Timer();
         private System.Timers.Timer updates = new System.Timers.Timer();
 
         /// <summary>
@@ -81,7 +74,6 @@
             this.CanShutdown = true;
         }        
 
-        #region Service Start/Stop Processing
         /// <summary>
         /// OnStart: Put startup code here
         ///  - Start threads, get inital data, etc.
@@ -95,8 +87,7 @@
 
             try
             {
-                computerIP = GetComputerIP();
-                InitialiseLogFolder();
+                Common.InitialiseLogFolder();
                 DeleteStoreFiles();
             }
             catch (Exception ex)
@@ -105,9 +96,11 @@
             }
 
             logging.AddToLog("OnStart", true);
-            
-            RemoveOrphanedMethods();
-            CreateComputerObject();
+
+            logging.AddToLog("Removing Orphaned methods", true);
+            OSAEMethodManager.ClearMethodQueue();
+
+            Common.CreateComputerObject(sourceName);
             CreateServiceObject();
 
             // Start the WCF service so messages can be sent 
@@ -125,13 +118,16 @@
         /// </summary>
         protected override void OnStop()
         {
+            logging.AddToLog("OnStop Invoked", false);
+
             ShutDownSystems();
         }        
 
         protected override void OnShutdown() 
         {
+            logging.AddToLog("OnShutdown Invoked", false);
+
             ShutDownSystems();
         }
-        #endregion       
     }
 }

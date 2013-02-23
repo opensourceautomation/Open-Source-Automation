@@ -154,12 +154,7 @@
                 logging.AddToLog("Error activating plugin (" + PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
                 _enabled = false;
                 return false;
-            }
-            catch
-            {
-                logging.AddToLog("Error activating plugin", true);
-                return false;
-            }
+            }           
         }
 
         private void Domain_UnhandledException(object source, System.UnhandledExceptionEventArgs e)

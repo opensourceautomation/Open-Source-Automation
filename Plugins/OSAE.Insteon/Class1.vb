@@ -106,14 +106,7 @@ Public Class Insteon
         Dim MessageEnd As Short  ' Position of expected end of message (start + length - 1000 if it's looping) 
         Dim DataAvailable As Short ' how many bytes of data available between x_Start and X_LastWrite?
         Dim data(2) As Byte
-        Dim Group As Byte
-        Dim FromName As String
         Dim DataString As String
-        Dim HasName As Boolean
-        Dim Groups As Byte  ' for a new device, number of groups (buttons) on the device
-        Dim DevCat As Byte  ' for a new device, DevCat
-        Dim SubCat As Byte  ' for a new device, SubCat
-        Dim Firmware As Byte ' for a new device, Firmware
         Dim CMD As New MySqlCommand
 
         Debug.WriteLine("PLM starting: x_LastWrite: " & x_LastWrite & " x_Start: " & x_Start)

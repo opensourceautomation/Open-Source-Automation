@@ -84,9 +84,9 @@
             }
         }
 
-        public static List<OSAEObjectProperty> GetObjectProperties(string ObjectName)
+        public static OSAEObjectPropertyCollection GetObjectProperties(string ObjectName)
         {
-            List<OSAEObjectProperty> props = new List<OSAEObjectProperty>();
+            OSAEObjectPropertyCollection props = new OSAEObjectPropertyCollection();
                         
             try
             {

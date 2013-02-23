@@ -17,7 +17,7 @@
         private int _enabled;
         private string _lastUpd;
         private OSAEObjectState _state;
-        public List<OSAEObjectProperty> Properties { get; set; }
+        public OSAEObjectPropertyCollection Properties { get; set; }
         public List<string> Methods { get; set; }
 
         public string Name

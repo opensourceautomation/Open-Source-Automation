@@ -48,7 +48,7 @@ Public Class AprilaireThermostat
     Private Shared ThermostatName
     Private Shared Port As Integer
     Private Shared IPAddress As String
-    Dim ThermostatObjects As List(Of OSAEObject)
+    Dim ThermostatObjects As OSAEObjectCollection
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
 

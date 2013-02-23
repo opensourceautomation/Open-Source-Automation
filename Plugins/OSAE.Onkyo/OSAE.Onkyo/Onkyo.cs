@@ -165,7 +165,7 @@
             _UDPListen.Listen();
             _UDPSend.Send();
 
-            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("ONKYO RECEIVER");
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("ONKYO RECEIVER");
 
             foreach (OSAEObject obj in objects)
             {

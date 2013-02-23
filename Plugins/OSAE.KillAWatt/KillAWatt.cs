@@ -6,8 +6,7 @@
     public class KillAWatt : OSAEPluginBase
     {
         Logging logging = Logging.GetLogger("KillAWatt");
-        int portNumber = 0;
-        string pName = "";
+        string pName = string.Empty;
         xbee xb;
         List<xbeePacket> xbl = new List<xbeePacket>();
         int packetCount = 0;

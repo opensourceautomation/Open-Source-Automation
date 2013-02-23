@@ -2,9 +2,104 @@
 {
     using System;
     using MySql.Data.MySqlClient;
+    using System.Collections.Generic;
 
     public class OSAEScriptManager
     {
+        public static List<OSAEScriptProcessor> GetScriptProcessors()
+        {            
+            List<OSAEScriptProcessor> scriptProcessors = new List<OSAEScriptProcessor>();
+
+            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+            {                
+                MySqlCommand command = new MySqlCommand("SELECT script_processor_id, script_processor_name, script_processor_plugin_name FROM osae_script_processors", connection);
+                connection.Open();
+
+                MySqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    OSAEScriptProcessor scriptProcessor = new OSAEScriptProcessor();
+
+                    scriptProcessor.ID = reader.GetUInt32("script_processor_id");
+                    scriptProcessor.Name = reader.GetString("script_processor_name");
+                    scriptProcessor.PluginName = reader.GetString("script_processor_plugin_name");
+
+                    scriptProcessors.Add(scriptProcessor);
+                }
+            }
+
+            return scriptProcessors;
+        }
+
+        public static void AddScriptProcessor()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void DeleteScriptProcessor()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void UpdateScriptProcessor()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Gets the name of the plugin that was meant to process the script
+        /// </summary>
+        /// <param name="osaeMethod">the method to be done</param>
+        /// <returns>the name of the plugin that should process the script</returns>
+        public static string GetDestinationScriptProcessor(OSAEMethod method)
+        {
+            // if we don't get a value back it's likely the default script processor
+            string scriptProcessorName = "Script Processor";
+
+            try
+            {
+                if (method.MethodName == "EVENT SCRIPT")
+                {
+                    using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+                    {
+                        MySqlCommand command = new MySqlCommand("CALL osae_sp_script_processor_by_pattern (@EventScriptId)", connection);
+                        command.Parameters.AddWithValue("@EventScriptId", method.Parameter1);
+                        connection.Open();
+
+                        MySqlDataReader reader = command.ExecuteReader();
+
+                        if (reader.Read())
+                        {
+                            scriptProcessorName = reader.GetString("script_processor_plugin_name");
+                        }
+                    }
+                }
+                else
+                {
+                    using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+                    {
+                        MySqlCommand command = new MySqlCommand("CALL osae_sp_script_processor_by_pattern (@Pattern)", connection);
+                        command.Parameters.AddWithValue("@Pattern", method.Parameter1);
+                        connection.Open();
+
+                        MySqlDataReader reader = command.ExecuteReader();
+
+                        if (reader.Read())
+                        {
+                            scriptProcessorName = reader.GetString("script_processor_plugin_name");
+                        }
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                Logging.GetLogger().AddToLog("Failed to get script processor, error detals: \r\n" + exc.Message, true);
+            }            
+
+            return scriptProcessorName;        
+        }
+
         /// <summary>
         /// Add a new event script for an object
         /// </summary>

@@ -19,8 +19,6 @@
 
         Thread updateThread;
         Thread SunriseSunsetThread;
-        string zipcode = "";
-        int updateInterval = 60;
         System.Timers.Timer Clock, Clock2;
         string feedUrl = "";
         string pName;
@@ -36,8 +34,8 @@
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-         
-            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("WEATHER");
+
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("WEATHER");
             if (objects.Count == 0)
             {
                 OSAEObjectManager.ObjectAdd("Weather Data", "Weather Data", "WEATHER", "", "SYSTEM", true);

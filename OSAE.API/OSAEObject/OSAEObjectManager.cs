@@ -130,12 +130,12 @@
         /// </summary>
         /// <param name="ContainerName"></param>
         /// <returns></returns>
-        public static List<OSAEObject> GetObjectsByContainer(string ContainerName)
+        public static OSAEObjectCollection GetObjectsByContainer(string ContainerName)
         {
             MySqlCommand command = new MySqlCommand();
             DataSet dataset = new DataSet();
             OSAEObject obj = new OSAEObject();
-            List<OSAEObject> objects = new List<OSAEObject>();
+            OSAEObjectCollection objects = new OSAEObjectCollection();
             try
             {
                 if (ContainerName == string.Empty)
@@ -175,9 +175,9 @@
             }
         }
 
-        public static List<OSAEObject> GetObjectsByOwner(string ObjectOwner)
-        {            
-            List<OSAEObject> objects = new List<OSAEObject>();
+        public static OSAEObjectCollection GetObjectsByOwner(string ObjectOwner)
+        {
+            OSAEObjectCollection objects = new OSAEObjectCollection();
 
             try
             {
@@ -222,11 +222,11 @@
         /// </summary>
         /// <param name="ObjectBaseType"></param>
         /// <returns></returns>
-        public static List<OSAEObject> GetObjectsByBaseType(string ObjectBaseType)
+        public static OSAEObjectCollection GetObjectsByBaseType(string ObjectBaseType)
         {
             DataSet dataset = new DataSet();
             OSAEObject obj = new OSAEObject();
-            List<OSAEObject> objects = new List<OSAEObject>();
+            OSAEObjectCollection objects = new OSAEObjectCollection();
 
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -268,11 +268,11 @@
         /// </summary>
         /// <param name="ObjectType"></param>
         /// <returns></returns>
-        public static List<OSAEObject> GetObjectsByType(string ObjectType)
+        public static OSAEObjectCollection GetObjectsByType(string ObjectType)
         {
             DataSet dataset = new DataSet();
             OSAEObject obj = new OSAEObject();
-            List<OSAEObject> objects = new List<OSAEObject>();
+            OSAEObjectCollection objects = new OSAEObjectCollection();
 
             using (MySqlCommand command = new MySqlCommand())
             {

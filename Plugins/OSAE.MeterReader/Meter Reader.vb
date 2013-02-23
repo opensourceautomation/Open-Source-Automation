@@ -152,13 +152,7 @@ Public Class MeterReader
 
             If Reading <> MeterToUpdate.Reading Then
                 If MeterToUpdate.LastReceived <> MeterToUpdate.LastChange Then
-                    Dim QueryString As String
                     Dim SQLCommand As New MySqlCommand
-                    'QueryString = "INSERT INTO TABLEW"
-                    'logging.AddToLog("Running Query: " & QueryString, False)
-                    'SQLCommand.CommandText = QueryString
-                    'OSAEApi.RunQuery(SQLCommand)
-
                 End If
                 OSAEObjectPropertyManager.ObjectPropertySet(MeterToUpdate.Name, "Reading", Reading.ToString, pName)
                 If MeterToUpdate.LastChange < ReceiveTime Then

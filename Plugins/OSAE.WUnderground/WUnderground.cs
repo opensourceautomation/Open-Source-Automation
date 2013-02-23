@@ -32,7 +32,7 @@
                 logging.AddToLog("Running Interface", true);
                 pName = pluginName;
 
-                List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType("WEATHER");
+                OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("WEATHER");
                 if (objects.Count == 0)
                 {
                     OSAEObjectManager.ObjectAdd("Weather", "Weather Data", "WEATHER", "", "", true);

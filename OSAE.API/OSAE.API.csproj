@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -63,10 +64,15 @@
     <Compile Include="General\Logging.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="OSAEMethod\OSAEMethodCollection.cs" />
     <Compile Include="OSAEObjectProperty\OSAEObjectPopertyManager.cs" />
+    <Compile Include="OSAEObjectProperty\OSAEObjectPropertyCollection.cs" />
     <Compile Include="OSAEObjectState\OSAEObjectStateManager.cs" />
     <Compile Include="OSAEObjectType\OSAEObjectTypeManager.cs" />
+    <Compile Include="OSAEObject\OSAEObjectCollection.cs" />
     <Compile Include="OSAEScreenControl\OSAEScreenControlManager.cs" />
+    <Compile Include="OSAEScript\OSAEScriptProcessor.cs" />
+    <Compile Include="Plugin\OSAEPluginCollection.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginDescription.cs" />
     <Compile Include="Plugin\PluginFinder.cs" />

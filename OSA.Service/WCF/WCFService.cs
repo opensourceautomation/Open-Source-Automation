@@ -16,7 +16,7 @@
         /// <summary>
         /// Provides access to logging
         /// </summary>
-        Logging logging = Logging.GetLogger(sourceName);
+        Logging logging = Logging.GetLogger();
       
         public event EventHandler<CustomEventArgs> MessageReceived;
 
@@ -110,12 +110,12 @@
             }
         }
 
-        public List<OSAEObject> GetAllObjects()
+        public OSAEObjectCollection GetAllObjects()
         {
             MySqlCommand command = new MySqlCommand("SELECT object_name, object_description, object_type_description, container_name, state_label, last_updated, address, enabled, time_in_state, base_type FROM osae_v_object");
             DataSet ds = OSAESql.RunQuery(command);
 
-            List<OSAEObject> objs = new List<OSAEObject>();
+            OSAEObjectCollection objs = new OSAEObjectCollection();
             OSAEObject obj;
 
             foreach (DataRow dr in ds.Tables[0].Rows)
@@ -142,18 +142,18 @@
             return OSAEObjectManager.GetObjectByAddress(address);
         }
 
-        public List<OSAEObject> GetObjectsByType(string type)
+        public OSAEObjectCollection GetObjectsByType(string type)
         {
             return OSAEObjectManager.GetObjectsByType(type);
         }
 
-        public List<OSAEObject> GetObjectsByBaseType(string type)
+        public OSAEObjectCollection GetObjectsByBaseType(string type)
         {
             // lookup objects of the requested type             
             return OSAEObjectManager.GetObjectsByBaseType(type);
         }
 
-        public List<OSAEObject> GetObjectsByContainer(string container)
+        public OSAEObjectCollection GetObjectsByContainer(string container)
         {
             return OSAEObjectManager.GetObjectsByContainer(container);
         }
@@ -208,12 +208,12 @@
             return true;
         }
 
-        public List<OSAEObject> GetPlugins()
+        public OSAEObjectCollection GetPlugins()
         {
             OSAEObjectManager objectManager = new OSAEObjectManager();
 
             // lookup objects of the requested type 
-            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByBaseType("plugin");
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByBaseType("plugin");
             return objects;
         }
 

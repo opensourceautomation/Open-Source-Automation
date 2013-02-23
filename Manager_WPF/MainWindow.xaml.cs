@@ -301,7 +301,7 @@
                     desc.Deserialize(path);
                     desc.Status = "Stopped";
                     desc.Enabled = false;
-                    List<OSAEObject> objs = OSAEObjectManager.GetObjectsByType(desc.Type);
+                    OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                     foreach (OSAEObject o in objs)
                     {
                         if (OSAEObjectPropertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)

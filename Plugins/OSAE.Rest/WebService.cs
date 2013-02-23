@@ -34,11 +34,11 @@
 
         [OperationContract]
         [WebGet(UriTemplate = "objects/type/{type}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        List<OSAEObject> GetObjectsByType(string type);
+        OSAEObjectCollection GetObjectsByType(string type);
 
         [OperationContract]
         [WebGet(UriTemplate = "objects/container/{container}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        List<OSAEObject> GetObjectsByContainer(string container);
+        OSAEObjectCollection GetObjectsByContainer(string container);
 
         [OperationContract]
         [WebGet(UriTemplate = "object/propertylist/{objName}/{propName}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -46,7 +46,7 @@
 
         [OperationContract]
         [WebGet(UriTemplate = "plugins", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        List<OSAEObject> GetPlugins();
+        OSAEObjectCollection GetPlugins();
 
         [OperationContract]
         [WebGet(UriTemplate = "namedscript/{match}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -89,9 +89,9 @@
             return state;
         }
 
-        public List<OSAEObject> GetObjectsByType(string type)
+        public OSAEObjectCollection GetObjectsByType(string type)
         {
-            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByType(type);
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType(type);
 
             foreach (OSAEObject oObj in objects)
             {
@@ -101,9 +101,9 @@
             return objects;
         }
 
-        public List<OSAEObject> GetObjectsByContainer(string container)
+        public OSAEObjectCollection GetObjectsByContainer(string container)
         {
-            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByContainer(container);
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByContainer(container);
 
             foreach (OSAEObject oObj in objects)
             {
@@ -164,9 +164,9 @@
             return true;
         }
 
-        public List<OSAEObject> GetPlugins()
+        public OSAEObjectCollection GetPlugins()
         {
-            List<OSAEObject> objects = OSAEObjectManager.GetObjectsByBaseType("plugin");
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByBaseType("plugin");
 
             foreach (OSAEObject oObj in objects)
             {
@@ -209,11 +209,11 @@
             return list;
         }
 
-        private List<OSAEObjectProperty> getProperties(string objName)
+        private OSAEObjectPropertyCollection getProperties(string objName)
         {
             OSAEObject oObj = OSAEObjectManager.GetObjectByName(objName);
-            List<OSAEObjectProperty> props = oObj.Properties;
-            List<OSAEObjectProperty> properties = new List<OSAEObjectProperty>();
+            OSAEObjectPropertyCollection props = oObj.Properties;
+            OSAEObjectPropertyCollection properties = new OSAEObjectPropertyCollection();
 
             foreach (OSAEObjectProperty prop in props)
             {
