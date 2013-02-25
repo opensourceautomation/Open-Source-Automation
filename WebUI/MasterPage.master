@@ -36,7 +36,7 @@
                     </a>
                     <a class="brand" href="http://www.opensourceautomation.com/">Open Source Automation</a>
                     <div class="nav-collapse">
-                       <%-- <asp:Menu  class="nav" ID="primaryMenu" runat="server" Orientation="Horizontal" RenderingMode="List">
+                        <%-- <asp:Menu  class="nav" ID="primaryMenu" runat="server" Orientation="Horizontal" RenderingMode="List">
                             <Items>
                                 <asp:MenuItem  Text="Logs" Value="Logs">
                                     <asp:MenuItem Text="Event Logs" Value="Event Logs"></asp:MenuItem>
@@ -54,7 +54,7 @@
                             <li><a href="editor.aspx">Script Editor</a></li>
                             <li><a href="schedules.aspx">Schedules</a></li>
                             <li><a href="plugins.aspx">Plugins</a></li>
-                            <li><a href="analytics.aspx">Analytics</a></li>                                                  
+                            <li><a href="analytics.aspx">Analytics</a></li>
                         </ul>
                     </div>
                     <!--/.nav-collapse -->
