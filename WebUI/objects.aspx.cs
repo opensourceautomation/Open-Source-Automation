@@ -23,6 +23,7 @@ public partial class home : System.Web.UI.Page
             hdnSelectedObjectName.Text = gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString();
             loadDDLs();
             loadProperties();
+            loadDetails();
         }
         else if (args[0] == "gvProperties")
         {
@@ -128,6 +129,22 @@ public partial class home : System.Web.UI.Page
         else
             divEvent.Visible = true;
         ddlEvent.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+
+        ddlType.DataSource = OSAESql.RunSQL("SELECT object_type as Text, object_type as Value FROM osae_object_type"); ;
+        ddlType.DataBind();
+        if (ddlType.Items.Count == 0)
+            ddlType.Visible = false;
+        else
+            ddlType.Visible = true;
+        ddlType.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+
+        ddlContainer.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_name as Value FROM osae_v_object where container = 1"); ;
+        ddlContainer.DataBind();
+        if (ddlContainer.Items.Count == 0)
+            ddlContainer.Visible = false;
+        else
+            ddlContainer.Visible = true;
+        ddlContainer.Items.Insert(0, new ListItem(String.Empty, String.Empty));
     }
 
     private void loadProperties()
@@ -135,9 +152,39 @@ public partial class home : System.Web.UI.Page
         gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
         gvProperties.DataBind();
     }
+
+    private void loadDetails()
+    {
+        OSAEObject obj = OSAEObjectManager.GetObjectByName(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString());
+        txtName.Text = obj.Name;
+        txtDescr.Text = obj.Description;
+        txtAddress.Text = obj.Address;
+        ddlContainer.SelectedValue = obj.Container;
+        ddlType.SelectedValue = obj.Type;
+        if (obj.Enabled == 1)
+            chkEnabled.Checked = true;
+        else
+            chkEnabled.Checked = false;
+    }
+
     protected void btnPropSave_Click(object sender, EventArgs e)
     {
         OSAEObjectPropertyManager.ObjectPropertySet(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtPropValue.Text, "Web UI");
         loadProperties();
+    }
+    protected void btnAdd_Click(object sender, EventArgs e)
+    {
+        OSAEObjectManager.ObjectAdd(txtName.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, chkEnabled.Checked);
+    }
+    protected void btnDelete_Click(object sender, EventArgs e)
+    {
+        OSAEObjectManager.ObjectDelete(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString());
+    }
+    protected void btnUpdate_Click(object sender, EventArgs e)
+    {
+        int enabled = 0;
+        if(chkEnabled.Checked)
+            enabled = 1;
+        OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString(), txtName.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, enabled);
     }
 }
