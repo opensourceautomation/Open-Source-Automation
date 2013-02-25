@@ -161,11 +161,30 @@ public partial class home : System.Web.UI.Page
         txtAddress.Text = obj.Address;
         ddlContainer.SelectedValue = obj.Container;
         ddlType.SelectedValue = obj.Type;
+        if (obj.Enabled == 1)
+            chkEnabled.Checked = true;
+        else
+            chkEnabled.Checked = false;
     }
 
     protected void btnPropSave_Click(object sender, EventArgs e)
     {
         OSAEObjectPropertyManager.ObjectPropertySet(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtPropValue.Text, "Web UI");
         loadProperties();
+    }
+    protected void btnAdd_Click(object sender, EventArgs e)
+    {
+        OSAEObjectManager.ObjectAdd(txtName.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, chkEnabled.Checked);
+    }
+    protected void btnDelete_Click(object sender, EventArgs e)
+    {
+        OSAEObjectManager.ObjectDelete(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString());
+    }
+    protected void btnUpdate_Click(object sender, EventArgs e)
+    {
+        int enabled = 0;
+        if(chkEnabled.Checked)
+            enabled = 1;
+        OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString(), txtName.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, enabled);
     }
 }
