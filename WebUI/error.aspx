@@ -11,7 +11,7 @@
             Try the  to see if anyone else is having the same issue or if anyone else is able to help in the <asp:HyperLink ID="HyperLink1" Text="Forum" NavigateUrl="http://www.opensourceautomation.com/phpBB3/" runat="server" />
         </li>
         <li>
-            If know one in the <asp:HyperLink ID="forumHyperLink" Text="Forum" NavigateUrl="http://www.opensourceautomation.com/phpBB3/" runat="server" /> can solve the problem you could sumit a bug report to
+            If no one in the <asp:HyperLink ID="forumHyperLink" Text="Forum" NavigateUrl="http://www.opensourceautomation.com/phpBB3/" runat="server" /> can solve the problem you could sumit a bug report to
             <asp:HyperLink ID="gitHubHyperLink" Text="GIT HUB" NavigateUrl="https://github.com/bwoodworth/Open-Source-Automation/issues" runat="server" />            
         </li>
         <li>

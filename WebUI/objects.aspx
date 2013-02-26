@@ -29,27 +29,14 @@
     </script> 
     <style>
         #EditForm {
-          position: fixed;
-          top: 65px;
-          right: 20px;
-          bottom: 35px; 
           padding: 15px;
-          height:90%; 
         }
 
-        #ObjPanel
-        {
-            height:90%; 
-            position: fixed; 
-            bottom: 35px; 
-            top: 65px;
-            width:60%;
-        }
     </style>
     <div class="row-fluid">
         <div class="span8">
             <div ID="ObjPanel">
-                <div class="row-fluid" ID="ObjGrid" style="overflow: auto; height:80%; border:solid;" onscroll="SetDivPosition()">
+                <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px; border:solid;" onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvObjects"
                         AutoGenerateColumns="False"  
                         GridLines="None"  
@@ -116,7 +103,7 @@
         </div>
         <div class="span4">
             <asp:Panel ID="panelEditForm" runat="server" Visible="false">
-                <div ID="EditForm" class="hero-unit" style="width:30%; ">
+                <div ID="EditForm" class="hero-unit">
                     <div class="alert alert-success" runat="server" id="alert" visible="false">
                       <asp:Label runat="server" ID="lblAlert"></asp:Label>
                     </div>
@@ -150,7 +137,7 @@
                     <br />
                     <div class="row-fluid">
                         <div class="span1"></div>
-                        <div class="span10" ID="propGrid" style="overflow: auto; border:solid; max-height:400px;"  onscroll="SetPropDivPosition()">
+                        <div class="span10" ID="propGrid" style="overflow: auto; border:solid; max-height:500px;"  onscroll="SetPropDivPosition()">
                             <asp:GridView runat="server" ID="gvProperties"
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
@@ -183,7 +170,6 @@
             </asp:Panel> 
         </div>
     </div>
-
 
     
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>

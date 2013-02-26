@@ -179,6 +179,14 @@ public partial class home : System.Web.UI.Page
     protected void btnDelete_Click(object sender, EventArgs e)
     {
         OSAEObjectManager.ObjectDelete(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString());
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataBind();
+        txtName.Text = "";
+        txtDescr.Text = "";
+        txtAddress.Text = "";
+        ddlContainer.SelectedValue = "";
+        ddlType.SelectedValue = "";
+        chkEnabled.Checked = false;
     }
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
