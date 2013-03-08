@@ -68,6 +68,7 @@
     <Compile Include="OSAEObjectProperty\OSAEObjectPopertyManager.cs" />
     <Compile Include="OSAEObjectProperty\OSAEObjectPropertyCollection.cs" />
     <Compile Include="OSAEObjectState\OSAEObjectStateManager.cs" />
+    <Compile Include="OSAEObjectType\OSAEObjectType.cs" />
     <Compile Include="OSAEObjectType\OSAEObjectTypeManager.cs" />
     <Compile Include="OSAEObject\OSAEObjectCollection.cs" />
     <Compile Include="OSAEScreenControl\OSAEScreenControlManager.cs" />

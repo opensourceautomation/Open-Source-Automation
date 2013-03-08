@@ -135,7 +135,8 @@ IN pimage_id INT
 BEGIN
 	DELETE FROM `osae`.`osae_images`
 	WHERE image_id = pimage_id;
-END$$
+END
+  $$
 
 
 -- Fix for scheduler running named scripts
@@ -287,6 +288,41 @@ END
 
 $$
 
+DELIMITER $$
+
+ALTER TABLE osae_pattern ADD COLUMN `script_processor_id` INT UNSIGNED NULL AFTER `script` $$
+ALTER TABLE osae_object_event_script ADD COLUMN `script_processor_id` INT UNSIGNED NULL AFTER `event_script` $$
+CREATE TABLE `osae_script_processors` (
+`script_processor_id` int(11) NOT NULL AUTO_INCREMENT,
+`script_processor_name` varchar(45) NOT NULL COMMENT 'visual name in UI',
+`script_processor_plugin_name` varchar(45) NOT NULL COMMENT 'the name of the plugin to process the script',
+PRIMARY KEY (`script_processor_id`),
+UNIQUE KEY `script_processor_id_UNIQUE` (`script_processor_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+  $$
+
+DELIMITER $$
+
+CREATE DEFINER = 'osae'@'%' PROCEDURE `osae_sp_script_processor_by_event_script_id`(
+IN pEventScriptId int
+)
+BEGIN
+SELECT script_processor_plugin_name FROM osae_script_processors
+INNER JOIN osae_object_event_script
+ON osae_script_processors.script_processor_id = osae_object_event_script.script_processor_id
+WHERE osae_object_event_script.event_script_id = pEventScriptId;
+END$$
+
+CREATE DEFINER = 'osae'@'%' PROCEDURE `osae_sp_script_processor_by_pattern`(
+IN pPattern VARCHAR(400)
+)
+BEGIN
+SELECT script_processor_plugin_name FROM osae_script_processors
+INNER JOIN osae_pattern
+ON osae_script_processors.script_processor_id = osae_pattern.script_processor_id
+WHERE osae_pattern.pattern = pPattern;
+END
+  $$
 
 
 delimiter ;

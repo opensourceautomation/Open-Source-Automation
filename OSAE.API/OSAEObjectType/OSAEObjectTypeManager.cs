@@ -5,7 +5,59 @@
     using MySql.Data.MySqlClient;
 
     public class OSAEObjectTypeManager
-    {       
+    {
+        public static OSAEObjectType ObjectTypeLoad(string name)
+        {
+            MySqlCommand command = new MySqlCommand();
+            DataSet dataset = new DataSet();
+
+            try
+            {
+                command.CommandText = "SELECT object_type, object_type_description, object_type_owner, container, hide_redundant_events, base_type, object_name, system_hidden FROM osae_v_object_type WHERE object_type=@Name";
+                command.Parameters.AddWithValue("@Name", name);
+                dataset = OSAESql.RunQuery(command);
+
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    OSAEObjectType type = new OSAEObjectType();
+                    type.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
+                    type.Description = dataset.Tables[0].Rows[0]["object_type_description"].ToString();
+                    type.Name = dataset.Tables[0].Rows[0]["object_type"].ToString();
+                    type.OwnedBy = dataset.Tables[0].Rows[0]["object_name"].ToString();
+                    if(dataset.Tables[0].Rows[0]["object_type_owner"].ToString() == "1")
+                        type.Owner = true;
+                    else
+                        type.Owner = false;
+
+                    if (dataset.Tables[0].Rows[0]["system_hidden"].ToString() == "1")
+                        type.SysType = true;
+                    else
+                        type.SysType = false;
+
+                    if (dataset.Tables[0].Rows[0]["container"].ToString() == "1")
+                        type.Container = true;
+                    else
+                        type.Container = false;
+
+                    if (dataset.Tables[0].Rows[0]["hide_redundant_events"].ToString() == "1")
+                        type.HideRedundant = true;
+                    else
+                        type.HideRedundant = false;
+
+                    return type;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - GetObjectTypeLoad (" + name + ")error: " + ex.Message, true);
+                return null;
+            }
+        }
+
         /// <summary>
         /// Create new object type
         /// </summary>

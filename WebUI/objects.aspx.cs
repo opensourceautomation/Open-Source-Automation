@@ -39,6 +39,11 @@ public partial class home : System.Web.UI.Page
     {
         gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
+
+        if (hdnSelectedPropRow.Text != "")
+        {
+            loadProperties();
+        }
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
