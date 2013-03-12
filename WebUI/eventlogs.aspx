@@ -3,7 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" runat="Server">
     <div class="row-fluid">
         <div class="span8">
-            <asp:GridView ID="eventLogGridView" AutoGenerateColumns="false" runat="server" GridLines="None" CssClass="mGrid" AlternatingRowStyle-CssClass="alt">
+            <asp:GridView ID="eventLogGridView" AutoGenerateColumns="false" runat="server" GridLines="None" CssClass="mGrid" AlternatingRowStyle-CssClass="alt" EmptyDataText="No Entries Found">
                 <Columns>
                     <asp:BoundField DataField="log_time" HeaderText="Time" ItemStyle-Width="10em" />
                     <asp:BoundField DataField="object_name" HeaderText="Object Name" />
