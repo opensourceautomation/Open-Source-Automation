@@ -5,7 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
+using OSAE;
 public partial class error : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
@@ -23,5 +23,5 @@ public partial class error : System.Web.UI.Page
             errorDetailTextBox.Text = sb.ToString();
             Server.ClearError();
         }
-    }
+    }    
 }
