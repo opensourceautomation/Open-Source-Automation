@@ -89,7 +89,7 @@
                     }
                     else
                     {
-                        logging.AddToLog("API - Failed to get requested image from DB: ", true);
+                        logging.AddToLog("API - Failed to get requested image from DB: " + imageId.ToString(), true);
                     }
                 }
             }
@@ -123,7 +123,7 @@
                     }
                     else
                     {
-                        logging.AddToLog("API - Failed to get requested image from DB: ", true);
+                        logging.AddToLog("API - Failed to get requested image from DB: " + imageName, true);
                     }
                 }
             }

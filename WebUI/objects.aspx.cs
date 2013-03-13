@@ -66,7 +66,7 @@ public partial class home : System.Web.UI.Page
         {
             e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
             if (e.Row.RowState == DataControlRowState.Alternate)
-                e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(../images/grd_alt.png) repeat-x top';");
+                e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvObjects_" + e.Row.RowIndex.ToString()));
@@ -80,7 +80,7 @@ public partial class home : System.Web.UI.Page
         {
             e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
             if (e.Row.RowState == DataControlRowState.Alternate)
-                e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(../images/grd_alt.png) repeat-x top';");
+                e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvProperties_" + e.Row.RowIndex.ToString()));

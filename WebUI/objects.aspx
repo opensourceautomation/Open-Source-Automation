@@ -92,10 +92,10 @@
                             <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
-                    <div class="span1" style="text-align:right;">
+                    <div class="span2" style="text-align:left;">
                         <asp:CheckBox runat="server" ID="chkEnabled" /> Enabled
                     </div>
-                    <div class="span5" style="text-align:right;" >
+                    <div class="span4" style="text-align:right;" >
                         <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp<asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp<asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click"/>
                     </div>
                 </div>
