@@ -55,6 +55,7 @@
                             <li><a href="schedules.aspx">Schedules</a></li>
                             <%--<li><a href="plugins.aspx">Plugins</a></li>
                             <li><a href="analytics.aspx">Analytics</a></li>--%>
+                            <li><a href="eventlogs.aspx">Event Logs</a></li>
                         </ul>
                     </div>
                     <!--/.nav-collapse -->
