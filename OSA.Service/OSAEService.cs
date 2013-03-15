@@ -47,7 +47,7 @@
                 Logging.AddToLog("Processing command: " + args[0] + ", Named Script: " + pattern, true, "OSACL");
                 if (pattern != string.Empty)
                 {
-                    OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, "", "OSACL");
+                    OSAEScriptManager.RunPatternScript(pattern, "", "OSACL");
                 }
             }
             else

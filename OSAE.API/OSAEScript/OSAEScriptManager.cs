@@ -32,9 +32,23 @@
             return scriptProcessors;
         }
 
-        public static void AddScriptProcessor()
+        public static void AddScriptProcessor(string Name, string pluginName)
         {
-            throw new NotImplementedException();
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_script_processor_add (@pname, @ppluginname)";
+                command.Parameters.AddWithValue("@pname", Name);
+                command.Parameters.AddWithValue("@ppluginname", pluginName);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - AddScriptProcessor error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
         }
 
         public static void DeleteScriptProcessor()
@@ -50,45 +64,26 @@
         /// <summary>
         /// Gets the name of the plugin that was meant to process the script
         /// </summary>
-        /// <param name="osaeMethod">the method to be done</param>
+        /// <param name="scriptID">the id of the script to be done</param>
         /// <returns>the name of the plugin that should process the script</returns>
-        public static string GetDestinationScriptProcessor(OSAEMethod method)
+        public static string GetDestinationScriptProcessor(int scriptID)
         {
             // if we don't get a value back it's likely the default script processor
             string scriptProcessorName = "Script Processor";
 
             try
             {
-                if (method.MethodName == "EVENT SCRIPT")
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
-                    using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+                    MySqlCommand command = new MySqlCommand("CALL osae_sp_script_processor_by_script_id (@ScriptId)", connection);
+                    command.Parameters.AddWithValue("@ScriptId", scriptID);
+                    connection.Open();
+
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.Read())
                     {
-                        MySqlCommand command = new MySqlCommand("CALL osae_sp_script_processor_by_pattern (@EventScriptId)", connection);
-                        command.Parameters.AddWithValue("@EventScriptId", method.Parameter1);
-                        connection.Open();
-
-                        MySqlDataReader reader = command.ExecuteReader();
-
-                        if (reader.Read())
-                        {
-                            scriptProcessorName = reader.GetString("script_processor_plugin_name");
-                        }
-                    }
-                }
-                else
-                {
-                    using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
-                    {
-                        MySqlCommand command = new MySqlCommand("CALL osae_sp_script_processor_by_pattern (@Pattern)", connection);
-                        command.Parameters.AddWithValue("@Pattern", method.Parameter1);
-                        connection.Open();
-
-                        MySqlDataReader reader = command.ExecuteReader();
-
-                        if (reader.Read())
-                        {
-                            scriptProcessorName = reader.GetString("script_processor_plugin_name");
-                        }
+                        scriptProcessorName = reader.GetString("script_processor_plugin_name");
                     }
                 }
             }
@@ -106,14 +101,14 @@
         /// <param name="name"></param>
         /// <param name="event"></param>
         /// <param name="scriptText"></param>
-        public static void ObjectEventScriptAdd(string name, string eventName, string scriptText)
+        public static void ObjectEventScriptAdd(string name, string eventName, int scriptID)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_event_script_add (@Name, @Event, @ScriptText)";
+                command.CommandText = "CALL osae_sp_object_event_script_add (@Name, @Event, @ScriptID)";
                 command.Parameters.AddWithValue("@Name", name);
                 command.Parameters.AddWithValue("@Event", eventName);
-                command.Parameters.AddWithValue("@ScriptText", scriptText);
+                command.Parameters.AddWithValue("@ScriptID", scriptID);
 
                 try
                 {
@@ -126,19 +121,11 @@
             }
         }
 
-        /// <summary>
-        /// Update an event script
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="event"></param>
-        /// <param name="scriptText"></param>
-        public static void ObjectEventScriptUpdate(string name, string eventName, string scriptText)
+        public static void ObjectEventScriptDelete(string eventScriptID)
         {
             MySqlCommand command = new MySqlCommand();
-            command.CommandText = "CALL osae_sp_object_event_script_update (@Name, @Event, @ScriptText)";
-            command.Parameters.AddWithValue("@Name", name);
-            command.Parameters.AddWithValue("@Event", eventName);
-            command.Parameters.AddWithValue("@ScriptText", scriptText);
+            command.CommandText = "CALL osae_sp_object_event_script_delete (@peventscriptid)";
+            command.Parameters.AddWithValue("@peventscriptid", eventScriptID);
 
             try
             {
@@ -146,17 +133,35 @@
             }
             catch (Exception ex)
             {
-                Logging.GetLogger().AddToLog("API - ObjectEventScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                Logging.GetLogger().AddToLog("API - ObjectEventScriptDelete error: " + command.CommandText + " - error: " + ex.Message, true);
             }
         }
 
-        public static void NamedScriptUpdate(string name, string oldName, string scriptText)
+        public static void ObjectTypeEventScriptAdd(string name, string eventName, int scriptID)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_type_event_script_add (@Name, @Event, @ScriptID)";
+                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@Event", eventName);
+                command.Parameters.AddWithValue("@ScriptID", scriptID);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectTypeEventScriptAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static void ObjectTypeEventScriptDelete(string eventScriptID)
         {
             MySqlCommand command = new MySqlCommand();
-            command.CommandText = "CALL osae_sp_pattern_update (@poldpattern, @pnewpattern, @pscript)";
-            command.Parameters.AddWithValue("@poldpattern", oldName);
-            command.Parameters.AddWithValue("@pnewpattern", name);
-            command.Parameters.AddWithValue("@pscript", scriptText);
+            command.CommandText = "CALL osae_sp_object_type_event_script_delete (@pobjtypeeventscriptid)";
+            command.Parameters.AddWithValue("@pobjtypeeventscriptid", eventScriptID);
 
             try
             {
@@ -164,8 +169,160 @@
             }
             catch (Exception ex)
             {
-                Logging.GetLogger().AddToLog("API - NamedScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                Logging.GetLogger().AddToLog("API - ObjectTypeEventScriptDelete error: " + command.CommandText + " - error: " + ex.Message, true);
             }
+        }
+
+        public static void PatternScriptAdd(string name, string eventName, int scriptID)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_script_add (@Name, @ScriptID)";
+                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@ScriptID", scriptID);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - PatternScriptAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static void PatternScriptDelete(string patternScriptID)
+        {
+            MySqlCommand command = new MySqlCommand();
+            command.CommandText = "CALL osae_sp_pattern_script_delete (@ppatternscriptid)";
+            command.Parameters.AddWithValue("@ppatternscriptid", patternScriptID);
+
+            try
+            {
+                OSAESql.RunQuery(command);
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - PatternScriptDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+            }
+        }
+
+
+        public static void ScriptAdd(string name, int scriptProcessorID, string script)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_script_add (@pname, @pscriptprocessorid, @pscript)";
+                command.Parameters.AddWithValue("@pname", name);
+                command.Parameters.AddWithValue("@pscriptprocessorid", scriptProcessorID);
+                command.Parameters.AddWithValue("@pscript", script);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ScriptAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static void ScriptUpdate(string oldName, string name, int scriptProcessorID, string script)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_script_update (@poldname, @pname, @pscriptprocessorid, @pscript)";
+                command.Parameters.AddWithValue("@poldname", oldName);
+                command.Parameters.AddWithValue("@pname", name);
+                command.Parameters.AddWithValue("@pscriptprocessorid", scriptProcessorID);
+                command.Parameters.AddWithValue("@pscript", script);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ScriptUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+        
+        public static void ScriptDelete(string name)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_script_delete (@pname)";
+                command.Parameters.AddWithValue("@pname", name);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ScriptDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static string GetScript(string scriptID)
+        {
+            string script = "";
+
+            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+            {
+                MySqlCommand command = new MySqlCommand("SELECT script FROM osae_script WHERE script_id = " + scriptID.ToString(), connection);
+                connection.Open();
+
+                MySqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    script = reader.GetString("script");
+                }
+            }
+
+            return script;
+        }
+
+
+
+        public static void RunPatternScript(string pattern, string parameter, string from)
+        {
+            int scriptID = GetScriptIDForPattern(pattern);
+
+            OSAEMethodManager.MethodQueueAdd(GetDestinationScriptProcessor(scriptID), "RUN SCRIPT", scriptID.ToString(), parameter, from);
+        }
+
+        public static int GetScriptIDForPattern(string pattern)
+        {
+            int scriptID = 0;
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+                {
+                    MySqlCommand command = new MySqlCommand("CALL osae_sp_pattern_script_id_get (@Pattern)", connection);
+                    command.Parameters.AddWithValue("@Pattern", pattern);
+                    connection.Open();
+
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        scriptID = Int32.Parse(reader.GetString("script_id"));
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                Logging.GetLogger().AddToLog("Failed to get pattern script id, error detals: \r\n" + exc.Message, true);
+            }
+
+            return scriptID;        
         }
     }
 }

@@ -12,27 +12,13 @@ Public Class ScriptProcessor
 
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
-        Dim sScript As String = "", sEvent As String = "", sObject As String = ""
-        If method.MethodName = "EVENT SCRIPT" Then
+        Dim sScript As String = "", sScriptName As String = ""
+        If method.MethodName = "RUN SCRIPT" Then
             Try
-                Dim dsResults As DataSet = OSAESql.RunSQL("SELECT event_script,object_name,event_name FROM osae_v_object_event_script WHERE event_script_id=" & method.Parameter1)
-                sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("event_script"))
-                sEvent = Convert.ToString(dsResults.Tables(0).Rows(0)("event_name"))
-                sObject = Convert.ToString(dsResults.Tables(0).Rows(0)("object_name"))
-                logging.AddToLog("Found Script for: " & sObject & " " & sEvent, True)
-                RunScript(sScript, method.Parameter2)
-                logging.AddToLog("Executed Script", True)
-            Catch ex As Exception
-                logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
-            End Try
-        ElseIf method.MethodName = "NAMED SCRIPT" Then
-            logging.AddToLog("NAMED SCRIPT Found", True)
-            Try
-                Dim dsResults As DataSet = OSAESql.RunSQL("SELECT pattern,script FROM osae_pattern WHERE pattern='" & method.Parameter1 & "'")
+                Dim dsResults As DataSet = OSAESql.RunSQL("SELECT script,script_name FROM osae_script WHERE script_id=" & method.Parameter1)
                 sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("script"))
-                sEvent = Convert.ToString(dsResults.Tables(0).Rows(0)("pattern"))
-                logging.AddToLog("Found Script for: " & sEvent, True)
-                logging.AddToLog(sScript, False)
+                sScriptName = Convert.ToString(dsResults.Tables(0).Rows(0)("script_name"))
+                logging.AddToLog("Found Script: " & sScriptName, True)
                 RunScript(sScript, method.Parameter2)
                 logging.AddToLog("Executed Script", True)
             Catch ex As Exception
@@ -75,7 +61,7 @@ Public Class ScriptProcessor
                 iEmbeddedScriptEnd = sScript.IndexOf(vbCrLf, iEmbeddedScriptStart)
                 sTempLine = sScript.Substring(iEmbeddedScriptStart, (iEmbeddedScriptEnd - iEmbeddedScriptStart))
                 sSubScriptName = sScript.Substring(iEmbeddedScriptStart, (iEmbeddedScriptEnd - iEmbeddedScriptStart)).Replace("Script:", "")
-                Dim dsResults As DataSet = OSAESql.RunSQL("SELECT Script FROM OSAE_Pattern WHERE Pattern='" & sSubScriptName & "'")
+                Dim dsResults As DataSet = OSAESql.RunSQL("SELECT script FROM osae_script WHERE script_name='" & sSubScriptName & "'")
                 sSubScript = Convert.ToString(dsResults.Tables(0).Rows(0)("Script"))
                 sScript = sScript.Replace(sTempLine, sSubScript)
                 iEmbeddedScriptStart = sScript.IndexOf("Script:", iEmbeddedScriptEnd)

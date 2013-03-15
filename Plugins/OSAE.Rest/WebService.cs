@@ -52,17 +52,17 @@
         [WebGet(UriTemplate = "namedscript/{match}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean SendPattern(string match);
 
-        [OperationContract]
-        [WebGet(UriTemplate = "namedscript/update?name={name}&oldName={oldName}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean UpdateNamedScript(string name, string oldName, string script);
+        //[OperationContract]
+        //[WebGet(UriTemplate = "namedscript/update?name={name}&oldName={oldName}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        //Boolean UpdateNamedScript(string name, string oldName, string script);
         
-        [OperationContract]
-        [WebGet(UriTemplate = "script/add?obj={objName}&event={objEvent}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean AddScript(string objName, string objEvent, string script);
+        //[OperationContract]
+        //[WebGet(UriTemplate = "script/add?obj={objName}&event={objEvent}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        //Boolean AddScript(string objName, string objEvent, string script);
 
-        [OperationContract]
-        [WebGet(UriTemplate = "script/update?obj={objName}&event={objEvent}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean UpdateScript(string objName, string objEvent, string script);
+        //[OperationContract]
+        //[WebGet(UriTemplate = "script/update?obj={objName}&event={objEvent}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        //Boolean UpdateScript(string objName, string objEvent, string script);
 
         [OperationContract]
         [WebGet(UriTemplate = "system/states", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -116,7 +116,7 @@
         public Boolean ExecuteMethod(string name, string method, string param1, string param2)
         {
             // execute a method on an object 
-            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "WCF Service");
+            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "REST Service");
             return true;
         }
 
@@ -125,7 +125,7 @@
             string patternName = Common.MatchPattern(match);
             if (patternName != "")
             {
-                OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", patternName, "", "WCF Service");
+                OSAEScriptManager.RunPatternScript(patternName, "", "REST Service");
                 return true;
             }
             else
@@ -146,23 +146,23 @@
             return true;
         }
 
-        public Boolean AddScript(string objName, string objEvent, string script)
-        {
-            OSAEScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
-            return true;
-        }
+        //public Boolean AddScript(string objName, string objEvent, string script)
+        //{
+        //    OSAEScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
+        //    return true;
+        //}
 
-        public Boolean UpdateScript(string objName, string objEvent, string script)
-        {
-            OSAEScriptManager.ObjectEventScriptUpdate(objName, objEvent, script.Replace("\n", "\r\n"));
-            return true;
-        }
+        //public Boolean UpdateScript(string objName, string objEvent, string script)
+        //{
+        //    OSAEScriptManager.ObjectEventScriptUpdate(objName, objEvent, script.Replace("\n", "\r\n"));
+        //    return true;
+        //}
 
-        public Boolean UpdateNamedScript(string Name, string oldName, string script)
-        {
-            OSAEScriptManager.NamedScriptUpdate(Name, oldName, script.Replace("\n", "\r\n"));
-            return true;
-        }
+        //public Boolean UpdateNamedScript(string Name, string oldName, string script)
+        //{
+        //    OSAEScriptManager.NamedScriptUpdate(Name, oldName, script.Replace("\n", "\r\n"));
+        //    return true;
+        //}
 
         public OSAEObjectCollection GetPlugins()
         {

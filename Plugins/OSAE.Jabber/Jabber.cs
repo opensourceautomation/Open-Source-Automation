@@ -92,7 +92,7 @@ namespace OSAE.Jabber
             string pattern = Common.MatchPattern(msg.Body);
             if (pattern != string.Empty)
             {
-                OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", pattern, msg.From.Bare, "Jabber");
+                OSAEScriptManager.RunPatternScript(pattern, msg.From.Bare, "Jabber");
             }             
         }
 

@@ -15,7 +15,6 @@
     <link href="css/style.css" rel="stylesheet" type="text/css">
     <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="bootstrap/js/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="includes/osae.js"></script>
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -36,22 +35,13 @@
                     </a>
                     <a class="brand" href="http://www.opensourceautomation.com/">Open Source Automation</a>
                     <div class="nav-collapse">
-                        <%-- <asp:Menu  class="nav" ID="primaryMenu" runat="server" Orientation="Horizontal" RenderingMode="List">
-                            <Items>
-                                <asp:MenuItem  Text="Logs" Value="Logs">
-                                    <asp:MenuItem Text="Event Logs" Value="Event Logs"></asp:MenuItem>
-                                    <asp:MenuItem Text="Server Logs" Value="Server Logs"></asp:MenuItem>
-                                </asp:MenuItem>
-                                <asp:MenuItem NavigateUrl="~/objtypes.aspx" Text="Object Types" Value="Object Types"></asp:MenuItem>
-                            </Items>
-                        </asp:Menu>--%>
                         <ul class="nav">
 
                             <%--<li><a href="screens.aspx">Screens</a></li>--%>
                             <li><a href="objects.aspx">Objects</a></li>
                             <li><a href="objtypes.aspx">Object Types</a></li>
-                            <li><a href="scripts.aspx">Named Scripts</a></li>
-                            <li><a href="editor.aspx">Script Editor</a></li>
+                            <li><a href="scripts.aspx">Scripts</a></li>
+                            <li><a href="patterns.aspx">Patterns</a></li>
                             <li><a href="schedules.aspx">Schedules</a></li>
                             <%--<li><a href="plugins.aspx">Plugins</a></li>
                             <li><a href="analytics.aspx">Analytics</a></li>--%>

@@ -27,7 +27,6 @@
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             lblDBVersion.Content = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value;
-            txbxZipcode.Text = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "ZIP Code").Value;
             if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE")
                 cbDebugging.SelectedItem = cbDebugging.Items[0];
             else
@@ -38,7 +37,6 @@
         {
             ComboBoxItem cbi = (ComboBoxItem)cbDebugging.SelectedItem;
             OSAEObjectPropertyManager.ObjectPropertySet("SYSTEM", "Debug", cbi.Content.ToString(), "Manager_WPF");
-            OSAEObjectPropertyManager.ObjectPropertySet("SYSTEM", "ZIP Code", txbxZipcode.Text, "Manager_WPF");
             this.Close();
         }
     }

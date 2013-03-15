@@ -170,7 +170,7 @@
             string patternName = Common.MatchPattern(pattern);
             if (!string.IsNullOrEmpty(patternName))
             {
-                OSAEMethodManager.MethodQueueAdd("Script Processor", "NAMED SCRIPT", patternName, "", sourceName);
+                OSAEScriptManager.RunPatternScript(patternName, "", sourceName);
             }
             return true;
         }
@@ -196,17 +196,17 @@
             return true;
         }
 
-        public Boolean AddScript(string objName, string objEvent, string script)
-        {
-            OSAEScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
-            return true;
-        }
+        //public Boolean AddScript(string objName, string objEvent, string script)
+        //{
+        //    OSAEScriptManager.ObjectEventScriptAdd(objName, objEvent, script);
+        //    return true;
+        //}
 
-        public Boolean UpdateScript(string objName, string objEvent, string script)
-        {
-            OSAEScriptManager.ObjectEventScriptUpdate(objName, objEvent, script);
-            return true;
-        }
+        //public Boolean UpdateScript(string objName, string objEvent, string script)
+        //{
+        //    OSAEScriptManager.ObjectEventScriptUpdate(objName, objEvent, script);
+        //    return true;
+        //}
 
         public OSAEObjectCollection GetPlugins()
         {

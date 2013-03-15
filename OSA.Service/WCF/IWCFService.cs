@@ -74,13 +74,13 @@ namespace WCF
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
         Boolean SendPattern(string pattern);
 
-        [OperationContract]
-        [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
-        Boolean AddScript(string objName, string objEvent, string script);
+        //[OperationContract]
+        //[WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
+        //Boolean AddScript(string objName, string objEvent, string script);
 
-        [OperationContract]
-        [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
-        Boolean UpdateScript(string objName, string objEvent, string script);
+        //[OperationContract]
+        //[WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]
+        //Boolean UpdateScript(string objName, string objEvent, string script);
 
         [OperationContract]
         [WebInvoke(BodyStyle = WebMessageBodyStyle.WrappedRequest)]

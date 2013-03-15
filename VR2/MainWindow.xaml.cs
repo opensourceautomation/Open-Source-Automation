@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Speech;
 using System.Speech.Recognition;
 using System.Data;
+using OSAE;
 namespace VR2
 
 {
@@ -22,7 +23,7 @@ namespace VR2
     /// </summary>
     public partial class MainWindow : Window
     {
-        OSAE.OSAE OSAEApi = new OSAE.OSAE("VR2");
+        Logging OSAEApi = Logging.GetLogger("VR2");
         SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
         String gAppName = "";
         Boolean gVRMuted = true;
@@ -73,7 +74,7 @@ namespace VR2
                 AddToLog("--  Bits Per Sample: " + oRecognizer.AudioFormat.BitsPerSample);
                 AddToLog("--  Samples Per Second: " + oRecognizer.AudioFormat.SamplesPerSecond);
                 AddToLog("--  Average Bytes Per Second: " + oRecognizer.AudioFormat.AverageBytesPerSecond);
-                gSpeechPlugin = OSAEApi.GetObjectPropertyValue(gAppName, "Can Hear this Plugin").Value.ToString();
+                gSpeechPlugin = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Can Hear this Plugin").Value.ToString();
                 AddToLog("--  I will ignore speech from: " + gSpeechPlugin);
                 oRecognizer.RecognizeAsync();
 
@@ -121,12 +122,12 @@ namespace VR2
         {
             try
             {
-                gAppName = OSAEApi.GetPluginName("VR CLIENT", OSAEApi.ComputerName);
+                gAppName = PluginManager.GetPluginName("VR CLIENT", OSAE.Common.ComputerName);
                 if (gAppName == "")
                 {
-                    gAppName = "VR CLIENT-" + OSAEApi.ComputerName;
+                    gAppName = "VR CLIENT-" + OSAE.Common.ComputerName;
                     OSAEObjectManager.ObjectAdd(gAppName, gAppName, "VR CLIENT", "", "SYSTEM", true);
-                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", OSAEApi.ComputerName);
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", OSAE.Common.ComputerName, "VR");
                 }
             }
             catch (Exception ex)
@@ -141,7 +142,7 @@ namespace VR2
             {
                 AddToLog("OSA Settings:");
                 AddToLog("--  Object Name: " + gAppName);
-                String temp = OSAEApi.GetObjectPropertyValue(gAppName, "VR Input Muted").Value.ToString();
+                String temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "VR Input Muted").Value.ToString();
                 if (temp == "FALSE")
                 {
                     gVRMuted = false;
@@ -155,7 +156,7 @@ namespace VR2
                 AddToLog("--  VR Muted: " + gVRMuted);
 
                 temp = "";
-                temp = OSAEApi.GetObjectPropertyValue(gAppName, "VR Enabled").Value.ToString();
+                temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "VR Enabled").Value.ToString();
                 if (temp == "FALSE")
                     gVREnabled = false;
                 else
@@ -163,12 +164,12 @@ namespace VR2
                 AddToLog("--  VR Enabled: " + gVREnabled);
 
                 temp = "";
-                temp = OSAEApi.GetObjectPropertyValue(gAppName, "VR Wake Phrase").Value.ToString();
+                temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "VR Wake Phrase").Value.ToString();
                 gWakePhrase = temp;
                 AddToLog("--  VR Wake Phrase: " + gWakePhrase);
 
                 temp = "";
-                temp = OSAEApi.GetObjectPropertyValue(gAppName, "VR Sleep Phrase").Value.ToString();
+                temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "VR Sleep Phrase").Value.ToString();
                 gSleepPhrase = temp;
                 AddToLog("--  VR Sleep Phrase: " + gSleepPhrase);
             }
@@ -230,7 +231,7 @@ namespace VR2
                     lblStatus.Content = "I am sleeping";
                 }
                // gSpeechPlugin;
-                String temp = OSAEApi.GetObjectPropertyValue(gSpeechPlugin, "Speaking").Value.ToString().ToLower();
+                String temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gSpeechPlugin, "Speaking").Value.ToString().ToLower();
 
                 if (temp.ToLower() == "true")
                 {
@@ -248,8 +249,8 @@ namespace VR2
                     {
                         try
                         {
-                            string sText = OSAEApi.MatchPattern(e.Result.Text);
-                            OSAEApi.MethodQueueAdd("Script Processor", "NAMED SCRIPT", sText, "");
+                            string sText = OSAE.Common.MatchPattern(e.Result.Text);
+                            OSAEScriptManager.RunPatternScript(sText, "", "VR"); 
                             AddToLog("Heard: " + e.Result.Text + ", Ran: " + sText);
                         }
                         catch (Exception ex)

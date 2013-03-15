@@ -1,90 +1,180 @@
 
+--
+-- Disable foreign keys
+--
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+
+SET NAMES 'utf8';
 USE osae;
 
-DELIMITER $$
-
-DROP TRIGGER IF EXISTS tr_osae_event_log_after_insert$$
-CREATE
-DEFINER = 'osae'@'%'
-TRIGGER tr_osae_event_log_after_insert
-	AFTER INSERT
-	ON osae_event_log
-	FOR EACH ROW
-BEGIN
-DECLARE vEventCount INT;
-DECLARE vEventID INT;
-DECLARE vEventScriptID INT;
-DECLARE vEventName VARCHAR(200);
-DECLARE vObjectName VARCHAR(200);
-DECLARE scriptProc VARCHAR(200);
-DECLARE vDebugTrace VARCHAR(2000);
-    SET vDebugTrace = CONCAT(COALESCE(NEW.debug_trace,''),' -> tr_osae_event_log_after_insert');
-    CALL osae_sp_debug_log_add(CONCAT('Event_Trigger is running for ',NEW.object_id,' ',NEW.event_id),vDebugTrace);
-    SELECT COUNT(event_script_id) INTO vEventCount FROM osae_v_object_event_script WHERE object_id=NEW.object_id AND event_id=NEW.event_id AND event_script IS NOT NULL and event_script<>'';
-    IF vEventCount = 1 THEN
-        SELECT event_script_id,event_name,object_name INTO vEventScriptID,vEventName,vObjectName FROM osae_v_object_event_script WHERE object_id=NEW.object_id AND event_id=NEW.event_id AND event_script IS NOT NULL and event_script<>'' LIMIT 1;
-        SELECT property_value INTO scriptProc FROM osae_v_object_property WHERE object_name='SYSTEM' AND property_name='Script Processor';
-        CALL osae_sp_method_queue_add (scriptProc,'EVENT SCRIPT',vEventScriptID,'','SYSTEM',vDebugTrace);
-    END IF; 
-END
-$$
+--
+-- Drop view osae_v_event_script_logjunk
+--
+DROP VIEW osae_v_event_script_logjunk CASCADE;
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS osae_sp_run_scheduled_methods$$
-CREATE DEFINER = 'osae'@'%'
-PROCEDURE osae_sp_run_scheduled_methods()
-BEGIN
-DECLARE iSCHEDULEID INT;
-DECLARE iOBJECTID INT DEFAULT 0;
-DECLARE vObjectName VARCHAR(400) DEFAULT '';
-DECLARE iMETHODID INT DEFAULT 0;
-DECLARE vMethodName VARCHAR(400);
-DECLARE vPARAM1 VARCHAR(200);
-DECLARE vPARAM2 VARCHAR(200);
-DECLARE iPATTERNID INT DEFAULT 0;
-DECLARE vPATTERN VARCHAR(200);
-DECLARE done INT DEFAULT 0;  
-DECLARE scriptProc VARCHAR(200);
-DECLARE cur1 CURSOR FOR SELECT schedule_ID,COALESCE(object_name,''),method_name,parameter_1,parameter_2,pattern_id FROM osae_v_schedule_queue WHERE queue_datetime < NOW();
-DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
-    CALL osae_sp_debug_log_add('Starting to run osae_sp_run_scheduled_methods','osae_sp_run_scheduled_methods');
-    OPEN cur1; 
-    Loop_Tag: LOOP
-        FETCH cur1 INTO iSCHEDULEID,vObjectName,vMethodName,vPARAM1,vPARAM2,iPATTERNID;
-        IF done THEN
-            Leave Loop_Tag;
-        END IF;
-            CALL osae_sp_debug_log_add(CONCAT('Found Scheduled Method to run:',iSCHEDULEID,'  Object=',vObjectName,'   PatternID=',COALESCE(iPATTERNID,0)),'osae_sp_run_scheduled_methods');
-            DELETE FROM osae_schedule_queue WHERE schedule_ID=iSCHEDULEID; 
-            IF vObjectName != '' THEN
-                CALL osae_sp_method_queue_add(vObjectName,vMethodName,vPARAM1,vPARAM2,'SYSTEM','osae_sp_run_scheduled_methods');
-            ELSEIF iPATTERNID != 0 THEN
-                SELECT pattern INTO vPATTERN FROM osae_pattern WHERE pattern_id=iPATTERNID;
-                SELECT property_value INTO scriptProc FROM osae_v_object_property WHERE object_name='SYSTEM' AND property_name='Script Processor';
-                CALL osae_sp_method_queue_add(scriptProc,'NAMED SCRIPT',vPATTERN,'SYSTEM','SYSTEM','osae_sp_run_scheduled_methods');
-            END IF;         
-        END LOOP;
-    CLOSE cur1;
-    CALL osae_sp_process_recurring();   
-END
-$$
+--
+-- Drop procedure osae_sp_object_event_script_update
+--
+DROP PROCEDURE IF EXISTS osae_sp_object_event_script_update$$
 
+--
+-- Drop procedure osae_object_name_get_by_address
+--
+DROP PROCEDURE IF EXISTS osae_object_name_get_by_address$$
 
-delimiter $$
-CREATE TABLE `osae_images` (
-  `image_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `image_data` longblob NOT NULL,
-  `image_name` varchar(45) NOT NULL,
-  `image_type` varchar(4) NOT NULL,
-  PRIMARY KEY (`image_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=257 DEFAULT CHARSET=latin1
-  $$
+DELIMITER ;
 
-delimiter $$
+--
+-- Create table osae_images
+--
+CREATE TABLE osae_images (
+  image_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  image_data LONGBLOB NOT NULL,
+  image_name VARCHAR(45) NOT NULL,
+  image_type VARCHAR(4) NOT NULL,
+  PRIMARY KEY (image_id)
+)
+ENGINE = INNODB
+CHARACTER SET latin1
+COLLATE latin1_swedish_ci;
 
-CREATE DEFINER = 'osae'@'%'
-PROCEDURE `osae_sp_image_add`(
+--
+-- Alter table osae_pattern
+--
+ALTER TABLE osae_pattern
+  DROP COLUMN script,
+  ADD COLUMN script_id INT(11) DEFAULT NULL AFTER pattern;
+
+--
+-- Create table osae_script
+--
+CREATE TABLE osae_script (
+  script_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  script TEXT DEFAULT NULL,
+  script_processor_id INT(10) UNSIGNED DEFAULT NULL,
+  script_name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (script_id),
+  UNIQUE INDEX script_name (script_name)
+)
+ENGINE = INNODB
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
+
+--
+-- Create table osae_script_processors
+--
+CREATE TABLE osae_script_processors (
+  script_processor_id INT(11) NOT NULL AUTO_INCREMENT,
+  script_processor_name VARCHAR(45) NOT NULL COMMENT 'visual name in UI',
+  script_processor_plugin_name VARCHAR(45) NOT NULL COMMENT 'the name of the plugin to process the script',
+  PRIMARY KEY (script_processor_id),
+  UNIQUE INDEX script_processor_id_UNIQUE (script_processor_id)
+)
+ENGINE = INNODB
+CHARACTER SET latin1
+COLLATE latin1_swedish_ci;
+
+--
+-- Create table osae_pattern_script
+--
+CREATE TABLE osae_pattern_script (
+  pattern_script_id INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  pattern_id INT(10) UNSIGNED ZEROFILL NOT NULL,
+  script_id INT(11) DEFAULT NULL,
+  script_sequence INT(11) DEFAULT NULL,
+  PRIMARY KEY (pattern_script_id),
+  UNIQUE INDEX script_sequence (script_sequence, pattern_id),
+  CONSTRAINT FK_osae_pattern_script_osae_pattern_pattern_id FOREIGN KEY (pattern_id)
+    REFERENCES osae_pattern(pattern_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+ENGINE = INNODB
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
+
+--
+-- Create table osae_object_type_event_script
+--
+CREATE TABLE osae_object_type_event_script (
+  object_type_event_script_id INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  object_type_id INT(10) UNSIGNED ZEROFILL NOT NULL,
+  event_id INT(10) UNSIGNED ZEROFILL NOT NULL,
+  script_id INT(11) DEFAULT NULL,
+  script_sequence INT(11) DEFAULT NULL,
+  PRIMARY KEY (object_type_event_script_id),
+  UNIQUE INDEX script_sequence (script_sequence, object_type_id, event_id),
+  CONSTRAINT FK_osae_object_type_event_script_osae_object_type_event_event_id FOREIGN KEY (event_id)
+    REFERENCES osae_object_type_event(event_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT FK_osae_object_type_event_script_osae_object_type_object_type_id FOREIGN KEY (object_type_id)
+    REFERENCES osae_object_type(object_type_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+ENGINE = INNODB
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
+
+--
+-- Alter table osae_object_event_script
+--
+ALTER TABLE osae_object_event_script
+  DROP COLUMN event_script,
+  DROP FOREIGN KEY osae_fk_object_script_to_events,
+  DROP INDEX osae_fk_object_script_to_events,
+  DROP FOREIGN KEY osae_fk_object_script_to_object,
+  DROP INDEX osae_object_event_script_unq,
+  ADD COLUMN script_id INT(11) DEFAULT NULL AFTER event_id,
+  ADD COLUMN script_sequence INT(11) DEFAULT NULL AFTER script_id;
+
+ALTER TABLE osae_object_event_script
+  ADD UNIQUE INDEX script_sequence (script_sequence, object_id, event_id);
+
+ALTER TABLE osae_object_event_script
+  ADD CONSTRAINT FK_osae_object_event_script_osae_object_object_id FOREIGN KEY (object_id)
+    REFERENCES osae_object(object_id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE osae_object_event_script
+  ADD CONSTRAINT FK_osae_object_event_script_osae_object_type_event_event_id FOREIGN KEY (event_id)
+    REFERENCES osae_object_type_event(event_id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- Alter table osae_object_property
+--
+ALTER TABLE osae_object_property
+  CHANGE COLUMN property_value property_value VARCHAR(4000) DEFAULT NULL;
+
+--
+-- Alter table osae_schedule_queue
+--
+ALTER TABLE osae_schedule_queue
+  DROP COLUMN pattern_id,
+  DROP FOREIGN KEY osae_fk_schedule_pattern_to_pattern_id,
+  DROP INDEX osae_fk_schedule_pattern_to_pattern_id,
+  ADD COLUMN script_id INT(10) UNSIGNED DEFAULT NULL AFTER recurring_id;
+
+ALTER TABLE osae_schedule_queue
+  ADD CONSTRAINT osae_fk_schedule_script_to_script_id FOREIGN KEY (script_id)
+    REFERENCES osae_script(script_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Alter table osae_schedule_recurring
+--
+ALTER TABLE osae_schedule_recurring
+  DROP COLUMN pattern_id,
+  DROP FOREIGN KEY osae_fk_recurring_pattern_to_pattern_id,
+  DROP INDEX osae_fk_recurring_pattern_to_pattern_id,
+  ADD COLUMN script_id INT(10) UNSIGNED DEFAULT NULL AFTER recurring_date,
+  CHANGE COLUMN schedule_name schedule_name VARCHAR(100) DEFAULT NULL;
+
+ALTER TABLE osae_schedule_recurring
+  ADD CONSTRAINT osae_fk_recurring_script_to_script_id FOREIGN KEY (script_id)
+    REFERENCES osae_script(script_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+DELIMITER $$
+
+--
+-- Create procedure osae_sp_image_add
+--
+CREATE PROCEDURE osae_sp_image_add(
 IN  pimage_data         LONGBLOB,
 IN  pimage_name			VARCHAR(45),
 IN  pimage_type			VARCHAR(4)
@@ -101,58 +191,133 @@ BEGIN
 		pimage_name,
 		pimage_type
 		);
-END$$
-
-delimiter $$
-DROP VIEW IF EXISTS osae_v_screen_object CASCADE$$
-CREATE OR REPLACE DEFINER = 'osae'@'%' VIEW osae_v_screen_object
-AS
-select so.screen_object_id AS screen_object_id
-     , so.screen_id AS screen_id
-     , so.object_id AS object_id
-     , so.control_id AS control_id
-     , screen.object_name AS screen_name
-     , co.object_name AS control_name
-     , oo.object_name AS object_name
-     , ot.object_type AS control_type
-     , oo.last_updated AS last_updated
-     , oo.last_state_change AS last_state_change
-     , timestampdiff(MINUTE, oo.last_state_change, now()) AS time_in_state
-     , ots.state_name AS state_name 
-  from osae_screen_object so
-  inner join osae_object screen on screen.object_id = so.screen_id
-  inner join osae_object oo on so.object_id = oo.object_id
-  inner join osae_object co on so.control_id = co.object_id
-  inner join osae_object_type ot on ot.object_type_id = co.object_type_id
-  left join osae_object_type_state ots on ots.state_id = oo.state_id
+END
 $$
 
-delimiter $$
-CREATE DEFINER = 'osae'@'%'
-PROCEDURE `osae_sp_image_delete`(
+--
+-- Create procedure osae_sp_image_delete
+--
+CREATE PROCEDURE osae_sp_image_delete(
 IN pimage_id INT
 )
 BEGIN
 	DELETE FROM `osae`.`osae_images`
 	WHERE image_id = pimage_id;
 END
-  $$
+$$
 
+--
+-- Alter procedure osae_sp_object_event_script_add
+--
+DROP PROCEDURE osae_sp_object_event_script_add$$
+CREATE PROCEDURE osae_sp_object_event_script_add(IN pobject VARCHAR(200), IN pevent VARCHAR(200), IN pscriptid INT)
+BEGIN
+DECLARE vObjectCount INT;
+DECLARE vObjectID INT;
+DECLARE vObjectTypeID INT;
+DECLARE vEventCount INT;
+DECLARE vEventID INT;
+DECLARE vScriptSeq INT;
+SET vScriptSeq = 0;
+    SELECT COUNT(object_id) INTO vObjectCount FROM osae_object WHERE object_name=pobject;
+    IF vObjectCount > 0 THEN
+        SELECT object_id,object_type_id INTO vObjectID,vObjectTypeID FROM osae_object WHERE object_name=pobject;
+        SELECT COUNT(event_id) INTO vEventCount FROM osae_object_type_event WHERE object_type_id=vObjectTypeID AND (event_name=pevent OR event_label=pevent);
+        IF vEventCount = 1 THEN       
+            SELECT event_id INTO vEventID FROM osae_object_type_event WHERE object_type_id=vObjectTypeID AND (event_name=pevent OR event_label=pevent);
+            SELECT COALESCE(script_sequence, 0) INTO vScriptSeq FROM osae_object_event_script where object_id = vObjectID AND event_id = vEventID ORDER BY script_sequence DESC LIMIT 1;
+            INSERT INTO osae_object_event_script (object_id,event_id,script_id, script_sequence) VALUES(vObjectID,vEventID,pscriptid,vScriptSeq+1);
+        END IF;
+    END IF; 
+END
+$$
 
--- Fix for scheduler running named scripts
-DELIMITER $$
-DROP PROCEDURE IF EXISTS osae_sp_process_recurring$$
+--
+-- Create procedure osae_sp_object_event_script_delete
+--
+CREATE PROCEDURE osae_sp_object_event_script_delete(IN peventscriptid INT)
+BEGIN
+  DELETE FROM osae_object_event_script
+    WHERE event_script_id = peventscriptid;
+END
+$$
 
-CREATE DEFINER = 'osae'@'%'
-PROCEDURE osae_sp_process_recurring()
+--
+-- Create procedure osae_sp_object_type_event_script_add
+--
+CREATE PROCEDURE osae_sp_object_type_event_script_add(IN pobjtypename VARCHAR(255), IN pevent VARCHAR(255), IN pscriptid INT)
+BEGIN
+DECLARE vObjectTypeCount INT;
+DECLARE vObjectTypeID INT;
+DECLARE vEventCount INT;
+DECLARE vEventID INT;
+DECLARE vScriptSeq INT;
+SET vScriptSeq = 0;
+    SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjtypename;
+    IF vObjectTypeCount > 0 THEN
+        SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjtypename;
+        SELECT COUNT(event_id) INTO vEventCount FROM osae_object_type_event WHERE object_type_id=vObjectTypeID AND (event_name=pevent OR event_label=pevent);
+        IF vEventCount = 1 THEN       
+            SELECT event_id INTO vEventID FROM osae_object_type_event WHERE object_type_id=vObjectTypeID AND (event_name=pevent OR event_label=pevent);
+            SELECT COALESCE(script_sequence, 0) INTO vScriptSeq FROM osae_object_type_event_script where object_type_id = vObjectTypeID AND event_id = vEventID ORDER BY script_sequence DESC LIMIT 1;
+            INSERT INTO osae_object_type_event_script (object_type_id,event_id,script_id, script_sequence) VALUES(vObjectTypeID,vEventID,pscriptid,vScriptSeq+1);
+        END IF;
+    END IF; 
+END
+$$
+
+--
+-- Create procedure osae_sp_object_type_event_script_delete
+--
+CREATE PROCEDURE osae_sp_object_type_event_script_delete(IN pobjtypeeventscriptid INT)
+BEGIN
+  DELETE FROM osae_object_type_event_script
+    WHERE object_type_event_script_id = pobjtypeeventscriptid;
+END
+$$
+
+--
+-- Create procedure osae_sp_pattern_script_add
+--
+CREATE PROCEDURE osae_sp_pattern_script_add(IN ppattern VARCHAR(255), IN pscriptid INT)
+BEGIN
+DECLARE vPatternCount INT;
+DECLARE vPatternID INT;
+DECLARE vScriptSeq INT;
+SET vScriptSeq = 0;
+    SELECT COUNT(pattern_id) INTO vPatternCount FROM osae_pattern WHERE pattern=ppattern;
+    IF vPatternCount > 0 THEN
+        SELECT pattern_id INTO vPatternID FROM osae_pattern WHERE pattern=ppattern;
+        SELECT COALESCE(script_sequence, 0) INTO vScriptSeq FROM osae_object_event_script where object_id = vObjectID AND event_id = vEventID ORDER BY script_sequence DESC LIMIT 1;
+        INSERT INTO osae_pattern_script (pattern_id,script_id, script_sequence) VALUES(vPatternID,pscriptid,vScriptSeq+1);
+        
+    END IF; 
+END
+$$
+
+--
+-- Create procedure osae_sp_pattern_script_delete
+--
+CREATE PROCEDURE osae_sp_pattern_script_delete(IN ppatternscriptid INT)
+BEGIN
+DELETE FROM osae_pattern_script
+    WHERE pattern_script_id = ppatternscriptid;
+END
+$$
+
+--
+-- Alter procedure osae_sp_process_recurring
+--
+DROP PROCEDURE osae_sp_process_recurring$$
+CREATE PROCEDURE osae_sp_process_recurring()
 BEGIN
 DECLARE iRECURRINGID INT;
 DECLARE vOBJECTNAME VARCHAR(400) DEFAULT '';
 DECLARE vMETHODNAME VARCHAR(400) DEFAULT '';
 DECLARE vPARAM1 VARCHAR(200);
 DECLARE vPARAM2 VARCHAR(200);
-DECLARE vPATTERN VARCHAR(200);
-DECLARE iPATTERNID INT;
+DECLARE vSCRIPTNAME VARCHAR(200);
+DECLARE iSCRIPTID INT;
 DECLARE cINTERVAL CHAR(1);
 DECLARE cSUNDAY CHAR(1);
 DECLARE cMONDAY CHAR(1);
@@ -173,14 +338,14 @@ DECLARE dCURDAY INT DEFAULT 1;
 DECLARE iMATCHES INT DEFAULT 0;
 DECLARE iDATEDIFF INT DEFAULT 0;
 DECLARE done INT DEFAULT 0;  
-DECLARE cur1 CURSOR FOR SELECT recurring_id,interval_unit,recurring_time,recurring_minutes,recurring_date,recurring_day,object_name,method_name,parameter_1,parameter_2,pattern_id, pattern, sunday,monday,tuesday,wednesday,thursday,friday,saturday FROM osae_v_schedule_recurring;
+DECLARE cur1 CURSOR FOR SELECT recurring_id,interval_unit,recurring_time,recurring_minutes,recurring_date,recurring_day,object_name,method_name,parameter_1,parameter_2,script_id, script_name, sunday,monday,tuesday,wednesday,thursday,friday,saturday FROM osae_v_schedule_recurring;
 DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
     OPEN cur1; 
     Loop_Tag: LOOP
         IF done THEN
             Leave Loop_Tag;
         END IF;
-        FETCH cur1 INTO iRECURRINGID,cINTERVAL,dRECURRINGTIME,iRECURRINGMINUTES,dRECURRINGDATE,dRECURRINGDAY,vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,iPATTERNID,vPATTERN,cSUNDAY,cMONDAY,cTUESDAY,cWEDNESDAY,cTHURSDAY,cFRIDAY,cSATURDAY;
+        FETCH cur1 INTO iRECURRINGID,cINTERVAL,dRECURRINGTIME,iRECURRINGMINUTES,dRECURRINGDATE,dRECURRINGDAY,vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,iSCRIPTID,vSCRIPTNAME,cSUNDAY,cMONDAY,cTUESDAY,cWEDNESDAY,cTHURSDAY,cFRIDAY,cSATURDAY;
         CALL osae_sp_debug_log_add(CONCAT('ID=',iRECURRINGID,', Interval=',cINTERVAL,' Time=',dRECURRINGTIME,' Date=',dRECURRINGDATE),'sp_process_recurring'); 
         IF NOT done THEN
             IF cINTERVAL = 'Y' THEN
@@ -197,7 +362,7 @@ DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
                 CALL osae_sp_debug_log_add(CONCAT(dRECURRINGDATE,' ',TIME(dRECURRINGTIME)),'SYSTEM'); 
                 SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                 IF iMATCHES = 0 THEN
-                    CALL osae_sp_schedule_queue_add (CONCAT(dRECURRINGDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);
+                    CALL osae_sp_schedule_queue_add (CONCAT(dRECURRINGDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);
                 END IF;
               ELSEIF cINTERVAL = 'T' THEN   
                 SET dCURDATETIME = NOW();             
@@ -209,8 +374,7 @@ DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
                 CALL osae_sp_debug_log_add(CONCAT(dRECURRINGDATE,' ',TIME(dRECURRINGTIME)),'SYSTEM'); 
                 SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                 IF iMATCHES = 0 THEN
-                    CALL osae_sp_schedule_queue_add (ADDTIME(NOW(),SEC_TO_TIME(iRECURRINGMINUTES * 60)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);
-                   -- CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',ADDTIME(NOW(),SEC_TO_TIME(iRECURRINGMINUTES * 60))),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);
+                    CALL osae_sp_schedule_queue_add (ADDTIME(NOW(),SEC_TO_TIME(iRECURRINGMINUTES * 60)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);
                END IF;               
             ELSEIF cINTERVAL = 'M' THEN                
                 SET dCURDATE = CURDATE();
@@ -225,7 +389,7 @@ DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
                 CALL osae_sp_debug_log_add(CONCAT(dRECURRINGDATE,' ',TIME(dRECURRINGTIME)),'SYSTEM'); 
                 SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                 IF iMATCHES = 0 THEN
-                    CALL osae_sp_schedule_queue_add (CONCAT(dRECURRINGDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);
+                    CALL osae_sp_schedule_queue_add (CONCAT(dRECURRINGDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);
                 END IF;               
             ELSEIF cINTERVAL = 'D' THEN                
                 SET dCURDATETIME = NOW();
@@ -241,43 +405,43 @@ DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
                 IF dCURDAYOFWEEK = 1 AND cSUNDAY = 1 THEN
                     SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                     IF iMATCHES = 0 THEN
-                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);
+                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);
                     END IF; 
                 END IF; 
                 IF dCURDAYOFWEEK = 2 AND cMONDAY = 1 THEN                
                     SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                     IF iMATCHES = 0 THEN
-                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);          
+                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);          
                     END IF; 
                 END IF; 
                 IF dCURDAYOFWEEK = 3 AND cTUESDAY = 1 THEN                
                     SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                     IF iMATCHES = 0 THEN
-                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);
+                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);
                     END IF; 
                 END IF;                 
                 IF dCURDAYOFWEEK = 4 AND cWEDNESDAY = 1 THEN                
                     SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                     IF iMATCHES = 0 THEN
-                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);   
+                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);   
                     END IF; 
                 END IF;  
                 IF dCURDAYOFWEEK = 5 AND cTHURSDAY = 1 THEN                
                     SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                     IF iMATCHES = 0 THEN
-                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);                    
+                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);                    
                     END IF; 
                 END IF;
                 IF dCURDAYOFWEEK = 6 AND cFRIDAY = 1 THEN                
                     SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                     IF iMATCHES = 0 THEN
-                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);                    
+                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);                    
                     END IF; 
                 END IF;
                 IF dCURDAYOFWEEK = 7 AND cSATURDAY = 1 THEN                
                     SELECT COUNT(schedule_ID) INTO iMATCHES FROM osae_schedule_queue WHERE recurring_id=iRECURRINGID;      
                     IF iMATCHES = 0 THEN
-                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vPATTERN,iRECURRINGID);                    
+                        CALL osae_sp_schedule_queue_add (CONCAT(dCURDATE,' ',TIME(dRECURRINGTIME)),vOBJECTNAME,vMETHODNAME,vPARAM1,vPARAM2,vSCRIPTNAME,iRECURRINGID);                    
                    END IF; 
                 END IF;                                                                           
             END IF;         
@@ -285,25 +449,132 @@ DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
      END LOOP;
     CLOSE cur1;   
 END
-
 $$
 
-DELIMITER $$
+--
+-- Alter procedure osae_sp_run_scheduled_methods
+--
+DROP PROCEDURE osae_sp_run_scheduled_methods$$
+CREATE PROCEDURE osae_sp_run_scheduled_methods()
+BEGIN
+DECLARE iSCHEDULEID INT;
+DECLARE iOBJECTID INT DEFAULT 0;
+DECLARE vObjectName VARCHAR(400) DEFAULT '';
+DECLARE iMETHODID INT DEFAULT 0;
+DECLARE vMethodName VARCHAR(400);
+DECLARE vPARAM1 VARCHAR(200);
+DECLARE vPARAM2 VARCHAR(200);
+DECLARE iSCRIPTID INT DEFAULT 0;
+DECLARE vSCRIPTPROCID INT DEFAULT 0;
+DECLARE done INT DEFAULT 0;  
+DECLARE scriptProc VARCHAR(200);
+DECLARE cur1 CURSOR FOR SELECT schedule_ID,COALESCE(object_name,''),method_name,parameter_1,parameter_2,script_id FROM osae_v_schedule_queue WHERE queue_datetime < NOW();
+DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+    CALL osae_sp_debug_log_add('Starting to run osae_sp_run_scheduled_methods','osae_sp_run_scheduled_methods');
+    OPEN cur1; 
+    Loop_Tag: LOOP
+        FETCH cur1 INTO iSCHEDULEID,vObjectName,vMethodName,vPARAM1,vPARAM2,iSCRIPTID;
+        IF done THEN
+            Leave Loop_Tag;
+        END IF;
+            CALL osae_sp_debug_log_add(CONCAT('Found Scheduled Method to run:',iSCHEDULEID,'  Object=',vObjectName,'   ScriptID=',COALESCE(iSCRIPTID,0)),'osae_sp_run_scheduled_methods');
+            DELETE FROM osae_schedule_queue WHERE schedule_ID=iSCHEDULEID; 
+            IF vObjectName != '' THEN
+                CALL osae_sp_method_queue_add(vObjectName,vMethodName,vPARAM1,vPARAM2,'SYSTEM','osae_sp_run_scheduled_methods');
+            ELSEIF iSCRIPTID != 0 THEN
+                SELECT script_processor_id INTO vSCRIPTPROCID FROM osae_script WHERE script_id=iSCRIPTID;
+                SELECT script_processor_name INTO scriptProc FROM osae_script_processor WHERE script_processor_id=vSCRIPTPROCID;
+                CALL osae_sp_method_queue_add(scriptProc,'RUN SCRIPT',vSCRIPTID,'SYSTEM','SYSTEM','osae_sp_run_scheduled_methods');
+            END IF;         
+        END LOOP;
+    CLOSE cur1;
+    CALL osae_sp_process_recurring();   
+END
+$$
 
-ALTER TABLE osae_pattern ADD COLUMN `script_processor_id` INT UNSIGNED NULL AFTER `script` $$
-ALTER TABLE osae_object_event_script ADD COLUMN `script_processor_id` INT UNSIGNED NULL AFTER `event_script` $$
-CREATE TABLE `osae_script_processors` (
-`script_processor_id` int(11) NOT NULL AUTO_INCREMENT,
-`script_processor_name` varchar(45) NOT NULL COMMENT 'visual name in UI',
-`script_processor_plugin_name` varchar(45) NOT NULL COMMENT 'the name of the plugin to process the script',
-PRIMARY KEY (`script_processor_id`),
-UNIQUE KEY `script_processor_id_UNIQUE` (`script_processor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-  $$
+--
+-- Alter procedure osae_sp_schedule_queue_add
+--
+DROP PROCEDURE osae_sp_schedule_queue_add$$
+CREATE PROCEDURE osae_sp_schedule_queue_add(IN pscheduleddate DATETIME, IN pobject VARCHAR(400), IN pmethod VARCHAR(400), IN pparameter1 VARCHAR(2000), IN pparameter2 VARCHAR(2000), IN pscript VARCHAR(200), IN precurringid INT(10))
+BEGIN
+DECLARE vObjectID INT DEFAULT NULL;
+DECLARE vMethodID INT DEFAULT NULL;
+DECLARE vScriptID INT DEFAULT NULL;
+DECLARE vRecurringID INT DEFAULT NULL;
+    SELECT script_id INTO vScriptID FROM osae_script WHERE UPPER(script_name)=UPPER(pscript);
+    SELECT object_id,method_id INTO vObjectID,vMethodID FROM osae_v_object_method WHERE UPPER(object_name)=UPPER(pobject) AND (UPPER(method_name)=UPPER(pmethod) OR UPPER(method_label)=UPPER(pmethod));
+    IF precurringid > 0 THEN
+        SET vRecurringID = precurringid;
+    END IF;
+    INSERT INTO osae_schedule_queue (queue_datetime,object_id,method_id,parameter_1,parameter_2,script_id,recurring_id) VALUES(pscheduleddate,vObjectID,vMethodID,pparameter1,pparameter2,vScriptID,vRecurringID);
+END
+$$
 
-DELIMITER $$
+--
+-- Alter procedure osae_sp_schedule_recurring_add
+--
+DROP PROCEDURE osae_sp_schedule_recurring_add$$
+CREATE PROCEDURE osae_sp_schedule_recurring_add(IN pschedule_name varchar(400), IN pobject varchar(400), IN pmethod varchar(400), IN pparameter1 varchar(2000), IN pparameter2 varchar(2000), IN ppattern varchar(400), IN precurringtime time, IN psunday tinyint(1), IN pmonday tinyint(1), IN ptuesday tinyint(1), IN pwednesday tinyint(1), IN pthursday tinyint(1), IN pfriday tinyint(1), IN psaturday tinyint(1), IN pinterval varchar(10), IN precurringminutes int(8), IN precurringday int(4), IN precurringdate date)
+BEGIN
+DECLARE vObjectID INT DEFAULT NULL;
+DECLARE vMethodID INT DEFAULT NULL;
+DECLARE vScriptID INT DEFAULT NULL;
+    SELECT script_id INTO vScriptID FROM osae_script WHERE script_name=pscript;
+    SELECT object_id,method_id INTO vObjectID,vMethodID FROM osae_v_object_method WHERE UPPER(object_name)=UPPER(pobject) AND (UPPER(method_name)=UPPER(pmethod) OR UPPER(method_label)=UPPER(pmethod));
+    INSERT INTO osae_schedule_recurring (schedule_name,object_id,method_id,parameter_1,parameter_2,pattern_id,interval_unit,recurring_time,recurring_minutes,recurring_day,recurring_date,sunday,monday,tuesday,wednesday,thursday,friday,saturday) VALUES(pschedule_name,vObjectID,vMethodID,pparameter1,pparameter2,vScriptID,pinterval,precurringtime,precurringminutes,precurringday,precurringdate,psunday,pmonday,ptuesday,pwednesday,pthursday,pfriday,psaturday);
+END
+$$
 
-CREATE DEFINER = 'osae'@'%' PROCEDURE `osae_sp_script_processor_by_event_script_id`(
+--
+-- Alter procedure osae_sp_schedule_recurring_update
+--
+DROP PROCEDURE osae_sp_schedule_recurring_update$$
+CREATE PROCEDURE osae_sp_schedule_recurring_update(IN poldschedulename VARCHAR(400), IN pnewschedulename VARCHAR(400), IN pobject VARCHAR(400), IN pmethod VARCHAR(400), IN pparameter1 VARCHAR(2000), IN pparameter2 VARCHAR(2000), IN pscript VARCHAR(400), IN precurringtime TIME, IN psunday TINYINT(1), IN pmonday TINYINT(1), IN ptuesday TINYINT(1), IN pwednesday TINYINT(1), IN pthursday TINYINT(1), IN pfriday TINYINT(1), IN psaturday TINYINT(1), IN pinterval VARCHAR(10), IN precurringminutes INT(8), IN precurringday INT(4), IN pprecurringdate DATE)
+BEGIN
+DECLARE vObjectID INT DEFAULT NULL;
+DECLARE vMethodID INT DEFAULT NULL;
+DECLARE vScriptID INT DEFAULT NULL;
+    SELECT script_id INTO vScriptID FROM osae_script WHERE script_name=pscript;
+    SELECT object_id,method_id INTO vObjectID,vMethodID FROM osae_v_object_method WHERE UPPER(object_name)=UPPER(pobject) AND (UPPER(method_name)=UPPER(pmethod) OR UPPER(method_label)=UPPER(pmethod));
+    UPDATE osae_schedule_recurring SET schedule_name=pnewschedulename,object_id=vObjectID,method_id=vMethodID,parameter_1=pparameter1,parameter_2=pparameter2,script_id=vScriptID,interval_unit=pinterval,recurring_time=precurringtime,recurring_minutes=precurringminutes,recurring_day=precurringday,recurring_date=pprecurringdate,sunday=psunday,monday=pmonday,tuesday=ptuesday,wednesday=pwednesday,thursday=pthursday,friday=pfriday,saturday=psaturday WHERE schedule_name=poldschedulename;
+END
+$$
+
+--
+-- Create procedure osae_sp_script_add
+--
+CREATE PROCEDURE osae_sp_script_add(IN pname VARCHAR(255), IN pscriptprocessorid INT, IN pscript VARCHAR(4000))
+BEGIN
+  INSERT INTO osae_script(script_name, script_processor_id, script)
+    VALUES(pname,pscriptprocessorid,pscript);
+END
+$$
+
+--
+-- Create procedure osae_sp_script_delete
+--
+CREATE PROCEDURE osae_sp_script_delete(IN pname VARCHAR(255))
+BEGIN
+  DELETE FROM osae_script
+    WHERE script_name = pname;
+END
+$$
+
+--
+-- Create procedure osae_sp_script_processor_add
+--
+CREATE PROCEDURE osae_sp_script_processor_add(IN pname VARCHAR(255), IN ppluginname VARCHAR(255))
+BEGIN
+  INSERT INTO osae_script_processors(script_processor_name, script_processor_plugin_name)
+    VALUES(pname,ppluginname);
+END
+$$
+
+--
+-- Create procedure osae_sp_script_processor_by_event_script_id
+--
+CREATE PROCEDURE osae_sp_script_processor_by_event_script_id(
 IN pEventScriptId int
 )
 BEGIN
@@ -311,9 +582,13 @@ SELECT script_processor_plugin_name FROM osae_script_processors
 INNER JOIN osae_object_event_script
 ON osae_script_processors.script_processor_id = osae_object_event_script.script_processor_id
 WHERE osae_object_event_script.event_script_id = pEventScriptId;
-END$$
+END
+$$
 
-CREATE DEFINER = 'osae'@'%' PROCEDURE `osae_sp_script_processor_by_pattern`(
+--
+-- Create procedure osae_sp_script_processor_by_pattern
+--
+CREATE PROCEDURE osae_sp_script_processor_by_pattern(
 IN pPattern VARCHAR(400)
 )
 BEGIN
@@ -322,7 +597,314 @@ INNER JOIN osae_pattern
 ON osae_script_processors.script_processor_id = osae_pattern.script_processor_id
 WHERE osae_pattern.pattern = pPattern;
 END
-  $$
+$$
+
+--
+-- Create procedure osae_sp_script_processor_by_script_id
+--
+CREATE PROCEDURE osae_sp_script_processor_by_script_id(
+IN pScriptId int
+)
+BEGIN
+  SELECT script_processor_plugin_name
+  FROM
+    osae_script_processors
+  INNER JOIN osae_script
+  ON osae_script_processors.script_processor_id = osae_script.script_processor_id
+  WHERE
+    osae_script.script_id = pScriptId;
+END
+$$
+
+--
+-- Create procedure osae_sp_script_update
+--
+CREATE PROCEDURE osae_sp_script_update(IN poldname VARCHAR(255), IN pname VARCHAR(255), IN pscriptprocessorid INT, IN pscript VARCHAR(255))
+BEGIN
+
+  UPDATE osae_script
+    SET script_name = pname, script_processor_id = pscriptprocessorid, script = pscript
+    WHERE script_name = poldname;
+
+END
+$$
+
+--
+-- Alter trigger tr_osae_event_log_after_insert
+--
+DROP TRIGGER IF EXISTS tr_osae_event_log_after_insert$$
+CREATE TRIGGER tr_osae_event_log_after_insert
+	AFTER INSERT
+	ON osae_event_log
+	FOR EACH ROW
+BEGIN
+DECLARE vEventCount INT;
+DECLARE vScriptID INT;
+DECLARE vScriptSeq INT;
+DECLARE vPrevScriptSeq INT;
+DECLARE scriptProc VARCHAR(200);
+DECLARE vDebugTrace VARCHAR(2000);
+    SET vPrevScriptSeq = -1;
+    SET vScriptSeq = 0;
+    SET vDebugTrace = CONCAT(COALESCE(NEW.debug_trace,''),' -> tr_osae_event_log_after_insert');
+    CALL osae_sp_debug_log_add(CONCAT('Event_Trigger is running for ',NEW.object_id,' ',NEW.event_id),vDebugTrace);
+    SELECT COUNT(event_script_id) INTO vEventCount FROM osae_v_object_event_script WHERE object_id=NEW.object_id AND event_id=NEW.event_id AND script IS NOT NULL and script<>'';
+    IF vEventCount > 0 THEN
+        WHILE vPrevScriptSeq != vScriptSeq DO
+          SET vPrevScriptSeq = vScriptSeq; 
+          SELECT script_sequence, s.script_id, sp.script_processor_plugin_name INTO vScriptSeq,vScriptID,scriptProc 
+            FROM osae_v_object_event_script e
+            INNER JOIN osae_script s ON e.script_id = s.script_id
+            INNER JOIN osae_script_processors sp ON sp.script_processor_id = s.script_processor_id
+            WHERE object_id=NEW.object_id AND event_id=NEW.event_id AND s.script IS NOT NULL and s.script<>'' AND script_sequence > vScriptSeq
+            ORDER BY script_sequence ASC LIMIT 1;
+          IF vPrevScriptSeq != vScriptSeq THEN
+            CALL osae_sp_method_queue_add (scriptProc,'RUN SCRIPT',vScriptID,'','SYSTEM',vDebugTrace);
+          END IF;
+        END WHILE;
+    END IF; 
+END
+$$
+
+DELIMITER ;
+
+--
+-- Alter view osae_v_event_log
+--
+CREATE OR REPLACE 
+VIEW osae_v_event_log
+AS
+	select `osae_event_log`.`event_log_id` AS `event_log_id`,`osae_event_log`.`parameter_1` AS `parameter_1`,`osae_event_log`.`parameter_2` AS `parameter_2`,`osae_event_log`.`from_object_id` AS `from_object_id`,`osae_event_log`.`debug_trace` AS `debug_trace`,`osae_event_log`.`log_time` AS `log_time`,`osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`container_id` AS `container_id`,`osae_object`.`enabled` AS `enabled`,`osae_object_type_event`.`event_id` AS `event_id`,`osae_object_type_event`.`event_name` AS `event_name`,`osae_object_type_event`.`event_label` AS `event_label`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object1`.`object_name` AS `from_object_name` from ((((`osae_object` join `osae_event_log` on((`osae_object`.`object_id` = `osae_event_log`.`object_id`))) join `osae_object_type_event` on((`osae_event_log`.`event_id` = `osae_object_type_event`.`event_id`))) join `osae_object_type` on((`osae_object_type_event`.`object_type_id` = `osae_object_type`.`object_type_id`))) left join `osae_object` `osae_object1` on((`osae_object1`.`object_id` = `osae_event_log`.`from_object_id`)));
+
+--
+-- Alter view osae_v_method_log
+--
+CREATE OR REPLACE 
+VIEW osae_v_method_log
+AS
+	select `osae_method_log`.`method_log_id` AS `method_log_id`,`osae_method_log`.`entry_time` AS `entry_time`,`osae_method_log`.`method_id` AS `method_id`,`osae_method_log`.`parameter_1` AS `parameter_1`,`osae_method_log`.`parameter_2` AS `parameter_2`,`osae_method_log`.`from_object_id` AS `from_object_id`,`osae_method_log`.`debug_trace` AS `debug_trace`,`osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_types1`.`object_type` AS `base_type`,`osae_objects1`.`object_name` AS `object_owner` from (((((`osae_object_type` left join `osae_object` `osae_objects1` on((`osae_object_type`.`plugin_object_id` = `osae_objects1`.`object_id`))) left join `osae_object_type` `osae_object_types1` on((`osae_object_type`.`base_type_id` = `osae_object_types1`.`object_type_id`))) join `osae_object` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) join `osae_method_log` on(((`osae_object`.`object_id` = `osae_method_log`.`object_id`) and (`osae_object_type_method`.`method_id` = `osae_method_log`.`method_id`))));
+
+--
+-- Alter view osae_v_method_queue
+--
+CREATE OR REPLACE 
+VIEW osae_v_method_queue
+AS
+	select `osae_method_queue`.`method_queue_id` AS `method_queue_id`,`osae_method_queue`.`entry_time` AS `entry_time`,`osae_method_queue`.`method_id` AS `method_id`,`osae_method_queue`.`parameter_1` AS `parameter_1`,`osae_method_queue`.`parameter_2` AS `parameter_2`,`osae_method_queue`.`from_object_id` AS `from_object_id`,`osae_method_queue`.`debug_trace` AS `debug_trace`,`osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_types1`.`object_type` AS `base_type`,`osae_objects1`.`object_name` AS `object_owner` from (((((`osae_object_type` left join `osae_object` `osae_objects1` on((`osae_object_type`.`plugin_object_id` = `osae_objects1`.`object_id`))) left join `osae_object_type` `osae_object_types1` on((`osae_object_type`.`base_type_id` = `osae_object_types1`.`object_type_id`))) join `osae_object` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) join `osae_method_queue` on(((`osae_object`.`object_id` = `osae_method_queue`.`object_id`) and (`osae_object_type_method`.`method_id` = `osae_method_queue`.`method_id`))));
+
+--
+-- Alter view osae_v_object
+--
+CREATE OR REPLACE 
+VIEW osae_v_object
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`last_updated` AS `last_updated`,`osae_object`.`last_state_change` AS `last_state_change`,`osae_object`.`enabled` AS `enabled`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object_type_state`.`state_id` AS `state_id`,`osae_object_type_state`.`state_name` AS `state_name`,`osae_object_type_state`.`state_label` AS `state_label`,`objects_2`.`object_name` AS `owned_by`,`object_types_2`.`object_type` AS `base_type`,`objects_1`.`object_name` AS `container_name`,`osae_object`.`container_id` AS `container_id`,timestampdiff(SECOND,`osae_object`.`last_state_change`,now()) AS `time_in_state` from (((((`osae_object` left join `osae_object_type` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) left join `osae_object_type` `object_types_2` on((`osae_object_type`.`base_type_id` = `object_types_2`.`object_type_id`))) left join `osae_object` `objects_2` on((`osae_object_type`.`plugin_object_id` = `objects_2`.`object_id`))) left join `osae_object_type_state` on(((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`) and (`osae_object_type_state`.`state_id` = `osae_object`.`state_id`)))) left join `osae_object` `objects_1` on((`objects_1`.`object_id` = `osae_object`.`container_id`)));
+
+--
+-- Alter view osae_v_object_event
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_event
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`container_id` AS `container_id`,`osae_object`.`enabled` AS `enabled`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object_type_event`.`event_id` AS `event_id`,`osae_object_type_event`.`event_name` AS `event_name`,`osae_object_type_event`.`event_label` AS `event_label` from ((`osae_object` join `osae_object_type` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) join `osae_object_type_event` on((`osae_object_type`.`object_type_id` = `osae_object_type_event`.`object_type_id`)));
+
+--
+-- Alter view osae_v_object_event_script
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_event_script
+AS
+	select `osae_object_event_script`.`event_script_id` AS `event_script_id`,`osae_object_event_script`.`script_id` AS `script_id`,`osae_script`.`script_name` AS `script_name`,`osae_object_event_script`.`script_sequence` AS `script_sequence`,`osae_script`.`script` AS `script`,`osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_type_id` AS `object_type_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`container_id` AS `container_id`,`osae_object`.`enabled` AS `enabled`,`osae_object_type_event`.`event_id` AS `event_id`,`osae_object_type_event`.`event_name` AS `event_name`,`osae_object_type_event`.`event_label` AS `event_label` from (((`osae_object` join `osae_object_event_script` on((`osae_object`.`object_id` = `osae_object_event_script`.`object_id`))) join `osae_object_type_event` on((`osae_object_event_script`.`event_id` = `osae_object_type_event`.`event_id`))) join `osae_script` on((`osae_script`.`script_id` = `osae_object_event_script`.`script_id`)));
+
+--
+-- Alter view osae_v_object_method
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_method
+AS
+	select `osae_object`.`object_name` AS `object_name`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object`.`object_id` AS `object_id`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_object_type_method`.`param_1_label` AS `param_1_label`,`osae_object_type_method`.`param_2_label` AS `param_2_label`,`osae_object_type_method`.`param_1_default` AS `param_1_default`,`osae_object_type_method`.`param_2_default` AS `param_2_default`,`osae_object_type_method`.`method_id` AS `method_id` from ((`osae_object` left join `osae_object_type` on((`osae_object_type`.`object_type_id` = `osae_object`.`object_type_id`))) join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`)));
+
+--
+-- Alter view osae_v_object_property
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_property
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`container_id` AS `container_id`,`osae_object`.`enabled` AS `enabled`,`osae_object`.`last_updated` AS `object_last_updated`,coalesce(`osae_object`.`last_state_change`,now()) AS `last_state_change`,`osae_object_property`.`last_updated` AS `last_updated`,`osae_object_property`.`object_property_id` AS `object_property_id`,`osae_object_property`.`object_type_property_id` AS `object_type_property_id`,`osae_object_property`.`property_value` AS `property_value`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_id` AS `property_id`,`osae_object_type_property`.`track_history` AS `track_history`,`ot1`.`object_type` AS `base_type`,`osae_object_type_state`.`state_name` AS `state_name` from (((((`osae_object` join `osae_object_property` on((`osae_object`.`object_id` = `osae_object_property`.`object_id`))) join `osae_object_type` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) join `osae_object_type_property` on(((`osae_object_type`.`object_type_id` = `osae_object_type_property`.`object_type_id`) and (`osae_object_property`.`object_type_property_id` = `osae_object_type_property`.`property_id`)))) left join `osae_object_type_state` on((`osae_object`.`state_id` = `osae_object_type_state`.`state_id`))) join `osae_object_type` `ot1` on((`osae_object_type`.`base_type_id` = `ot1`.`object_type_id`)));
+
+--
+-- Alter view osae_v_object_property_array
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_property_array
+AS
+	select `osae_object_property_array`.`property_array_id` AS `property_array_id`,`osae_object_property_array`.`item_name` AS `item_name`,`osae_object_property_array`.`item_label` AS `item_label`,`osae_object_property`.`object_property_id` AS `object_property_id`,`osae_object_property`.`property_value` AS `property_value`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object_type_property`.`property_id` AS `property_id`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_datatype` AS `property_datatype` from (((`osae_object_property_array` left join `osae_object_property` on((`osae_object_property_array`.`object_property_id` = `osae_object_property`.`object_property_id`))) join `osae_object` on((`osae_object_property`.`object_id` = `osae_object`.`object_id`))) join `osae_object_type_property` on((`osae_object_property`.`object_type_property_id` = `osae_object_type_property`.`property_id`)));
+
+--
+-- Alter view osae_v_object_property_history
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_property_history
+AS
+	select `osae_object_property_history`.`history_id` AS `history_id`,`osae_object_property_history`.`history_timestamp` AS `history_timestamp`,`osae_object_property_history`.`property_value` AS `property_value`,`osae_object`.`object_name` AS `object_name`,`osae_object_property_history`.`object_property_id` AS `object_property_id`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object`.`object_description` AS `object_description` from ((((`osae_object_property_history` join `osae_object_property` on((`osae_object_property_history`.`object_property_id` = `osae_object_property`.`object_property_id`))) join `osae_object` on((`osae_object_property`.`object_id` = `osae_object`.`object_id`))) join `osae_object_type_property` on((`osae_object_property`.`object_type_property_id` = `osae_object_type_property`.`property_id`))) join `osae_object_type` on(((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`) and (`osae_object_type_property`.`object_type_id` = `osae_object_type`.`object_type_id`))));
+
+--
+-- Alter view osae_v_object_state
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_state
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`object_type_id` AS `object_type_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type_state`.`state_id` AS `state_id`,`osae_object_type_state`.`state_name` AS `state_name`,`osae_object_type_state`.`state_label` AS `state_label` from ((`osae_object` left join `osae_object_type` on((`osae_object_type`.`object_type_id` = `osae_object`.`object_type_id`))) join `osae_object_type_state` on((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`)));
+
+--
+-- Alter view osae_v_object_state_history
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_state_history
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`address` AS `address`,`osae_object_type_state`.`state_name` AS `state_name`,`osae_object_type_state`.`state_label` AS `state_label`,`osae_object_type_state`.`state_id` AS `state_id`,`osae_object_state_history`.`times_this_hour` AS `times_this_hour`,`osae_object_state_history`.`times_this_day` AS `times_this_day`,`osae_object_state_history`.`times_this_month` AS `times_this_month`,`osae_object_state_history`.`times_ever` AS `times_ever`,`osae_object_state_history`.`times_this_year` AS `times_this_year` from ((`osae_object` join `osae_object_state_history` on((`osae_object`.`object_id` = `osae_object_state_history`.`object_id`))) join `osae_object_type_state` on(((`osae_object_state_history`.`state_id` = `osae_object_type_state`.`state_id`) and (`osae_object`.`object_type_id` = `osae_object_type_state`.`object_type_id`))));
+
+--
+-- Alter view osae_v_object_type
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type
+AS
+	select `osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object_type`.`hide_redundant_events` AS `hide_redundant_events`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`ot1`.`object_type` AS `base_type` from ((`osae_object_type` left join `osae_object` on((`osae_object`.`object_id` = `osae_object_type`.`plugin_object_id`))) left join `osae_object_type` `ot1` on((`osae_object_type`.`base_type_id` = `ot1`.`object_type_id`)));
+
+--
+-- Alter view osae_v_object_type_event
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type_event
+AS
+	select `osae_object_type_event`.`event_id` AS `event_id`,`osae_object_type_event`.`event_name` AS `event_name`,`osae_object_type_event`.`event_label` AS `event_label`,`osae_object_type_event`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`hide_redundant_events` AS `hide_redundant_events`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id` from (`osae_object_type` join `osae_object_type_event` on((`osae_object_type`.`object_type_id` = `osae_object_type_event`.`object_type_id`)));
+
+--
+-- Create view osae_v_object_type_event_script
+--
+CREATE VIEW osae_v_object_type_event_script
+AS
+SELECT `osae_object_type_event_script`.`object_type_event_script_id` AS `object_type_event_script_id`
+     , `osae_object_type_event_script`.`script_id` AS `script_id`
+     , `osae_script`.`script_name` AS `script_name`
+     , `osae_object_type_event_script`.`script_sequence` AS `script_sequence`
+     , `osae_script`.`script` AS `script`
+     , `osae_object_type`.`object_type_id` AS `object_type_id`
+     , `osae_object_type`.`object_type` AS `object_type`
+     , `osae_object_type`.`object_type_description` AS `object_type_description`
+     , `osae_object_type_event`.`event_id` AS `event_id`
+     , `osae_object_type_event`.`event_name` AS `event_name`
+     , `osae_object_type_event`.`event_label` AS `event_label`
+FROM
+  (((`osae_object_type`
+JOIN `osae_object_type_event_script`
+ON ((`osae_object_type`.`object_type_id` = `osae_object_type_event_script`.`object_type_id`)))
+JOIN `osae_object_type_event`
+ON ((`osae_object_type_event_script`.`event_id` = `osae_object_type_event`.`event_id`)))
+JOIN `osae_script`
+ON ((`osae_script`.`script_id` = `osae_object_type_event_script`.`script_id`)));
+
+--
+-- Alter view osae_v_object_type_method
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type_method
+AS
+	select `osae_object_type_method`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_object_type_method`.`object_type_id` AS `object_type_id`,coalesce(`osae_object_type_method`.`param_1_label`,'') AS `param_1_label`,coalesce(`osae_object_type_method`.`param_2_label`,'') AS `param_2_label`,coalesce(`osae_object_type_method`.`param_1_default`,'') AS `param_1_default`,coalesce(`osae_object_type_method`.`param_2_default`,'') AS `param_2_default`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden` from (`osae_object_type` join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`)));
+
+--
+-- Alter view osae_v_object_type_property
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type_property
+AS
+	select `osae_object_type_property`.`property_id` AS `property_id`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type_property`.`property_default` AS `property_default`,`osae_object_type_property`.`object_type_id` AS `object_type_id`,`osae_object_type_property`.`track_history` AS `track_history`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`system_hidden` AS `system_hidden` from (`osae_object_type` join `osae_object_type_property` on((`osae_object_type`.`object_type_id` = `osae_object_type_property`.`object_type_id`)));
+
+--
+-- Alter view osae_v_object_type_property_option
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type_property_option
+AS
+	select `osae_object_type_property_option`.`option_id` AS `option_id`,`osae_object_type_property_option`.`option_name` AS `option_name`,`osae_object_type_property`.`property_id` AS `property_id`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type_property`.`property_default` AS `property_default`,`osae_object_type_property`.`object_type_id` AS `object_type_id`,`osae_object_type_property`.`track_history` AS `track_history`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`system_hidden` AS `system_hidden` from ((`osae_object_type` join `osae_object_type_property` on((`osae_object_type`.`object_type_id` = `osae_object_type_property`.`object_type_id`))) join `osae_object_type_property_option` on((`osae_object_type_property`.`property_id` = `osae_object_type_property_option`.`property_id`)));
+
+--
+-- Alter view osae_v_object_type_state
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type_state
+AS
+	select `osae_object_type_state`.`state_id` AS `state_id`,`osae_object_type_state`.`state_name` AS `state_name`,`osae_object_type_state`.`state_label` AS `state_label`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description` from (`osae_object_type` join `osae_object_type_state` on((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`)));
+
+--
+-- Alter view osae_v_pattern
+--
+CREATE OR REPLACE 
+VIEW osae_v_pattern
+AS
+	select `osae_pattern`.`pattern_id` AS `pattern_id`,`osae_pattern`.`pattern` AS `pattern`,`osae_pattern`.`script_id` AS `script_id`,`osae_pattern_match`.`match_id` AS `match_id`,`osae_pattern_match`.`match` AS `match` from (`osae_pattern` left join `osae_pattern_match` on((`osae_pattern`.`pattern_id` = `osae_pattern_match`.`pattern_id`)));
+
+--
+-- Alter view osae_v_schedule_queue
+--
+CREATE OR REPLACE 
+VIEW osae_v_schedule_queue
+AS
+	select `osae_schedule_queue`.`schedule_id` AS `schedule_id`,`osae_schedule_queue`.`queue_datetime` AS `queue_datetime`,`osae_schedule_queue`.`parameter_1` AS `parameter_1`,`osae_schedule_queue`.`parameter_2` AS `parameter_2`,`osae_script`.`script_id` AS `script_id`,`osae_script`.`script_name` AS `script_name`,`osae_script`.`script` AS `script`,`osae_object_type_method`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_object_type_method`.`param_1_label` AS `param_1_label`,`osae_object_type_method`.`param_2_label` AS `param_2_label`,`osae_object_type_method`.`param_1_default` AS `param_1_default`,`osae_object_type_method`.`param_2_default` AS `param_2_default`,`osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_type_id` AS `object_type_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`container_id` AS `container_id`,`osae_object`.`enabled` AS `enabled`,`osae_object`.`last_updated` AS `last_updated`,`osae_schedule_recurring`.`recurring_id` AS `recurring_id`,coalesce(`osae_schedule_recurring`.`schedule_name`,'One Time Execution') AS `schedule_name` from ((((`osae_schedule_queue` left join `osae_object` on((`osae_object`.`object_id` = `osae_schedule_queue`.`object_id`))) left join `osae_object_type_method` on((`osae_schedule_queue`.`method_id` = `osae_object_type_method`.`method_id`))) left join `osae_script` on((`osae_schedule_queue`.`script_id` = `osae_script`.`script_id`))) left join `osae_schedule_recurring` on((`osae_schedule_queue`.`recurring_id` = `osae_schedule_recurring`.`recurring_id`)));
+
+--
+-- Alter view osae_v_schedule_recurring
+--
+CREATE OR REPLACE 
+VIEW osae_v_schedule_recurring
+AS
+	select `osae_schedule_recurring`.`recurring_id` AS `recurring_id`,`osae_schedule_recurring`.`schedule_name` AS `schedule_name`,`osae_schedule_recurring`.`parameter_1` AS `parameter_1`,`osae_schedule_recurring`.`parameter_2` AS `parameter_2`,`osae_schedule_recurring`.`recurring_time` AS `recurring_time`,`osae_schedule_recurring`.`monday` AS `monday`,`osae_schedule_recurring`.`tuesday` AS `tuesday`,`osae_schedule_recurring`.`wednesday` AS `wednesday`,`osae_schedule_recurring`.`thursday` AS `thursday`,`osae_schedule_recurring`.`friday` AS `friday`,`osae_schedule_recurring`.`saturday` AS `saturday`,`osae_schedule_recurring`.`sunday` AS `sunday`,`osae_schedule_recurring`.`interval_unit` AS `interval_unit`,`osae_schedule_recurring`.`recurring_minutes` AS `recurring_minutes`,`osae_schedule_recurring`.`recurring_day` AS `recurring_day`,`osae_schedule_recurring`.`recurring_date` AS `recurring_date`,`osae_script`.`script_id` AS `script_id`,`osae_script`.`script_name` AS `script_name`,`osae_script`.`script` AS `script`,`osae_object_type_method`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_object_type_method`.`object_type_id` AS `object_type_id`,`osae_object_type_method`.`param_1_label` AS `param_1_label`,`osae_object_type_method`.`param_2_label` AS `param_2_label`,`osae_object_type_method`.`param_1_default` AS `param_1_default`,`osae_object_type_method`.`param_2_default` AS `param_2_default`,`osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id` from (((`osae_schedule_recurring` left join `osae_object` on((`osae_schedule_recurring`.`object_id` = `osae_object`.`object_id`))) left join `osae_script` on((`osae_schedule_recurring`.`script_id` = `osae_script`.`script_id`))) left join `osae_object_type_method` on((`osae_schedule_recurring`.`method_id` = `osae_object_type_method`.`method_id`)));
+
+--
+-- Alter view osae_v_screen_object
+--
+CREATE OR REPLACE 
+VIEW osae_v_screen_object
+AS
+	select `so`.`screen_object_id` AS `screen_object_id`,`so`.`screen_id` AS `screen_id`,`so`.`object_id` AS `object_id`,`so`.`control_id` AS `control_id`,`screen`.`object_name` AS `screen_name`,`co`.`object_name` AS `control_name`,`oo`.`object_name` AS `object_name`,`ot`.`object_type` AS `control_type`,`oo`.`last_updated` AS `last_updated`,`oo`.`last_state_change` AS `last_state_change`,timestampdiff(MINUTE,`oo`.`last_state_change`,now()) AS `time_in_state`,`ots`.`state_name` AS `state_name` from (((((`osae_screen_object` `so` join `osae_object` `screen` on((`screen`.`object_id` = `so`.`screen_id`))) join `osae_object` `oo` on((`so`.`object_id` = `oo`.`object_id`))) join `osae_object` `co` on((`so`.`control_id` = `co`.`object_id`))) join `osae_object_type` `ot` on((`ot`.`object_type_id` = `co`.`object_type_id`))) left join `osae_object_type_state` `ots` on((`ots`.`state_id` = `oo`.`state_id`)));
+
+--
+-- Create view osae_v_screen_updates
+--
+CREATE VIEW osae_v_screen_updates
+AS
+SELECT `osae_v_screen_object`.`screen_object_id` AS `screen_object_id`
+     , `osae_v_screen_object`.`screen_id` AS `screen_id`
+     , `osae_v_screen_object`.`object_id` AS `object_id`
+     , `osae_v_screen_object`.`control_id` AS `control_id`
+     , `osae_v_screen_object`.`screen_name` AS `screen_name`
+     , `osae_v_screen_object`.`control_name` AS `control_name`
+     , `osae_v_screen_object`.`object_name` AS `object_name`
+     , `osae_v_screen_object`.`last_updated` AS `last_updated`
+     , `osae_v_screen_object`.`last_state_change` AS `last_state_change`
+     , `osae_object_type_state`.`state_name` AS `state_name`
+     , `osae_object_type_state`.`state_label` AS `state_label`
+     , `osae_object_type_property`.`property_name` AS `property_name`
+     , `osae_object_property`.`property_value` AS `property_value`
+     , `osae_v_screen_object`.`control_type` AS `control_type`
+FROM
+  ((((`osae_object`
+LEFT JOIN `osae_object_type_state`
+ON ((`osae_object`.`state_id` = `osae_object_type_state`.`state_id`)))
+JOIN `osae_v_screen_object`
+ON ((`osae_object`.`object_id` = `osae_v_screen_object`.`object_id`)))
+LEFT JOIN `osae_object_type_property`
+ON ((`osae_object_type_property`.`object_type_id` = `osae_object`.`object_type_id`)))
+LEFT JOIN `osae_object_property`
+ON ((`osae_object_type_property`.`property_id` = `osae_object_property`.`object_type_property_id`)))
+WHERE
+  (`osae_v_screen_object`.`last_updated` > subtime(now(), '00:00:30'));
+
+--
+-- Enable foreign keys
+--
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 
 
 delimiter ;
@@ -337,8 +919,9 @@ CALL osae_sp_object_type_state_update('CLOSED','OFF','Closed','X10 DS10A');
 CALL osae_sp_object_type_event_update('OPENED','ON','Opened','X10 DS10A');
 CALL osae_sp_object_type_event_update('CLOSED','OFF','Closed','X10 DS10A');
 
-CALL osae_sp_object_type_property_add ('Script Processor','String','','SYSTEM',0);
-CALL osae_sp_object_property_set('SYSTEM','Script Processor','Script Processor', '', '');
+CALL osae_sp_script_processor_add ('Script Processor', 'Script Processor');
+
+CALL osae_sp_object_type_method_add ('RUN SCRIPT','Run Script','Script Processor','','','','');
 
 CALL osae_sp_object_type_add ('CONTROL CAMERA VIEWER','Control - IP Camera Viewer','','CONTROL',0,1,0,1);
 CALL osae_sp_object_type_property_add ('X','Integer','','CONTROL CAMERA VIEWER',1);
@@ -351,7 +934,6 @@ CALL osae_sp_object_type_state_add ('OFF','Still','IP CAMERA');
 CALL osae_sp_object_type_event_add ('ON','Motion','IP CAMERA');
 CALL osae_sp_object_type_event_add ('OFF','Still','IP CAMERA');
 CALL osae_sp_object_type_property_add ('Stream Address','String','','IP CAMERA',0);
-
 
 -- Set DB version 
 CALL osae_sp_object_property_set('SYSTEM', 'DB Version', '0.4.0', '', '');
