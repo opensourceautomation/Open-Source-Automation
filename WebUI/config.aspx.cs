@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using OSAE;
+﻿using OSAE;
+using System;
 
 public partial class config : System.Web.UI.Page
 {

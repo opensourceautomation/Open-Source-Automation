@@ -29,7 +29,7 @@ public partial class _Default : System.Web.UI.Page
             {
                 // Success, create non-persistent authentication cookie.
                 FormsAuthentication.SetAuthCookie(
-                        this.txtUserName.Text.Trim(), false);
+                        this.txtUserName.Text.Trim(), false);                
 
                 FormsAuthenticationTicket ticket1 = new FormsAuthenticationTicket(this.txtUserName.Text.Trim(),true,10);
                 HttpCookie cookie1 = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket1));

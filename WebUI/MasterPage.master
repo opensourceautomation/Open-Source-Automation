@@ -10,6 +10,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <link rel="stylesheet" href="css/jquery-ui.css" />
+    
+
     <!-- Le styles -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="css/style.css" rel="stylesheet" type="text/css">
@@ -76,6 +79,9 @@
     <script type="text/javascript" src="bootstrap/js/bootstrap-transition.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap-dropdown.js"></script>
+
+    <script src="js/jquery-1.9.1.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.min.js"></script>
 </body>
 </html>
 
