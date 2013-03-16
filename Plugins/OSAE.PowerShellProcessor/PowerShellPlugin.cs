@@ -1,8 +1,11 @@
 ﻿namespace OSAE.PowerShellProcessor
 {
     using System;
+    using System.Collections.ObjectModel;
     using System.Data;
+    using System.Management.Automation;
     using System.Management.Automation.Runspaces;
+    using System.Text;
 
     class PowerShellPlugin : OSAEPluginBase
     {
@@ -22,18 +25,28 @@
             RunScript(script);            
         }
 
+        /// <summary>
+        /// Runs the content of the script parameter as a powershell script 
+        /// </summary>
+        /// <param name="script">The script to be run</param>
         private void RunScript(string script)
         {
             Runspace runspace = RunspaceFactory.CreateRunspace();
-
             runspace.Open();
 
             Pipeline pipeline = runspace.CreatePipeline();
             pipeline.Commands.AddScript(script);
-
             pipeline.Commands.Add("Out-String");
 
-            pipeline.Invoke();
+            Collection<PSObject> results = pipeline.Invoke();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (PSObject obj in results)
+            {
+                stringBuilder.AppendLine(obj.ToString());
+            }
+
+            logging.AddToLog("Script return: " + stringBuilder.ToString(), false);
 
             runspace.Close();   
         }
