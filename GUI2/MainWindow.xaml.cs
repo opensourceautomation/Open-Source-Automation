@@ -66,10 +66,16 @@
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Uri uri = new Uri("pack://siteoforigin:,,,/OSA.png");
+            var bitmapImage = new BitmapImage(uri);
 
-            //canGUI.Background = new ImageBrush(bitmapImage);
-            canGUI.Height = 200;// bitmapImage.Height;
-            canGUI.Width = 200;//bitmapImage.Width;
+            
+            canGUI.Background = new ImageBrush(bitmapImage);
+            canGUI.Height = bitmapImage.Height;
+            canGUI.Width = bitmapImage.Width;
+            canGUI.Background = new ImageBrush(bitmapImage);
+            canGUI.Height = bitmapImage.Height;
+            canGUI.Width = bitmapImage.Width;
 
             Load_App_Name();
             gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;

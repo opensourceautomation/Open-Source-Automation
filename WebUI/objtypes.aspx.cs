@@ -81,7 +81,10 @@ public partial class objtypes : System.Web.UI.Page
         {
             loadEvents();
         }
-        
+        if (!this.IsPostBack)
+        {
+            loadDDLs();
+        }
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
@@ -126,25 +129,25 @@ public partial class objtypes : System.Web.UI.Page
             txtEventLabel.Text = gvEvents.DataKeys[Int32.Parse(hdnSelectedEventRow.Text)]["event_label"].ToString();
         }
 
-        if (gvMethods.Rows.Count == 0)
-            divMethods.Visible = false;
-        else
-            divMethods.Visible = true;
+        //if (gvMethods.Rows.Count == 0)
+        //    divMethods.Visible = false;
+        //else
+        //    divMethods.Visible = true;
 
-        if (gvStates.Rows.Count == 0)
-            divStates.Visible = false;
-        else
-            divStates.Visible = true;
+        //if (gvStates.Rows.Count == 0)
+        //    divStates.Visible = false;
+        //else
+        //    divStates.Visible = true;
 
-        if (gvProperties.Rows.Count == 0)
-            divProps.Visible = false;
-        else
-            divProps.Visible = true;
+        //if (gvProperties.Rows.Count == 0)
+        //    divProps.Visible = false;
+        //else
+        //    divProps.Visible = true;
 
-        if (gvEvents.Rows.Count == 0)
-            divEvents.Visible = false;
-        else
-            divEvents.Visible = true;
+        //if (gvEvents.Rows.Count == 0)
+        //    divEvents.Visible = false;
+        //else
+        //    divEvents.Visible = true;
     }
 
     protected void gvObjectTypes_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)

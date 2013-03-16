@@ -65,7 +65,7 @@
     <div class="row-fluid">
         <div class="span3">
             <div ID="ScriptPanel">
-                <div class="row-fluid" ID="ScriptGrid" style="overflow: auto; max-height:350px; border:solid;" onscroll="SetDivPosition()">
+                <div class="row-fluid" ID="ScriptGrid" style="overflow: auto; max-height:350px;" onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvScripts"
                         AutoGenerateColumns="False"  
                         GridLines="None"  
@@ -146,7 +146,7 @@
                 </div>
                 <div class="span6">
                     <asp:Panel runat="server" ID="pnlEventScripts" Visible="false">
-                        <div class="row-fluid" ID="eventScriptGrid" style="overflow: auto; max-height:350px; border:solid;" onscroll="SetEventScriptDivPosition()">
+                        <div class="row-fluid" ID="eventScriptGrid" style="overflow: auto; max-height:350px; " onscroll="SetEventScriptDivPosition()">
                             <asp:GridView runat="server" ID="gvEventScripts"
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
@@ -204,7 +204,7 @@
                 </div>
                 <div class="span6">
                     <asp:Panel runat="server" ID="pnlObjTypeEventScripts" Visible="false">
-                        <div class="row-fluid" ID="objTypeScriptGrid" style="overflow: auto; max-height:350px; border:solid;" onscroll="SetObjtypeEventScriptDivPosition()">
+                        <div class="row-fluid" ID="objTypeScriptGrid" style="overflow: auto; max-height:350px;" onscroll="SetObjtypeEventScriptDivPosition()">
                             <asp:GridView runat="server" ID="gvObjTypeScripts"
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  

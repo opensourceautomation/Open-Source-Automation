@@ -20,7 +20,7 @@ public partial class eventlogs : System.Web.UI.Page
 
     private void BindData()
     {
-        eventLogGridView.DataSource = OSAESql.RunSQL("SELECT log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY log_time DESC, object_name LIMIT 1000");
+        eventLogGridView.DataSource = OSAESql.RunSQL("SELECT log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY log_time DESC, object_name LIMIT 100");
         eventLogGridView.DataBind();
     }
    

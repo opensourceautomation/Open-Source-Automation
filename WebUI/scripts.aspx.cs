@@ -9,7 +9,7 @@ using OSAE;
 
 public partial class scripts : System.Web.UI.Page
 {
-    Logging logging = Logging.GetLogger("WebUI");
+    Logging logging = Logging.GetLogger("Web UI");
 
     public void RaisePostBackEvent(string eventArgument)
     {
