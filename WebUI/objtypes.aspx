@@ -16,19 +16,28 @@
                 var intS = strCook.indexOf("$~");
                 var intE = strCook.indexOf("~$");
                 var strPos = strCook.substring(intS + 2, intE);
-                document.getElementById("propGrid").scrollTop = strPos;
+                var grid = document.getElementById("propGrid");
+                if (grid != null) {
+                    grid.scrollTop = strPos;
+                }
             }
             if (strCook.indexOf("#~") != 0) {
                 var intS = strCook.indexOf("#~");
                 var intE = strCook.indexOf("~#");
                 var strPos = strCook.substring(intS + 2, intE);
-                document.getElementById("stateGrid").scrollTop = strPos;
+                var grid = document.getElementById("stateGrid");
+                if (grid != null) {
+                    grid.scrollTop = strPos;
+                }
             }
             if (strCook.indexOf("@~") != 0) {
                 var intS = strCook.indexOf("@~");
                 var intE = strCook.indexOf("~@");
                 var strPos = strCook.substring(intS + 2, intE);
-                document.getElementById("methodGrid").scrollTop = strPos;
+                var grid = document.getElementById("methodGrid");
+                if (grid != null) {
+                    grid.scrollTop = strPos;
+                }
             }
         }
         function SetDivPosition() {
@@ -109,7 +118,9 @@
                         <asp:CheckBox runat="server" ID="chkHideEvents" /> Hide Redundant Events &nbsp;
                     </div>
                     <div class="span4" style="text-align:right;" >
-                        <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp<asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp<asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click"/>
+                        <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
+                        <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp
+                        <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object type?');"/>
                     </div>
                 </div>
             </div>
