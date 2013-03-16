@@ -2,7 +2,7 @@
 <%@ Implements Interface="System.Web.UI.IPostBackEventHandler" %>
 
 
-<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server">
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server"> 
     <script>
         window.onload = function () {
             var strCook = document.cookie;
@@ -16,13 +16,19 @@
                 var intS = strCook.indexOf("$~");
                 var intE = strCook.indexOf("~$");
                 var strPos = strCook.substring(intS + 2, intE);
-                document.getElementById("eventScriptGrid").scrollTop = strPos;
+                var grid = document.getElementById("eventScriptGrid");
+                if (grid != null) {
+                    grid.scrollTop = strPos;
+                }                
             }
             if (strCook.indexOf("#~") != 0) {
                 var intS = strCook.indexOf("#~");
                 var intE = strCook.indexOf("~#");
                 var strPos = strCook.substring(intS + 2, intE);
-                document.getElementById("objTypeScriptGrid").scrollTop = strPos;
+                var grid = document.getElementById("objTypeScriptGrid");
+                if (grid != null) {
+                    grid.scrollTop = strPos;
+                }               
             }
         }
 
@@ -46,7 +52,7 @@
         function SetObjTypeEventScriptDivPosition() {
             var intY = document.getElementById("objTypeScriptGrid").scrollTop;
             document.cookie = "yPos=#~" + intY + "~#";
-        }
+        }      
     </script>
     <style type="text/css" media="screen">
     #editor { 
@@ -77,8 +83,9 @@
         <div class="span9">
             <div class="row-fluid">
                 <div class="span12">
-                    Name: <asp:TextBox runat="server" ID="txtName" class="input-xlarge"></asp:TextBox>
-                    <div style="float:right;">Script Processor: <asp:DropDownList runat="server" ID="ddlScriptProcessor" datatextfield="Text" datavaluefield="Value" style="width:300px"></asp:DropDownList></div>
+                    Name: <asp:TextBox runat="server" ID="txtName" class="input-xlarge" />
+                    <div style="float:right;">
+                        Script Processor: <asp:DropDownList runat="server" ID="ddlScriptProcessor" datatextfield="Text" datavaluefield="Value" style="width:300px"></asp:DropDownList></div>
                 </div>
             </div>
             <div class="row-fluid">
@@ -94,7 +101,7 @@
                     <div class="alert alert-warning" runat="server" id="deleteAlert" visible="false" >Deleted!</div> &nbsp;
                     <asp:Button runat="server" ID="btnAdd" class="btn" OnClientClick="saveScriptAdd();" Text="Add" /> &nbsp;
                     <asp:Button runat="server" ID="btnUpdate" class="btn" OnClientClick="saveScriptUpdate();" Text="Update" /> &nbsp;
-                    <asp:Button runat="server" ID="btnDelete" class="btn" OnClick="btnDelete_Click" Text="Delete"/>
+                    <asp:Button runat="server" ID="btnDelete" class="btn" OnClick="btnDelete_Click" Text="Delete" OnClientClick="return confirm('Are you sure you want to delete the script?');"/>
                     <asp:Button runat="server" ID="btnAdd2" OnClick="btnAdd_Click" style="display:none;" /> &nbsp;
                     <asp:Button runat="server" ID="btnUpdate2" OnClick="btnUpdate_Click" style="display:none;" /> &nbsp;
                     
