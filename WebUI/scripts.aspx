@@ -70,7 +70,7 @@
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid" ShowHeader="true" 
-                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvScripts_RowDataBound" DataKeyNames="script_name,script_id, script_processor_id">  
+                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvScripts_RowDataBound" DataKeyNames="script_name,script_id, script_processor_id" ShowHeaderWhenEmpty="true">  
                         <Columns>  
                             <asp:BoundField DataField="script_name" HeaderText="Script" /> 
                             <asp:BoundField DataField="script_id" Visible="false" /> 
@@ -151,7 +151,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid" ShowHeader="true" 
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvEventScripts_RowDataBound" DataKeyNames="script_name,script_sequence, event_script_id">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvEventScripts_RowDataBound" DataKeyNames="script_name,script_sequence, event_script_id" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="script_name" HeaderText="Script" /> 
                                     <asp:BoundField DataField="script_sequence" HeaderText="Sequence" /> 
@@ -209,7 +209,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid" ShowHeader="true" 
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjTypeScripts_RowDataBound" DataKeyNames="script_name,script_sequence, object_type_event_script_id">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjTypeScripts_RowDataBound" DataKeyNames="script_name,script_sequence, object_type_event_script_id" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="script_name" HeaderText="Script" /> 
                                     <asp:BoundField DataField="script_sequence" HeaderText="Sequence" /> 

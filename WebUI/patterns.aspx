@@ -55,7 +55,7 @@
                             AutoGenerateColumns="False"  
                             GridLines="None"  
                             CssClass="mGrid" ShowHeader="true" 
-                            AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvPatterns_RowDataBound" DataKeyNames="pattern,pattern_id">  
+                            AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvPatterns_RowDataBound" DataKeyNames="pattern,pattern_id" ShowHeaderWhenEmpty="true">  
                             <Columns>  
                                 <asp:BoundField DataField="pattern" HeaderText="Pattern" /> 
                                 <asp:BoundField DataField="pattern_id" Visible="false" /> 
@@ -81,7 +81,7 @@
                             AutoGenerateColumns="False"  
                             GridLines="None"  
                             CssClass="mGrid" ShowHeader="true" 
-                            AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvMatches_RowDataBound" DataKeyNames="match,match_id">  
+                            AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvMatches_RowDataBound" DataKeyNames="match,match_id" ShowHeaderWhenEmpty="true">  
                             <Columns>  
                                 <asp:BoundField DataField="match" HeaderText="Match" /> 
                                 <asp:BoundField DataField="match_id" Visible="false" /> 
@@ -109,7 +109,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid" ShowHeader="true" 
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvScripts_RowDataBound" DataKeyNames="script_name,script_sequence, pattern_script_id">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvScripts_RowDataBound" DataKeyNames="script_name,script_sequence, pattern_script_id" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="script_name" HeaderText="Script" /> 
                                     <asp:BoundField DataField="script_sequence" HeaderText="Sequence" /> 

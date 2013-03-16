@@ -44,7 +44,7 @@
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid"  
-                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name">  
+                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="true">  
                         <Columns>  
                             <asp:BoundField DataField="container_name" HeaderText="Container" />  
                             <asp:BoundField DataField="object_name" HeaderText="Object" />  
@@ -147,7 +147,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value, property_datatype">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value, property_datatype" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="property_name" HeaderText="Property" /> 
                                     <asp:BoundField DataField="property_value" HeaderText="Value" /> 

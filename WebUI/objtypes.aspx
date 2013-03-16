@@ -136,7 +136,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvStates_RowDataBound" DataKeyNames="state_name, state_label">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvStates_RowDataBound" DataKeyNames="state_name, state_label" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="state_name" HeaderText="Name" /> 
                                     <asp:BoundField DataField="state_label" HeaderText="Label" /> 
@@ -168,7 +168,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvMethods_RowDataBound" DataKeyNames="method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvMethods_RowDataBound" DataKeyNames="method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="method_name" HeaderText="Name" /> 
                                     <asp:BoundField DataField="method_label" HeaderText="Label" />  
@@ -211,7 +211,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvEvents_RowDataBound" DataKeyNames="event_name, event_label">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvEvents_RowDataBound" DataKeyNames="event_name, event_label" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="event_name" HeaderText="Name" /> 
                                     <asp:BoundField DataField="event_label" HeaderText="Label" /> 
@@ -244,7 +244,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_default, track_history">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_default, track_history" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="property_name" HeaderText="Property" /> 
                                     <asp:BoundField DataField="property_datatype" HeaderText="Type" /> 
