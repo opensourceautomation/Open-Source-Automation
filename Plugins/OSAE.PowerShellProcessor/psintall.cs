@@ -2,11 +2,11 @@
 /// Create the Windows PowerShell snap-in for this sample.
 /// </summary>
 /// 
-using System.Management.Automation;
-using System.ComponentModel;  // Windows PowerShell assembly
 
 namespace OSAPS
 {
+    using System.Management.Automation;
+    using System.ComponentModel;  // Windows PowerShell assembly
 
     [RunInstaller(true)]
     public class GetProcPSSnapIn01 : PSSnapIn
@@ -38,7 +38,7 @@ namespace OSAPS
         {
             get
             {
-                return "IandL";
+                return "Open Source Automation";
             }
         }
 
@@ -50,7 +50,7 @@ namespace OSAPS
         {
             get
             {
-                return "OSAPS,IandL";
+                return "OSAPS,Open Source Automation";
             }
         }
 

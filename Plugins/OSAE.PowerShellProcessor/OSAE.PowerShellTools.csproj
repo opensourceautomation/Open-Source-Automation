@@ -47,11 +47,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OSAPS.cs" />
+    <Compile Include="PowerShellPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="psintall.cs" />
+    <Compile Include="psintall.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OSAE.API\OSAE.API.csproj">
+    <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
       <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
       <Name>OSAE.API</Name>
       <Private>False</Private>
