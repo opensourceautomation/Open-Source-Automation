@@ -54,7 +54,7 @@
     <div class="row-fluid">
         <div class="span6">
             <div ID="ObjPanel">
-                <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px; border:solid;" onscroll="SetDivPosition()">
+                <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px; " onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvObjectTypes"
                         AutoGenerateColumns="False"  
                         GridLines="None"  
@@ -116,11 +116,11 @@
         </div>
         <div class="span6">
             <asp:Panel ID="panelEditForm" runat="server" Visible="false">
-                <div runat="server" ID="divStates" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;" Visible="false">
+                <div runat="server" ID="divStates" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;">
                      <div class="row-fluid">   
                         <h3 style="float:right; margin-right:10px;">States</h3>
                         <br />
-                        <div class="span5"  id="stateGrid" style="overflow: auto; border:solid; max-height:300px;"  onscroll="SetStateDivPosition()">
+                        <div class="span5"  id="stateGrid" style="overflow: auto; max-height:300px;"  onscroll="SetStateDivPosition()">
                            <asp:GridView runat="server" ID="gvStates"
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
@@ -148,11 +148,11 @@
                         </div>
                     </div>
                 </div>
-                <div  runat="server" ID="divMethods" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;" Visible="false">
+                <div  runat="server" ID="divMethods" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;">
                     <div class="row-fluid">
                         <h3 style="float:right; margin-right:10px;">Methods</h3>
                         <br />
-                        <div class="span5" id="methodGrid" style="overflow: auto; border:solid; max-height:300px;"  onscroll="SetMethodDivPosition()">
+                        <div class="span5" id="methodGrid" style="overflow: auto;max-height:300px;"  onscroll="SetMethodDivPosition()">
                             <asp:GridView runat="server" ID="gvMethods"
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
@@ -191,11 +191,11 @@
 
                     </div>
                 </div>
-                <div  runat="server" ID="divEvents" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;" Visible="false">
+                <div  runat="server" ID="divEvents" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;">
                     <div class="row-fluid">
                         <h3 style="float:right; margin-right:10px;">Events</h3>
                         <br />
-                        <div class="span5" style="overflow: auto; border:solid; max-height:300px;"  onscroll="SetEventDivPosition()">
+                        <div class="span5" ID="eventGrid" style="overflow: auto; max-height:300px;"  onscroll="SetEventDivPosition()">
                             <asp:GridView runat="server" ID="gvEvents"
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
@@ -224,11 +224,11 @@
 
                     </div>
                 </div>
-                <div  runat="server" ID="divProps" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;" Visible="false">
+                <div  runat="server" ID="divProps" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;">
                     <div class="row-fluid">
                         <h3 style="float:right; margin-right:10px;">Properties</h3>
                         <br />
-                        <div class="span5" id="propGrid" style="overflow: auto; border:solid; max-height:300px;"  onscroll="SetPropDivPosition()">
+                        <div class="span5" id="propGrid" style="overflow: auto; max-height:300px;"  onscroll="SetPropDivPosition()">
                             <asp:GridView runat="server" ID="gvProperties"
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
@@ -255,6 +255,7 @@
                                          <asp:ListItem Text = "List" Value = "List"></asp:ListItem>
                                          <asp:ListItem Text = "Password" Value = "Password"></asp:ListItem>
                                          <asp:ListItem Text = "File" Value = "File"></asp:ListItem>
+                                         <asp:ListItem Text = "DateTime" Value = "DateTime"></asp:ListItem>
                                     </asp:DropDownList>
                                     <br />
                                     Default: <asp:TextBox  runat="server" ID="txtPropDefault" style="width:215px;"></asp:TextBox>

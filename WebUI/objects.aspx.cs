@@ -39,6 +39,10 @@ public partial class home : System.Web.UI.Page
     {
         gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
+        if (!this.IsPostBack)
+        {
+            loadDDLs();
+        }
 
         if (hdnSelectedPropRow.Text != "")
         {
@@ -109,15 +113,13 @@ public partial class home : System.Web.UI.Page
 
     private void loadDDLs()
     {
-        OSAEObject obj = OSAEObjectManager.GetObjectByName(hdnSelectedObjectName.Text);
-
         ddlState.DataSource = OSAESql.RunSQL("SELECT state_label as Text, state_name as Value FROM osae_object_type_state ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + hdnSelectedObjectName.Text + "'"); ;
         ddlState.DataBind();
         if (ddlState.Items.Count == 0)
             divState.Visible = false;
         else
             divState.Visible = true;
-        ddlState.SelectedValue = obj.State.Value;
+        
 
         ddlMethod.DataSource = OSAESql.RunSQL("SELECT method_label as Text, method_name as Value FROM osae_object_type_method ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + hdnSelectedObjectName.Text + "'"); ;
         ddlMethod.DataBind();
@@ -154,7 +156,7 @@ public partial class home : System.Web.UI.Page
 
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
         gvProperties.DataBind();
     }
 
@@ -165,6 +167,7 @@ public partial class home : System.Web.UI.Page
         txtDescr.Text = obj.Description;
         txtAddress.Text = obj.Address;
         ddlContainer.SelectedValue = obj.Container;
+        ddlState.SelectedValue = obj.State.Value;
         ddlType.SelectedValue = obj.Type;
         if (obj.Enabled == 1)
             chkEnabled.Checked = true;
@@ -179,7 +182,16 @@ public partial class home : System.Web.UI.Page
     }
     protected void btnAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectManager.ObjectAdd(txtName.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, chkEnabled.Checked);
+        OSAEObjectManager.ObjectAdd(txtName.Text, txtDescr.Text, ddlType.SelectedItem.Value, txtAddress.Text, ddlContainer.SelectedValue, chkEnabled.Checked);
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataBind();
+        txtName.Text = "";
+        txtDescr.Text = "";
+        txtAddress.Text = "";
+        ddlContainer.SelectedValue = "";
+        ddlType.SelectedValue = "";
+        chkEnabled.Checked = false;
+        panelEditForm.Visible = false;
     }
     protected void btnDelete_Click(object sender, EventArgs e)
     {
@@ -192,6 +204,7 @@ public partial class home : System.Web.UI.Page
         ddlContainer.SelectedValue = "";
         ddlType.SelectedValue = "";
         chkEnabled.Checked = false;
+        panelEditForm.Visible = false;
     }
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
@@ -200,4 +213,8 @@ public partial class home : System.Web.UI.Page
             enabled = 1;
         OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString(), txtName.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, enabled);
     }
+    //protected void btnEditList_Click(object sender, EventArgs e)
+    //{
+
+    //}
 }

@@ -7,6 +7,15 @@
 SET NAMES 'utf8';
 USE osae;
 
+
+--
+-- Disable foreign keys
+--
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+
+SET NAMES 'utf8';
+USE osae_039;
+
 --
 -- Drop view osae_v_event_script_logjunk
 --
@@ -130,7 +139,7 @@ ALTER TABLE osae_object_event_script
 
 ALTER TABLE osae_object_event_script
   ADD CONSTRAINT FK_osae_object_event_script_osae_object_object_id FOREIGN KEY (object_id)
-    REFERENCES osae_object(object_id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+    REFERENCES osae_object(object_id) ON DELETE CASCADE ON UPDATE RESTRICT;
 
 ALTER TABLE osae_object_event_script
   ADD CONSTRAINT FK_osae_object_event_script_osae_object_type_event_event_id FOREIGN KEY (event_id)
@@ -277,6 +286,18 @@ END
 $$
 
 --
+-- Create procedure osae_sp_pattern_scripts_get
+--
+CREATE PROCEDURE osae_sp_pattern_scripts_get(IN ppattern VARCHAR(255))
+BEGIN
+  SELECT script_id
+    FROM osae_pattern_script s
+    INNER JOIN osae_pattern p ON p.pattern_id = s.pattern_id
+    WHERE p.pattern = ppattern;
+END
+$$
+
+--
 -- Create procedure osae_sp_pattern_script_add
 --
 CREATE PROCEDURE osae_sp_pattern_script_add(IN ppattern VARCHAR(255), IN pscriptid INT)
@@ -288,7 +309,7 @@ SET vScriptSeq = 0;
     SELECT COUNT(pattern_id) INTO vPatternCount FROM osae_pattern WHERE pattern=ppattern;
     IF vPatternCount > 0 THEN
         SELECT pattern_id INTO vPatternID FROM osae_pattern WHERE pattern=ppattern;
-        SELECT COALESCE(script_sequence, 0) INTO vScriptSeq FROM osae_object_event_script where object_id = vObjectID AND event_id = vEventID ORDER BY script_sequence DESC LIMIT 1;
+        SELECT COALESCE(script_sequence, 0) INTO vScriptSeq FROM osae_pattern_script where pattern_id = vPatternID ORDER BY script_sequence DESC LIMIT 1;
         INSERT INTO osae_pattern_script (pattern_id,script_id, script_sequence) VALUES(vPatternID,pscriptid,vScriptSeq+1);
         
     END IF; 
@@ -907,6 +928,21 @@ WHERE
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 
 
+DELIMITER $$
+
+CREATE DEFINER = 'osae'@'%'
+PROCEDURE osae_sp_pattern_scripts_get(IN ppattern VARCHAR(255))
+BEGIN
+  SELECT script_id
+  FROM
+    osae_pattern_script s
+  INNER JOIN osae_pattern p
+  ON p.pattern_id = s.pattern_id
+  WHERE
+    p.pattern = ppattern;
+END
+$$
+
 delimiter ;
 
 alter table osae_object_property modify property_value VARCHAR(4000) DEFAULT NULL ; 
@@ -934,6 +970,8 @@ CALL osae_sp_object_type_state_add ('OFF','Still','IP CAMERA');
 CALL osae_sp_object_type_event_add ('ON','Motion','IP CAMERA');
 CALL osae_sp_object_type_event_add ('OFF','Still','IP CAMERA');
 CALL osae_sp_object_type_property_add ('Stream Address','String','','IP CAMERA',0);
+
+CALL osae_sp_object_type_property_update ('PAssword', 'Password', 'Password', '', 'PERSON', 0);
 
 -- Set DB version 
 CALL osae_sp_object_property_set('SYSTEM', 'DB Version', '0.4.0', '', '');

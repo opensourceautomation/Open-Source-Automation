@@ -173,7 +173,80 @@
             }
         }
 
-        public static void PatternScriptAdd(string name, string eventName, int scriptID)
+        public static void PatternAdd(string name)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_add (@Name)";
+                command.Parameters.AddWithValue("@Name", name);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - PatterAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static void PatternDelete(string name)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_delete (@Name)";
+                command.Parameters.AddWithValue("@Name", name);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - PatternDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static void PatternMatchDelete(string name)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_match_delete (@Name)";
+                command.Parameters.AddWithValue("@Name", name);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - PatternMatchDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static void PatternMatchAdd(string pattern, string match)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_match_add (@Pattern, @Match)";
+                command.Parameters.AddWithValue("@Match", match);
+                command.Parameters.AddWithValue("@Pattern", pattern);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - PatternMatchAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static void PatternScriptAdd(string name, int scriptID)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -292,37 +365,40 @@
 
         public static void RunPatternScript(string pattern, string parameter, string from)
         {
-            int scriptID = GetScriptIDForPattern(pattern);
+            List<int> scriptIDs = GetScriptsForPattern(pattern);
 
-            OSAEMethodManager.MethodQueueAdd(GetDestinationScriptProcessor(scriptID), "RUN SCRIPT", scriptID.ToString(), parameter, from);
+            foreach (int scriptID in scriptIDs)
+            {
+                OSAEMethodManager.MethodQueueAdd(GetDestinationScriptProcessor(scriptID), "RUN SCRIPT", scriptID.ToString(), parameter, from);
+            }
         }
 
-        public static int GetScriptIDForPattern(string pattern)
+        public static List<int> GetScriptsForPattern(string pattern)
         {
-            int scriptID = 0;
+            List<int> scriptIDs = new List<int>();
 
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
-                    MySqlCommand command = new MySqlCommand("CALL osae_sp_pattern_script_id_get (@Pattern)", connection);
+                    MySqlCommand command = new MySqlCommand("CALL osae_sp_pattern_scripts_get (@Pattern)", connection);
                     command.Parameters.AddWithValue("@Pattern", pattern);
                     connection.Open();
 
                     MySqlDataReader reader = command.ExecuteReader();
 
-                    if (reader.Read())
+                    while (reader.Read())
                     {
-                        scriptID = Int32.Parse(reader.GetString("script_id"));
+                        scriptIDs.Add(Int32.Parse(reader.GetString("script_id")));
                     }
                 }
             }
             catch (Exception exc)
             {
-                Logging.GetLogger().AddToLog("Failed to get pattern script id, error detals: \r\n" + exc.Message, true);
+                Logging.GetLogger().AddToLog("Failed to get pattern scripts, error detals: \r\n" + exc.Message, true);
             }
 
-            return scriptID;        
+            return scriptIDs;        
         }
     }
 }

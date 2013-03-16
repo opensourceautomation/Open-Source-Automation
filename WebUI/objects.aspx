@@ -36,7 +36,7 @@
     <div class="row-fluid">
         <div class="span8">
             <div ID="ObjPanel">
-                <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px; border:solid;" onscroll="SetDivPosition()">
+                <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px;" onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvObjects"
                         AutoGenerateColumns="False"  
                         GridLines="None"  
@@ -137,15 +137,16 @@
                     <br />
                     <div class="row-fluid">
                         <div class="span1"></div>
-                        <div class="span10" ID="propGrid" style="overflow: auto; border:solid; max-height:500px;"  onscroll="SetPropDivPosition()">
+                        <div class="span10" ID="propGrid" style="overflow: auto; max-height:500px;"  onscroll="SetPropDivPosition()">
                             <asp:GridView runat="server" ID="gvProperties"
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value, property_datatype">  
                                 <Columns>  
                                     <asp:BoundField DataField="property_name" HeaderText="Property" /> 
                                     <asp:BoundField DataField="property_value" HeaderText="Value" /> 
+                                    <asp:BoundField DataField="property_datatype" Visible="false" /> 
                                 </Columns>  
 
                             </asp:GridView>
@@ -163,6 +164,9 @@
                                 <asp:Button class="btn btn-primary" runat="server" ID="btnPropSave" Text="Save" OnClick="btnPropSave_Click"/>
                             </form>
                         </asp:Panel>
+                        <%--<asp:Panel runat="server" ID="pnlList" Visible ="false">
+                            <asp:Button runat="server" ID="btnEditList" Text="Edit List" OnClick="btnEditList_Click" />
+                        </asp:Panel>--%>
                         </div>
                         <div class="span1"></div>
                     </div>
