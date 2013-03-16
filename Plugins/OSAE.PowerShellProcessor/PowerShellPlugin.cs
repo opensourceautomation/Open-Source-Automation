@@ -31,24 +31,31 @@
         /// <param name="script">The script to be run</param>
         private void RunScript(string script)
         {
-            Runspace runspace = RunspaceFactory.CreateRunspace();
-            runspace.Open();
-
-            Pipeline pipeline = runspace.CreatePipeline();
-            pipeline.Commands.AddScript(script);
-            pipeline.Commands.Add("Out-String");
-
-            Collection<PSObject> results = pipeline.Invoke();
-
-            StringBuilder stringBuilder = new StringBuilder();
-            foreach (PSObject obj in results)
+            try
             {
-                stringBuilder.AppendLine(obj.ToString());
+                Runspace runspace = RunspaceFactory.CreateRunspace();
+                runspace.Open();
+
+                Pipeline pipeline = runspace.CreatePipeline();
+                pipeline.Commands.AddScript(script);
+                pipeline.Commands.Add("Out-String");
+
+                Collection<PSObject> results = pipeline.Invoke();
+
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (PSObject obj in results)
+                {
+                    stringBuilder.AppendLine(obj.ToString());
+                }
+
+                logging.AddToLog("Script return: " + stringBuilder.ToString(), false);
+
+                runspace.Close();
             }
-
-            logging.AddToLog("Script return: " + stringBuilder.ToString(), false);
-
-            runspace.Close();   
+            catch (Exception ex)
+            {
+                logging.AddToLog("An error occured while trying to run the script, details: \r\n" + ex.Message, true);
+            }
         }
 
         /// <summary>

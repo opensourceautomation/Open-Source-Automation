@@ -5,7 +5,6 @@ Imports System.IO.Ports
 Imports System.Threading.Thread
 'Imports System.Text.RegularExpressions
 
-<AddIn("DSC Alarm", Version:="0.1.4")>
 Public Class DSCAlarm
     Inherits OSAEPluginBase
     Private Shared logging As Logging = logging.GetLogger("DSC Alarm")
