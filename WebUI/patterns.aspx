@@ -9,19 +9,28 @@
                 var intS = strCook.indexOf("!~");
                 var intE = strCook.indexOf("~!");
                 var strPos = strCook.substring(intS + 2, intE);
-                document.getElementById("PatternsGrid").scrollTop = strPos;
+                var grid = document.getElementById("PatternsGrid");
+                if (grid != null) {
+                    grid.scrollTop = strPos;
+                }               
             }
             if (strCook.indexOf("$~") != 0) {
                 var intS = strCook.indexOf("$~");
                 var intE = strCook.indexOf("~$");
                 var strPos = strCook.substring(intS + 2, intE);
-                document.getElementById("MatchesGrid").scrollTop = strPos;
+                var grid = document.getElementById("MatchesGrid");
+                if (grid != null) {
+                    grid.scrollTop = strPos;
+                }
             }
             if (strCook.indexOf("#~") != 0) {
                 var intS = strCook.indexOf("#~");
                 var intE = strCook.indexOf("~#");
                 var strPos = strCook.substring(intS + 2, intE);
-                document.getElementById("ScriptGrid").scrollTop = strPos;
+                var grid = document.getElementById("ScriptGrid");
+                if (grid != null) {
+                    grid.scrollTop = strPos;
+                }               
             }
         }
 

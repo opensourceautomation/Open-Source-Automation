@@ -52,8 +52,11 @@
         function SetObjTypeEventScriptDivPosition() {
             var intY = document.getElementById("objTypeScriptGrid").scrollTop;
             document.cookie = "yPos=#~" + intY + "~#";
-        }      
+        }       
     </script>
+    
+
+
     <style type="text/css" media="screen">
     #editor { 
         position:relative;
@@ -83,9 +86,9 @@
         <div class="span9">
             <div class="row-fluid">
                 <div class="span12">
-                    Name: <asp:TextBox runat="server" ID="txtName" class="input-xlarge" />
+                    Name: <asp:TextBox runat="server" ID="txtName" class="input-xlarge" title="The name to be given to the script (used to link events and patterns to scripts)" />
                     <div style="float:right;">
-                        Script Processor: <asp:DropDownList runat="server" ID="ddlScriptProcessor" datatextfield="Text" datavaluefield="Value" style="width:300px"></asp:DropDownList></div>
+                        Script Processor: <asp:DropDownList runat="server" ID="ddlScriptProcessor" datatextfield="Text" datavaluefield="Value" title="The script processor that will execute the content of the script" style="width:300px"></asp:DropDownList></div>
                 </div>
             </div>
             <div class="row-fluid">
@@ -121,7 +124,7 @@
                             <label>Object:</label>
                         </div>
                         <div class="span10" style="text-align:left;">
-                            <asp:DropDownList runat="server" ID="ddlObject" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlObject_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
+                            <asp:DropDownList runat="server" ID="ddlObject" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlObject_SelectedIndexChanged" AutoPostBack="true" title="The object you want to associate the script to" />
                         </div>
                     </div>
                     <div class="row-fluid">
@@ -129,7 +132,7 @@
                             <label>Event:</label>
                         </div>
                         <div class="span10" style="text-align:left;">
-                            <asp:DropDownList runat="server" ID="ddlEvent" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlEvent_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
+                            <asp:DropDownList runat="server" ID="ddlEvent" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlEvent_SelectedIndexChanged" title="the event of the object that you want the script to be associated to" AutoPostBack="true"></asp:DropDownList>
                         </div>
                     </div>
                     <div class="row-fluid">       
@@ -137,7 +140,7 @@
                             <label>Script:</label>
                         </div>
                         <div class="span10" style="text-align:left;">
-                            <asp:DropDownList runat="server" ID="ddlScript" datatextfield="Text" datavaluefield="Value" style="width:100%"></asp:DropDownList>
+                            <asp:DropDownList runat="server" ID="ddlScript" datatextfield="Text" datavaluefield="Value" title="The script you want to run when the event occurs" style="width:100%"></asp:DropDownList>
                         </div>
                     </div>
                     <div class="row-fluid">

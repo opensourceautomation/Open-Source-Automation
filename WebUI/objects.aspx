@@ -30,6 +30,11 @@
             document.cookie = "yPos=$~" + intY + "~$";
         }
     </script> 
+    <script>
+        $(function () {
+            $(document).tooltip();
+        });
+    </script>
     <style>
         #EditForm {
           padding: 15px;
@@ -67,8 +72,8 @@
                         <label>Container</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:DropDownList runat="server" ID="ddlContainer" datatextfield="Text" datavaluefield="Value" style="width:280px;">
-                            <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
+                        <asp:DropDownList runat="server" ID="ddlContainer" title="The container to which the object will be associated" datatextfield="Text" datavaluefield="Value" style="width:280px;">
+                            <asp:ListItem Selected = "True"  Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                 </div>
@@ -83,7 +88,7 @@
                         <label>Address</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:TextBox class="input-xlarge" runat="server" ID="txtAddress"></asp:TextBox>
+                        <asp:TextBox class="input-xlarge" runat="server" ID="txtAddress" title="The IP address of the object (not all objects require an IP)"></asp:TextBox>
                     </div>
                 </div>
                 <div class="row-fluid">
