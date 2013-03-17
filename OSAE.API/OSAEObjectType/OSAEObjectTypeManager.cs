@@ -342,7 +342,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyAAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyAdd error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }

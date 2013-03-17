@@ -1,5 +1,8 @@
 ﻿namespace OSAE
 {
+    /// <summary>
+    /// This class represents and OSA object Property
+    /// </summary>
     public class OSAEObjectProperty
     {
         /// <summary>

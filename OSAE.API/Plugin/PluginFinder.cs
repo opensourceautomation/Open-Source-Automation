@@ -58,12 +58,16 @@
 
             foreach (var file in Directory.GetFiles(Common.ApiPath + "\\" + PluginPath, "*.dll", SearchOption.AllDirectories))
             {
+                Logging.GetLogger("Plugin Loader").AddToLog("DLL Found while loading Plugins:" + file, false);
+
                 try
                 {
                     var assembly = Assembly.LoadFrom(file);
 
                     foreach (var type in assembly.GetExportedTypes())
                     {
+                        Logging.GetLogger("Plugin Loader").AddToLog("Exposed Type: " + type, false);
+
                         if (!type.Equals(_pluginBaseType) &&
                             _pluginBaseType.IsAssignableFrom(type))
                         {
@@ -73,7 +77,8 @@
                 }
                 catch (Exception)
                 {
-                    // Ignore DLLs that are not .NET assemblies.
+                    // This method is called in its own App Domain so will not have access to the calling logger
+                    Logging.GetLogger("Plugin Loader").AddToLog("Found a not .NET assembly:" + file, false);
                 }
             }
 
