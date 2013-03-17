@@ -9,8 +9,8 @@
         /// <summary>
         /// Set the state of an object
         /// </summary>
-        /// <param name="ObjectName"></param>
-        /// <param name="State"></param>
+        /// <param name="ObjectName">The name of the object to set the state of</param>
+        /// <param name="State">The state to set the object too</param>
         /// <param name="source">Where the message was genreated from e.g. the plugin name (pName)</param>
         public static void ObjectStateSet(string ObjectName, string State, string source)
         {
@@ -36,8 +36,8 @@
         /// <summary>
         /// Returns a OSAEObjectState object
         /// </summary>
-        /// <param name="ObjectName"></param>
-        /// <returns></returns>
+        /// <param name="ObjectName">The object name to get the state of</param>
+        /// <returns>The state of the requested object</returns>
         public static OSAEObjectState GetObjectStateValue(string ObjectName)
         {
             DataSet dataset = new DataSet();

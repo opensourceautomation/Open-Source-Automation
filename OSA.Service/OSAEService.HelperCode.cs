@@ -3,14 +3,15 @@
     using System;
     using System.Diagnostics;
     using System.IO;
-    using System.Security;
-    using System.Security.Policy;
     using System.ServiceModel;
     using System.Threading;
     using System.Timers;
 
     partial class OSAEService
     {
+        /// <summary>
+        /// Check if there is a OSA message container in the Event log and create one if not.
+        /// </summary>
         private void InitialiseOSAInEventLog()
         {
             try
@@ -34,6 +35,9 @@
                 File.Delete(f);
         }       
 
+        /// <summary>
+        /// Check if there is an object for the Service running on this machine in OSA, and create one if not.
+        /// </summary>
         private void CreateServiceObject()
         {
             try
@@ -52,6 +56,9 @@
             }
         }                     
 
+        /// <summary>
+        /// Starts the various OSA threads that monitors the command Queue, and monitors plugins
+        /// </summary>
         private void StartThreads()
         {
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
@@ -72,6 +79,9 @@
             updateThread.Start();
         }
 
+        /// <summary>
+        /// Stops all the plugins & closes the WCF service
+        /// </summary>
         private void ShutDownSystems()
         {             
             logging.AddToLog("Stopping...", true);
@@ -175,6 +185,10 @@
             }
         }
 
+        /// <summary>
+        /// Logs information about a method found in the Queue
+        /// </summary>
+        /// <param name="method">The method to log</param>
         private void LogMethodInformation(OSAEMethod method)
         {
             logging.AddToLog("Found method in queue: " + method.MethodName, false);
@@ -184,6 +198,10 @@
             logging.AddToLog("-- object owner: " + method.Owner, false);
         }
 
+        /// <summary>
+        /// Stops a plugin based on a method
+        /// </summary>
+        /// <param name="method">The method containing the information of the plugin to stop</param>
         private void StopPlugin(OSAEMethod method)
         {
             foreach (Plugin p in plugins)
@@ -200,6 +218,10 @@
             }
         }
 
+        /// <summary>
+        /// Starts a plugin based on a method
+        /// </summary>
+        /// <param name="method">The method containing the information of the plugin to stop</param>
         private void StartPlugin(OSAEMethod method)
         {
             foreach (Plugin p in plugins)
