@@ -558,7 +558,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error enabling plugin: " + ex.Message, true);
+                logging.AddToLog("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException, true);
             }
         }
 

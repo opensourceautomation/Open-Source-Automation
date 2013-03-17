@@ -5,14 +5,17 @@
     using System.Data;
     using MySql.Data.MySqlClient;
 
+    /// <summary>
+    /// Can be used to manager the properties of an object in OSA
+    /// </summary>
     public class OSAEObjectPropertyManager
     {
         /// <summary>
         /// Returns an OSAEObjectProperty whcih contains the value, type, ID, last updated, and name
         /// </summary>
-        /// <param name="ObjectName"></param>
-        /// <param name="OSAEObjectProperty"></param>
-        /// <returns></returns>
+        /// <param name="ObjectName">The name of the object to get the property of</param>
+        /// <param name="OSAEObjectProperty">The property to be retieved</param>
+        /// <returns>the Property requested</returns>
         public static OSAEObjectProperty GetObjectPropertyValue(string ObjectName, string ObjectProperty)
         {           
             try
@@ -84,6 +87,11 @@
             }
         }
 
+        /// <summary>
+        /// The the properties of an object
+        /// </summary>
+        /// <param name="ObjectName">The object to get the proeprties of</param>
+        /// <returns>The properties associated to the object</returns>
         public static OSAEObjectPropertyCollection GetObjectProperties(string ObjectName)
         {
             OSAEObjectPropertyCollection props = new OSAEObjectPropertyCollection();

@@ -1,15 +1,20 @@
 ﻿namespace OSAE.Service
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.ServiceModel;
     using System.ServiceProcess;
+
+    #endregion
 
     /// <summary>
     /// The primary server used in the OSA infrastructure to process information
     /// </summary>
     partial class OSAEService : ServiceBase
     {
+        #region Member Variables
         /// <summary>
         /// Used when generating messages to identify where the message came from
         /// </summary>
@@ -35,6 +40,8 @@
         /// Timer used to periodically check if plugins are still running
         /// </summary>
         private System.Timers.Timer checkPlugins = new System.Timers.Timer();
+
+        #endregion
 
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
@@ -68,15 +75,16 @@
             InitialiseOSAInEventLog();
 
             // These Flags set whether or not to handle that specific
-            //  type of event. Set to true if you need it, false otherwise.
+            // type of event. Set to true if you need it, false otherwise.
             
             this.CanStop = true;
             this.CanShutdown = true;
-        }        
+        }
+
+        #region Standard Windows Service Methods
 
         /// <summary>
-        /// OnStart: Put startup code here
-        ///  - Start threads, get inital data, etc.
+        /// The service control manager has requested us to start
         /// </summary>
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
@@ -113,8 +121,7 @@
         }                            
 
         /// <summary>
-        /// OnStop: Put your stop code here
-        /// - Stop threads, set final data, etc.
+        /// The service control manager has requested us to stop
         /// </summary>
         protected override void OnStop()
         {
@@ -123,11 +130,16 @@
             ShutDownSystems();
         }        
 
+        /// <summary>
+        /// The service control manager has requested us to shitdown
+        /// </summary>
         protected override void OnShutdown() 
         {
             logging.AddToLog("OnShutdown Invoked", false);
 
             ShutDownSystems();
         }
+
+        #endregion
     }
 }

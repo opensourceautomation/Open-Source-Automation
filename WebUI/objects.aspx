@@ -72,7 +72,7 @@
                         <label>Container</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:DropDownList runat="server" ID="ddlContainer" title="The container to which the object will be associated" datatextfield="Text" datavaluefield="Value" style="width:280px;">
+                        <asp:DropDownList runat="server" ID="ddlContainer" datatextfield="Text" datavaluefield="Value" style="width:280px;">
                             <asp:ListItem Selected = "True"  Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>

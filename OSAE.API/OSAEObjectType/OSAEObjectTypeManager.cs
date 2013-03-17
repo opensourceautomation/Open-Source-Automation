@@ -4,8 +4,16 @@
     using System.Data;
     using MySql.Data.MySqlClient;
 
+    /// <summary>
+    /// The class is used to manage OSA ObjectTypes
+    /// </summary>
     public class OSAEObjectTypeManager
     {
+        /// <summary>
+        /// Loads the requested object Type
+        /// </summary>
+        /// <param name="name">The name of the object type to load</param>
+        /// <returns>The requested object type</returns>
         public static OSAEObjectType ObjectTypeLoad(string name)
         {
             MySqlCommand command = new MySqlCommand();
@@ -61,13 +69,13 @@
         /// <summary>
         /// Create new object type
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="Description"></param>
-        /// <param name="OwnedBy"></param>
-        /// <param name="BaseType"></param>
+        /// <param name="Name">The name of the new object type</param>
+        /// <param name="Description">The description of the new object type</param>
+        /// <param name="OwnedBy">Who the new object type is owned by</param>
+        /// <param name="BaseType">The base type of the new object</param>
         /// <param name="TypeOwner"></param>
         /// <param name="System"></param>
-        /// <param name="Container"></param>
+        /// <param name="Container">The container for the new object type</param>
         public static void ObjectTypeAdd(string Name, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
         {
             using (MySqlCommand command = new MySqlCommand())
@@ -117,14 +125,14 @@
         /// <summary>
         /// Update an existing object type
         /// </summary>
-        /// <param name="oldName"></param>
-        /// <param name="newName"></param>
-        /// <param name="Description"></param>
-        /// <param name="OwnedBy"></param>
+        /// <param name="oldName">The old name of the object type</param>
+        /// <param name="newName">The new name to be given to the object type</param>
+        /// <param name="Description">The description for the object type</param>
+        /// <param name="OwnedBy">Who owns the object type</param>
         /// <param name="BaseType"></param>
         /// <param name="TypeOwner"></param>
         /// <param name="System"></param>
-        /// <param name="Container"></param>
+        /// <param name="Container">The container for the object type</param>
         public static void ObjectTypeUpdate(string oldName, string newName, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
         {
             using (MySqlCommand command = new MySqlCommand())

@@ -1,101 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Management.Automation;  // Windows PowerShell assembly.
-
-
-namespace OSAE.PowerShellTools
+﻿namespace OSAE.PowerShellTools
 {
+    using System.Management.Automation;  // Windows PowerShell assembly.
+
     [Cmdlet(VerbsCommon.Get, "OSAPS")]
     public class OSAPS : Cmdlet
     {
+        /// <summary>
+        /// Provides access to the OSA logging class
+        /// </summary>
+        private Logging logging = Logging.GetLogger("PowerShell");
+
+        /// <summary>
+        /// Used in logs to determine where an event occured from or where log messages should go to
+        /// </summary>
+        private const string source = "PowerShell CmdLet";
+
         [Parameter(Mandatory = true)]
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-        private string name;
+        public string Name { get; set; }
 
         [Parameter(Mandatory = false)]
-        public string Property
-        {
-            get { return property; }
-            set { property = value; }
-        }
-        private string property = "";
-
-        // Overide the ProcessRecord method to process
-        // the supplied user name and write out a 
-        // greeting to the user by calling the WriteObject
-        // method.
+        public string Property { get; set; }
+      
         protected override void ProcessRecord()
-        {
-            OSAE osae = new OSAE(name);
+        {         
+            OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
 
-            OSAEObject obj = osae.GetObjectByName(name);
-
-            if (property != "")
+            if (Property != string.Empty)
             {
-                ObjectProperty objProp = osae.GetObjectPropertyValue(name, property);
+                OSAEObjectProperty objProp = OSAEObjectPropertyManager.GetObjectPropertyValue(Name, Property);
 
                 WriteObject(objProp);
             }
             else
             {
-
                 WriteObject(obj);
             }
-
-            //WriteObject("Hello " + name + "!");
         }
-
     }
 
     [Cmdlet(VerbsCommon.Set, "OSAPS")]
     public class OSAPSSet : Cmdlet
     {
-        [Parameter(Mandatory = true)]
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-        private string name;
+        /// <summary>
+        /// Provides access to the OSA logging class
+        /// </summary>
+        private Logging logging = Logging.GetLogger("PowerShell");
+
+        /// <summary>
+        /// Used in logs to determine where an event occured from or where log messages should go to
+        /// </summary>
+        private const string source = "PowerShell CmdLet";
 
         [Parameter(Mandatory = true)]
-        public string Property
-        {
-            get { return property; }
-            set { property = value; }
-        }
-        private string property = "";
+        public string Name { get; set; }
 
         [Parameter(Mandatory = true)]
-        public string Value
-        {
-            get { return val; }
-            set { val = value; }
-        }
-        private string val = "";
+        public string Property { get; set; }
 
-        // Overide the ProcessRecord method to process
-        // the supplied user name and write out a 
-        // greeting to the user by calling the WriteObject
-        // method.
+        [Parameter(Mandatory = true)]
+        public string Value { get; set; }
+                
         protected override void ProcessRecord()
-        {
-            OSAE osae = new OSAE(name);
-
-            OSAEObject obj = osae.GetObjectByName(name);
-
-            osae.ObjectPropertySet(name, property, val);
+        {           
+            OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
+            OSAEObjectPropertyManager.ObjectPropertySet(Name, Property, Value, source);
 
             WriteObject(true);
-
-
-            //WriteObject("Hello " + name + "!");
         }
 
     }
@@ -103,71 +73,52 @@ namespace OSAE.PowerShellTools
     [Cmdlet(VerbsLifecycle.Invoke, "OSAPS")]
     public class OSAPSInovke : Cmdlet
     {
-        [Parameter(Mandatory = true)]
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-        private string name;
+        /// <summary>
+        /// Provides access to the OSA logging class
+        /// </summary>
+        private Logging logging = Logging.GetLogger("PowerShell");
+
+        /// <summary>
+        /// Used in logs to determine where an event occured from or where log messages should go to
+        /// </summary>
+        private const string source = "PowerShell CmdLet";
 
         [Parameter(Mandatory = true)]
-        public string Method
-        {
-            get { return method; }
-            set { method = value; }
-        }
-        private string method = "";
+        public string Name { get; set; }
 
         [Parameter(Mandatory = true)]
-        public string Value
-        {
-            get { return val; }
-            set { val = value; }
-        }
-        private string val = "";
+        public string Method { get; set; }
 
-        // Overide the ProcessRecord method to process
-        // the supplied user name and write out a 
-        // greeting to the user by calling the WriteObject
-        // method.
+        [Parameter(Mandatory = true)]
+        public string Value { get; set; }
+               
         protected override void ProcessRecord()
         {
-            OSAE osae = new OSAE(name);
-
-            osae.MethodQueueAdd(name, Method, Value, "");
-
+            // OSAEMethodManager.MethodQueueAdd(name, Method, Value, ""); TODO
 
             WriteObject(true);
-
-
-            //WriteObject("Hello " + name + "!");
         }
-
     }
 
     [Cmdlet(VerbsCommon.Show, "OSAPS")]
     public class OSAPSShow : Cmdlet
     {
+        /// <summary>
+        /// Provides access to the OSA logging class
+        /// </summary>
+        private Logging logging = Logging.GetLogger("PowerShell");
+
+        /// <summary>
+        /// Used in logs to determine where an event occured from or where log messages should go to
+        /// </summary>
+        private const string source = "PowerShell CmdLet";
+
         [Parameter(Mandatory = true)]
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-        private string name;
-
-
-
-        // Overide the ProcessRecord method to process
-        // the supplied user name and write out a 
-        // greeting to the user by calling the WriteObject
-        // method.
+        public string Name { get; set; }
+        
         protected override void ProcessRecord()
         {
-            OSAE osae = new OSAE(name);
-
-            OSAEObject obj = osae.GetObjectByName(name);
+            OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
 
             WriteObject("Name: " + obj.Name);
             WriteObject("State: " + obj.State);
@@ -183,19 +134,12 @@ namespace OSAE.PowerShellTools
                 WriteObject("Method: " + method);
             }
 
-            foreach (ObjectProperty prop in obj.Properties)
+            foreach (OSAEObjectProperty prop in obj.Properties)
             {
                 WriteObject("Property (" + prop.DataType + "): " + prop.Name + " Value = " + prop.Value);
             }
 
             WriteObject("Updated: " + obj.LastUpd);
-
-
-
-
-            //WriteObject("Hello " + name + "!");
         }
-
     }
-
 }

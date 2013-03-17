@@ -4,7 +4,7 @@ Imports MySql.Data.MySqlClient
 Imports ActiveHomeScriptLib
 Imports System.AddIn
 Imports OpenSourceAutomation
-<AddIn("CM15A", Version:="1.0.2")>
+
 Public Class CM15A
     Inherits OSAEPluginBase
     Structure Device
@@ -48,7 +48,7 @@ Public Class CM15A
                 If curTime > gTimeCounter Then booBlockDups = False
             End If
         Catch myerror As Exception
-            Logging.AddToLog("Error ActiveHome_RecvAction 1: " & myerror.Message, True)
+            logging.AddToLog("Error ActiveHome_RecvAction 1: " & myerror.Message, True)
             Exit Sub
         End Try
         Try
