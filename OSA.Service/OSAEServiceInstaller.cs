@@ -17,7 +17,7 @@ namespace OSAEService
             ServiceInstaller serviceInstaller = new ServiceInstaller();
 
             //# Service Account Information
-            serviceProcessInstaller.Account = ServiceAccount.LocalSystem;
+            serviceProcessInstaller.Account = ServiceAccount.NetworkService;
             serviceProcessInstaller.Username = null;
             serviceProcessInstaller.Password = null;
 
