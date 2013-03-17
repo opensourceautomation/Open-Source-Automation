@@ -9,7 +9,7 @@
     /// <summary>
     /// Allows OSA to run scripts through PowerShell.
     /// </summary>
-    class PowerShellPlugin : OSAEPluginBase
+    public class PowerShellPlugin : OSAEPluginBase
     {
         /// <summary>
         /// Provides access to the OSA logging functionality
