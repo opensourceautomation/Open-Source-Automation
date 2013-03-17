@@ -2,14 +2,23 @@
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Data;
     using System.Management.Automation;
     using System.Management.Automation.Runspaces;
     using System.Text;
 
+    /// <summary>
+    /// Allows OSA to run scripts through PowerShell.
+    /// </summary>
     class PowerShellPlugin : OSAEPluginBase
     {
+        /// <summary>
+        /// Provides access to the OSA logging functionality
+        /// </summary>
         Logging logging = Logging.GetLogger("PowerShell Plugin");
+
+        /// <summary>
+        /// The plugin name
+        /// </summary>
         string pName;
 
         /// <summary>
@@ -31,12 +40,20 @@
         /// <param name="script">The script to be run</param>
         private void RunScript(string script)
         {
+            Pipeline pipeline = null;
+            Runspace runspace = null;
+
             try
             {
-                Runspace runspace = RunspaceFactory.CreateRunspace();
+                RunspaceConfiguration runConfig = RunspaceConfiguration.Create();
+                
+                PSSnapInException psEx = null;
+                runConfig.AddPSSnapIn("OSAPS", out psEx);
+                runspace = RunspaceFactory.CreateRunspace(runConfig);
+
                 runspace.Open();
 
-                Pipeline pipeline = runspace.CreatePipeline();
+                pipeline = runspace.CreatePipeline();
                 pipeline.Commands.AddScript(script);
                 pipeline.Commands.Add("Out-String");
 
@@ -50,11 +67,22 @@
 
                 logging.AddToLog("Script return: " + stringBuilder.ToString(), false);
 
-                runspace.Close();
             }
             catch (Exception ex)
             {
                 logging.AddToLog("An error occured while trying to run the script, details: \r\n" + ex.Message, true);
+            }
+            finally
+            {
+                if (pipeline != null)
+                {
+                    pipeline.Dispose();
+                }
+                if (runspace != null)
+                {
+                    runspace.Close();
+                    runspace.Dispose();
+                }
             }
         }
 
