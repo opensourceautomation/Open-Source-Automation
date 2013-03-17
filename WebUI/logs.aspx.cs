@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 public partial class logs : System.Web.UI.Page
@@ -51,7 +49,6 @@ public partial class logs : System.Web.UI.Page
             var list = from f in fileList
                        select new { logName = Path.GetFileNameWithoutExtension(f) };
 
-
             gvLogs.DataKeyNames = new string[] { "logName" };
 
             gvLogs.DataSource = list;
@@ -65,9 +62,13 @@ public partial class logs : System.Web.UI.Page
         {
             e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
             if (e.Row.RowState == DataControlRowState.Alternate)
+            {
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
+            }
             else
+            {
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+            }
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvLogs_" + e.Row.RowIndex.ToString()));
         }
 
