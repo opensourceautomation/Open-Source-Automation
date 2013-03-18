@@ -121,10 +121,12 @@
                 {
                     foreach (OSAEMethod method in OSAEMethodManager.GetMethodsInQueue())
                     {
+                        logging.AddToLog("Method in Queue, ObjectName: " + method.ObjectName + " MethodName: " + method.MethodName, false);
+
                         sendMessageToClients("log", "found method in queue: " + method.ObjectName +
                             "(" + method.MethodName + ")   p1: " + method.Parameter1 +
                             "  p2: " + method.Parameter2);
-
+                        
                         LogMethodInformation(method);
 
                         if (method.ObjectName == "SERVICE-" + Common.ComputerName)
@@ -178,7 +180,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("Error in QueryCommandQueue: " + ex.Message, true);
+                    logging.AddToLog("Error in QueryCommandQueue: " + ex.Message + " InnerException: " + ex.InnerException, true);
                 }
 
                 System.Threading.Thread.Sleep(100);

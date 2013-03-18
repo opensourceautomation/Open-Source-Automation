@@ -32,6 +32,11 @@
         public string Address { get; set; }
        
         public string Owner { get; set; }
+
+        public OSAEMethod()
+        {
+
+        }
        
         public OSAEMethod(string methodName, string objName, string param1, string param2, string address, string owner)
         {

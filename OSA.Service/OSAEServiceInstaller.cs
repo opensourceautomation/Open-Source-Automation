@@ -1,9 +1,9 @@
-﻿using System.ComponentModel;
-using System.Configuration.Install;
-using System.ServiceProcess;
-
-namespace OSAEService
+﻿namespace OSAEService
 {
+    using System.ComponentModel;
+    using System.Configuration.Install;
+    using System.ServiceProcess;
+
     [RunInstaller(true)]
     public class OSAEServiceInstaller : Installer
     {
@@ -23,7 +23,7 @@ namespace OSAEService
 
             //# Service Information
             serviceInstaller.DisplayName = "OSAE";
-            serviceInstaller.StartType = ServiceStartMode.Automatic;
+            serviceInstaller.StartType = ServiceStartMode.Automatic;            
 
             // This must be identical to the WindowsService.ServiceBase name
             // set in the constructor of WindowsService.cs

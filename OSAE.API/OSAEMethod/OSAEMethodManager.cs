@@ -82,15 +82,51 @@
         {
             List<OSAEMethod> methods = new List<OSAEMethod>();
 
-            DataSet dataset = new DataSet();
-            MySqlCommand command = new MySqlCommand();
-            command.CommandText = "SELECT method_queue_id, object_name, address, method_name, parameter_1, parameter_2, object_owner FROM osae_v_method_queue ORDER BY entry_time";
-            dataset = OSAESql.RunQuery(command);
-
-            foreach (DataRow row in dataset.Tables[0].Rows)
+            using (MySqlCommand command = new MySqlCommand())
             {
-                OSAEMethod method = new OSAEMethod((int)row["method_queue_id"], row["method_name"].ToString(), row["object_name"].ToString(), row["parameter_1"].ToString(), row["parameter_2"].ToString(), row["address"].ToString(), row["object_owner"].ToString());
-                methods.Add(method);
+                command.CommandText = "SELECT method_queue_id, object_name, address, method_name, parameter_1, parameter_2, object_owner FROM osae_v_method_queue ORDER BY entry_time";
+                DataSet dataset = OSAESql.RunQuery(command);
+
+                foreach (DataRow row in dataset.Tables[0].Rows)
+                {
+                    object methodId = row["method_queue_id"];
+                    object methodName = row["method_name"];
+                    object objectName = row["object_name"];
+                    object parameter1 = row["parameter_1"];
+                    object parameter2 = row["parameter_2"];
+                    object address = row["address"];
+                    object owner = row["object_owner"];
+                                        
+                    OSAEMethod method = new OSAEMethod();
+
+                    // These parameters should never be null so we won't check them
+                    method.Id = int.Parse(methodId.ToString());
+                    method.MethodName = methodName.ToString();
+                    method.ObjectName = objectName.ToString();
+                    
+                    // These parameters could be null
+                    if (parameter1 != null)
+                    {
+                        method.Parameter1 = parameter1.ToString();
+                    }
+
+                    if (parameter2 != null)
+                    {
+                        method.Parameter2 = parameter2.ToString();
+                    }
+
+                    if (address != null)
+                    {
+                        method.Address = address.ToString();
+                    }
+
+                    if (owner != null)
+                    {
+                        method.Owner = owner.ToString();
+                    }
+
+                    methods.Add(method);                    
+                }
             }
 
             return methods;
