@@ -5,15 +5,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 
 SET NAMES 'utf8';
-USE osae;
-
-
---
--- Disable foreign keys
---
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-
-SET NAMES 'utf8';
 USE osae_039;
 
 --
@@ -536,14 +527,14 @@ $$
 -- Alter procedure osae_sp_schedule_recurring_add
 --
 DROP PROCEDURE osae_sp_schedule_recurring_add$$
-CREATE PROCEDURE osae_sp_schedule_recurring_add(IN pschedule_name varchar(400), IN pobject varchar(400), IN pmethod varchar(400), IN pparameter1 varchar(2000), IN pparameter2 varchar(2000), IN ppattern varchar(400), IN precurringtime time, IN psunday tinyint(1), IN pmonday tinyint(1), IN ptuesday tinyint(1), IN pwednesday tinyint(1), IN pthursday tinyint(1), IN pfriday tinyint(1), IN psaturday tinyint(1), IN pinterval varchar(10), IN precurringminutes int(8), IN precurringday int(4), IN precurringdate date)
+CREATE PROCEDURE osae_sp_schedule_recurring_add(IN pschedule_name VARCHAR(400), IN pobject VARCHAR(400), IN pmethod VARCHAR(400), IN pparameter1 VARCHAR(2000), IN pparameter2 VARCHAR(2000), IN pscript VARCHAR(400), IN precurringtime TIME, IN psunday TINYINT(1), IN pmonday TINYINT(1), IN ptuesday TINYINT(1), IN pwednesday TINYINT(1), IN pthursday TINYINT(1), IN pfriday TINYINT(1), IN psaturday TINYINT(1), IN pinterval VARCHAR(10), IN precurringminutes INT(8), IN precurringday INT(4), IN precurringdate DATE)
 BEGIN
 DECLARE vObjectID INT DEFAULT NULL;
 DECLARE vMethodID INT DEFAULT NULL;
 DECLARE vScriptID INT DEFAULT NULL;
     SELECT script_id INTO vScriptID FROM osae_script WHERE script_name=pscript;
     SELECT object_id,method_id INTO vObjectID,vMethodID FROM osae_v_object_method WHERE UPPER(object_name)=UPPER(pobject) AND (UPPER(method_name)=UPPER(pmethod) OR UPPER(method_label)=UPPER(pmethod));
-    INSERT INTO osae_schedule_recurring (schedule_name,object_id,method_id,parameter_1,parameter_2,pattern_id,interval_unit,recurring_time,recurring_minutes,recurring_day,recurring_date,sunday,monday,tuesday,wednesday,thursday,friday,saturday) VALUES(pschedule_name,vObjectID,vMethodID,pparameter1,pparameter2,vScriptID,pinterval,precurringtime,precurringminutes,precurringday,precurringdate,psunday,pmonday,ptuesday,pwednesday,pthursday,pfriday,psaturday);
+    INSERT INTO osae_schedule_recurring (schedule_name,object_id,method_id,parameter_1,parameter_2,script_id,interval_unit,recurring_time,recurring_minutes,recurring_day,recurring_date,sunday,monday,tuesday,wednesday,thursday,friday,saturday) VALUES(pschedule_name,vObjectID,vMethodID,pparameter1,pparameter2,vScriptID,pinterval,precurringtime,precurringminutes,precurringday,precurringdate,psunday,pmonday,ptuesday,pwednesday,pthursday,pfriday,psaturday);
 END
 $$
 
@@ -565,10 +556,12 @@ $$
 --
 -- Create procedure osae_sp_script_add
 --
-CREATE PROCEDURE osae_sp_script_add(IN pname VARCHAR(255), IN pscriptprocessorid INT, IN pscript VARCHAR(4000))
+CREATE PROCEDURE osae_sp_script_add(IN pname VARCHAR(255), IN pscriptprocessor VARCHAR(255), IN pscript VARCHAR(4000))
 BEGIN
+  DECLARE vScriptProcessorID INT;
+  SELECT script_processor_id INTO vScriptProcessorID FROM osae_script_processors WHERE script_processor_id = pscriptprocessorid;
   INSERT INTO osae_script(script_name, script_processor_id, script)
-    VALUES(pname,pscriptprocessorid,pscript);
+    VALUES(pname,vScriptProcessorID,pscript);
 END
 $$
 
@@ -587,8 +580,13 @@ $$
 --
 CREATE PROCEDURE osae_sp_script_processor_add(IN pname VARCHAR(255), IN ppluginname VARCHAR(255))
 BEGIN
-  INSERT INTO osae_script_processors(script_processor_name, script_processor_plugin_name)
-    VALUES(pname,ppluginname);
+  DECLARE vCount INT;
+
+   SELECT count(script_processor_id) INTO vCount FROM osae_script_processors WHERE script_processor_name = pname;
+   IF vCount = 0 THEN
+      INSERT INTO osae_script_processors(script_processor_name, script_processor_plugin_name)
+      VALUES(pname,ppluginname);
+   END IF;
 END
 $$
 
@@ -640,11 +638,13 @@ $$
 --
 -- Create procedure osae_sp_script_update
 --
-CREATE PROCEDURE osae_sp_script_update(IN poldname VARCHAR(255), IN pname VARCHAR(255), IN pscriptprocessorid INT, IN pscript VARCHAR(255))
+CREATE PROCEDURE osae_sp_script_update(IN poldname VARCHAR(255), IN pname VARCHAR(255), IN pscriptprocessor VARCHAR(255), IN pscript VARCHAR(255))
 BEGIN
+  DECLARE vScriptProcessorID INT;
+  SELECT script_processor_id INTO vScriptProcessorID FROM osae_script_processors WHERE script_processor_id = pscriptprocessorid;
 
   UPDATE osae_script
-    SET script_name = pname, script_processor_id = pscriptprocessorid, script = pscript
+    SET script_name = pname, script_processor_id = vScriptProcessorID, script = pscript
     WHERE script_name = poldname;
 
 END
@@ -928,21 +928,6 @@ WHERE
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 
 
-DELIMITER $$
-
-CREATE DEFINER = 'osae'@'%'
-PROCEDURE osae_sp_pattern_scripts_get(IN ppattern VARCHAR(255))
-BEGIN
-  SELECT script_id
-  FROM
-    osae_pattern_script s
-  INNER JOIN osae_pattern p
-  ON p.pattern_id = s.pattern_id
-  WHERE
-    p.pattern = ppattern;
-END
-$$
-
 delimiter ;
 
 alter table osae_object_property modify property_value VARCHAR(4000) DEFAULT NULL ; 
@@ -955,7 +940,7 @@ CALL osae_sp_object_type_state_update('CLOSED','OFF','Closed','X10 DS10A');
 CALL osae_sp_object_type_event_update('OPENED','ON','Opened','X10 DS10A');
 CALL osae_sp_object_type_event_update('CLOSED','OFF','Closed','X10 DS10A');
 
-CALL osae_sp_script_processor_add ('Script Processor', 'Script Processor');
+CALL osae_sp_script_processor_add ('OSA Default Script Processor', 'Script Processor');
 
 CALL osae_sp_object_type_method_add ('RUN SCRIPT','Run Script','Script Processor','','','','');
 

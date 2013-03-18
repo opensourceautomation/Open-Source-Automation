@@ -55,7 +55,7 @@ public partial class scripts : System.Web.UI.Page
             gvScripts.Rows[Int32.Parse(hdnSelectedRow.Text)].Attributes.Remove("onmouseout");
             gvScripts.Rows[Int32.Parse(hdnSelectedRow.Text)].Style.Add("background", "lightblue");
             txtName.Text = hdnSelectedScriptName.Text;
-            ddlScriptProcessor.SelectedValue = gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_processor_id"].ToString();
+            ddlScriptProcessor.SelectedValue = gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_processor_name"].ToString();
             hdnScript.Value = OSAEScriptManager.GetScript(gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_id"].ToString());
         }
         if (hdnSelectedEventScriptRow.Text != "")
@@ -113,7 +113,7 @@ public partial class scripts : System.Web.UI.Page
 
     private void loadScripts()
     {
-        gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, script_id, script_processor_id FROM osae_script ORDER BY script_name");
+        gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, script_id, s.script_processor_id, script_processor_name FROM osae_script s INNER JOIN osae_script_processors sp ON sp.script_processor_id = s.script_processor_id ORDER BY script_name");
         gvScripts.DataBind();
 
         ddlScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
@@ -149,7 +149,7 @@ public partial class scripts : System.Web.UI.Page
 
     private void loadDDLs()
     {
-        ddlScriptProcessor.DataSource = OSAESql.RunSQL("SELECT script_processor_name as Text, script_processor_id as Value FROM osae_script_processors ORDER BY script_processor_name"); ;
+        ddlScriptProcessor.DataSource = OSAESql.RunSQL("SELECT script_processor_name as Text, script_processor_name as Value FROM osae_script_processors ORDER BY script_processor_name"); ;
         ddlScriptProcessor.DataBind();
         if (ddlScriptProcessor.Items.Count == 0)
             ddlScriptProcessor.Visible = false;
@@ -182,7 +182,7 @@ public partial class scripts : System.Web.UI.Page
         }
         else
         {
-            OSAEScriptManager.ScriptAdd(txtName.Text, Int32.Parse(ddlScriptProcessor.SelectedValue), hdnScript.Value);
+            OSAEScriptManager.ScriptAdd(txtName.Text,ddlScriptProcessor.SelectedValue, hdnScript.Value);
             loadScripts();
             saveAlert.Visible = true;
         }
@@ -195,7 +195,7 @@ public partial class scripts : System.Web.UI.Page
         }
         else
         {
-            OSAEScriptManager.ScriptUpdate(hdnSelectedScriptName.Text, txtName.Text, Int32.Parse(ddlScriptProcessor.SelectedValue), hdnScript.Value);
+            OSAEScriptManager.ScriptUpdate(hdnSelectedScriptName.Text, txtName.Text, ddlScriptProcessor.SelectedValue, hdnScript.Value);
             loadScripts();
             saveAlert.Visible = true;
         }

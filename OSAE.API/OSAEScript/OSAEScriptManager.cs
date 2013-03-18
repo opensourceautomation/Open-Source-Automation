@@ -282,13 +282,13 @@
         }
 
 
-        public static void ScriptAdd(string name, int scriptProcessorID, string script)
+        public static void ScriptAdd(string name, string scriptProcessor, string script)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_script_add (@pname, @pscriptprocessorid, @pscript)";
+                command.CommandText = "CALL osae_sp_script_add (@pname, @pscriptprocessor, @pscript)";
                 command.Parameters.AddWithValue("@pname", name);
-                command.Parameters.AddWithValue("@pscriptprocessorid", scriptProcessorID);
+                command.Parameters.AddWithValue("@pscriptprocessor", scriptProcessor);
                 command.Parameters.AddWithValue("@pscript", script);
 
                 try
@@ -302,14 +302,14 @@
             }
         }
 
-        public static void ScriptUpdate(string oldName, string name, int scriptProcessorID, string script)
+        public static void ScriptUpdate(string oldName, string name, string scriptProcessor, string script)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_script_update (@poldname, @pname, @pscriptprocessorid, @pscript)";
+                command.CommandText = "CALL osae_sp_script_update (@poldname, @pname, @pscriptprocessor, @pscript)";
                 command.Parameters.AddWithValue("@poldname", oldName);
                 command.Parameters.AddWithValue("@pname", name);
-                command.Parameters.AddWithValue("@pscriptprocessorid", scriptProcessorID);
+                command.Parameters.AddWithValue("@pscriptprocessor", scriptProcessor);
                 command.Parameters.AddWithValue("@pscript", script);
 
                 try

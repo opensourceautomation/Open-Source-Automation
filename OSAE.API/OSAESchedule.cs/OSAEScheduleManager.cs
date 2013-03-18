@@ -20,17 +20,17 @@
         /// <param name="parameter2"></param>
         /// <param name="pattern"></param>
         /// <param name="recurringID"></param>
-        public static void ScheduleQueueAdd(DateTime scheduleDate, string obj, string method, string parameter1, string parameter2, string pattern, int recurringID)
+        public static void ScheduleQueueAdd(DateTime scheduleDate, string obj, string method, string parameter1, string parameter2, string script, int recurringID)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_schedule_queue_add(@ScheduleDate, @Object, @Method, @Parameter1, @Parameter2, @Pattern, @RecurringID)";
+                command.CommandText = "CALL osae_sp_schedule_queue_add(@ScheduleDate, @Object, @Method, @Parameter1, @Parameter2, @Script, @RecurringID)";
                 command.Parameters.AddWithValue("@ScheduleDate", scheduleDate);
                 command.Parameters.AddWithValue("@Object", obj);
                 command.Parameters.AddWithValue("@Method", method);
                 command.Parameters.AddWithValue("@Parameter1", parameter1);
                 command.Parameters.AddWithValue("@Parameter2", parameter2);
-                command.Parameters.AddWithValue("@Pattern", pattern);
+                command.Parameters.AddWithValue("@Script", script);
                 command.Parameters.AddWithValue("@RecurringID", recurringID);
 
                 try
@@ -86,21 +86,21 @@
         /// <param name="interval"></param>
         /// <param name="recurringDay"></param>
         /// <param name="recurringDate"></param>
-        public static void ScheduleRecurringAdd(string scheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
+        public static void ScheduleRecurringAdd(string scheduleName, string obj, string method, string parameter1, string parameter2, string script,
             string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
             string interval, int recurringMinutes, string recurringDay, string recurringDate)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
                 command.CommandText = "CALL osae_sp_schedule_recurring_add(@ScheduleName, @Object, @Method, @Parameter1, @Parameter2, ";
-                command.CommandText = command.CommandText + "@Pattern, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
+                command.CommandText = command.CommandText + "@Script, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
                 command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate)";
                 command.Parameters.AddWithValue("@ScheduleName", scheduleName);
                 command.Parameters.AddWithValue("@Object", obj);
                 command.Parameters.AddWithValue("@Method", method);
                 command.Parameters.AddWithValue("@Parameter1", parameter1);
                 command.Parameters.AddWithValue("@Parameter2", parameter2);
-                command.Parameters.AddWithValue("@Pattern", pattern);
+                command.Parameters.AddWithValue("@Script", script);
                 command.Parameters.AddWithValue("@RecurringTime", recurringTime);
                 command.Parameters.AddWithValue("@Sunday", sunday);
                 command.Parameters.AddWithValue("@Monday", monday);
@@ -168,14 +168,14 @@
         /// <param name="interval"></param>
         /// <param name="recurringDay"></param>
         /// <param name="recurringDate"></param>
-        public static void ScheduleRecurringUpdate(string oldScheduleName, string newScheduleName, string obj, string method, string parameter1, string parameter2, string pattern,
+        public static void ScheduleRecurringUpdate(string oldScheduleName, string newScheduleName, string obj, string method, string parameter1, string parameter2, string script,
             string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
             string interval, int recurringMinutes, string recurringDay, string recurringDate)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
                 command.CommandText = "CALL osae_sp_schedule_recurring_update(@OldScheduleName, @NewScheduleName, @Object, @Method, @Parameter1, @Parameter2, ";
-                command.CommandText = command.CommandText + "@Pattern, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
+                command.CommandText = command.CommandText + "@Script, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
                 command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate)";
                 command.Parameters.AddWithValue("@OldScheduleName", oldScheduleName);
                 command.Parameters.AddWithValue("@NewScheduleName", newScheduleName);
@@ -183,7 +183,7 @@
                 command.Parameters.AddWithValue("@Method", method);
                 command.Parameters.AddWithValue("@Parameter1", parameter1);
                 command.Parameters.AddWithValue("@Parameter2", parameter2);
-                command.Parameters.AddWithValue("@Pattern", pattern);
+                command.Parameters.AddWithValue("@Script", script);
                 command.Parameters.AddWithValue("@RecurringTime", recurringTime);
                 command.Parameters.AddWithValue("@Sunday", sunday);
                 command.Parameters.AddWithValue("@Monday", monday);

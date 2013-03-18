@@ -73,7 +73,7 @@
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid" ShowHeader="true" 
-                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvScripts_RowDataBound" DataKeyNames="script_name,script_id, script_processor_id" ShowHeaderWhenEmpty="true">  
+                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvScripts_RowDataBound" DataKeyNames="script_name,script_id, script_processor_id, script_processor_name" ShowHeaderWhenEmpty="true">  
                         <Columns>  
                             <asp:BoundField DataField="script_name" HeaderText="Script" /> 
                             <asp:BoundField DataField="script_id" Visible="false" /> 
@@ -242,8 +242,16 @@
     <script>
         var editor = ace.edit("editor");
         editor.setTheme("ace/theme/tomorrow");
-        //editor.getSession().setMode("ace/mode/javascript");
+        //editor.getSession().setMode("ace/mode/powershell");
         editor.setValue(document.getElementById('<%=hdnScript.ClientID%>').value);
+
+        $(function () {
+            $("#<%=ddlScriptProcessor.ClientID%>").change(function () {
+                if ($("#<%=ddlScriptProcessor.ClientID%>").val() == 'PowerShell') {
+                    editor.getSession().setMode("ace/mode/powershell");
+                }
+            });
+        });
     </script>
 </asp:Content>
 

@@ -301,6 +301,11 @@ public partial class objtypes : System.Web.UI.Page
         txtStateName.Text = "";
         txtStateLabel.Text = "";
         loadStates();
+        int selectedRow = Int32.Parse(hdnSelectedStateRow.Text) - 1;
+        if (selectedRow < 0)
+            hdnSelectedStateRow.Text = "";
+        else
+            hdnSelectedStateRow.Text = selectedRow.ToString();
     }
 
     protected void btnPropSave_Click(object sender, EventArgs e)
@@ -351,6 +356,11 @@ public partial class objtypes : System.Web.UI.Page
         txtPropName.Text = "";
         txtPropDefault.Text = "";
         loadProperties();
+        int selectedRow = Int32.Parse(hdnSelectedPropRow.Text) - 1;
+        if (selectedRow < 0)
+            hdnSelectedPropRow.Text = "";
+        else
+            hdnSelectedPropRow.Text = selectedRow.ToString();
     }
 
     protected void btnMethodDelete_Click(object sender, EventArgs e)
@@ -363,6 +373,11 @@ public partial class objtypes : System.Web.UI.Page
         txtParam1Default.Text = "";
         txtParam2Default.Text = "";
         loadMethods();
+        int selectedRow = Int32.Parse(hdnSelectedMethodRow.Text) - 1;
+        if (selectedRow < 0)
+            hdnSelectedMethodRow.Text = "";
+        else
+            hdnSelectedMethodRow.Text = selectedRow.ToString();
     }
 
     protected void btnEventDelete_Click(object sender, EventArgs e)
@@ -371,6 +386,11 @@ public partial class objtypes : System.Web.UI.Page
         txtEventName.Text = "";
         txtEventLabel.Text = "";
         loadEvents();
+        int selectedRow = Int32.Parse(hdnSelectedEventRow.Text) - 1;
+        if (selectedRow < 0)
+            hdnSelectedEventRow.Text = "";
+        else
+            hdnSelectedEventRow.Text = selectedRow.ToString();
     }
 
     protected void btnAdd_Click(object sender, EventArgs e)
@@ -408,6 +428,11 @@ public partial class objtypes : System.Web.UI.Page
         ddlOwnedBy.SelectedValue = "";
         ddlBaseType.SelectedValue = "";
         loadObjectTypes();
+        int selectedRow = Int32.Parse(hdnSelectedRow.Text) - 1;
+        if (selectedRow < 0)
+            hdnSelectedRow.Text = "";
+        else
+            hdnSelectedRow.Text = selectedRow.ToString();
     }
     protected void btnUpdate_Click(object sender, EventArgs e)
     {

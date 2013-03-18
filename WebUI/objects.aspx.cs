@@ -205,6 +205,11 @@ public partial class home : System.Web.UI.Page
         ddlType.SelectedValue = "";
         chkEnabled.Checked = false;
         panelEditForm.Visible = false;
+        int selectedRow = Int32.Parse(hdnSelectedRow.Text) - 1;
+        if (selectedRow < 0)
+            hdnSelectedRow.Text = "";
+        else
+            hdnSelectedRow.Text = selectedRow.ToString();
     }
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
@@ -212,6 +217,8 @@ public partial class home : System.Web.UI.Page
         if(chkEnabled.Checked)
             enabled = 1;
         OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString(), txtName.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, enabled);
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataBind();
     }
     //protected void btnEditList_Click(object sender, EventArgs e)
     //{
