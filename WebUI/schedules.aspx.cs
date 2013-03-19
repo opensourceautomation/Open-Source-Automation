@@ -27,6 +27,8 @@ public partial class schedules : System.Web.UI.Page
             hdnSelectedRecurringName.Text = gvRecurring.DataKeys[Int32.Parse(hdnSelectedRecurringRow.Text)]["schedule_name"].ToString();
             btnUpdate.Visible = true;
             btnDelete.Visible = true;
+            loadDetails();
+            alert.Visible = false;
         }
 
     }
@@ -110,6 +112,55 @@ public partial class schedules : System.Web.UI.Page
 
     }
 
+    private void loadDetails()
+    {
+        OSAERecurringSchedule schedule = OSAEScheduleManager.GetRecurringSchedule(hdnSelectedRecurringName.Text);
+
+        rbScheduleType.SelectedValue = schedule.Interval;
+        rbScheduleType_SelectedIndexChanged(null, null);
+
+        txtName.Text = schedule.Name;
+        tsTime.Text = schedule.Time.Substring(0,5);
+        txtMinutes.Text = schedule.Minutes;
+        ddlMonthDay.SelectedItem.Text = schedule.MonthDay;
+
+        string date = schedule.Date;
+        DateTime dt = Convert.ToDateTime(date); 
+        txtPickedDate.Text = dt.Year + "-" + dt.Month + "-" + dt.Day;
+
+        if (schedule.Sunday == "1")
+            chkSunday.Checked = true;
+        if (schedule.Saturday == "1")
+            chkSaturday.Checked = true;
+        if (schedule.Monday == "1")
+            chkMonday.Checked = true;
+        if (schedule.Tuesday == "1")
+            chkTuesday.Checked = true;
+        if (schedule.Wednesday == "1")
+            chkWednesday.Checked = true;
+        if (schedule.Thursday == "1")
+            chkThursday.Checked = true;
+        if (schedule.Friday == "1")
+            chkFriday.Checked = true;
+
+        if (schedule.Object != "")
+        {
+            rblAction.SelectedValue = "2";
+            rblAction_SelectedIndexChanged(null, null);
+            ddlObject.SelectedValue = schedule.Object;
+            ddlMethod.SelectedValue = schedule.Method;
+            txtParam1.Text = schedule.Param1;
+            txtParam2.Text = schedule.Param2; 
+        }
+        else
+        {
+            rblAction.SelectedValue = "1";
+            rblAction_SelectedIndexChanged(null, null);
+            ddlScript.SelectedItem.Text = schedule.Script;
+        }
+
+    }
+
     protected void rbScheduleType_SelectedIndexChanged(object sender, EventArgs e)
     {
         datepicker.Visible = false;
@@ -165,46 +216,59 @@ public partial class schedules : System.Web.UI.Page
             txtPickedDate.Text = "2000-01-01";
         if(rbScheduleType.SelectedValue == "1")
         {
-
+            string date = txtPickedDate.Text + " " + tsTime.Text + ":00";
+            DateTime dt = Convert.ToDateTime(date);  
+            if(rblAction.SelectedValue == "1")
+            {
+                OSAEScheduleManager.ScheduleQueueAdd(dt, "", "", "", "", ddlScript.SelectedItem.Text, 0);
+            }
+            else
+            {
+                OSAEScheduleManager.ScheduleQueueAdd(dt, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, ddlScript.SelectedItem.Text, 0);
+            }
         }
         else
         {
-            if(rblAction.SelectedValue == "T")
+            if(rblAction.SelectedValue == "1")
             {
-                
-                OSAEScheduleManager.ScheduleRecurringAdd(txtName.Text, "", "", "", "", ddlScript.SelectedItem.Text, tsTime.Hour.ToString() + ":" + tsTime.Minute.ToString() + ":" + tsTime.Second.ToString(),
+
+                OSAEScheduleManager.ScheduleRecurringAdd(txtName.Text, "", "", "", "", ddlScript.SelectedItem.Text, tsTime.Text + ":00",
                     chkSunday.Checked, chkMonday.Checked, chkTuesday.Checked, chkWednesday.Checked, chkThursday.Checked, chkFriday.Checked, chkSaturday.Checked, rbScheduleType.SelectedValue,
                     Int32.Parse(txtMinutes.Text), ddlMonthDay.SelectedValue, txtPickedDate.Text);
             }
             else
             {
-                OSAEScheduleManager.ScheduleRecurringAdd(txtName.Text, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, ddlScript.SelectedItem.Text, tsTime.Hour.ToString() + ":" + tsTime.Minute.ToString() + ":" + tsTime.Second.ToString(),
+                OSAEScheduleManager.ScheduleRecurringAdd(txtName.Text, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, ddlScript.SelectedItem.Text, tsTime.Text + ":00",
                     chkSunday.Checked, chkMonday.Checked, chkTuesday.Checked, chkWednesday.Checked, chkThursday.Checked, chkFriday.Checked, chkSaturday.Checked, rbScheduleType.SelectedValue,
                     Int32.Parse(txtMinutes.Text), ddlMonthDay.SelectedValue, txtPickedDate.Text);
             }
         }
         loadQueue();
         loadRecurring();
+        lblAlert.Text = "Recurring schedule added successfully";
+        alert.Visible = true;
     }
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
         if (txtPickedDate.Text == "")
             txtPickedDate.Text = "2000-01-01";
-        if(rblAction.SelectedValue == "T")
+        if(rblAction.SelectedValue == "1")
         {
-                
-            OSAEScheduleManager.ScheduleRecurringUpdate(hdnSelectedRecurringName.Text, txtName.Text, "", "", "", "", ddlScript.SelectedItem.Text, tsTime.Hour.ToString() + ":" + tsTime.Minute.ToString() + ":" + tsTime.Second.ToString(),
+
+            OSAEScheduleManager.ScheduleRecurringUpdate(hdnSelectedRecurringName.Text, txtName.Text, "", "", "", "", ddlScript.SelectedItem.Text, tsTime.Text + ":00",
                 chkSunday.Checked, chkMonday.Checked, chkTuesday.Checked, chkWednesday.Checked, chkThursday.Checked, chkFriday.Checked, chkSaturday.Checked, rbScheduleType.SelectedValue,
                 Int32.Parse(txtMinutes.Text), ddlMonthDay.SelectedValue, txtPickedDate.Text);
         }
         else
         {
-            OSAEScheduleManager.ScheduleRecurringUpdate(hdnSelectedRecurringName.Text, txtName.Text, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, ddlScript.SelectedItem.Text, tsTime.Hour.ToString() + ":" + tsTime.Minute.ToString() + ":" + tsTime.Second.ToString(),
+            OSAEScheduleManager.ScheduleRecurringUpdate(hdnSelectedRecurringName.Text, txtName.Text, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, ddlScript.SelectedItem.Text, tsTime.Text + ":00",
                 chkSunday.Checked, chkMonday.Checked, chkTuesday.Checked, chkWednesday.Checked, chkThursday.Checked, chkFriday.Checked, chkSaturday.Checked, rbScheduleType.SelectedValue,
                 Int32.Parse(txtMinutes.Text), ddlMonthDay.SelectedValue, txtPickedDate.Text);
         }
         loadQueue();
         loadRecurring();
+        lblAlert.Text = "Recurring schedule updated successfully";
+        alert.Visible = true;
     }
     protected void btnDelete_Click(object sender, EventArgs e)
     {

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using System.Data;
     using MySql.Data.MySqlClient;
 
     public class OSAEScheduleManager
@@ -204,6 +205,57 @@
                 {
                     Logging.GetLogger().AddToLog("ScheduleRecurringUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
+            }
+        }
+
+        public static OSAERecurringSchedule GetRecurringSchedule(string name)
+        {
+            
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    DataSet dataset = new DataSet();
+                    OSAEScreenControl ctrl = new OSAEScreenControl();
+
+                    command.CommandText = "SELECT schedule_name, parameter_1, parameter_2, recurring_time, monday, tuesday, wednesday, thursday, friday, saturday, sunday, interval_unit, recurring_minutes," + 
+                                            "recurring_day, recurring_date, script_name, method_name, object_name " +
+                                            "FROM osae.osae_v_schedule_recurring WHERE schedule_name=@Name";
+                    command.Parameters.AddWithValue("@Name", name);
+                    dataset = OSAESql.RunQuery(command);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        OSAERecurringSchedule schedule = new OSAERecurringSchedule();
+                        schedule.Name = name;
+                        schedule.Param1 = dataset.Tables[0].Rows[0]["parameter_1"].ToString();
+                        schedule.Param2 = dataset.Tables[0].Rows[0]["parameter_2"].ToString();
+                        schedule.Time = dataset.Tables[0].Rows[0]["recurring_time"].ToString();
+                        schedule.Monday = dataset.Tables[0].Rows[0]["monday"].ToString();
+                        schedule.Tuesday = dataset.Tables[0].Rows[0]["tuesday"].ToString();
+                        schedule.Wednesday = dataset.Tables[0].Rows[0]["wednesday"].ToString();
+                        schedule.Thursday = dataset.Tables[0].Rows[0]["thursday"].ToString();
+                        schedule.Friday = dataset.Tables[0].Rows[0]["friday"].ToString();
+                        schedule.Saturday = dataset.Tables[0].Rows[0]["saturday"].ToString();
+                        schedule.Sunday = dataset.Tables[0].Rows[0]["sunday"].ToString();
+                        schedule.Interval = dataset.Tables[0].Rows[0]["interval_unit"].ToString();
+                        schedule.Minutes = dataset.Tables[0].Rows[0]["recurring_minutes"].ToString();
+                        schedule.MonthDay = dataset.Tables[0].Rows[0]["recurring_day"].ToString();
+                        schedule.Date = dataset.Tables[0].Rows[0]["recurring_date"].ToString();
+                        schedule.Script = dataset.Tables[0].Rows[0]["script_name"].ToString();
+                        schedule.Method = dataset.Tables[0].Rows[0]["method_name"].ToString();
+                        schedule.Object = dataset.Tables[0].Rows[0]["object_name"].ToString();
+
+                        return schedule;
+                    }
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - GetRecurringScedule error: " + ex.Message, true);
+                return null;
             }
         }
 

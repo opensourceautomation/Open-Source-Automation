@@ -1,6 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"  MaintainScrollPositionOnPostback="true" EnableEventValidation="false" CodeFile="schedules.aspx.cs" Inherits="schedules" %>
 
-<%@ Register Assembly="TimePicker" Namespace="MKB.TimePicker" TagPrefix="MKB" %>
 <%@ Implements Interface="System.Web.UI.IPostBackEventHandler" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" runat="Server">
@@ -11,9 +10,7 @@
             
             $("#<%=datepicker.ClientID%>").val($("#<%=txtPickedDate.ClientID%>").val());
 
-            //$("#<%=timepicker.ClientID%>").timepicker();
-            //$('#timezone_example_1').timepicker();
-            $('#timezone_example_1').datetimepicker();
+            $('#<%=tsTime.ClientID%>').timepicker();
         }
 
         
@@ -47,7 +44,7 @@
 
         .ui-timepicker-rtl{ direction: rtl; }
         .ui-timepicker-rtl dl { text-align: right; }
-        .ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }
+        .ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }  
     </style>
     <div class="row-fluid">
         <div class="span8">
@@ -105,11 +102,8 @@
                             Time: 
                         </div>
                         <div class="span10">
-                            <MKB:TimeSelector ID="tsTime" runat="server"></MKB:TimeSelector>
-                            <asp:TextBox runat="server" name="timepicker" ID="timepicker"></asp:TextBox>
-                            <div>
-					 		<input type="text" name="timezone_example_1" id="timezone_example_1" value="" />
-						</div>	
+                            <asp:TextBox runat="server" name="timepicker" ID="tsTime"></asp:TextBox>
+                         
                         </div>
                     </div>
                 
@@ -203,6 +197,11 @@
                     <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click" Visible="false"/>&nbsp
                     <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" Visible="false"/>&nbsp
                     <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" Visible="false" OnClientClick="return confirm('Are you sure you want to delete the schedule?');" />
+                    <br />
+                    <br />
+                    <div class="alert alert-success" runat="server" id="alert" visible="false">
+                      <asp:Label runat="server" ID="lblAlert"></asp:Label>
+                    </div>
                 </div>
             </div>
         </div>

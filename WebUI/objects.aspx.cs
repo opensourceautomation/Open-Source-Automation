@@ -16,6 +16,7 @@ public partial class home : System.Web.UI.Page
 
         if (args[0] == "gvObjects")
         {
+            alert.Visible = false;
             hdnSelectedRow.Text = args[1];
             panelEditForm.Visible = true;
             panelPropForm.Visible = false;
