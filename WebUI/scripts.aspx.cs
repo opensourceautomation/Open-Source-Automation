@@ -84,6 +84,7 @@ public partial class scripts : System.Web.UI.Page
         }
 
     }
+    
     protected void gvEventScripts_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
     {
         if ((e.Row.RowType == DataControlRowType.DataRow))
@@ -97,6 +98,7 @@ public partial class scripts : System.Web.UI.Page
         }
 
     }
+    
     protected void gvObjTypeScripts_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
     {
         if ((e.Row.RowType == DataControlRowType.DataRow))
@@ -116,11 +118,7 @@ public partial class scripts : System.Web.UI.Page
         gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, script_id, s.script_processor_id, script_processor_name FROM osae_script s INNER JOIN osae_script_processors sp ON sp.script_processor_id = s.script_processor_id ORDER BY script_name");
         gvScripts.DataBind();
 
-        ddlScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
-        ddlScript.DataBind();
-
-        ddlObjTypeScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
-        ddlObjTypeScript.DataBind();
+        
     }
 
     private void loadEventScripts()
@@ -172,6 +170,12 @@ public partial class scripts : System.Web.UI.Page
         else
             ddlObjectType.Visible = true;
         ddlObjectType.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+
+        ddlScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
+        ddlScript.DataBind();
+
+        ddlObjTypeScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
+        ddlObjTypeScript.DataBind();
     }
 
     protected void btnAdd_Click(object sender, EventArgs e)
@@ -187,6 +191,7 @@ public partial class scripts : System.Web.UI.Page
             saveAlert.Visible = true;
         }
     }
+    
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
         if (txtName.Text == "" || ddlScriptProcessor.SelectedValue == "0")
@@ -200,6 +205,7 @@ public partial class scripts : System.Web.UI.Page
             saveAlert.Visible = true;
         }
     }
+    
     protected void btnDelete_Click(object sender, EventArgs e)
     {
         OSAEScriptManager.ScriptDelete(hdnSelectedScriptName.Text);
@@ -265,6 +271,7 @@ public partial class scripts : System.Web.UI.Page
         else
             hdnSelectedObjTypeEventScriptRow.Text = selectedRow.ToString();
     }
+    
     protected void btnAddObjTypeEventScript_Click(object sender, EventArgs e)
     {
         OSAEScriptManager.ObjectTypeEventScriptAdd(ddlObjectType.SelectedItem.Text, ddlObjTypeEvent.SelectedItem.Value, Int32.Parse(ddlObjTypeScript.SelectedValue));

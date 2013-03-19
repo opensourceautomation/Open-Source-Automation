@@ -559,7 +559,7 @@ $$
 CREATE PROCEDURE osae_sp_script_add(IN pname VARCHAR(255), IN pscriptprocessor VARCHAR(255), IN pscript VARCHAR(4000))
 BEGIN
   DECLARE vScriptProcessorID INT;
-  SELECT script_processor_id INTO vScriptProcessorID FROM osae_script_processors WHERE script_processor_id = pscriptprocessorid;
+  SELECT script_processor_id INTO vScriptProcessorID FROM osae_script_processors WHERE script_processor_name = pscriptprocessor;
   INSERT INTO osae_script(script_name, script_processor_id, script)
     VALUES(pname,vScriptProcessorID,pscript);
 END
@@ -641,7 +641,7 @@ $$
 CREATE PROCEDURE osae_sp_script_update(IN poldname VARCHAR(255), IN pname VARCHAR(255), IN pscriptprocessor VARCHAR(255), IN pscript VARCHAR(255))
 BEGIN
   DECLARE vScriptProcessorID INT;
-  SELECT script_processor_id INTO vScriptProcessorID FROM osae_script_processors WHERE script_processor_id = pscriptprocessorid;
+  SELECT script_processor_id INTO vScriptProcessorID FROM osae_script_processors WHERE script_processor_name = pscriptprocessor;
 
   UPDATE osae_script
     SET script_name = pname, script_processor_id = vScriptProcessorID, script = pscript
@@ -680,6 +680,7 @@ DECLARE vDebugTrace VARCHAR(2000);
             WHERE object_id=NEW.object_id AND event_id=NEW.event_id AND s.script IS NOT NULL and s.script<>'' AND script_sequence > vScriptSeq
             ORDER BY script_sequence ASC LIMIT 1;
           IF vPrevScriptSeq != vScriptSeq THEN
+            # CALL osae_sp_debug_log_add(CONCAT(vScriptSeq, '-',vScriptID,'-',scriptProc),vDebugTrace);
             CALL osae_sp_method_queue_add (scriptProc,'RUN SCRIPT',vScriptID,'','SYSTEM',vDebugTrace);
           END IF;
         END WHILE;
@@ -956,7 +957,7 @@ CALL osae_sp_object_type_event_add ('ON','Motion','IP CAMERA');
 CALL osae_sp_object_type_event_add ('OFF','Still','IP CAMERA');
 CALL osae_sp_object_type_property_add ('Stream Address','String','','IP CAMERA',0);
 
-CALL osae_sp_object_type_property_update ('PAssword', 'Password', 'Password', '', 'PERSON', 0);
+CALL osae_sp_object_type_property_update ('Password', 'Password', 'Password', '', 'PERSON', 0);
 
 -- Set DB version 
 CALL osae_sp_object_property_set('SYSTEM', 'DB Version', '0.4.0', '', '');

@@ -34,9 +34,9 @@
             </div>
             <asp:Button runat="server" ID="btnRefresh" Text="Refresh" class="btn" OnClick="btnRefresh_Click"/>
         </div>
-        <div class="span8">
+        <div class="span10">
             <asp:Panel ID="panelLogContent" runat="server" Visible="false">
-                <asp:TextBox ID="logContentTextBox" runat="server" Width="70em" Height="50em" TextMode="MultiLine" ReadOnly="false" />
+                <asp:TextBox ID="logContentTextBox" runat="server" Width="99%" Height="50em" TextMode="MultiLine" ReadOnly="false" />
             </asp:Panel>
         </div>
     </div>

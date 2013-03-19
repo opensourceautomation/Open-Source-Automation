@@ -11,7 +11,12 @@
             
             $("#<%=datepicker.ClientID%>").val($("#<%=txtPickedDate.ClientID%>").val());
 
+            //$("#<%=timepicker.ClientID%>").timepicker();
+            //$('#timezone_example_1').timepicker();
+            $('#timezone_example_1').datetimepicker();
         }
+
+        
 
         $(function () {
             $("#<%=datepicker.ClientID%>").change(function () {
@@ -31,6 +36,18 @@
               display: block;
               text-align: left;
          }
+
+         /* css for timepicker */
+        .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+        .ui-timepicker-div dl { text-align: left; }
+        .ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+        .ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+        .ui-timepicker-div td { font-size: 90%; }
+        .ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+
+        .ui-timepicker-rtl{ direction: rtl; }
+        .ui-timepicker-rtl dl { text-align: right; }
+        .ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }
     </style>
     <div class="row-fluid">
         <div class="span8">
@@ -89,6 +106,10 @@
                         </div>
                         <div class="span10">
                             <MKB:TimeSelector ID="tsTime" runat="server"></MKB:TimeSelector>
+                            <asp:TextBox runat="server" name="timepicker" ID="timepicker"></asp:TextBox>
+                            <div>
+					 		<input type="text" name="timezone_example_1" id="timezone_example_1" value="" />
+						</div>	
                         </div>
                     </div>
                 

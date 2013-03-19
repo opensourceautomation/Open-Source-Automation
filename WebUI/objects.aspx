@@ -88,7 +88,7 @@
                         <label>Address</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:TextBox class="input-xlarge" runat="server" ID="txtAddress" title="The IP address of the object (not all objects require an IP)"></asp:TextBox>
+                        <asp:TextBox class="input-xlarge" runat="server" ID="txtAddress" title="The protocal address of the object (not all objects require an address)"></asp:TextBox>
                     </div>
                 </div>
                 <div class="row-fluid">

@@ -98,10 +98,13 @@ Section Server s1
   Pop $1
   SimpleSC::ExistsService "MySQL"
   Pop $2
-   
+  SimpleSC::ExistsService "MySql56"
+  Pop $3
+  
   ${If} $0 != 0
   ${AndIf} $1 != 0
   ${AndIf} $2 != 0
+  ${AndIf} $3 != 0
     SetOutPath "$INSTDIR"
     File "..\DB\osae.sql"
     File "MySql.Data.dll"
@@ -161,53 +164,11 @@ Section Server s1
   File "..\output\OSAE.VR.exe"
   CreateDirectory "Sounds"
   CreateDirectory "Logs"
-  CreateDirectory "Images"
+
   CreateDirectory "Plugins"
-  CreateDirectory "wwwroot"
   
-  SetOutPath "$INSTDIR\wwwroot"
-  File "..\output\wwwroot\*.*"
-  CreateDirectory "bootstrap"
-  CreateDirectory "includes"
-  CreateDirectory "mobile"
-  CreateDirectory "images"
-  
-  SetOutPath "$INSTDIR\wwwroot\bootstrap"
-  CreateDirectory "css"
-  CreateDirectory "js"
-  CreateDirectory "img"
-  SetOutPath "$INSTDIR\wwwroot\bootstrap\css"
-  File "..\output\wwwroot\bootstrap\css\*.*"
-  SetOutPath "$INSTDIR\wwwroot\bootstrap\js"
-  File "..\output\wwwroot\bootstrap\js\*.*"
-  SetOutPath "$INSTDIR\wwwroot\bootstrap\img"
-  File "..\output\wwwroot\bootstrap\img\*.*"
-  SetOutPath "$INSTDIR\wwwroot\includes"
-  File "..\output\wwwroot\includes\*.*"
-  SetOutPath "$INSTDIR\wwwroot\images"
-  File "..\output\Images\*.jpg"
-  File "..\output\Images\*.png"
-  SetOutPath "$INSTDIR\wwwroot\mobile"
-  File "..\output\wwwroot\mobile\*.*"
-  
-  CreateDirectory "images"
-  SetOutPath "$INSTDIR\wwwroot\mobile\images"
-  File "..\output\wwwroot\mobile\images\*.*"
-  SetOutPath "$INSTDIR\wwwroot\mobile"
-  
-  CreateDirectory "jquery"
-  SetOutPath "$INSTDIR\wwwroot\mobile\jquery"
-  File "..\output\wwwroot\mobile\jquery\*.*"
-  
-  CreateDirectory "images"
-  SetOutPath "$INSTDIR\wwwroot\mobile\jquery\images"
-  File "..\output\wwwroot\mobile\jquery\images\*.*"
   
   SetOutPath "$INSTDIR\Logs"
-  
-  SetOutPath "$INSTDIR\Images"
-  File "..\output\Images\*.jpg"
-  File "..\output\Images\*.png" 
   
   SetOutPath "$INSTDIR\Plugins"
   CreateDirectory "Bluetooth"
@@ -258,19 +219,66 @@ Section Server s1
 
   SetOutPath "$INSTDIR\Plugins\Web Server"
   File "..\output\Plugins\Web Server\Web Server.osapd"
-  File "..\output\Plugins\Web Server\OSAE.WebServer.dll"  
-  File "..\output\Plugins\Web Server\HttpServer.dll"
   File "..\output\Plugins\Web Server\Screenshot.jpg"
+  CreateDirectory "wwwroot"
+    
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot"
+  File "..\WebUI\*.*"
+  CreateDirectory "bootstrap"
+  CreateDirectory "Bin"
+  CreateDirectory "mobile"
+  CreateDirectory "Images"
+  CreateDirectory "css"
+  
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\bootstrap"
+  CreateDirectory "css"
+  CreateDirectory "js"
+  CreateDirectory "img"
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\bootstrap\css"
+  File "..\WebUI\bootstrap\css\*.*"
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\bootstrap\js"
+  File "..\WebUI\bootstrap\js\*.*"
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\bootstrap\img"
+  File "..\WebUI\bootstrap\img\*.*"
+  
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\Bin"
+  File "..\WebUI\Bin\*.*"
+  
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\Images"
+  File "..\WebUI\Images\*.*"
+  
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\mobile"
+  File "..\WebUI\mobile\*.*"
+  CreateDirectory "images"
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\mobile\images"
+  File "..\WebUI\mobile\images\*.*"
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\mobile"
+  CreateDirectory "jquery"
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\mobile\jquery"
+  File "..\WebUI\mobile\jquery\*.*"
+  CreateDirectory "images"
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\mobile\jquery\images"
+  File "..\WebUI\mobile\jquery\images\*.*"
+  
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\css"
+  File "..\WebUI\css\*.*"
 
-  SetOutPath "C:\"
-  CreateDirectory "PHP"
-  SetOutPath "C:\PHP"
-  CreateDirectory "ext"
-  File "php-cgi.exe"
-  File "php5.dll"
-  File "php.ini"
-  SetOutPath "C:\PHP\ext"
-  File "php_mysql.dll"
+
+ 
+  SetOutPath $INSTDIR
+  File "UltiDev.WebServer.msi"
+
+  DetailPrint "Installing UltiDev Web Server Pro"
+  ExecWait 'msiexec.exe /passive /i "$INSTDIR\UltiDev.WebServer.msi"'
+
+  ; Unregister website to make sure no files are in use by webserver while upgrading 
+  ; and to pick up any changes in how we register it now
+
+  DetailPrint "Unregistering Website"
+  ExecWait '"$PROGRAMFILES64\UltiDev\Web Server\UWS.RegApp.exe" /unreg /AppID:{58fe03ca-9975-4df2-863e-a228614258c4}'
+  ; Register the website 
+
+  ExecWait '"$PROGRAMFILES64\UltiDev\Web Server\UWS.RegApp.exe" /r /AppId={58fe03ca-9975-4df2-863e-a228614258c4} /path:"$INSTDIR\Plugins\Web Server\wwwroot" "/EndPoints:http://*:8081/" /ddoc:default.aspx /appname:"Open Source Automation" /apphost=SharedLocalSystem /clr:4 /vpath:"/"'
   
   # Start Menu Shortcuts
   SetShellVarContext all
@@ -302,11 +310,6 @@ Section Server s1
   AccessControl::GrantOnFile \
     "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   
-  ;SetOutPath $INSTDIR
-  ;File "DBInstall\GAC\bin\Debug\GAC.exe"
-  ;ExecWait "$INSTDIR\GAC.exe"
-  ;Delete "$INSTDIR\GAC.exe"
-    
   writeUninstaller $INSTDIR\uninstall.exe
   
   
@@ -341,13 +344,8 @@ Section Client s2
   File "..\output\OSAE.VR.exe"
   CreateDirectory "Sounds"
   CreateDirectory "Logs"
-  CreateDirectory "Images"
   CreateDirectory "Plugins"
-  
-  SetOutPath "$INSTDIR\Images"
-  File "..\output\Images\*.jpg"
-  File "..\output\Images\*.png" 
-  
+    
   SetOutPath "$INSTDIR\Plugins"
   CreateDirectory "Speech"
      
@@ -389,12 +387,7 @@ Section Client s2
   
   AccessControl::GrantOnFile \
     "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
-  
-  ;SetOutPath $INSTDIR
-  ;File "DBInstall\GAC\bin\Debug\GAC.exe"
-  ;ExecWait "$INSTDIR\GAC.exe"
-  ;Delete "$INSTDIR\GAC.exe"
-    
+   
   writeUninstaller $INSTDIR\uninstall.exe
   
   SetOutPath $INSTDIR

@@ -167,7 +167,8 @@ public partial class home : System.Web.UI.Page
         txtDescr.Text = obj.Description;
         txtAddress.Text = obj.Address;
         ddlContainer.SelectedValue = obj.Container;
-        ddlState.SelectedValue = obj.State.Value;
+        if(obj.State.Value != "")
+            ddlState.SelectedValue = obj.State.Value;
         ddlType.SelectedValue = obj.Type;
         if (obj.Enabled == 1)
             chkEnabled.Checked = true;
