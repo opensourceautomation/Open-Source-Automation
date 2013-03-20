@@ -29,11 +29,18 @@
         /// <param name="method"></param>
         public override void ProcessCommand(OSAEMethod method)
         {
-            string script = OSAEScriptManager.GetScript(method.Parameter1);
+            try
+            {
+                string script = OSAEScriptManager.GetScript(method.Parameter1);
 
-            logging.AddToLog("running script: " + script, false);
- 
-            RunScript(script);            
+                logging.AddToLog("running script: " + script, false);
+
+                RunScript(script);
+            }
+            catch (Exception exc)
+            {
+                logging.AddToLog("Error Processing Command: " + exc.Message, true);
+            }
         }
 
         /// <summary>
@@ -106,7 +113,7 @@
                 
                 PSSnapInException psEx = null;
                 
-                runConfig.AddPSSnapIn("OSAPS", out psEx);
+                runConfig.AddPSSnapIn("OSA", out psEx);
                 runspace = RunspaceFactory.CreateRunspace(runConfig);
 
                 runspace.Open();

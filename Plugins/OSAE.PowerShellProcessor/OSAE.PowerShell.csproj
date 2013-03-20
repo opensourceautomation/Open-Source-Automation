@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OSAPS.cs" />
+    <Compile Include="CmdLets.cs" />
     <Compile Include="PowerShellPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="psintall.cs">
