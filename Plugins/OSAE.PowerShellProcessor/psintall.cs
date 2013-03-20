@@ -27,7 +27,7 @@ namespace OSAPS
         {
             get
             {
-                return "OSAPS";
+                return "OSA";
             }
         }
 
@@ -50,7 +50,7 @@ namespace OSAPS
         {
             get
             {
-                return "OSAPS,Open Source Automation";
+                return "OSA,Open Source Automation";
             }
         }
 

@@ -16,13 +16,13 @@ Install:
 	set-alias installutil $env:windir\Microsoft.NET\Framework64\v4.0.30319\installutil
 	
 	#make sure you are in the directory where the OSAPS dll is located
-	installutil OSAPS.dll
+	installutil OSA.dll
 	
-	#this should show that OSAPS is registered
+	#this should show that OSA is registered
 	get-PSsnapin -registered
 
 	#enable the addin
-	add-pssnapin OSAPS
+	add-pssnapin OSA
 
 	#need to allow the execution of scripts in powershell so we change the execution policy
 	Set-ExecutionPolicy RemoteSigned
@@ -34,7 +34,7 @@ Install:
 	PS -PSConsoleFile OSAPSCustomShell.mcf
 
 	#or you will need to execute
-	add-pssnapin OSAPS
+	add-pssnapin OSA
 	#from  the shell when you open it
 
 
@@ -42,21 +42,21 @@ Useage:
 
 There are three commands:
 
-	1. Get an OSA object, called get-OSAPS
-	2. Set an OSA object, called set-OSAPS
-	3. Invoke a method on an object, called invoke-OSAPS
+	1. Get an OSA object, called get-OSA
+	2. Set an OSA object, called set-OSA
+	3. Invoke a method on an object, called invoke-OSA
 
 Each command takes the required set of parameters for the object name, property value or method name respectively
 
 e.g.
 
-	invoke-osaps -name "Plugwise" -Method "On" -Value "D364C8"  
+	invoke-osa -name "Plugwise" -Method "On" -Value "D364C8"  
 
 This runs the function "On" on the component called "Plugiwse" with the paramtere "D364C8" being passed to the function
 
 e.g.
 
-	$x = get-osaps -name pvbeancounter
+	$x = get-osa -name pvbeancounter
 	$solarpower = $x.properties[0].Value
 
 This gets the component called "pvbeancounter" and in the next line gets the first property (value) stored.
