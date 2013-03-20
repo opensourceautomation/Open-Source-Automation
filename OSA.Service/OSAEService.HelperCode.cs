@@ -159,7 +159,7 @@
                                 if (plugin.Enabled == true && (method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower()))
                                 {
                                     logging.AddToLog("Removing method from queue with ID: " + method.Id, false);
-                                    OSAEMethodManager.MethodQueueDelete(method.Id);
+                                    plugin.ExecuteCommand(method);
                                     processed = true;
                                     break;
                                 }
@@ -172,9 +172,9 @@
                                     + method.Address + " | " + method.Id);
 
                                 logging.AddToLog("Removing method from queue with ID: " + method.Id, false);
-                                OSAEMethodManager.MethodQueueDelete(method.Id);
-                                processed = true;
                             }
+
+                            OSAEMethodManager.MethodQueueDelete(method.Id);
                         }
                     }
                 }
