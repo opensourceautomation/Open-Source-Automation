@@ -20,7 +20,7 @@
     <DebugType>None</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\output\AddIns\Computer Power\</OutputPath>
+    <OutputPath>..\..\output\Plugins\Computer Power\</OutputPath>
     <DocumentationFile>
     </DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
