@@ -62,7 +62,14 @@
 
         public MainWindow()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("Error starting GUI: " + ex.Message,true);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

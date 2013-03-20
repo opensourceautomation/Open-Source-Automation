@@ -156,6 +156,9 @@ Section Server s1
   Delete "..\output\OSAE Manager.exe.config"
   
   File "..\output\ICSharpCode.SharpZipLib.dll"
+  File "..\output\MjpegProcessor.dll"
+  File "..\output\OSAE.UI.Controls.dll"
+  File "..\output\OSA.png"
   File "..\output\OSAE.Manager.exe"
   File "..\output\OSAE.Manager.exe.config"
   File "..\output\LogViewer.exe"
@@ -295,6 +298,8 @@ Section Server s1
     SetShellVarContext all
     ShellLink::SetRunAsAdministrator "$INSTDIR\OSAE.Manager.exe"
     ShellLink::SetRunAsAdministrator "$SMPROGRAMS\OSA\Manager.lnk"
+    ShellLink::SetRunAsAdministrator "$INSTDIR\OSAE.GUI.exe"
+    ShellLink::SetRunAsAdministrator "$SMPROGRAMS\OSA\OSAE.GUI.lnk"
     #Pop $0
   ${EndIf}          
   
@@ -338,6 +343,9 @@ Section Client s2
   Delete "..\output\OSAE Manager.exe.config"
   
   File "..\output\ICSharpCode.SharpZipLib.dll"
+  File "..\output\MjpegProcessor.dll"
+  File "..\output\OSAE.UI.Controls.dll"
+  File "..\output\OSA.png"
   File "MySql.Data.dll"
   File "..\output\OSAE.Manager.exe"
   File "..\output\OSAE.Manager.exe.config"
@@ -375,8 +383,10 @@ Section Client s2
     SetShellVarContext all
     ShellLink::SetRunAsAdministrator "$INSTDIR\OSAE.Manager.exe"
     ShellLink::SetRunAsAdministrator "$SMPROGRAMS\OSA\Manager.lnk"
+    ShellLink::SetRunAsAdministrator "$INSTDIR\OSAE.GUI.exe"
+    ShellLink::SetRunAsAdministrator "$SMPROGRAMS\OSA\OSAE.GUI.lnk"
     #Pop $0
-  ${EndIf} 
+  ${EndIf}  
   
   SimpleSC::InstallService "OSAE Client" "OSAE Client Service" "16" "2" "$INSTDIR\ClientService.exe" "" "" ""
   Pop $0 ; returns an errorcode (<>0) otherwise success (0)
