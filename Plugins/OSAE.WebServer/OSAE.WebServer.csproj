@@ -64,7 +64,6 @@
     <None Include="Web Server.osapd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="WebUI.zip" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Screenshot.jpg">
