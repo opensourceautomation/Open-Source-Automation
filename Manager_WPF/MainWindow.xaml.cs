@@ -29,7 +29,7 @@
         /// <summary>
         /// Used to get access to the logging facility
         /// </summary>
-        private Logging logging = Logging.GetLogger("Manager_WPF");
+        private Logging logging = Logging.GetLogger("Manager");
 
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
