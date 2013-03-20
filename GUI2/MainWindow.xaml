@@ -12,6 +12,7 @@
                     <MenuItem Header="Add Control">
                         <MenuItem Name="menuAddStateImage" Header="State Image" Click="menuAddStateImage_Click" />
                         <MenuItem Name="menuAddPropertyLabel" Header="Property Label" Click="menuAddPropertyLabel_Click" />
+                        <MenuItem Name="menuAddMethodImage" Header="Method Image" Click="menuAddMethodImage_Click" />
                         <MenuItem Name="menuAddNavImage" Header="Navigation Image" Click="menuAddNavImage_Click" />
                         <MenuItem Name="menuAddTimerLabel" Header="Timer Label" Click="menuAddTimerLabel_Click" />
                         <MenuItem Name="menuAddCameraViewer" Header="Camera Viwer" Click="menuAddCameraViewer_Click" />

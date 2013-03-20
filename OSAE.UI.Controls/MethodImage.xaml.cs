@@ -1,39 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.IO;
 
 namespace OSAE.UI.Controls
 {
     /// <summary>
-    /// Interaction logic for NavigationImage.xaml
+    /// Interaction logic for MethodImage.xaml
     /// </summary>
-    public partial class NavigationImage : UserControl
+    public partial class MethodImage : UserControl
     {
-        public string screenName { get; set; }
         public Point Location;
         public OSAEObject screenObject { get; set; }
 
-
+        private string ObjectName;
+        private string MethodName;
+        private string Param1;
+        private string Param2;
         private OSAEImageManager imgMgr = new OSAEImageManager();
 
-        public NavigationImage(string Name, OSAEObject sObj)
+        public MethodImage(OSAEObject sObj)
         {
             InitializeComponent();
             screenObject = sObj;
-            screenName = Name;
+            ObjectName = screenObject.Property("Object Name").Value; ;
+            MethodName = screenObject.Property("Method Name").Value; ;
+            Param1 = screenObject.Property("Param 1").Value; ;
+            Param2 = screenObject.Property("Param 2").Value; ;
 
-            Image.Tag = screenName;
+            Image.Tag = ObjectName + " - " + MethodName;
+            Image.MouseLeftButtonUp += new MouseButtonEventHandler(Method_Image_MouseLeftButtonUp);
 
             string imgName = screenObject.Property("Image").Value;
             OSAEImage img = imgMgr.GetImage(imgName);
@@ -56,5 +54,10 @@ namespace OSAE.UI.Controls
             }
 
         }
+
+        private void Method_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
+        {
+            OSAEMethodManager.MethodQueueAdd(ObjectName, MethodName, Param1, Param2, "GUI");
+        }     
     }
 }

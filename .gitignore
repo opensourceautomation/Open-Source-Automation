@@ -12,6 +12,7 @@
 *.exe
 *.manifest
 *.msi
+*.orig
 _ReSharper.*
 lib/
 AddIns/

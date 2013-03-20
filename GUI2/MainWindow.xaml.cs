@@ -26,6 +26,7 @@
 
         List<StateImage> stateImages = new List<StateImage>();
         List<NavigationImage> navImages = new List<NavigationImage>();
+        List<MethodImage> methodImages = new List<MethodImage>();
         List<VideoStreamViewer> cameraViewers = new List<VideoStreamViewer>();
         List<PropertyLabel> propLabels = new List<PropertyLabel>();
         List<StaticLabel> staticLabels = new List<StaticLabel>();
@@ -379,40 +380,33 @@
                 #endregion
 
                 #region CONTROL METHOD IMAGE
-                //    else if (aScreenObject(iLoop).Control_Type = "CONTROL METHOD IMAGE")
-                //        iMethodImageCount = iMethodImageCount + 1
-                //        aScreenObject(iLoop).Object_Name = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Object Name")
-                //        aScreenObject(iLoop).Control_Index = iMethodImageCount
-                //        aControlMethodImage(aControlMethodImage.Count).Tag = iLoop
-                //        g_toolTip.SetToolTip(aControlMethodImage(iMethodImageCount), aScreenObject(iLoop).Object_Name)
-                //        CMD.Parameters.Clear()
-                //        try
-                //        {
-                //            sImage = OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Image");
-                //            sImage = sImage.Replace(".\", "\");
-                //            If File.Exists(gAppPath & sImage) Then sImage = gAppPath & sImage
-                //            iZOrder = Val(OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "ZOrder"));
-                //            iX = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "X"));
-                //            iY = Val("" & OSAEApi.GetObjectProperty(aScreenObject(iLoop).Control_Name, "Y"));
-                //            if (File.Exists(sImage))
-                //            {
-                //                aControlMethodImage(aScreenObject(iLoop).Control_Index).Image = Image.FromFile(sImage);
-                //                aScreenObject(iLoop).Object_State = ""
-                //                aControlMethodImage(aScreenObject(iLoop).Control_Index).Left = iX;
-                //                aControlMethodImage(aScreenObject(iLoop).Control_Index).Top = iY;
-                //                aControlMethodImage(aScreenObject(iLoop).Control_Index).Visible = True;
-                //            }
-                //            else
-                //            {
-                //                aControlMethodImage(aScreenObject(iLoop).Control_Index).Image = Nothing;
-                //                aControlMethodImage(aScreenObject(iLoop).Control_Index).Visible = False;
-                //            }
-                //        }
-                //         catch (MySqlException myerror)
-                //        {
-                //            MessageBox.Show("GUI Error Load_Objects 4: " + myerror.Message);
-                //            CN.Close();
-                //         }
+                else if (obj.Type == "CONTROL METHOD IMAGE")
+                {
+                    try
+                    {
+                        MethodImage methodImageControl = new MethodImage(obj);
+                        canGUI.Children.Add(methodImageControl);
+
+                        OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
+                        OSAE.OSAEObjectProperty pX = obj.Property("X");
+                        OSAE.OSAEObjectProperty pY = obj.Property("Y");
+                        Double dX = Convert.ToDouble(pX.Value);
+                        Canvas.SetLeft(methodImageControl, dX);
+                        Double dY = Convert.ToDouble(pY.Value);
+                        Canvas.SetTop(methodImageControl, dY);
+                        int dZ = Convert.ToInt32(pZOrder.Value);
+                        Canvas.SetZIndex(methodImageControl, dZ);
+                        methodImageControl.Location.X = dX;
+                        methodImageControl.Location.Y = dY;
+                        methodImages.Add(methodImageControl);
+                        controlTypes.Add(typeof(MethodImage));
+                        methodImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    }
+                    catch (MySqlException myerror)
+                    {
+                        MessageBox.Show("GUI Error Load Navigation Image: " + myerror.Message);
+                    }
+                }
                 #endregion
 
                 #region CONTROL NAVIGATION IMAGE
@@ -420,7 +414,7 @@
                 {
                     try
                     {
-                        NavigationImage navImageControl = new NavigationImage(obj.Property("Screen").Value, obj.Property("Image").Value, obj);
+                        NavigationImage navImageControl = new NavigationImage(obj.Property("Screen").Value, obj);
                         navImageControl.MouseLeftButtonUp += new MouseButtonEventHandler(Navigaton_Image_MouseLeftButtonUp);
                         canGUI.Children.Add(navImageControl);
 
@@ -759,6 +753,16 @@
             addControl.Show();
         }
 
+        private void menuAddMethodImage_Click(object sender, RoutedEventArgs e)
+        {
+            AddControl addControl = new AddControl();
+            AddControlMethodImage cmi = new AddControlMethodImage(gCurrentScreen);
+            addControl.Content = cmi;
+            addControl.Width = cmi.Width + 80;
+            addControl.Height = cmi.Height + 80;
+            addControl.Show();
+        }
+
         private void menuAddTimerLabel_Click(object sender, RoutedEventArgs e)
         {
             AddControl addControl = new AddControl();
@@ -807,6 +811,8 @@
             ChangeScreen chgScrn = new ChangeScreen(this);
             chgScrn.Show();
         }
+
+        
 
         
 
