@@ -2,7 +2,7 @@
 {
     using System.Management.Automation;  // Windows PowerShell assembly.
 
-    [Cmdlet(VerbsCommon.Get, "OSAPS")]
+    [Cmdlet(VerbsCommon.Get, "OSA")]
     public class OSAPS : Cmdlet
     {
         /// <summary>
@@ -22,7 +22,8 @@
         public string Property { get; set; }
       
         protected override void ProcessRecord()
-        {         
+        {
+            logging.AddToLog("Get-OSA - ProcessRecord - Started", false);
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
 
             if (Property != string.Empty)
@@ -38,7 +39,7 @@
         }
     }
 
-    [Cmdlet(VerbsCommon.Set, "OSAPS")]
+    [Cmdlet(VerbsCommon.Set, "OSA")]
     public class OSAPSSet : Cmdlet
     {
         /// <summary>
@@ -61,16 +62,16 @@
         public string Value { get; set; }
                 
         protected override void ProcessRecord()
-        {           
+        {
+            logging.AddToLog("Set-OSA - ProcessRecord - Started", false);
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
             OSAEObjectPropertyManager.ObjectPropertySet(Name, Property, Value, source);
 
             WriteObject(true);
         }
-
     }
 
-    [Cmdlet(VerbsLifecycle.Invoke, "OSAPS")]
+    [Cmdlet(VerbsLifecycle.Invoke, "OSA")]
     public class OSAPSInovke : Cmdlet
     {
         /// <summary>
@@ -89,18 +90,46 @@
         [Parameter(Mandatory = true)]
         public string Method { get; set; }
 
-        [Parameter(Mandatory = true)]
-        public string Value { get; set; }
+        private string parameter1 = string.Empty;
+        
+        [Parameter(Mandatory = false)]
+        public string Parameter1 
+        {
+            get
+            {
+                return parameter1;
+            }
+            set
+            {
+                parameter1 = value;
+            }
+        }
+
+        private string parameter2 = string.Empty;
+
+        [Parameter(Mandatory = false)]
+        public string Parameter2
+        {
+            get
+            {
+                return parameter2;
+            }
+            set
+            {
+                parameter2 = value;
+            }
+        }
                
         protected override void ProcessRecord()
         {
-            // OSAEMethodManager.MethodQueueAdd(name, Method, Value, ""); TODO
+            logging.AddToLog("Invoke-OSA - ProcessRecord - Started", false);
+            OSAEMethodManager.MethodQueueAdd(Name, Method, parameter1, parameter2, source);
 
             WriteObject(true);
         }
     }
 
-    [Cmdlet(VerbsCommon.Show, "OSAPS")]
+    [Cmdlet(VerbsCommon.Show, "OSA")]
     public class OSAPSShow : Cmdlet
     {
         /// <summary>
@@ -118,6 +147,7 @@
         
         protected override void ProcessRecord()
         {
+            logging.AddToLog("Show-OSA - ProcessRecord - Started", false);
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
 
             WriteObject("Name: " + obj.Name);
