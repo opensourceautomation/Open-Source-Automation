@@ -33,5 +33,13 @@
 
             return null;
         }
+
+        public OSAEObjectProperty this[string key]
+        {
+            get
+            {
+                return this.Find(key);
+            }
+        }
     }
 }

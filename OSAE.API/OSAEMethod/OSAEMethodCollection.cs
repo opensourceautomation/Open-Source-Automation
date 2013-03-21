@@ -1,10 +1,7 @@
 ﻿namespace OSAE
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Text;
 
     public class OSAEMethodCollection : Collection<OSAEMethod>
     {
@@ -27,6 +24,14 @@
             }
 
             return null;
+        }
+
+        public OSAEMethod this[string key]
+        {
+            get
+            {
+                return this.Find(key);
+            }
         }
     }
 }

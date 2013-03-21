@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
-namespace OSAE
+﻿namespace OSAE
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+
     public class OSAEPluginCollection : Collection<Plugin>
     {
         public void AddRange(List<Plugin> osaeObjects)
@@ -40,6 +37,14 @@ namespace OSAE
             }
 
             return null;
+        }
+
+        public Plugin this[string key]
+        {
+            get
+            {
+                return this.Find(key);
+            }
         }
     }
 }
