@@ -47,10 +47,6 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AddInView">
-      <HintPath>..\..\output\AddInViews\AddInView.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="MySql.Data, Version=6.3.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\output\lib\MySql.Data.dll</HintPath>

@@ -49,10 +49,6 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AddInView">
-      <HintPath>..\..\output\AddInViews\AddInView.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Interop.cm11a">
       <HintPath>.\Interop.cm11a.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>

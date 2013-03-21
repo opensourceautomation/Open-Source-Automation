@@ -29,6 +29,7 @@ Public Class ScriptProcessor
 
     Public Overrides Sub RunInterface(ByVal sName As String)
         gAppName = sName
+        logging.AddToLog("Running Interface!", True)
     End Sub
 
     Public Overrides Sub Shutdown()

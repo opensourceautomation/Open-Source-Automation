@@ -94,10 +94,6 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AddInView">
-      <HintPath>..\..\output\AddInViews\AddInView.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Interop.ActiveHomeScriptLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
