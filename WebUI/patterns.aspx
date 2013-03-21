@@ -121,7 +121,7 @@
                                 AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvScripts_RowDataBound" DataKeyNames="script_name,script_sequence, pattern_script_id" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="script_name" HeaderText="Script" /> 
-                                    <asp:BoundField DataField="script_sequence" HeaderText="Sequence" /> 
+                                    <asp:BoundField DataField="script_sequence" HeaderText="Sequence" Visible="False" /> 
                                     <asp:BoundField DataField="pattern_script_id" Visible="False" /> 
                                 </Columns>  
                             </asp:GridView>

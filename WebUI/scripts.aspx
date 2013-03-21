@@ -157,7 +157,7 @@
                                 AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvEventScripts_RowDataBound" DataKeyNames="script_name,script_sequence, event_script_id" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="script_name" HeaderText="Script" /> 
-                                    <asp:BoundField DataField="script_sequence" HeaderText="Sequence" /> 
+                                    <asp:BoundField DataField="script_sequence" HeaderText="Sequence" Visible="False"/> 
                                     <asp:BoundField DataField="event_script_id" Visible="False" /> 
                                 </Columns>  
                             </asp:GridView>
@@ -215,7 +215,7 @@
                                 AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjTypeScripts_RowDataBound" DataKeyNames="script_name,script_sequence, object_type_event_script_id" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="script_name" HeaderText="Script" /> 
-                                    <asp:BoundField DataField="script_sequence" HeaderText="Sequence" /> 
+                                    <asp:BoundField DataField="script_sequence" HeaderText="Sequence" Visible="False"/> 
                                     <asp:BoundField DataField="object_type_event_script_id" Visible="False" /> 
                                 </Columns>  
                             </asp:GridView>
