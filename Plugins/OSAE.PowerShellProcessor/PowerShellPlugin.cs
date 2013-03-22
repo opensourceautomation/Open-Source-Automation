@@ -130,7 +130,7 @@
                     stringBuilder.AppendLine(obj.ToString());
                 }
 
-                logging.AddToLog("Script return: " + stringBuilder.ToString(), false);
+                logging.AddToLog("Script return: \r\n" + stringBuilder.ToString(), false);
 
             }
             catch (Exception ex)

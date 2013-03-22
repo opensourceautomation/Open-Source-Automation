@@ -291,7 +291,7 @@
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
                             obj.Properties = OSAEObjectPropertyManager.GetObjectProperties(obj.Name);
-                            obj.Methods = GetObjectMethods(obj.Name);
+                            obj.Methods = OSAEObjectManager.GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
                         return objects;
@@ -435,23 +435,27 @@
             }
         }
 
-        public static List<string> GetObjectMethods(string ObjectName)
+        public static OSAEMethodCollection GetObjectMethods(string ObjectName)
         {
             DataSet dataset = new DataSet();
-            List<string> methods = new List<string>();
+            OSAEMethodCollection methods = new OSAEMethodCollection();
 
             try
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    command.CommandText = "SELECT method_name FROM osae_v_object_method WHERE object_name=@ObjectName ORDER BY method_name";
+                    command.CommandText = "SELECT method_id, method_name FROM osae_v_object_method WHERE object_name=@ObjectName ORDER BY method_name";
                     command.Parameters.AddWithValue("@ObjectName", ObjectName);
                     dataset = OSAESql.RunQuery(command);
                 }
 
                 foreach (DataRow drp in dataset.Tables[0].Rows)
                 {
-                    methods.Add(drp["method_name"].ToString());
+                    OSAEMethod method = new OSAEMethod();
+                    method.MethodName = drp["method_name"].ToString();
+                    method.Id = int.Parse(drp["method_id"].ToString());
+                    method.ObjectName = ObjectName;
+                    methods.Add(method);
                 }
             }
             catch (Exception ex)
@@ -460,6 +464,6 @@
             }
 
             return methods;
-        }
+        }       
     }
 }

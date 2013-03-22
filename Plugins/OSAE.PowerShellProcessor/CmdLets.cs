@@ -17,25 +17,12 @@
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }
-
-        [Parameter(Mandatory = false)]
-        public string Property { get; set; }
-      
+               
         protected override void ProcessRecord()
         {
             logging.AddToLog("Get-OSA - ProcessRecord - Started", false);
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
-
-            if (Property != string.Empty)
-            {
-                OSAEObjectProperty objProp = OSAEObjectPropertyManager.GetObjectPropertyValue(Name, Property);
-
-                WriteObject(objProp);
-            }
-            else
-            {
-                WriteObject(obj);
-            }
+            WriteObject(obj);
         }
     }
 
@@ -151,17 +138,26 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
 
             WriteObject("Name: " + obj.Name);
-            WriteObject("State: " + obj.State);
+            WriteObject("State: " + obj.State.Value);
             WriteObject("Description: " + obj.Description);
             WriteObject("Container: " + obj.Container);
             WriteObject("Address: " + obj.Address);
-            WriteObject("Enabled: " + obj.Enabled);
+
+            if (obj.Enabled == 0)
+            {
+                WriteObject("Enabled: FALSE");
+            }
+            else
+            {
+                WriteObject("Enabled: TRUE");
+            }
+
             WriteObject("Base Type: " + obj.BaseType);
             WriteObject("Type: " + obj.Type);
 
-            foreach (string method in obj.Methods)
+            foreach (OSAEMethod method in obj.Methods)
             {
-                WriteObject("Method: " + method);
+                WriteObject("Method: " + method.MethodName);
             }
 
             foreach (OSAEObjectProperty prop in obj.Properties)

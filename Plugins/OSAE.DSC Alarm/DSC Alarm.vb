@@ -1,9 +1,7 @@
-﻿Imports System.AddIn
-Imports OpenSourceAutomation
-Imports System.Timers
+﻿Imports System.Timers
 Imports System.IO.Ports
 Imports System.Threading.Thread
-'Imports System.Text.RegularExpressions
+Imports OSAE
 
 Public Class DSCAlarm
     Inherits OSAEPluginBase

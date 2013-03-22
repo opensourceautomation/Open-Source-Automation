@@ -1,6 +1,8 @@
 ﻿namespace OSAE
 {
+    using MySql.Data.MySqlClient;
     using System;
+    using System.Data;
 
     /// <summary>
     /// Method passed to plugins to allow them to process an event in the system
@@ -57,6 +59,60 @@
             Parameter2 = param2;
             Address = address;
             Owner = owner;
+        }
+
+        public void Run()
+        {
+            if (this.Id == null | this.Id == 0)
+            {
+                throw new ArgumentException("Cannot invoke run when Id is not available");
+            }
+
+            if(string.IsNullOrEmpty(this.MethodName))
+            {
+                throw new ArgumentException("Cannot invoke run when method name is not available");
+            }    
+      
+            if(string.IsNullOrEmpty(this.ObjectName))
+            {
+                this.ObjectName = GetObjectNameFromMethodId(Id);
+            }
+
+            OSAEMethodManager.MethodQueueAdd(this.ObjectName, this.MethodName, this.Parameter1, this.Parameter2, "API");                
+        }
+
+        private string GetObjectNameFromMethodId(int methodId)
+        {            
+            string objectName = null;
+
+            try
+            {
+                DataSet dataset = new DataSet();
+
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    
+                    command.CommandText = "SELECT object_name FROM osae_v_object WHERE object_name=@MethodId";
+                    command.Parameters.AddWithValue("@MethodId", this.Id);
+                    dataset = OSAESql.RunQuery(command);
+                }
+
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    objectName = dataset.Tables[0].Rows[0]["object_name"].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - GetObjectNameFromMethodId (" + methodId + ")error: " + ex.Message, true);                    
+            }
+
+            return ObjectName;
+        }
+
+        public override string ToString()
+        {
+            return this.MethodName;
         }
     }
 }

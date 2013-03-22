@@ -54,6 +54,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebUI", "http://localhost:5
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		ProjectReferences = "{022f45f1-c988-41a1-a203-39e97be928b6}|OSAE.API.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_53994"
 		Debug.AspNetCompiler.PhysicalPath = "WebUI\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53994\"

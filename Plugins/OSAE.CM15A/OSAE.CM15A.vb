@@ -3,7 +3,6 @@ Option Explicit On
 Imports MySql.Data.MySqlClient
 Imports ActiveHomeScriptLib
 Imports System.AddIn
-Imports OpenSourceAutomation
 
 Public Class CM15A
     Inherits OSAEPluginBase

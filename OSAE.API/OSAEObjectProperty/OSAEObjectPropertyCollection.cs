@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Text;
 
     /// <summary>
     /// Collection class for managing properties of an OSA object
@@ -32,6 +33,26 @@
             }
 
             return null;
+        }
+
+        public OSAEObjectProperty this[string key]
+        {
+            get
+            {
+                return this.Find(key);
+            }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (OSAEObjectProperty obj in this.Items)
+            {
+                sb.AppendLine(obj.Name);
+            }
+
+            return sb.ToString();
         }
     }
 }
