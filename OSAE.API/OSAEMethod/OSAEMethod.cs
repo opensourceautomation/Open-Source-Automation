@@ -78,8 +78,7 @@
                 this.ObjectName = GetObjectNameFromMethodId(Id);
             }
 
-            OSAEMethodManager.MethodQueueAdd(this.ObjectName, this.MethodName, this.Parameter1, this.Parameter2, "API");
-                
+            OSAEMethodManager.MethodQueueAdd(this.ObjectName, this.MethodName, this.Parameter1, this.Parameter2, "API");                
         }
 
         private string GetObjectNameFromMethodId(int methodId)
@@ -109,6 +108,11 @@
             }
 
             return ObjectName;
+        }
+
+        public override string ToString()
+        {
+            return this.MethodName;
         }
     }
 }

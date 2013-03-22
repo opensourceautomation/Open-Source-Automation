@@ -14,5 +14,10 @@
         /// The amount of time the object was in the state
         /// </summary>
         public long TimeInState { get; set; }
+
+        public override string ToString()
+        {
+            return this.Value;
+        }
     }
 }

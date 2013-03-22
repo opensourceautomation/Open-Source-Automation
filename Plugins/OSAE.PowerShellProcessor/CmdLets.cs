@@ -17,25 +17,12 @@
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }
-
-        [Parameter(Mandatory = false)]
-        public string Property { get; set; }
-      
+               
         protected override void ProcessRecord()
         {
             logging.AddToLog("Get-OSA - ProcessRecord - Started", false);
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
-
-            if (Property != string.Empty)
-            {
-                OSAEObjectProperty objProp = OSAEObjectPropertyManager.GetObjectPropertyValue(Name, Property);
-
-                WriteObject(objProp);
-            }
-            else
-            {
-                WriteObject(obj);
-            }
+            WriteObject(obj);
         }
     }
 

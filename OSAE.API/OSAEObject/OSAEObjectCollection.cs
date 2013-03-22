@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Text;
 
     public class OSAEObjectCollection : Collection<OSAEObject>
     {
@@ -32,6 +33,18 @@
             {
                 return this.Find(key);
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach(OSAEObject obj in this.Items)
+            {
+                sb.AppendLine(obj.Name);
+            }
+            
+            return sb.ToString();
         }
     }
 }

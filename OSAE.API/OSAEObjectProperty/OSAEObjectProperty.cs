@@ -29,5 +29,10 @@
         /// When the peroperty was last updated.
         /// </summary>
         public string LastUpdated { get; set; }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }
