@@ -52,7 +52,11 @@
         function SetObjTypeEventScriptDivPosition() {
             var intY = document.getElementById("objTypeScriptGrid").scrollTop;
             document.cookie = "yPos=#~" + intY + "~#";
-        }       
+        }
+
+        function copyScript() {
+            $('#dvmodalbody').html(editor.getValue());
+        }
     </script>
     
 
@@ -107,7 +111,7 @@
                     <asp:Button runat="server" ID="btnDelete" class="btn" OnClick="btnDelete_Click" Text="Delete" OnClientClick="return confirm('Are you sure you want to delete the script?');"/>
                     <asp:Button runat="server" ID="btnAdd2" OnClick="btnAdd_Click" style="display:none;" /> &nbsp;
                     <asp:Button runat="server" ID="btnUpdate2" OnClick="btnUpdate_Click" style="display:none;" /> &nbsp;
-                    
+                    <a href="#myModal" role="button" class="btn" data-toggle="modal" onclick="copyScript();">Copy</a>
                 </div>
             </div>
         </div>
@@ -230,7 +234,21 @@
             </div>
         </div>
     </div>
-                
+    
+    <!-- Modal -->
+    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Copy Script</h3>
+      </div>
+      <div ID="dvmodalbody" class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      </div>
+    </div>
+             
     <asp:HiddenField  runat="server" ID="hdnScript"></asp:HiddenField>
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedScriptName" Visible="false"></asp:Label>
@@ -247,11 +265,15 @@
 
         $(function () {
             $("#<%=ddlScriptProcessor.ClientID%>").change(function () {
-                if ($("#<%=ddlScriptProcessor.ClientID%>").val() == 'PowerShell') {
-                    editor.getSession().setMode("ace/mode/powershell");
-                }
+                setSytaxHighlighter();
             });
         });
+
+        function setSytaxHighlighter() {
+            if ($("#<%=ddlScriptProcessor.ClientID%>").val() == 'PowerShell') {
+                editor.getSession().setMode("ace/mode/powershell");
+            }
+        }
     </script>
 </asp:Content>
 

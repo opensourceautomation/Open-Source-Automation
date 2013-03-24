@@ -15,6 +15,7 @@
     <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-sliderAccess.js"></script>
     <script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
     
 
     <!-- Le styles -->

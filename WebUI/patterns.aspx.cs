@@ -20,6 +20,7 @@ public partial class patterns : System.Web.UI.Page
             hdnSelectedPatternName.Text = gvPatterns.DataKeys[Int32.Parse(hdnSelectedPatternRow.Text)]["pattern"].ToString();
             hdnSelectedMatchRow.Text = "";
             loadMatches();
+            loadScripts();
         }
         else if (args[0] == "gvMatches")
         {

@@ -16,19 +16,19 @@
             <div class="control-group">
             <label class="control-label" for="txtUser">User</label>
                 <div class="controls">
-                    <asp:TextBox runat="server" ID="txtUser" />
+                    <asp:TextBox class="input-xlarge" runat="server" ID="txtUser" />
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label" for="txtPass">Password</label>
                 <div class="controls">
-                    <asp:TextBox TextMode="password" runat="server" ID="txtPass" />
+                    <asp:TextBox  class="input-xlarge" TextMode="password" runat="server" ID="txtPass" />
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label" for="txtPass2">Confirm Password</label>
                 <div class="controls">
-                    <asp:TextBox TextMode="password" runat="server" ID="txtPass2" />
+                    <asp:TextBox class="input-xlarge" TextMode="password" runat="server" ID="txtPass2" />
                 </div>
             </div>
             <div class="control-group">

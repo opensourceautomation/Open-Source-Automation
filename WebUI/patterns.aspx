@@ -149,12 +149,6 @@
     <asp:Label runat="server" ID="hdnSelectedMatchName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedScriptRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedScriptID" Visible="false"></asp:Label>
-    <script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script>
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/tomorrow");
-        //editor.getSession().setMode("ace/mode/javascript");
-        editor.setValue(document.getElementById('<%=hdnScript.ClientID%>').value);
-    </script>
+    
 </asp:Content>
 

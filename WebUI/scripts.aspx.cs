@@ -19,7 +19,11 @@ public partial class scripts : System.Web.UI.Page
         {
             hdnSelectedRow.Text = args[1];
             hdnSelectedScriptName.Text = gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_name"].ToString();
-            
+            Page.ClientScript.RegisterStartupScript(
+                GetType(),
+                "MyKey",
+                "setSytaxHighlighter();",
+                true);
         }
         else if (args[0] == "gvEventScripts")
         {
