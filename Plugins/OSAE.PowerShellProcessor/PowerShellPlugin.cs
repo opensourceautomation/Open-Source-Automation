@@ -35,7 +35,7 @@
 
                 logging.AddToLog("running script: " + script, false);
 
-                RunScript(script);
+                RunScript(script, method);
             }
             catch (Exception exc)
             {
@@ -102,26 +102,29 @@
         /// Runs the content of the script parameter as a powershell script 
         /// </summary>
         /// <param name="script">The script to be run</param>
-        private void RunScript(string script)
+        private void RunScript(string script, OSAEMethod method)
         {
             Pipeline pipeline = null;
             Runspace runspace = null;
 
             try
             {
-                RunspaceConfiguration runConfig = RunspaceConfiguration.Create();
+                RunspaceConfiguration runConfig = RunspaceConfiguration.Create();                
                 
                 PSSnapInException psEx = null;
                 
-                runConfig.AddPSSnapIn("OSA", out psEx);
+                runConfig.AddPSSnapIn("OSA", out psEx);                
                 runspace = RunspaceFactory.CreateRunspace(runConfig);
-
+                runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
+               
                 runspace.Open();
-
+                
+                runspace.SessionStateProxy.SetVariable("parameter2", method.Parameter2);
+                
                 pipeline = runspace.CreatePipeline();
                 pipeline.Commands.AddScript(script);
                 pipeline.Commands.Add("Out-String");
-
+          
                 Collection<PSObject> results = pipeline.Invoke();
 
                 StringBuilder stringBuilder = new StringBuilder();
