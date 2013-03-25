@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" Height="402" Width="464">
     <Grid>
-        <Button Name="btnOpen" Content=".." HorizontalAlignment="Left" Margin="430,44,0,0" VerticalAlignment="Top" Width="24" Click="btnOpen_Click"/>
-        <TextBox x:Name="txtPath" HorizontalAlignment="Left" Height="23" Margin="83,42,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="342"/>
+        <Button Name="btnOpen" Content="Select" HorizontalAlignment="Left" Margin="83,44,0,0" VerticalAlignment="Top" Width="73" Click="btnOpen_Click"/>
         <Label Content="Image" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="txtName" HorizontalAlignment="Left" Height="23" Margin="83,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="342"/>
         <Label Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>

@@ -69,7 +69,7 @@ Section -Prerequisites
     ${EndIf}    
   ${Else}
     File "dotNetFx40_Full_setup.exe"
-    ExecWait "$INSTDIR\dotNetFx40_Full_setup.exe"
+    ExecWait "$INSTDIR\dotNetFx40_Full_setup.exe /q /norestart"
   ${EndIf}         
   ReadRegStr $0 HKLM "SOFTWARE\Microsoft\VisualStudio\10.0\VC\VCRedist\x64" 'Installed'
   ${If} $0 == 1
@@ -181,6 +181,7 @@ Section Server s1
   CreateDirectory "Email"
   CreateDirectory "Jabber"
   CreateDirectory "Network Monitor"
+  CreateDirectory "Rest"
   CreateDirectory "Script Processor"
   CreateDirectory "Speech"
   CreateDirectory "Weather"
@@ -207,6 +208,11 @@ Section Server s1
   File "..\output\Plugins\Network Monitor\Network Monitor.osapd"
   File "..\output\Plugins\Network Monitor\OSAE.NetworkMonitor.dll"
   File "..\output\Plugins\Network Monitor\Screenshot.jpg"
+
+  SetOutPath "$INSTDIR\Plugins\Rest"
+  File "..\output\Plugins\Rest\Rest.osapd"
+  File "..\output\Plugins\Rest\OSAE.Rest.dll"
+  File "..\output\Plugins\Rest\Screenshot.jpg"
   
   SetOutPath "$INSTDIR\Plugins\Script Processor"
   File "..\output\Plugins\Script Processor\Script Processor.osapd"
@@ -235,6 +241,7 @@ Section Server s1
   CreateDirectory "mobile"
   CreateDirectory "Images"
   CreateDirectory "css"
+  CreateDirectory "js"
   
   SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\bootstrap"
   CreateDirectory "css"
@@ -269,7 +276,8 @@ Section Server s1
   SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\css"
   File "..\WebUI\css\*.*"
 
-
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\js"
+  File "..\WebUI\js\*.*"
  
   SetOutPath $INSTDIR
   File "UltiDev.WebServer.msi"
