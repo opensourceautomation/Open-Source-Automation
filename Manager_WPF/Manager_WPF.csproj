@@ -151,9 +151,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Service References\WCFServiceReference\Arrays.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Service References\WCFServiceReference\OSAE.xsd">
       <SubType>Designer</SubType>
     </None>

@@ -230,38 +230,6 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="AddScript">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" name="objName" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="objEvent" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="script" nillable="true" type="xs:string" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="AddScriptResponse">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" name="AddScriptResult" type="xs:boolean" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="UpdateScript">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" name="objName" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="objEvent" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="script" nillable="true" type="xs:string" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="UpdateScriptResponse">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" name="UpdateScriptResult" type="xs:boolean" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
   <xs:element name="ExecuteSQL">
     <xs:complexType>
       <xs:sequence>

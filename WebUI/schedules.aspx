@@ -191,7 +191,7 @@
                         Object: <asp:DropDownList runat="server" ID="ddlObject" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlObject_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                         Method: <asp:DropDownList runat="server" ID="ddlMethod" datatextfield="Text" datavaluefield="Value" style="width:100%"></asp:DropDownList>
                         Parameter 1: <asp:TextBox class="input-xlarge" runat="server" ID="txtParam1"></asp:TextBox>
-                        Parameter 2: <asp:TextBox class="input-xlarge" runat="server" ID="txtParam2"></asp:TextBox>
+                        <br />Parameter 2: <asp:TextBox class="input-xlarge" runat="server" ID="txtParam2"></asp:TextBox>
                     </asp:Panel>
                     <br />
                     <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click" Visible="false"/>&nbsp

@@ -17,7 +17,7 @@
         <ItemsPanelTemplate x:Key="ImageGalleryItemsPanelTemplate">
 
             <!--Display Images on UniformGrid Panel-->
-            <UniformGrid Columns="3" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
+            <UniformGrid Columns="3" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
         </ItemsPanelTemplate>
 

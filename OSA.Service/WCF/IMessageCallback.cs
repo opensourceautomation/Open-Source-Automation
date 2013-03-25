@@ -7,9 +7,9 @@
     interface IMessageCallback
     {
         [OperationContract(IsOneWay = true)]
-        void OnMessageReceived(string msgType, string message, string from, DateTime timestamp);
+        void OnMessageReceived(OSAEWCFMessage message);
 
-        [OperationContract(IsOneWay = true)]
-        void EnablePlugin(Plugin plugin);
+        //[OperationContract(IsOneWay = true)]
+        //void EnablePlugin(Plugin plugin);
     }
 }

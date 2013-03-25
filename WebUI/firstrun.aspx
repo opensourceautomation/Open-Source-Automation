@@ -6,10 +6,10 @@
     <div class="span3"></div>
     <div class="span6">
         <center><h2>Welcome to Open Source Automation</h2>  <br />
-        <h4>You do not have any users set up in your system yet.</h4>
-        <h4>In order to get started a user account needs to be set up, this user account</h4>
-        <h4>will be an administrator in the system. subsequent users can be added and edited</h4>
-        <h4>in the users screen.</h4>
+        <h4>You do not have any users set up in your system yet.
+        In order to get started a user account needs to be set up, this user account
+        will be an administrator in the system. subsequent users can be added and edited
+        in the users screen.</h4>
         <br /><br /></center>
         
         <div class="form-horizontal">
