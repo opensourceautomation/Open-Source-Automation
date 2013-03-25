@@ -91,8 +91,8 @@
 
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    
-                    command.CommandText = "SELECT object_name FROM osae_v_object WHERE object_name=@MethodId";
+
+                    command.CommandText = "SELECT object_name FROM  osae_v_method_queue WHERE method_id=@MethodId";
                     command.Parameters.AddWithValue("@MethodId", this.Id);
                     dataset = OSAESql.RunQuery(command);
                 }
