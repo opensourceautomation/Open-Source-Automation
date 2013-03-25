@@ -15,6 +15,7 @@ namespace OSAE.UI.Controls
     public partial class AddControlMethodImage : UserControl
     {
         private string currentScreen;
+        OSAEImage img = new OSAEImage();
 
         public AddControlMethodImage(string screen)
         {
@@ -35,32 +36,13 @@ namespace OSAE.UI.Controls
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            string fileName = Path.GetFileName(txtImagePath.Text).Split('.')[0];
-            string ext = Path.GetFileName(txtImagePath.Text).Split('.')[1];
-
-            OSAEImageManager imgMgr = new OSAEImageManager();
-
-            int imgID = 0;
-            byte[] byt;
-
-            if (ext.ToLower() == "jpg" || ext.ToLower() == "jpeg")
-            {
-                byt = imgMgr.getJPGFromImageControl((BitmapImage)imgMethod.Source);
-                imgID = imgMgr.AddImage(fileName, ext, byt);
-            }
-            else if (ext.ToLower() == "png")
-            {
-                byt = imgMgr.getPNGFromImageControl((BitmapImage)imgMethod.Source);
-                imgID = imgMgr.AddImage(fileName, ext, byt);
-            }
-
             string sName = currentScreen + " - " + objectComboBox.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL METHOD IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Method Name", methodComboBox.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Param 1", txtParam1.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Param 2", txtParam2.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", fileName, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
@@ -72,7 +54,7 @@ namespace OSAE.UI.Controls
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-
+            NotifyParentFinished();
         }
 
         private void objectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -83,18 +65,14 @@ namespace OSAE.UI.Controls
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // Configure open file dialog box 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = "Document"; // Default file name 
-            dlg.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
-                "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
-                "Portable Network Graphic (*.png)|*.png"; // Filter files by extension 
+            selectImageWindow dlgSelectImage = new selectImageWindow();
+            ctrlSelectImage si = new ctrlSelectImage();
+            si.ImagePicked += si_ImagePicked;
+            dlgSelectImage.Width = si.Width + 80;
+            dlgSelectImage.Height = si.Height + 80;
+            dlgSelectImage.Content = si;
+            dlgSelectImage.Show();
 
-            if (dlg.ShowDialog() == true)
-            {
-                imgMethod.Source = new BitmapImage(new Uri(dlg.FileName));
-                txtImagePath.Text = dlg.FileName;
-            }
         }
 
         /// <summary>
@@ -109,5 +87,35 @@ namespace OSAE.UI.Controls
             Window parentWindow = Window.GetWindow(this);
             parentWindow.Close();
         }
+
+        protected void si_ImagePicked(object sender, EventArgs e)
+        {
+            OSAEImageManager imgMgr = new OSAEImageManager();
+            
+            img = imgMgr.GetImage((int)sender);
+            imgMethod.Source = LoadImage(img.Data);
+        }
+
+        private static BitmapImage LoadImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0) return null;
+            var image = new BitmapImage();
+            using (var mem = new MemoryStream(imageData))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
+            }
+            image.Freeze();
+            return image;
+        }
     }
+
+    
+
+
 }

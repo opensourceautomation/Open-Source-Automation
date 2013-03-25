@@ -31,7 +31,7 @@
             try
             {
                 logging.AddToLog("received message: " + e.Message, false);
-                if (e.Message == "connected")
+                if (e.Message.Type == WCF.OSAEWCFMessageType.CONNECT)
                 {
                     try
                     {
@@ -40,7 +40,7 @@
                         {
                             string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName;
 
-                            sendMessageToClients("plugin", msg);
+                            sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, msg);
                         }
                     }
                     catch (Exception ex)
@@ -50,7 +50,7 @@
                 }
                 else
                 {
-                    string[] arguments = e.Message.Split('|');
+                    string[] arguments = e.Message.Message.Split('|');
                     if (arguments[0] == "ENABLEPLUGIN")
                     {
                         bool local = false;
@@ -79,14 +79,14 @@
                                     else if (arguments[2] == "False")
                                     {
                                         disablePlugin(p);
-                                        sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName);
+                                        sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName);
                                     }
                                 }
                             }
                         }
                         if (!local)
                         {
-                            sendMessageToClients("enablePlugin", e.Message);
+                            sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, e.Message.Message);
                         }
                     }
                     else if (arguments[0] == "plugin")
@@ -130,7 +130,7 @@
                                 if (plugin.Status == "Running")
                                 {
                                     disablePlugin(plugin);
-                                    sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
+                                    sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
                                 }
 
                                 //code for downloading and installing plugin
@@ -157,12 +157,17 @@
         /// </summary>
         /// <param name="msgType"></param>
         /// <param name="message"></param>
-        private void sendMessageToClients(string msgType, string message)
+        private void sendMessageToClients(WCF.OSAEWCFMessageType msgType, string message)
         {
             try
             {
                 logging.AddToLog("Sending message to clients: " + msgType + " - " + message, false);
-                Thread thread = new Thread(() => wcfService.SendMessageToClients(msgType, message, Common.ComputerName));
+                WCF.OSAEWCFMessage msg = new WCF.OSAEWCFMessage();
+                msg.Type = msgType;
+                msg.Message = message;
+                msg.From = OSAE.Common.ComputerName;
+                msg.TimeSent = DateTime.Now;
+                Thread thread = new Thread(() => wcfService.SendMessageToClients(msg));
                 thread.Start();
             }
             catch (Exception ex)

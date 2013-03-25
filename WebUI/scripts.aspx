@@ -262,6 +262,7 @@
         editor.setTheme("ace/theme/tomorrow");
         //editor.getSession().setMode("ace/mode/powershell");
         editor.setValue(document.getElementById('<%=hdnScript.ClientID%>').value);
+        editor.clearSelection();
 
         $(function () {
             $("#<%=ddlScriptProcessor.ClientID%>").change(function () {

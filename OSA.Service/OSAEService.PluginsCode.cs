@@ -25,7 +25,7 @@
                     plugin.Enabled = true;
                     plugin.RunInterface();
                     OSAEObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", sourceName);
-                    sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
+                    sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
                     logging.AddToLog("Plugin enabled: " + plugin.PluginName, true);
                 }
             }
@@ -155,7 +155,7 @@
                             if (!plug)
                             {
                                 msg = version + "|" + latestMajor + "." + latestMinor + "." + latestRevision;
-                                sendMessageToClients("service", msg);
+                                sendMessageToClients(WCF.OSAEWCFMessageType.SERVICE, msg);
                             }
                         }
                     }
@@ -166,7 +166,7 @@
                 if (plug)
                 {
                     string msg = p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | " + p.Status + " | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName;
-                    sendMessageToClients("plugin", msg);
+                    sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, msg);
                 }
             }
             catch (Exception ex)
@@ -294,7 +294,7 @@
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
 
                             logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
-                            sendMessageToClients("plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
+                            sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
 
                         }
                         masterPlugins.Add(plugin);

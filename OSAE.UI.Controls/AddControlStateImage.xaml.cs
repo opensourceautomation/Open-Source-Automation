@@ -15,6 +15,8 @@ namespace OSAE.UI.Controls
     public partial class AddControlStateImage : UserControl
     {
         private string currentScreen;
+        OSAEImage onImg = new OSAEImage();
+        OSAEImage offImg = new OSAEImage();
 
         public AddControlStateImage(string screen)
         {
@@ -34,34 +36,24 @@ namespace OSAE.UI.Controls
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // Configure open file dialog box 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = "Document"; // Default file name 
-            dlg.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
-                "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
-                "Portable Network Graphic (*.png)|*.png"; // Filter files by extension 
-
-            if (dlg.ShowDialog() == true)
-            {
-                imgState1.Source = new BitmapImage(new Uri(dlg.FileName));
-                txtState1Path.Text = dlg.FileName;
-            }
+            selectImageWindow dlgSelectImage = new selectImageWindow();
+            ctrlSelectImage si = new ctrlSelectImage();
+            si.ImagePicked += si_OnImagePicked;
+            dlgSelectImage.Width = si.Width + 80;
+            dlgSelectImage.Height = si.Height + 80;
+            dlgSelectImage.Content = si;
+            dlgSelectImage.Show();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            // Configure open file dialog box 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = "Document"; // Default file name 
-            dlg.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
-                "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
-                "Portable Network Graphic (*.png)|*.png"; // Filter files by extension 
-
-            if (dlg.ShowDialog() == true)
-            {
-                imgState2.Source = new BitmapImage(new Uri(dlg.FileName));
-                txtState2Path.Text = dlg.FileName;
-            }
+            selectImageWindow dlgSelectImage = new selectImageWindow();
+            ctrlSelectImage si = new ctrlSelectImage();
+            si.ImagePicked += si_OffImagePicked;
+            dlgSelectImage.Width = si.Width + 80;
+            dlgSelectImage.Height = si.Height + 80;
+            dlgSelectImage.Content = si;
+            dlgSelectImage.Show();
         }
 
         private void objectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -71,49 +63,16 @@ namespace OSAE.UI.Controls
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            string fileName1 = Path.GetFileName(txtState1Path.Text).Split('.')[0];
-            string fileName2 = Path.GetFileName(txtState2Path.Text).Split('.')[0];
-            string ext1 = Path.GetFileName(txtState1Path.Text).Split('.')[1];
-            string ext2 = Path.GetFileName(txtState2Path.Text).Split('.')[1];
-
-            OSAEImageManager imgMgr = new OSAEImageManager();
-
-            int imgID1 = 0;
-            int imgID2 = 0;
-            byte[] byt1;
-            byte[] byt2;
-
-            if(ext1.ToLower() == "jpg" || ext1.ToLower() == "jpeg")
-            {
-                byt1 = imgMgr.getJPGFromImageControl((BitmapImage)imgState1.Source);
-                imgID1 = imgMgr.AddImage(fileName1,ext1,byt1);
-            }
-            else if(ext1.ToLower() == "png")
-            {
-                byt1 = imgMgr.getPNGFromImageControl((BitmapImage)imgState1.Source);
-                imgID1 = imgMgr.AddImage(fileName1,ext1,byt1);
-            }
-
-            if (ext2.ToLower() == "jpg" || ext2.ToLower() == "jpeg")
-            {
-                byt2 = imgMgr.getJPGFromImageControl((BitmapImage)imgState2.Source);
-                imgID2 = imgMgr.AddImage(fileName2, ext2, byt2);
-            }
-            else if (ext2.ToLower() == "png")
-            {
-                byt2 = imgMgr.getPNGFromImageControl((BitmapImage)imgState2.Source);
-                imgID2 = imgMgr.AddImage(fileName2, ext2, byt2);
-            }
-
+            
             string sName = currentScreen + " - " + objectComboBox.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", "ON", "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", fileName1, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", onImg.Name, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", "OFF", "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", fileName2, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", offImg.Name, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
@@ -139,6 +98,40 @@ namespace OSAE.UI.Controls
             // Get the window hosting us so we can ask it to close
             Window parentWindow = Window.GetWindow(this);
             parentWindow.Close();
+        }
+
+        protected void si_OnImagePicked(object sender, EventArgs e)
+        {
+            OSAEImageManager imgMgr = new OSAEImageManager();
+
+            onImg = imgMgr.GetImage((int)sender);
+            imgState1.Source = LoadImage(onImg.Data);
+        }
+
+        protected void si_OffImagePicked(object sender, EventArgs e)
+        {
+            OSAEImageManager imgMgr = new OSAEImageManager();
+
+            offImg = imgMgr.GetImage((int)sender);
+            imgState2.Source = LoadImage(offImg.Data);
+        }
+
+        private static BitmapImage LoadImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0) return null;
+            var image = new BitmapImage();
+            using (var mem = new MemoryStream(imageData))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
+            }
+            image.Freeze();
+            return image;
         }
     }
 }

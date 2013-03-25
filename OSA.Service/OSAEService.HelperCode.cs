@@ -123,7 +123,7 @@
                     {
                         logging.AddToLog("Method in Queue, ObjectName: " + method.ObjectName + " MethodName: " + method.MethodName, false);
 
-                        sendMessageToClients("log", "found method in queue: " + method.ObjectName +
+                        sendMessageToClients(WCF.OSAEWCFMessageType.LOG, "found method in queue: " + method.ObjectName +
                             "(" + method.MethodName + ")   p1: " + method.Parameter1 +
                             "  p2: " + method.Parameter2);
                         
@@ -135,7 +135,7 @@
                             {
                                 case "EXECUTE" : 
                                     logging.AddToLog("Recieved Execute Method Name", true);
-                                    sendMessageToClients("command", method.Parameter1 + " | " + method.Parameter2 + " | " + Common.ComputerName);
+                                    sendMessageToClients(WCF.OSAEWCFMessageType.CMDLINE, method.Parameter1 + " | " + method.Parameter2 + " | " + Common.ComputerName);
                                     break;
                                 case "START PLUGIN":
                                     StartPlugin(method);
@@ -167,7 +167,7 @@
 
                             if (!processed)
                             {
-                                sendMessageToClients("method", method.ObjectName + " | " + method.Owner + " | "
+                                sendMessageToClients(WCF.OSAEWCFMessageType.METHOD, method.ObjectName + " | " + method.Owner + " | "
                                     + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | "
                                     + method.Address + " | " + method.Id);
 
@@ -214,7 +214,7 @@
                     if (obj != null)
                     {
                         disablePlugin(p);
-                        sendMessageToClients("plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName);
+                        sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName);
                     }
                 }
             }

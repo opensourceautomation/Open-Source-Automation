@@ -309,7 +309,12 @@
                             desc.Name = o.Name;
                             if (o.Enabled == 1)
                                 desc.Enabled = true;
-                            desc.Status = o.State.Value;
+                            if (o.State.Value == "ON")
+                                desc.Status = "Running";
+                            else if (o.State.Value == "OFF")
+                                desc.Status = "Stopped";
+                            else
+                                desc.Status = o.State.Value;
                         }
                     }
                     pluginList.Add(desc);
@@ -394,7 +399,12 @@
                         {
                             if ((plugin.Type == split[5].Trim() && Common.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
                             {
-                                plugin.Status = split[3].Trim();
+                                if (split[3].Trim() == "ON")
+                                    plugin.Status = "Running";
+                                else if (split[3].Trim() == "OFF")
+                                    plugin.Status = "Stopped";
+                                else
+                                    plugin.Status = split[3].Trim();
                                 plugin.Enabled = enabled;
                                 plugin.Name = split[0].Trim();
                                 if (split[4].Trim() != "")

@@ -13,6 +13,7 @@ namespace OSAE.UI.Controls
     public partial class CreateScreen : UserControl
     {
         private string screenName;
+        OSAEImage img = new OSAEImage();
 
         public CreateScreen()
         {
@@ -27,34 +28,16 @@ namespace OSAE.UI.Controls
                 return;
             }
 
-            if (string.IsNullOrEmpty(txtPath.Text))
+            if (img == null)
             {
                 MessageBox.Show("Please specify an image for the screen");
                 return;
             }
 
-            string fileName = Path.GetFileName(txtPath.Text).Split('.')[0];
-            string ext = Path.GetFileName(txtPath.Text).Split('.')[1];
-
-            OSAEImageManager imgMgr = new OSAEImageManager();
-
-            int imgID = 0;
-            byte[] byt;
-
-            if (ext.ToLower() == "jpg" || ext.ToLower() == "jpeg")
-            {
-                byt = imgMgr.getJPGFromImageControl((BitmapImage)imgScreen.Source);
-                imgID = imgMgr.AddImage(fileName, ext, byt);
-            }
-            else if (ext.ToLower() == "png")
-            {
-                byt = imgMgr.getPNGFromImageControl((BitmapImage)imgScreen.Source);
-                imgID = imgMgr.AddImage(fileName, ext, byt);
-            }
 
             screenName = "Screen - " + txtName.Text;
             OSAEObjectManager.ObjectAdd(screenName, screenName, "SCREEN", "", screenName, true);
-            OSAEObjectPropertyManager.ObjectPropertySet(screenName, "Background Image", fileName, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(screenName, "Background Image", img.Name, "GUI");
 
             OnLoadScreen();
 
@@ -68,18 +51,13 @@ namespace OSAE.UI.Controls
 
         private void btnOpen_Click(object sender, RoutedEventArgs e)
         {
-            // Configure open file dialog box 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = "Document"; // Default file name 
-            dlg.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
-                "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
-                "Portable Network Graphic (*.png)|*.png"; // Filter files by extension 
-
-            if (dlg.ShowDialog() == true)
-            {
-                imgScreen.Source = new BitmapImage(new Uri(dlg.FileName));
-                txtPath.Text = dlg.FileName;
-            }
+            selectImageWindow dlgSelectImage = new selectImageWindow();
+            ctrlSelectImage si = new ctrlSelectImage();
+            si.ImagePicked += si_ImagePicked;
+            dlgSelectImage.Width = si.Width + 80;
+            dlgSelectImage.Height = si.Height + 80;
+            dlgSelectImage.Content = si;
+            dlgSelectImage.Show();
         }
 
         /// <summary>
@@ -99,6 +77,32 @@ namespace OSAE.UI.Controls
         protected virtual void OnLoadScreen()
         {
             if (LoadScreen != null) LoadScreen(screenName, EventArgs.Empty);
+        }
+
+        protected void si_ImagePicked(object sender, EventArgs e)
+        {
+            OSAEImageManager imgMgr = new OSAEImageManager();
+
+            img = imgMgr.GetImage((int)sender);
+            imgScreen.Source = LoadImage(img.Data);
+        }
+
+        private static BitmapImage LoadImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0) return null;
+            var image = new BitmapImage();
+            using (var mem = new MemoryStream(imageData))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
+            }
+            image.Freeze();
+            return image;
         }
     }
 }

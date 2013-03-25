@@ -107,6 +107,7 @@
                 stateImages.Clear();
                 propLabels.Clear();
                 navImages.Clear();
+                methodImages.Clear();
                 cameraViewers.Clear();
                 canGUI.Children.Clear(); 
                 
@@ -254,6 +255,19 @@
                             foreach (OSAE.UI.Controls.NavigationImage nav in navImages)
                             {
                                 if (newCtrl.ControlName == nav.screenObject.Name)
+                                {
+                                    oldCtrl = true;
+                                }
+                            }
+                        }
+                        #endregion
+
+                        #region CONTROL NAVIGATION IMAGE
+                        else if (newCtrl.ControlType == "CONTROL METHOD IMAGE")
+                        {
+                            foreach (OSAE.UI.Controls.MethodImage method in methodImages)
+                            {
+                                if (newCtrl.ControlName == method.screenObject.Name)
                                 {
                                     oldCtrl = true;
                                 }

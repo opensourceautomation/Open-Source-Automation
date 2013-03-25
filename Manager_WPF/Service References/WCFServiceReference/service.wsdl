@@ -16,7 +16,6 @@
       <xsd:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
       <xsd:import namespace="http://schemas.datacontract.org/2004/07/WCF" />
       <xsd:import namespace="http://schemas.datacontract.org/2004/07/OSAE" />
-      <xsd:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
       <xsd:import />
     </xsd:schema>
   </wsdl:types>
@@ -116,18 +115,6 @@
   <wsdl:message name="IWCFService_SendPattern_OutputMessage">
     <wsdl:part name="parameters" element="tns:SendPatternResponse" />
   </wsdl:message>
-  <wsdl:message name="IWCFService_AddScript_InputMessage">
-    <wsdl:part name="parameters" element="tns:AddScript" />
-  </wsdl:message>
-  <wsdl:message name="IWCFService_AddScript_OutputMessage">
-    <wsdl:part name="parameters" element="tns:AddScriptResponse" />
-  </wsdl:message>
-  <wsdl:message name="IWCFService_UpdateScript_InputMessage">
-    <wsdl:part name="parameters" element="tns:UpdateScript" />
-  </wsdl:message>
-  <wsdl:message name="IWCFService_UpdateScript_OutputMessage">
-    <wsdl:part name="parameters" element="tns:UpdateScriptResponse" />
-  </wsdl:message>
   <wsdl:message name="IWCFService_ExecuteSQL_InputMessage">
     <wsdl:part name="parameters" element="tns:ExecuteSQL" />
   </wsdl:message>
@@ -213,14 +200,6 @@
     <wsdl:operation name="SendPattern">
       <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/SendPattern" message="tns:IWCFService_SendPattern_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/SendPatternResponse" message="tns:IWCFService_SendPattern_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="AddScript">
-      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/AddScript" message="tns:IWCFService_AddScript_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/AddScriptResponse" message="tns:IWCFService_AddScript_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="UpdateScript">
-      <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/UpdateScript" message="tns:IWCFService_UpdateScript_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IWCFService/UpdateScriptResponse" message="tns:IWCFService_UpdateScript_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="ExecuteSQL">
       <wsdl:input wsaw:Action="http://tempuri.org/IWCFService/ExecuteSQL" message="tns:IWCFService_ExecuteSQL_InputMessage" />
@@ -379,24 +358,6 @@
     </wsdl:operation>
     <wsdl:operation name="SendPattern">
       <soap12:operation soapAction="http://tempuri.org/IWCFService/SendPattern" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="AddScript">
-      <soap12:operation soapAction="http://tempuri.org/IWCFService/AddScript" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="UpdateScript">
-      <soap12:operation soapAction="http://tempuri.org/IWCFService/UpdateScript" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
