@@ -9,7 +9,7 @@
             <Grid>
                 <Border BorderBrush="DarkSlateGray" BorderThickness="3"  Width="100" Height="100" Padding="3" Margin="5" CornerRadius="3">
                     <!--Bind Image Path in Image Control-->
-                    <Image Source="{Binding Data}" Tag="{Binding ID}" Stretch="Fill"  HorizontalAlignment="Center" MouseLeftButtonUp="Image_MouseLeftButtonUp_1" />
+                    <Image Source="{Binding Data}" Tag="{Binding ID}" Stretch="None"  HorizontalAlignment="Center" MouseLeftButtonUp="Image_MouseLeftButtonUp_1" />
                 </Border>
             </Grid>
         </DataTemplate>
