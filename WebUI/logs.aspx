@@ -23,11 +23,12 @@
             <div id="ObjPanel">
                 <div class="row-fluid" id="logsGrid" style="overflow: auto; max-height: 670px;" onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvLogs"
-                        AutoGenerateColumns="true"
+                        AutoGenerateColumns="false"
                         GridLines="None"
                         CssClass="mGrid"
                         AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvLogs_RowDataBound" DataKeyNames="logName">
                         <Columns>
+                            <asp:BoundField HeaderText="Logs" DataField="logName" />
                         </Columns>
                     </asp:GridView>
                 </div>
