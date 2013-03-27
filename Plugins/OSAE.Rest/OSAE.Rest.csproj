@@ -60,6 +60,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="install.sql" />
     <Content Include="Screenshot.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

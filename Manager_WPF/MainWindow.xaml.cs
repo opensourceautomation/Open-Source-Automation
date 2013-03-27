@@ -422,6 +422,7 @@
                         string[] param = message.Message.Split('|');
                         if (param[2].Trim() == Common.ComputerName)
                         {
+                            logging.AddToLog("CMDLINE received: " + param[0].Trim() + " - " + param[1].Trim(), true);
                             Process pr = new Process();
                             pr.StartInfo.FileName = param[0].Trim();
                             pr.StartInfo.Arguments = param[1].Trim();

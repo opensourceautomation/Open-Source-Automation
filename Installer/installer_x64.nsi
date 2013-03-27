@@ -184,7 +184,7 @@ Section Server s1
   CreateDirectory "Rest"
   CreateDirectory "Script Processor"
   CreateDirectory "Speech"
-  CreateDirectory "Weather"
+  CreateDirectory "WUnderground"
   CreateDirectory "Web Server"
   
   SetOutPath "$INSTDIR\Plugins\Bluetooth"
@@ -224,10 +224,10 @@ Section Server s1
   File "..\output\Plugins\Speech\OSAE.Speech.dll"
   File "..\output\Plugins\Speech\Screenshot.jpg"
   
-  SetOutPath "$INSTDIR\Plugins\Weather"
-  File "..\output\Plugins\Weather\Weather.osapd"
-  File "..\output\Plugins\Weather\OSAE.Weather.dll"  
-  File "..\output\Plugins\Weather\Screenshot.jpg"
+  SetOutPath "$INSTDIR\Plugins\WUnderground"
+  File "..\output\Plugins\WUnderground\WUnderground.osapd"
+  File "..\output\Plugins\WUnderground\WUnderground.dll"  
+  File "..\output\Plugins\WUnderground\Screenshot.jpg"
 
   SetOutPath "$INSTDIR\Plugins\Web Server"
   File "..\output\Plugins\Web Server\Web Server.osapd"

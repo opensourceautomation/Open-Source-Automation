@@ -50,7 +50,7 @@
                     <Label Content="Label" Height="28" HorizontalAlignment="Left" Margin="210,78,0,0" Name="lblVersion" VerticalAlignment="Top" />
                     <TextBlock HorizontalAlignment="Left" Margin="314,82,0,6" Width="21" Height="21" Name="txblUpdate">
                     <Hyperlink RequestNavigate="HandleRequestNavigate" NavigateUri="http://www.opensourceautomation.com/plugins.php" TextDecorations="None" Name="hypUpdate">
-                        <Image Name="imgUpdate" Source="Resources/upgrade.png" ToolTip="Update Available" />
+                        <Image Name="imgUpdate" Source="Resources/upgrade.png" ToolTip="Update Available" Visibility="Hidden" />
                     </Hyperlink>
                     </TextBlock>
                     <TextBlock HorizontalAlignment="Left" Margin="117,60,0,29" Width="35" Name="txblWiki" Height="20">
