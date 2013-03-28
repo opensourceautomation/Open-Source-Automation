@@ -14,7 +14,6 @@ CALL osae_sp_object_type_method_add ('RESET CONTROLLER','Reset Controller','ZWAV
 CALL osae_sp_object_type_method_add ('NODE NEIGHBOR UPDATE','Node Neighbor Update','ZWAVE','Object Address','','','');
 CALL osae_sp_object_type_method_add ('NETWORK UPDATE','Network Update','ZWAVE','','','','');
 CALL osae_sp_object_type_property_add ('Port','Integer','','ZWAVE',0);
-CALL osae_sp_object_type_property_add ('Computer Name','String','','ZWAVE',0);
 CALL osae_sp_object_type_property_add ('Home ID','String','','ZWAVE',0);
 CALL osae_sp_object_type_property_add ('Polling Interval','Integer','','ZWAVE',0);
 

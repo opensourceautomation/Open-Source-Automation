@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Phidget-IK</plugin-name>
 <plugin-id>a4b11c52-5b16-4698-8b32-291ec3f837d9</plugin-id>
-<plugin-version>0.3.2a</plugin-version>
+<plugin-version>0.4.0</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>
 Plugin for Phidget 8/8/8 and other controllers</short-description>

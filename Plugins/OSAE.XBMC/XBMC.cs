@@ -11,8 +11,7 @@ namespace OSAE.XBMC
 {
     public class XBMC : OSAEPluginBase
     {
-        private OSAE osae = new OSAE("XBMC");
-        private Logging logging = new Logging("XBMC");
+        private Logging logging = Logging.GetLogger("XBMC");
         private List<XBMCSystem> Systems = new List<XBMCSystem>();
         private string pName;
         //private System.Timers.Timer Clock;
@@ -51,16 +50,16 @@ namespace OSAE.XBMC
         {
             logging.AddToLog("Running interface", false);
             pName = pluginName;
-            osae.ObjectTypeUpdate("XBMC SYSTEM", "XBMC SYSTEM", "XBMC System", pluginName, "XBMC SYSTEM", 0, 0, 0, 1);
+            OSAEObjectTypeManager.ObjectTypeUpdate("XBMC SYSTEM", "XBMC SYSTEM", "XBMC System", pluginName, "XBMC SYSTEM", 0, 0, 0, 1);
 
-            List<OSAEObject> XBMCInstances = osae.GetObjectsByType("XBMC System");
+            OSAEObjectCollection XBMCInstances = OSAEObjectManager.GetObjectsByType("XBMC System");
 
             foreach (OSAEObject obj in XBMCInstances)
             {
                 string ip = "", username = "", password = "";
                 int port = 0;
 
-                foreach (ObjectProperty p in obj.Properties)
+                foreach (OSAEObjectProperty p in obj.Properties)
                 {
                     switch (p.Name)
                     {
@@ -123,12 +122,12 @@ namespace OSAE.XBMC
                     if (r.Playing)
                     {
                         logging.AddToLog("Checking " + r.Name + " - Playing", false);
-                        osae.ObjectStateSet(r.Name, "Playing");
+                        OSAEObjectStateManager.ObjectStateSet(r.Name, "Playing", "XBMC");
                     }
                     else
                     {
                         logging.AddToLog("Checking " + r.Name + " - Stopped", false);
-                        osae.ObjectStateSet(r.Name, "Stopped");
+                        OSAEObjectStateManager.ObjectStateSet(r.Name, "Stopped", "XBMC");
                     }
                 }
             }
@@ -151,8 +150,7 @@ namespace OSAE.XBMC
         private bool _connected;
         private bool _playing;
         private Client _xbmcSystem;
-        private OSAE osae = new OSAE("XBMC");
-        private Logging logging = new Logging("XBMC");
+        private Logging logging = Logging.GetLogger("XBMC");
 
         public string Name
         {
@@ -290,19 +288,19 @@ namespace OSAE.XBMC
         void Player_OnPlay(string sender = null, XBMCRPC.Player.Notifications.Data data = null)
         {
             logging.AddToLog(Name + " started playing", false);
-            osae.ObjectStateSet(Name, "Playing");
-                }
+            OSAEObjectStateManager.ObjectStateSet(Name, "Playing", "XBMC");
+        }
 
         void Player_OnStop(string sender = null, Player.OnStopdataType data = null)
-                {
-            logging.AddToLog(Name + " stopped playing", false); 
-            osae.ObjectStateSet(Name, "Stopped");
+        {
+            logging.AddToLog(Name + " stopped playing", false);
+            OSAEObjectStateManager.ObjectStateSet(Name, "Stopped", "XBMC");
         }
 
         void Player_OnPause(string sender = null, XBMCRPC.Player.Notifications.Data data = null)
         {
             logging.AddToLog(Name + " paused", false);
-            osae.ObjectStateSet(Name, "Stopped");
+            OSAEObjectStateManager.ObjectStateSet(Name, "Stopped", "XBMC");
         }
     }
 }
