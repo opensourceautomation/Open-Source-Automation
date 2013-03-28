@@ -19,16 +19,16 @@
         OSAEObjectState GetObjectState(string name);
 
         [OperationContract]
-        [WebGet(UriTemplate = "object/{name}/{method}?param1={param1}&param2={param2}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [WebInvoke(UriTemplate = "object/{name}/{method}?param1={param1}&param2={param2}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean ExecuteMethod(string name, string method, string param1, string param2);
 
         [OperationContract]
-        [WebGet(UriTemplate = "object/add?name={name}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/add?name={name}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean AddObject(string name, string description, string type, string address, string container, string enabled);
 
         [OperationContract]
-        [WebGet(UriTemplate = "object/update?oldName={oldName}&newName={newName}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/update?oldName={oldName}&newName={newName}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean UpdateObject(string oldName, string newName, string description, string type, string address, string container, string enabled);
 
@@ -49,7 +49,7 @@
         OSAEObjectCollection GetPlugins();
 
         [OperationContract]
-        [WebGet(UriTemplate = "namedscript/{match}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [WebInvoke(UriTemplate = "namedscript/{match}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean SendPattern(string match);
 
         //[OperationContract]
@@ -69,7 +69,7 @@
         List<string> GetSystemStates();
 
         [OperationContract]
-        [WebGet(UriTemplate = "property/update?objName={objName}&propName={propName}&propVal={propVal}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [WebInvoke(UriTemplate = "property/update?objName={objName}&propName={propName}&propVal={propVal}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean SetObjectProperty(string objName, string propName, string propVal);        
     }
 
