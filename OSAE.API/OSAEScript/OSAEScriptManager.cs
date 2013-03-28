@@ -361,6 +361,27 @@
             return script;
         }
 
+        public static string GetScriptByName(string scriptName)
+        {
+            string script = "";
+
+            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+            {
+                MySqlCommand command = new MySqlCommand("SELECT script FROM osae_script WHERE script_name = @ScriptName", connection);
+                command.Parameters.AddWithValue("@ScriptName", scriptName);
+
+                connection.Open();
+
+                MySqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    script = reader.GetString("script");
+                }
+            }
+
+            return script;
+        }
 
 
         public static void RunPatternScript(string pattern, string parameter, string from)
