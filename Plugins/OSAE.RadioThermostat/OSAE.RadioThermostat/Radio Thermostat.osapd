@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Radio Thermostat</plugin-name>
 <plugin-id>5e689de8-5139-4862-95e8-1782be56ce39</plugin-id>
-<plugin-version>0.1.0</plugin-version>
+<plugin-version>0.2.0</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Control your Radio Thermostat</short-description>
 <author>Brian</author>

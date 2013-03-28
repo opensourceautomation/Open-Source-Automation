@@ -147,6 +147,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="install.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Screenshot.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="UsbUirtManagedWrapper.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -155,6 +161,7 @@
     <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
       <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
       <Name>OSAE.API</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

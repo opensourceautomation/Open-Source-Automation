@@ -42,7 +42,7 @@
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\output\AddIns\CM15A\</OutputPath>
+    <OutputPath>..\..\output\PlugIns\CM15A\</OutputPath>
     <DocumentationFile>OSAE.CM15A.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -101,9 +101,9 @@
     </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\..\Assemblies\MySql.Data.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.AddIn" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core">
@@ -184,7 +184,16 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ahsdk_install.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="install.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Interop.ActiveHomeScriptLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Screenshot.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -192,6 +201,7 @@
     <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
       <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
       <Name>OSAE.API</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

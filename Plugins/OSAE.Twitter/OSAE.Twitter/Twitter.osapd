@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Twitter</plugin-name>
 <plugin-id>ab365800-15db-46eb-ae8f-b6f967a9178a</plugin-id>
-<plugin-version>0.1.6</plugin-version>
+<plugin-version>0.2.0</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Post updates to Twitter</short-description>
 <author>Brian Woodworth</author>
