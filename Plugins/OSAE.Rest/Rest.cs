@@ -35,11 +35,17 @@
 
                 // int port = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value);
                 // string uriPath = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "URI Path").Value;
+
+                bool showHelp = bool.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Show Help").Value);
                 
                 serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri("http://localhost:8732/api"));
 
                 serviceHost.AddServiceEndpoint(typeof(IRestService), new WebHttpBinding(), "http://localhost:8732/api");
-                serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
+                
+                if (showHelp)
+                {
+                    serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
+                }
                 
                 serviceHost.Open();
 
