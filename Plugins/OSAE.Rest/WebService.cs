@@ -68,7 +68,7 @@
         [WebGet(UriTemplate = "system/states", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         List<string> GetSystemStates();
 
-        [OperationContract]
+        [OperationContract]        
         [WebInvoke(UriTemplate = "property/update?objName={objName}&propName={propName}&propVal={propVal}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean SetObjectProperty(string objName, string propName, string propVal);        
     }

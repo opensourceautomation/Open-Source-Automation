@@ -82,13 +82,13 @@
                         <label>Name</label>
                     </div>
                     <div class="span4" style="text-align:left;">
-                        <asp:TextBox class="input-large" runat="server" ID="txtName"></asp:TextBox>
+                        <asp:TextBox class="input" runat="server" ID="txtName" style="width:100%;"></asp:TextBox>
                     </div>
                     <div class="span2" style="text-align:right;">
                         <label>Owned By</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:DropDownList runat="server" ID="ddlOwnedBy" datatextfield="Text" datavaluefield="Value" style="width:250px;">
+                        <asp:DropDownList runat="server" ID="ddlOwnedBy" datatextfield="Text" datavaluefield="Value" style="width:100%;">
                             <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
@@ -98,13 +98,13 @@
                         <label>Desc</label>
                     </div>
                     <div class="span4" style="text-align:left;">
-                        <asp:TextBox class="input-large" runat="server" ID="txtDescr"></asp:TextBox>
+                        <asp:TextBox class="input" runat="server" ID="txtDescr" style="width:100%;"></asp:TextBox>
                     </div>
                     <div class="span2" style="text-align:right;">
                         <label>Base Type</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:DropDownList runat="server" ID="ddlBaseType" datatextfield="Text" datavaluefield="Value" style="width:250px;">
+                        <asp:DropDownList runat="server" ID="ddlBaseType" datatextfield="Text" datavaluefield="Value" style="width:100%;">
                             <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>

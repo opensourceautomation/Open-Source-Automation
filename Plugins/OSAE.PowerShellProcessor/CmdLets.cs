@@ -59,7 +59,7 @@
     }
 
     [Cmdlet(VerbsLifecycle.Invoke, "OSA")]
-    public class OSAPSInovke : Cmdlet
+    public class OSAPSInvoke : Cmdlet
     {
         /// <summary>
         /// Provides access to the OSA logging class
