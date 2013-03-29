@@ -11,7 +11,6 @@ CALL osae_sp_object_type_method_add ('TRANSMIT ONLY','Set Transmit Only','CM15A'
 CALL osae_sp_object_type_method_add ('TRANSMIT RF','Set Transmit RF','CM15A','TRUE / FALSE','','FALSE','');
 CALL osae_sp_object_type_method_add ('ALLLIGHTSON','All Lights On','CM15A','HouseCode','','A1','');
 CALL osae_sp_object_type_method_add ('ALLLIGHTSOFF','All Lights Off','CM15A','HouseCode','','A1','');
-CALL osae_sp_object_type_property_add ('Computer Name','Integer','','CM15A',0);
 CALL osae_sp_object_type_property_add ('Transmit Only','Boolean','FALSE','CM15A',0);
 CALL osae_sp_object_type_property_add ('Transmit RF','Boolean','FALSE','CM15A',0);
 CALL osae_sp_object_type_property_add ('Debounce','Integer','120','CM15A',0);
