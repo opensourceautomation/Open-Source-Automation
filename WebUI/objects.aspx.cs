@@ -33,6 +33,23 @@ public partial class home : System.Web.UI.Page
             hdnSelectedPropName.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_name"].ToString();
             lblPropName.Text = hdnSelectedPropName.Text;
             txtPropValue.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+
+            if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "List")
+            {
+                loadPropertyList();
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = false;
+                lblPropName.Visible = false;
+                btnEditPropList.Visible = true;
+            }
+            else
+            {
+                txtPropValue.Visible = true;
+                btnPropSave.Visible = true;
+                lblPropName.Visible = true;
+                btnEditPropList.Visible = false;
+            }
+            
         }
     }
 
@@ -63,6 +80,7 @@ public partial class home : System.Web.UI.Page
             gvProperties.Rows[Int32.Parse(hdnSelectedPropRow.Text)].Attributes.Remove("onmouseout");
             gvProperties.Rows[Int32.Parse(hdnSelectedPropRow.Text)].Style.Add("background", "lightblue");
         }
+        hdnEditingPropList.Value = hdnEditingPropList.Value;
     }
 
     protected void gvObjects_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -157,8 +175,14 @@ public partial class home : System.Web.UI.Page
 
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
         gvProperties.DataBind();
+    }
+
+    private void loadPropertyList()
+    {
+        gvPropList.DataSource = OSAESql.RunSQL("SELECT item_name FROM osae_object_property_array WHERE object_property_id = " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["object_property_id"].ToString());
+        gvPropList.DataBind();
     }
 
     private void loadDetails()
@@ -222,8 +246,11 @@ public partial class home : System.Web.UI.Page
         gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
     }
-    //protected void btnEditList_Click(object sender, EventArgs e)
-    //{
 
-    //}
+    protected void btnListItemSave_Click(object sender, EventArgs e)
+    {
+        OSAEObjectPropertyManager.ObjectPropertyArrayAdd(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtListItem.Text, txtListItem.Text);
+        hdnEditingPropList.Value = "1";
+        loadPropertyList();
+    }
 }
