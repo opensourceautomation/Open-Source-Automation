@@ -69,7 +69,7 @@
 
               if (data.BaseType == 'BINARY SWITCH' || data.BaseType == 'MULTILEVEL SWITCH') {
 
-                  if (data.State == 'On') {
+                  if (data.State.Value.toUpperCase() == 'ON') {
                       $("#callback").append('<center>Power State<br /><select name="slider" id="flip-a" data-role="slider"><option value="off">Off</option><option value="on" selected>On</option></select></center>');
                   }
                   else {
@@ -215,7 +215,7 @@
           });
 
           $.getJSON('http://' + host + ':8732/api/object/system?callback=?', null, function (data) {
-              $('#btn_' + data.State.toUpperCase()).attr("data-theme", "b").removeClass("ui-btn-up-a").addClass("ui-btn-up-b");
+              $('#btn_' + data.State.Value.toUpperCase()).attr("data-theme", "b").removeClass("ui-btn-up-a").addClass("ui-btn-up-b");
           });
 
           $('#header').html('<center><img src="images/osa_logo.png" /></center><br />');
@@ -261,7 +261,7 @@
                   $.getJSON('http://' + host + ':8732/api/object/' + array[0] + '?callback=?', null, function (data2) {
                       var val = '';
                       if (array[1].toLowerCase() == 'state') {
-                          val = data2.State;
+                          val = data2.State.Value;
                       }
                       else {
 
@@ -278,7 +278,7 @@
           });
 
           $.getJSON('http://' + host + ':8732/api/object/system?callback=?', null, function (data) {
-              $('#btn_' + data.State.toUpperCase()).attr("data-theme", "b").removeClass("ui-btn-up-a").addClass("ui-btn-up-b");
+              $('#btn_' + data.State.Value.toUpperCase()).attr("data-theme", "b").removeClass("ui-btn-up-a").addClass("ui-btn-up-b");
           });
 
           $('#header').html('<center><img src="images/osa_logo.png" /></center><br />');
