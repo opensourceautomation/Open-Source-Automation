@@ -29,6 +29,13 @@
             var intY = document.getElementById("propGrid").scrollTop;
             document.cookie = "yPos=$~" + intY + "~$";
         }
+
+        $(function () {
+            if ($('#<%=hdnEditingPropList.ClientID%>').val() == "1") {
+                $('#<%=hdnEditingPropList.ClientID%>').val("0");
+                $('#myPropListModal').modal('show');
+            }
+        });
     </script> 
     <script>
         $(function () {
@@ -152,11 +159,12 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value, property_datatype" ShowHeaderWhenEmpty="true">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value, property_datatype, object_property_id" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="property_name" HeaderText="Property" /> 
                                     <asp:BoundField DataField="property_value" HeaderText="Value" /> 
-                                    <asp:BoundField DataField="property_datatype" Visible="false" /> 
+                                    <asp:BoundField DataField="property_datatype" Visible="false" />
+                                    <asp:BoundField DataField="object_property_id" Visible="false" /> 
                                 </Columns>  
 
                             </asp:GridView>
@@ -172,11 +180,9 @@
                                 <asp:Label  runat="server" ID="lblPropName"></asp:Label>
                                 <asp:Textbox class="input-xlarge" runat="server" ID="txtPropValue"></asp:Textbox>
                                 <asp:Button class="btn btn-primary" runat="server" ID="btnPropSave" Text="Save" OnClick="btnPropSave_Click"/>
+                                <asp:Button class="btn btn-primary" runat="server" ID="btnEditPropList" Text="Edit List" href="#myPropListModal" data-toggle="modal"/>
                             </form>
                         </asp:Panel>
-                        <%--<asp:Panel runat="server" ID="pnlList" Visible ="false">
-                            <asp:Button runat="server" ID="btnEditList" Text="Edit List" OnClick="btnEditList_Click" />
-                        </asp:Panel>--%>
                         </div>
                         <div class="span1"></div>
                     </div>
@@ -185,9 +191,33 @@
         </div>
     </div>
 
+    <!-- Property List Modal -->
+    <div id="myPropListModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Edit Property List</h3>
+      </div>
+      <div ID="dvmodalbody" class="modal-body">
+        <asp:GridView runat="server" ID="gvPropList"
+            AutoGenerateColumns="False"  
+            GridLines="None"  
+            CssClass="mGrid"  
+            AlternatingRowStyle-CssClass="alt" DataKeyNames="item_name" ShowHeaderWhenEmpty="true">  
+            <Columns>  
+                <asp:BoundField DataField="item_name" HeaderText="Item" />
+            </Columns>  
+        </asp:GridView>
+      </div>
+      <div class="modal-footer">
+        <asp:Textbox class="input-xlarge" runat="server" ID="txtListItem"></asp:Textbox>
+        <asp:Button class="btn btn-primary" runat="server" ID="btnAddListItem" Text="Add" OnClick="btnListItemSave_Click"/>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      </div>
+    </div>
     
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>
+    <asp:HiddenField runat="server" ID="hdnEditingPropList"/>
 </asp:Content>
