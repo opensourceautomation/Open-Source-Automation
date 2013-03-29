@@ -208,6 +208,11 @@ public partial class scripts : System.Web.UI.Page
             loadScripts();
             saveAlert.Visible = true;
         }
+        Page.ClientScript.RegisterStartupScript(
+                GetType(),
+                "MyKey",
+                "setSytaxHighlighter();",
+                true);
     }
     
     protected void btnDelete_Click(object sender, EventArgs e)
