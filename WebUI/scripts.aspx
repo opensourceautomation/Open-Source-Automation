@@ -55,7 +55,7 @@
         }
 
         function copyScript() {
-            $('#dvmodalbody').html(editor.getValue());
+            $('#dvmodalbody').html(editor.getValue().replace(/\n/g, "<br />"));
         }
     </script>
     
