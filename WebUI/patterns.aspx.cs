@@ -162,7 +162,7 @@ public partial class patterns : System.Web.UI.Page
     }
     protected void btnMatchAdd_Click(object sender, EventArgs e)
     {
-        OSAEScriptManager.PatternMatchAdd(hdnSelectedPatternName.Text, hdnSelectedMatchName.Text);
+        OSAEScriptManager.PatternMatchAdd(hdnSelectedPatternName.Text, txtMatch.Text);
         loadMatches();
     }
     protected void btnPatternAdd_Click(object sender, EventArgs e)
