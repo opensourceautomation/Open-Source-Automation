@@ -174,10 +174,10 @@ public partial class patterns : System.Web.UI.Page
     {
         OSAEScriptManager.PatternDelete(hdnSelectedPatternName.Text);
         loadPatterns();
-        int selectedRow = Int32.Parse(hdnSelectedScriptRow.Text) - 1;
+        int selectedRow = Int32.Parse(hdnSelectedPatternRow.Text) - 1;
         if (selectedRow < 0)
-            hdnSelectedScriptRow.Text = "";
+            hdnSelectedPatternRow.Text = "";
         else
-            hdnSelectedScriptRow.Text = selectedRow.ToString();
+            hdnSelectedPatternRow.Text = selectedRow.ToString();
     }
 }
