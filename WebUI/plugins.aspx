@@ -12,7 +12,7 @@
                     <asp:TemplateField HeaderText ="Enabled">
                         <ItemTemplate>
                             <center>
-                                <asp:CheckBox ID="chkEnabled" runat="server"/>
+                                <asp:CheckBox ID="chkEnabled" onclick="javascript: return false;" runat="server"/>
                                 <asp:Label ID="lblEnabled" runat="server" Text='<%# Eval("Enabled") %>' Visible="false"></asp:Label>
                             </center>
                         </ItemTemplate>
@@ -23,7 +23,6 @@
                     <asp:BoundField DataField="Name" HeaderText="OSA Object" /> 
                     <asp:BoundField DataField="Version" HeaderText="Version" /> 
                 </Columns>  
-
             </asp:GridView>
         </div>
     </div>
