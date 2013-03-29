@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 
 <html lang="en">
+<link rel="shortcut icon" href="Images/icon.ico">
 <head runat="server">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Open Source Automation</title>

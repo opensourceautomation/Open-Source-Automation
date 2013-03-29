@@ -1,7 +1,7 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="_Default" %>
 
 <!DOCTYPE html>
-
+<link rel="shortcut icon" href="Images/icon.ico">
 <html lang="en">                 
     <head>                             
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />                             
