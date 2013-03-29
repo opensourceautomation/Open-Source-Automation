@@ -17,14 +17,14 @@
     <script type="text/javascript" src="js/jquery-ui-sliderAccess.js"></script>
     <script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
-    
+
 
     <!-- Le styles -->
-    <link href="css/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" />
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="css/style.css" rel="stylesheet" type="text/css">
     <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
-	
+
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -58,7 +58,9 @@
                             <li><a href="eventlogs.aspx">Event Logs</a></li>
                             <li><a href="logs.aspx">Server Logs</a></li>
                         </ul>
+                        <asp:ImageButton runat="server" ID="cog" AlternateText="Configuration" style="float:right; display:inline; padding-top:4px" Width="26px" Height="26px" ImageAlign="Middle" ImageUrl="~/Images/cog.png" OnClick="cog_Click" />
                     </div>
+
                     <!--/.nav-collapse -->
                 </div>
             </div>
@@ -87,8 +89,8 @@
     <script type="text/javascript" src="bootstrap/js/bootstrap-transition.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap-dropdown.js"></script>
-    
-    
+
+
 </body>
 </html>
 

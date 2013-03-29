@@ -1,36 +1,59 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="config.aspx.cs" Inherits="config"  MasterPageFile="~/MasterPage.master" EnableEventValidation="false" MaintainScrollPositionOnPostback="true"%>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="config.aspx.cs" Inherits="config" MasterPageFile="~/MasterPage.master" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 
 
 <asp:Content ID="Content1" runat="server" ContentPlaceHolderID="ContentPlaceHolder">
 
     <div class="row-fluid">
         <div class="span2">
-
         </div>
         <div class="span8">
             <center><img src="Images/OSA.png" /></center>
             <br />
             <br />
             <br />
-            <div class="row-fluid">
-                <div class="span6" style="text-align:right">
-                    Current Version: 
-                    <br />
-                    Debug Mode: 
-                </div>
-                <div class="span6" style="text-align:left">
-                    <asp:Label ID="lblVersion" runat="server"></asp:Label>
-                    <br />
-                    <asp:DropDownList ID="ddlDebug" runat="server">
+            <center>
+                <table  style="text-align:left; padding-bottom:4px">
+
+                    <tr>
+                        <td style="padding-right: 20px">
+                            Current Version:
+                        </td>
+                        <td>
+                            <asp:Label ID="lblVersion" runat="server"></asp:Label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Debug Mode: 
+                        </td>
+                        <td>
+                            <asp:DropDownList ID="ddlDebug" AutoPostBack="true" runat="server" OnSelectedIndexChanged="ddlDebug_SelectedIndexChanged">
                         <asp:ListItem Text="True" Value="True"></asp:ListItem>
                         <asp:ListItem Text="False" Value="False"></asp:ListItem>
                     </asp:DropDownList>
-                </div>
-            </div>
-        </div>
-        <div class="span2">
-
+                        </td>
+                    </tr>
+                     <tr>
+                        <td>
+                            Service:
+                        </td>
+                        <td>
+                            <asp:Label ID="serviceLabel" runat="server" Text="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            DB Size:
+                        </td>
+                        <td>
+                            <asp:Label ID="dbSize" runat="server" Text="" />
+                        </td>
+                    </tr>
+                </table>
+                </center>
         </div>
     </div>
+    <div class="span2">
+    </div>    
 </asp:Content>
 
