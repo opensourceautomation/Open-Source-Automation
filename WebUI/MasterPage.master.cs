@@ -15,4 +15,8 @@ public partial class MasterPage : System.Web.UI.MasterPage
             Response.Redirect("mobile/index.aspx");
         }
     }
+    protected void cog_Click(object sender, ImageClickEventArgs e)
+    {
+        Response.Redirect("~/config.aspx");
+    }
 }
