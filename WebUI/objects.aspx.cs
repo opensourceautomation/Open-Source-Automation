@@ -111,6 +111,20 @@ public partial class home : System.Web.UI.Page
 
     }
 
+    protected void gvPropList_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
+    {
+        if ((e.Row.RowType == DataControlRowType.DataRow))
+        {
+            e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
+            if (e.Row.RowState == DataControlRowState.Alternate)
+                e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
+            else
+                e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+            e.Row.Attributes.Add("onclick", "selectPropListItem('" + gvPropList.DataKeys[e.Row.RowIndex]["item_name"].ToString() + "', this);");
+        }
+
+    }
+
     protected void ddlState_SelectedIndexChanged(object sender, EventArgs e)
     {
         OSAEObjectStateManager.ObjectStateSet(hdnSelectedObjectName.Text, ddlState.SelectedItem.Value, "Web UI");
@@ -250,6 +264,13 @@ public partial class home : System.Web.UI.Page
     protected void btnListItemSave_Click(object sender, EventArgs e)
     {
         OSAEObjectPropertyManager.ObjectPropertyArrayAdd(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtListItem.Text, txtListItem.Text);
+        hdnEditingPropList.Value = "1";
+        loadPropertyList();
+    }
+
+    protected void btnListItemDelete_Click(object sender, EventArgs e)
+    {
+        OSAEObjectPropertyManager.ObjectPropertyArrayDelete(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, hdnPropListItemName.Value);
         hdnEditingPropList.Value = "1";
         loadPropertyList();
     }
