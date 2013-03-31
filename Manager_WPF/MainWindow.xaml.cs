@@ -530,8 +530,7 @@
 
         private void hypSettings_Click(object sender, RoutedEventArgs e)
         {
-            Settings s = new Settings();
-            s.ShowDialog();
+            Process.Start("http://localhost:8081/default.aspx");
         }
 
         private void hypGUI_Click(object sender, RoutedEventArgs e)
