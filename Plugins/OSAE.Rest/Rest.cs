@@ -5,7 +5,9 @@
     using System.ServiceModel;
     using System.ServiceModel.Description;
     using System.ServiceModel.Web;
+    using System.ServiceModel.Activation;
 
+    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class Rest : OSAEPluginBase
     {
         /// <summary>
@@ -38,10 +40,15 @@
 
                 bool showHelp = bool.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Show Help").Value);
                 
-                serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri("http://localhost:8732/api"));
+                //serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri("http://localhost:8732/api"));
 
-                serviceHost.AddServiceEndpoint(typeof(IRestService), new WebHttpBinding(), "http://localhost:8732/api");
-                
+                //serviceHost.AddServiceEndpoint(typeof(IRestService), new WebHttpBinding(), "http://localhost:8732/api");
+                serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri("http://localhost:8732/api"));
+                WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None);
+                binding.CrossDomainScriptAccessEnabled = true;
+
+                var endpoint = serviceHost.AddServiceEndpoint(typeof(IRestService), binding, ""); 
+
                 if (showHelp)
                 {
                     serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
