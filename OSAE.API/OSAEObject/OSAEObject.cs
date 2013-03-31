@@ -2,8 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.Serialization;
 
-    [Serializable]
+    [DataContract]
     public class OSAEObject
     {
         #region Properties
@@ -17,9 +18,14 @@
         private int _enabled;
         private string _lastUpd;
         private OSAEObjectState _state;
+
+        [DataMember]
         public OSAEObjectPropertyCollection Properties { get; set; }
+
+        [DataMember]
         public OSAEMethodCollection Methods { get; set; }
 
+        [DataMember]
         public string Name
         {
             get
@@ -34,6 +40,7 @@
             }
         }
 
+        [DataMember]
         public string Description
         {
             get
@@ -46,8 +53,9 @@
                 _description = value;
                 OSAEObjectManager.ObjectUpdate(_name, _name, value, _type, _address, _container, _enabled);
             }
-        }      
+        }
 
+        [DataMember]
         public string Type
         {
             get
@@ -60,8 +68,9 @@
                 _type = value;
                 OSAEObjectManager.ObjectUpdate(_name, _name, _description, value, _address, _container, _enabled);
             }
-        }      
+        }
 
+        [DataMember]
         public string BaseType
         {
             get
@@ -73,8 +82,9 @@
             {
                 _baseType = value;
             }
-        }      
+        }
 
+        [DataMember]
         public string Address
         {
             get
@@ -87,8 +97,9 @@
                 _address = value;
                 OSAEObjectManager.ObjectUpdate(_name, _name, _description, _type, value, _container, _enabled);
             }
-        }      
+        }
 
+        [DataMember]
         public string Container
         {
             get
@@ -101,8 +112,9 @@
                 _container = value;
                 OSAEObjectManager.ObjectUpdate(_name, _name, _description, _type, _address, value, _enabled);
             }
-        }      
-              
+        }
+
+        [DataMember]
         public int Enabled  
         {
             get
@@ -117,6 +129,7 @@
             }
         }
 
+        [DataMember]
         public OSAEObjectState State
         {
             get
@@ -130,8 +143,9 @@
                 _state = value;
                 OSAEObjectStateManager.ObjectStateSet(_name, value.Value, "API");
             }
-        }      
+        }
 
+        [DataMember]
         public string LastUpd
         {
             get

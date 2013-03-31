@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Network Monitor</plugin-name>
 <plugin-id>ccd2e274-e483-442a-bd50-1827e8c76be8</plugin-id>
-<plugin-version>0.3.7</plugin-version>
+<plugin-version>0.4.0</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Monitor your network to detect when devices are connected or not.</short-description>
 <author>Brian Woodworth</author>

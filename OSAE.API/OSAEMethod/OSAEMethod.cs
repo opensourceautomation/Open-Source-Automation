@@ -3,11 +3,12 @@
     using MySql.Data.MySqlClient;
     using System;
     using System.Data;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// Method passed to plugins to allow them to process an event in the system
     /// </summary>
-    [Serializable]
+    [DataContract]
     public class OSAEMethod
     {
         public int Id { get; set; }
@@ -15,24 +16,30 @@
         /// <summary>
         /// The name of the method
         /// </summary>
+        [DataMember]
         public string MethodName { get; set; }
-       
+
+        [DataMember]
         public string ObjectName { get; set; }
 
         /// <summary>
         /// The first parameter passed which may contain information that
         /// the plugin needs to process the request
         /// </summary>
+        [DataMember]
         public string Parameter1 { get; set; }
        
         /// <summary>
         /// Second parameter passed which may contain information that 
         /// the plugin needs to process the request
         /// </summary>
+        [DataMember]
         public string Parameter2 { get; set; }
-       
+
+        [DataMember]
         public string Address { get; set; }
-       
+
+        [DataMember]
         public string Owner { get; set; }
 
         public OSAEMethod()
