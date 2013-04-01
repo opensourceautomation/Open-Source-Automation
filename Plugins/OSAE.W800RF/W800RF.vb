@@ -16,6 +16,7 @@ Public Class W800RF
     Private _msg As String = ""
     Private comPort As New SerialPort()
     Private gNewTime As DateTime
+    Private previousBuffer As Byte()
     Dim ByteDetail(4) As ByteDetails
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
@@ -69,7 +70,8 @@ Public Class W800RF
         If readBytes < 4 Then Exit Sub
         Dim comBuffer As Byte() = New Byte(readBytes - 1) {}
         comPort.Read(comBuffer, 0, readBytes)
-        If DateTime.Now() < gNewTime Then Exit Sub
+
+        previousBuffer = comBuffer
 
         ByteDetail(1).BinaryValue = Dec2Bin(comBuffer(2))
         ByteDetail(2).BinaryValue = Dec2Bin(comBuffer(3))
@@ -86,19 +88,27 @@ Public Class W800RF
         ByteDetail(3).HexValue = Hex(ByteDetail(3).DecimalValue).PadLeft(2, "0")
         ByteDetail(4).HexValue = Hex(ByteDetail(4).DecimalValue).PadLeft(2, "0")
 
-        If (ByteDetail(1).DecimalValue Xor ByteDetail(2).DecimalValue) <> &HFF Then
+        If DateTime.Now() < gNewTime Then
+            logging.AddToLog("Disposing event as bounce not passed: ByteDetail1 " & ByteDetail(1).HexValue & " ByteDetail2 " & ByteDetail(2).HexValue & " ByteDetail3 " & ByteDetail(3).HexValue & " ByteDetail4 " & ByteDetail(4).HexValue, False)
             Exit Sub
         End If
+
+        If (ByteDetail(1).DecimalValue Xor ByteDetail(2).DecimalValue) <> &HFF Then
+            logging.AddToLog("ByteDetail 1 or 2 not equal HFF disposing: ByteDetail1 " & ByteDetail(1).HexValue & " ByteDetail2 " & ByteDetail(2).HexValue, False)
+            Exit Sub
+        End If
+		
+		logging.AddToLog("Event Detail : ByteDetail1 " & ByteDetail(1).HexValue & " ByteDetail2 " & ByteDetail(2).HexValue & " ByteDetail3 " & ByteDetail(3).HexValue & " ByteDetail4 " & ByteDetail(4).HexValue, False)
 
         If (ByteDetail(3).DecimalValue Xor ByteDetail(4).DecimalValue) <> 255 Then
             ' If Bytes 3 & 4 <> 255 here, then it indicates it is a Security device
             gDevice.House_Code = "" 'ByteDetail(3).DecimalValue
             intUnit = Bin2Dec(ByteDetail(4).BinaryValue & ByteDetail(3).BinaryValue)
             gDevice.Device_Code = CStr(intUnit)
-            If ByteDetail(1).DecimalValue = &H20 Or ByteDetail(1).DecimalValue = &H30 Then
+            If ByteDetail(1).DecimalValue = &H20 Or ByteDetail(1).DecimalValue = &H30 Or ByteDetail(1).DecimalValue = &HA0 Then
                 gDevice.Device_Type = "X10_SECURITY_DS10"
                 gDevice.Current_Command = "ON"
-            ElseIf ByteDetail(1).DecimalValue = &H21 Or ByteDetail(1).DecimalValue = &H31 Then
+            ElseIf ByteDetail(1).DecimalValue = &H21 Or ByteDetail(1).DecimalValue = &H31 Or ByteDetail(1).DecimalValue = &HA1 Then
                 gDevice.Device_Type = "X10_SECURITY_DS10"
                 gDevice.Current_Command = "OFF"
             ElseIf ByteDetail(1).DecimalValue = 48 Then
