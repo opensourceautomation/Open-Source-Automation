@@ -317,7 +317,7 @@ Section Server s1
   WriteRegStr HKLM "SOFTWARE\OSAE\DBSETTINGS" "DBPASSWORD" "osaePass"
   
   !insertmacro APP_ASSOCIATE "osapd" "OSA.osapd" "Plugin Description" "$INSTDIR\PluginDescriptionEditor.exe,0" "Open" "$INSTDIR\PluginDescriptionEditor.exe $\"%1$\""  
-  !insertmacro APP_ASSOCIATE "osapp" "OSA.osapp" "Plugin Package" "$INSTDIR\PluginInstaller.exe,0" "Open" "$INSTDIR\OSAE Manager.exe $\"%1$\"" 
+  !insertmacro APP_ASSOCIATE "osapp" "OSA.osapp" "Plugin Package" "$INSTDIR\OSAE Manager.exe,0" "Open" "$INSTDIR\OSAE Manager.exe $\"%1$\"" 
   !insertmacro UPDATEFILEASSOC    
   
   AccessControl::GrantOnFile \
