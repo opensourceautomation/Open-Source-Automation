@@ -52,10 +52,11 @@
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\output\Plugins\W800RF\</OutputPath>
     <DocumentationFile>OSAE.W800RF.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
