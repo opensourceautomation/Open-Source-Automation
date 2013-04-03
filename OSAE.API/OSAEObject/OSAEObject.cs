@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
-    [DataContract]
+    [Serializable, DataContract]
     public class OSAEObject
     {
         #region Properties

@@ -4,7 +4,7 @@
     using System;
     using System.Runtime.Serialization;
 
-    [DataContract]
+    [Serializable, DataContract]
     public class OSAEObjectProperty
     {
         /// <summary>

@@ -7,7 +7,7 @@
     /// <summary>
     /// This class is used to hold information about the state of an object.
     /// </summary>
-    [DataContract]
+    [Serializable, DataContract]
     public class OSAEObjectState
     {
         private string _value;
