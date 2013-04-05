@@ -163,13 +163,13 @@
 
         public OSAEObject(string name, string description, string type, string address, string container, int enabled)
         {
-            Name = name;
-            Type = type;
-            Address = address;
-            Container = container;
-            Enabled = enabled;
-            Description = description;
-            State = new OSAEObjectState();
+            _name = name;
+            _type = type;
+            _address = address;
+            _container = container;
+            _enabled = enabled;
+            _description = description;
+            _state = new OSAEObjectState();
         }
 
         public OSAEObject()

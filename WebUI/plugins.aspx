@@ -7,15 +7,14 @@
                 AutoGenerateColumns="False"  
                 GridLines="None"  
                 CssClass="mGrid"  
-                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvPlugins_RowDataBound"  >  
+                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvPlugins_RowDataBound">  
                 <Columns>
-                    <asp:TemplateField HeaderText ="Enabled">
+                    <asp:TemplateField HeaderText="Enabled" Visible="True">
                         <ItemTemplate>
-                            <center>
-                                <asp:CheckBox ID="chkEnabled" onclick="javascript: return false;" runat="server"/>
-                                <asp:Label ID="lblEnabled" runat="server" Text='<%# Eval("Enabled") %>' Visible="false"></asp:Label>
-                            </center>
+                            <asp:CheckBox ID="chkEnabled" runat="server" AutoPostback="true" OnCheckedChanged="chkEnabled_OnCheckedChanged" />
+                            <asp:Label ID="lblEnabled" runat="server" Text='<%# Eval("Enabled") %>' Visible="false"></asp:Label>
                         </ItemTemplate>
+                        <ItemStyle HorizontalAlign="Center" />
                     </asp:TemplateField>
                     <asp:BoundField DataField="Type" HeaderText="Plugin" /> 
                     <asp:BoundField DataField="Status" HeaderText="Status" />  

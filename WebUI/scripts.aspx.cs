@@ -184,7 +184,7 @@ public partial class scripts : System.Web.UI.Page
 
     protected void btnAdd_Click(object sender, EventArgs e)
     {
-        if (txtName.Text == "" || ddlScriptProcessor.SelectedValue == "0")
+        if (txtName.Text == "" || ddlScriptProcessor.SelectedValue == "")
         {
             alert.Visible = true;
         }
@@ -192,13 +192,14 @@ public partial class scripts : System.Web.UI.Page
         {
             OSAEScriptManager.ScriptAdd(txtName.Text,ddlScriptProcessor.SelectedValue, hdnScript.Value);
             loadScripts();
+            loadDDLs();
             saveAlert.Visible = true;
         }
     }
     
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
-        if (txtName.Text == "" || ddlScriptProcessor.SelectedValue == "0")
+        if (txtName.Text == "" || ddlScriptProcessor.SelectedValue == "")
         {
             alert.Visible = true;
         }
@@ -206,7 +207,9 @@ public partial class scripts : System.Web.UI.Page
         {
             OSAEScriptManager.ScriptUpdate(hdnSelectedScriptName.Text, txtName.Text, ddlScriptProcessor.SelectedValue, hdnScript.Value);
             loadScripts();
+            loadDDLs();
             saveAlert.Visible = true;
+            hdnSelectedScriptName.Text = txtName.Text;
         }
         Page.ClientScript.RegisterStartupScript(
                 GetType(),

@@ -16,7 +16,7 @@
                 </li>
                 <li>
                     If no one in the <asp:HyperLink ID="forumHyperLink" Text="Forum" NavigateUrl="http://www.opensourceautomation.com/phpBB3/" runat="server" /> can solve the problem you could sumit a bug report to
-                    <asp:HyperLink ID="gitHubHyperLink" Text="GIT HUB" NavigateUrl="https://github.com/bwoodworth/Open-Source-Automation/issues" runat="server" />            
+                    <asp:HyperLink ID="gitHubHyperLink" Text="GIT HUB" NavigateUrl="https://github.com/opensourceautomation/Open-Source-Automation/issues" runat="server" />            
                 </li>
                 <li>
                     Remember to make a copy of the error details as it will help to solve the problem

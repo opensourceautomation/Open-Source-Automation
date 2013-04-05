@@ -39,7 +39,10 @@ namespace OSAE.UI.Controls
 
             ObjectName = screenObject.Property("Object Name").Value;
             OSAEObject timerObj = OSAEObjectManager.GetObjectByName(ObjectName);
-            OffTimer = Int32.Parse(timerObj.Property("OFF TIMER").Value);
+            if (timerObj.Property("OFF TIMER").Value != "")
+                OffTimer = Int32.Parse(timerObj.Property("OFF TIMER").Value);
+            else
+                OffTimer = 0;
             CurrentState = timerObj.State.Value;
             TimeInState = (int)timerObj.State.TimeInState;
 
