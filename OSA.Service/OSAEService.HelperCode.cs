@@ -74,9 +74,6 @@
             checkPlugins.Interval = 60000;
             checkPlugins.Enabled = true;
             checkPlugins.Elapsed += new ElapsedEventHandler(checkPlugins_tick);
-
-            Thread updateThread = new Thread(() => getPluginUpdates());
-            updateThread.Start();
         }
 
         /// <summary>

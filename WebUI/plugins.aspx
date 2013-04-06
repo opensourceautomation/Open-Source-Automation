@@ -19,8 +19,21 @@
                     <asp:BoundField DataField="Type" HeaderText="Plugin" /> 
                     <asp:BoundField DataField="Status" HeaderText="Status" />  
                     <asp:BoundField DataField="Author" HeaderText="Author" /> 
-                    <asp:BoundField DataField="Name" HeaderText="OSA Object" /> 
-                    <asp:BoundField DataField="Version" HeaderText="Version" /> 
+                    <asp:TemplateField HeaderText="OSA Object" Visible="True">
+                        <ItemTemplate>
+                            <asp:Label ID="lblObject" runat="server" Text='<%# Eval("Name") %>'></asp:Label>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                    <asp:TemplateField HeaderText="Version" Visible="True">
+                        <ItemTemplate>
+                            <asp:Label ID="lblCurVersion" runat="server" Text='<%# Eval("Version") %>'></asp:Label>
+                            <asp:HyperLink ID="hypUpgrade" runat="server">
+                                <asp:Image runat="server" ImageUrl="Images/upgrade.png" ToolTip="New version available!" />
+                            </asp:HyperLink>
+                            <asp:Label ID="lblLatestVersion" runat="server" Text='<%# Eval("Upgrade") %>' Visibile="false"></asp:Label>
+                            <asp:Label ID="lblID" runat="server" Text='<%# Eval("ID") %>' Visible="false"></asp:Label>
+                        </ItemTemplate>
+                    </asp:TemplateField>
                 </Columns>  
             </asp:GridView>
         </div>

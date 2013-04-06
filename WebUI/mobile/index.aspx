@@ -231,17 +231,17 @@
 
       function runMethod(object, method, p1, p2) {
           if (p1 != '') {
-              $.getJSON('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&callback=?', null, function (data) {
+              $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&callback=?', null, function (data) {
                   return data;
               });
           }
           else if (p2 != '') {
-              $.getJSON('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
+              $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
                   return data;
               });
           }
           else {
-              $.getJSON('http://' + host + ':8732/api/object/' + object + '/' + method + '?callback=?', null, function (data) {
+              $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?callback=?', null, function (data) {
                   return data;
               });
           }

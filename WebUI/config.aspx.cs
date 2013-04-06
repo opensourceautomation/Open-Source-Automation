@@ -2,6 +2,9 @@
 using System;
 using System.Data;
 using System.ServiceProcess;
+using System.Xml.Linq;
+using System.Net;
+using System.IO;
 
 public partial class config : System.Web.UI.Page
 {
@@ -20,6 +23,7 @@ public partial class config : System.Web.UI.Page
             }
             CheckServiceStatus();
             GetDBSize();
+            checkForUpdates();
         }
     }
     protected void ddlDebug_SelectedIndexChanged(object sender, EventArgs e)
@@ -67,5 +71,34 @@ public partial class config : System.Web.UI.Page
         DataSet d = OSAESql.RunSQL(sql);
         decimal size = (decimal)d.Tables[0].Rows[0]["size"];
         dbSize.Text = String.Format("{0:0.##}", size) + "Mb";
+    }
+
+    private void checkForUpdates()
+    {
+        try
+        {
+            string url = "http://www.opensourceautomation.com/getLatestVersion.php";
+            //logging.AddToLog("Checking for plugin updates: " + url, false);
+            WebRequest request = HttpWebRequest.Create(url);
+            WebResponse response = request.GetResponse();
+            Stream responseStream = response.GetResponseStream();
+            //XmlReader rdr = XmlReader.Create(responseStream);
+
+            XElement xml = XElement.Load(responseStream);
+            XElement svc = xml.Element("service");
+
+            string latest = svc.Element("major").Value + "." + svc.Element("minor").Value + "." + svc.Element("revision").Value;
+
+            if (latest != lblVersion.Text)
+                hypUpgrade.Visible = true;
+            else
+                hypUpgrade.Visible = false;
+
+            response.Close();
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 }
