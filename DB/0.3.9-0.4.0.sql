@@ -1,11 +1,12 @@
 
+
 --
 -- Disable foreign keys
 --
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 
 SET NAMES 'utf8';
-USE osae_039;
+USE osae;
 
 
 --
@@ -602,7 +603,7 @@ $$
 --
 -- Create procedure "osae_sp_script_add"
 --
-CREATE PROCEDURE osae_sp_script_add(IN pname VARCHAR(255), IN pscriptprocessor VARCHAR(255), IN pscript VARCHAR(4000))
+CREATE PROCEDURE osae_sp_script_add(IN pname VARCHAR(255), IN pscriptprocessor VARCHAR(255), IN pscript TEXT)
 BEGIN
   DECLARE vScriptProcessorID INT;
   SELECT script_processor_id INTO vScriptProcessorID FROM osae_script_processors WHERE script_processor_name = pscriptprocessor;
@@ -684,7 +685,7 @@ $$
 --
 -- Create procedure "osae_sp_script_update"
 --
-CREATE PROCEDURE osae_sp_script_update(IN poldname VARCHAR(255), IN pname VARCHAR(255), IN pscriptprocessor VARCHAR(255), IN pscript VARCHAR(255))
+CREATE PROCEDURE osae_sp_script_update(IN poldname VARCHAR(255), IN pname VARCHAR(255), IN pscriptprocessor VARCHAR(255), IN pscript TEXT)
 BEGIN
   DECLARE vScriptProcessorID INT;
   SELECT script_processor_id INTO vScriptProcessorID FROM osae_script_processors WHERE script_processor_name = pscriptprocessor;
@@ -841,6 +842,16 @@ CALL osae_sp_object_type_state_add ('OFF','Still','IP CAMERA');
 CALL osae_sp_object_type_event_add ('ON','Motion','IP CAMERA');
 CALL osae_sp_object_type_event_add ('OFF','Still','IP CAMERA');
 CALL osae_sp_object_type_property_add ('Stream Address','String','','IP CAMERA',0);
+
+CALL osae_sp_object_type_add ('REST','Rest API','','REST',0,0,0,1);
+CALL osae_sp_object_type_state_add ('OFF','Stopped','REST');
+CALL osae_sp_object_type_state_add ('ON','Running','REST');
+CALL osae_sp_object_type_event_add ('OFF','Stopped','REST');
+CALL osae_sp_object_type_event_add ('ON','Started','REST');
+CALL osae_sp_object_type_method_add ('OFF','Stop','REST','','','','');
+CALL osae_sp_object_type_method_add ('ON','Start','REST','','','','');
+CALL osae_sp_object_type_property_add ('System Plugin','Boolean','TRUE','REST',0);
+CALL osae_sp_object_type_property_add ('Show Help','Boolean','TRUE','REST',0);
 
 CALL osae_sp_object_type_property_update ('Password', 'Password', 'Password', '', 'PERSON', 0);
 

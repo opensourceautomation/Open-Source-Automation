@@ -20,6 +20,9 @@
                         </td>
                         <td>
                             <asp:Label ID="lblVersion" runat="server"></asp:Label>
+                            <asp:HyperLink ID="hypUpgrade" runat="server" NavigateUrl="http://www.opensourceautomation.com/downloads.php">
+                                <asp:Image ID="Image1" runat="server" ImageUrl="Images/upgrade.png" ToolTip="New version available!" />
+                            </asp:HyperLink>
                         </td>
                     </tr>
                     <tr>

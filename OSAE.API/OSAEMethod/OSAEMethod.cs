@@ -8,7 +8,7 @@
     /// <summary>
     /// Method passed to plugins to allow them to process an event in the system
     /// </summary>
-    [DataContract]
+    [Serializable, DataContract]
     public class OSAEMethod
     {
         public int Id { get; set; }
