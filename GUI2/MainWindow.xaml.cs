@@ -833,13 +833,28 @@
             chgScrn.Show();
         }
 
-        
+        private void menuFrameShow_Click(object sender, RoutedEventArgs e)     
+        {
+            this.ResizeMode = System.Windows.ResizeMode.CanResize;
+            this.WindowStyle = System.Windows.WindowStyle.ToolWindow;
+            this.ResizeMode = System.Windows.ResizeMode.NoResize;    
+        }
 
-        
+        private void menuFrameHide_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowStyle = System.Windows.WindowStyle.None;
+            this.ResizeMode = System.Windows.ResizeMode.CanResize;
+            this.Width = canGUI.Width;
+            this.Height = canGUI.Height;
+            this.ResizeMode = System.Windows.ResizeMode.NoResize;        
+        }
 
-        
-
-        
+        private void menuFrameTopLeft_Click(object sender, RoutedEventArgs e)
+        {
+            var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
+            this.Left = desktopWorkingArea.Left;
+            this.Top = desktopWorkingArea.Top;
+        }       
     }
     
 }
