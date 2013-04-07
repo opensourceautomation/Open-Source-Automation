@@ -62,11 +62,7 @@
         private void StartThreads()
         {
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
-            QueryCommandQueueThread.Start();
-
-            updates.Interval = 86400000;
-            updates.Enabled = true;
-            updates.Elapsed += new ElapsedEventHandler(getPluginUpdates_tick);
+            QueryCommandQueueThread.Start();           
 
             Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
             loadPluginsThread.Start();
