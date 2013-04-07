@@ -854,6 +854,21 @@
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
             this.Left = desktopWorkingArea.Left;
             this.Top = desktopWorkingArea.Top;
+        }
+
+        private void menuFrameBottomRight_Click(object sender, RoutedEventArgs e)
+        {
+            var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
+            this.Left = desktopWorkingArea.Right - this.Width;
+            this.Top = desktopWorkingArea.Bottom - this.Height;
+
+        }
+
+        private void menuFrameCentre_Click(object sender, RoutedEventArgs e)
+        {
+            var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
+            this.Left = (desktopWorkingArea.Width / 2) - (this.Width /2);
+            this.Top = (desktopWorkingArea.Height / 2) - (this.Height / 2);
         }       
     }
     

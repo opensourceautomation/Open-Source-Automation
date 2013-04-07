@@ -21,7 +21,11 @@
                     <MenuItem Header="Window">
                         <MenuItem Name="menuFrameShow" Header="Show Frame" Click="menuFrameShow_Click"  />
                         <MenuItem Name="menuFrameHide" Header="Hide Frame" Click="menuFrameHide_Click"  />
-                        <MenuItem Name="menuFrameTopLeft" Header="Move Top Left" Click="menuFrameTopLeft_Click"   />
+                        <MenuItem Header="Position">
+                            <MenuItem Name="menuFrameTopLeft" Header="Top Left" Click="menuFrameTopLeft_Click"   />
+                            <MenuItem Name="menuFrameBottomRight" Header="Bottom Right" Click="menuFrameBottomRight_Click"  />
+                            <MenuItem Name="menuFrameCenter" Header="Centre" Click="menuFrameCentre_Click"  />
+                        </MenuItem>        
                     </MenuItem>
                 </ContextMenu>
             </Canvas.ContextMenu>
