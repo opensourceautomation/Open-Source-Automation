@@ -422,7 +422,7 @@ namespace OSAE.MediaCenter
                             }
                             else
                             {
-                                log("Error parsing tracktime (" + _name + "): ", true);
+                                log("Error parsing tracktime (" + _name + "): ", false);
                             }
 
 
@@ -606,14 +606,12 @@ namespace OSAE.MediaCenter
                             {
                                 cursessionindex++;
 
-                                log("looping sessions for " + _name + " (" + sessions.Count().ToString() + ")-  active:" + s.active + ", sessionnum:" + s.SessionNumber + ", type:" + s.SessionType + ", lastupdate:" + s.lastupdate + ", medianame:" + s.MediaName + ", play:" + s.Play.ToString() + ", stop:" + s.Stop.ToString(), true);
+                                log("looping sessions for " + _name + " (" + sessions.Count().ToString() + ")-  active:" + s.active + ", sessionnum:" + s.SessionNumber + ", type:" + s.SessionType + ", lastupdate:" + s.lastupdate + ", medianame:" + s.MediaName + ", play:" + s.Play.ToString() + ", stop:" + s.Stop.ToString(), false);
 
                                 if (s.active)
                                 {
-                                    //log("in s.active for " + _name, true);
                                     if (s.SessionType.Equals("Recording"))
                                     {
-                                        //log("in s.SessionType.Equals('Recording') for " + _name, true);
                                         Recording = true;
                                         RecordingChannel = RecordingChannel + s.TrackNumber + ", ";
                                         if (s.SessionNumber == 0) // fix issue when plugin first started it will give us the last media played and not the current recording name on start of the status connection
@@ -628,16 +626,13 @@ namespace OSAE.MediaCenter
                                     }
                                     else
                                     {
-                                        //log("in s.SessionType.Equals('Recording') ELSE for " + _name, true);
                                         MediaName = s.MediaName;
                                         MediaTime = s.MediaTimeS;
-                                        //CurrentPostition = s.TrackTime;
                                         MediaType = s.SessionType;
                                     }
                                 }
                                 else
                                 {
-                                    //log("in s.active ELSE for " + _name, true);
                                     if (DateTime.Now >= s.lastupdate.Add(sessionkeepduration) && cursessionindex != sessions.Count() - 1) // if it is not active and hasn't been updated in an hour and is not the last session then remove it
                                     {
                                         sessions.Remove(s);
@@ -645,10 +640,8 @@ namespace OSAE.MediaCenter
                                 }
                             }
 
-                            //log("done with session loop for " + _name, true);
                             if (Recording)
                             {
-                                //log("in recording for " + _name, true);
                                 RecordingName = RecordingName.TrimEnd(',', ' ');
                                 RecordingChannel = RecordingChannel.TrimEnd(',', ' ');
 
@@ -659,14 +652,12 @@ namespace OSAE.MediaCenter
                             }
                             else
                             {
-                                //log("in recording ELSE for " + _name, true);
                                 OSAEObjectPropertyManager.ObjectPropertySet(_name, "Recording", "FALSE", pName);
                                 OSAEObjectPropertyManager.ObjectPropertySet(_name, "Recording Name", "", pName);
                                 OSAEObjectPropertyManager.ObjectPropertySet(_name, "Recording Channel", "", pName);
                                 OSAEObjectPropertyManager.ObjectPropertySet(_name, "Number of Recordings", "0", pName);
                             }
 
-                            //log("set media info for " + _name, true);
                             if (!MediaName.Equals(""))
                                 OSAEObjectPropertyManager.ObjectPropertySet(_name, "Media Name", MediaName, pName);
                             if (!MediaTime.Equals("0"))

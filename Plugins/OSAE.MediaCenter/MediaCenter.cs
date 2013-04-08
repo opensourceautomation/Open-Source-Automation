@@ -26,7 +26,7 @@ namespace OSAE.MediaCenter
 
         public override void RunInterface(string pluginName)
         {
-            log("Running interface", false);
+            log("Running interface", true);
             pName = pluginName;
             OSAEObjectTypeManager.ObjectTypeUpdate("MediaCenter Device", "MediaCenter Device", "MediaCenter Device", pluginName, "MediaCenter Device", 0, 0, 0, 1);
 
@@ -55,7 +55,7 @@ namespace OSAE.MediaCenter
             this.updateThread = new Thread(new ThreadStart(update));
             this.updateThread.Start();
 
-            log("Run Interface Complete", false);
+            log("Run Interface Complete", true);
             
         }
 
@@ -80,7 +80,7 @@ namespace OSAE.MediaCenter
             String parameter_2 = method.Parameter2;
             String mycommand;
 
-            log("Found Command: " + method_name + " | param1: " + parameter_1 + " | param2: " + parameter_2, false);
+            log("Found Command: " + method_name + " | param1: " + parameter_1 + " | param2: " + parameter_2, true);
 
             if (object_name == pName)
             {
@@ -117,7 +117,6 @@ namespace OSAE.MediaCenter
 
         public void Timer_Tick(object sender, EventArgs eArgs)
         {
-            //log("timmer_tick: " + sender+", isalive="+updateThread.IsAlive, false);
             if (sender == Clock)
             {
                 if (!updateThread.IsAlive)
@@ -189,7 +188,7 @@ namespace OSAE.MediaCenter
             }
             catch (IOException ex)
             {
-                if (ex.Message != "") //failed because another thread was already writting to log, wqe will try again
+                if (ex.Message != "") //failed because another thread was already writting to log, we will try again ... this is probably totally not needed but I was getting some strange failures when writting to log... will investigate more later
                 {
                     try
                     {
@@ -204,7 +203,6 @@ namespace OSAE.MediaCenter
             finally
             {
                 //do nothing... we tried writting twice so we will skip this message
-                //eventually I may have a log queue to re log old missed messages or even to have one other thread do all the logging from the queue
             }
 
         }
