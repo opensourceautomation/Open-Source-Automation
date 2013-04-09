@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.ServiceModel;
     using System.ServiceProcess;
+    using System.Diagnostics;
 
     #endregion
 
@@ -34,8 +35,6 @@
 
         private bool running = true;
         
-        private System.Timers.Timer updates = new System.Timers.Timer();
-
         /// <summary>
         /// Timer used to periodically check if plugins are still running
         /// </summary>
@@ -90,7 +89,7 @@
         protected override void OnStart(string[] args)
         {
 //#if (DEBUG)
-//            Debugger.Launch(); //<-- Simple form to debug a web services 
+            Debugger.Launch(); //<-- Simple form to debug a web services 
 //#endif
 
             try

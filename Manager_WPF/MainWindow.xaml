@@ -48,11 +48,7 @@
                     <Label Content="by" Height="28" HorizontalAlignment="Left" Margin="112,30,0,0" Name="lblAuthor" VerticalAlignment="Top" />
                     <Label Content="Installed Version: " Height="28" HorizontalAlignment="Left" Margin="112,78,0,0" Name="label1" VerticalAlignment="Top" Width="101" />
                     <Label Content="Label" Height="28" HorizontalAlignment="Left" Margin="210,78,0,0" Name="lblVersion" VerticalAlignment="Top" />
-                    <TextBlock HorizontalAlignment="Left" Margin="314,82,0,6" Width="21" Height="21" Name="txblUpdate">
-                    <Hyperlink RequestNavigate="HandleRequestNavigate" NavigateUri="http://www.opensourceautomation.com/plugins.php" TextDecorations="None" Name="hypUpdate">
-                        <Image Name="imgUpdate" Source="Resources/upgrade.png" ToolTip="Update Available" Visibility="Hidden" />
-                    </Hyperlink>
-                    </TextBlock>
+                    
                     <TextBlock HorizontalAlignment="Left" Margin="117,60,0,29" Width="35" Name="txblWiki" Height="20">
                     <Hyperlink RequestNavigate="HandleRequestNavigate" TextDecorations="None" Name="hypWiki">
                         Wiki
@@ -70,9 +66,6 @@
             <Hyperlink TextDecorations="None" Name="hypGUI" Click="hypGUI_Click">
                 <Image Height="30" Source="Resources/screen.jpg" Name="imgGUI" Stretch="Fill" Width="38" ToolTip="Open GUI"  />
             </Hyperlink>
-            </TextBlock>
-            <TextBlock HorizontalAlignment="Right" Margin="0,64,5,0" Width="150" Height="17" Name="txblNewVersion" VerticalAlignment="Top" Visibility="Hidden">
-            <Hyperlink TextDecorations="None" Name="hypNewVersion" RequestNavigate="HandleRequestNavigate" NavigateUri="http://www.opensourceautomation.com/downloads.php"/>
             </TextBlock>
             <Label Content="The OSAE service is:" Height="28" HorizontalAlignment="Left" Margin="10,11,0,0" Name="label2" VerticalAlignment="Top" />
             <Label Content="RUNNING" Height="28" HorizontalAlignment="Left" Margin="119,12,0,0" Name="lbl_isRunning" VerticalAlignment="Top" />

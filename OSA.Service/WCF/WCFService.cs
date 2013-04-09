@@ -35,7 +35,6 @@
                         try
                         {
                             callback.OnMessageReceived(message);
-                            logging.AddToLog("Message sent to client: " + message, false);
                         }
                         catch (TimeoutException ex)
                         {

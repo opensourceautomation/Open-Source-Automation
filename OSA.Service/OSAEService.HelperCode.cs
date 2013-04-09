@@ -64,10 +64,6 @@
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
             QueryCommandQueueThread.Start();
 
-            updates.Interval = 86400000;
-            updates.Enabled = true;
-            updates.Elapsed += new ElapsedEventHandler(getPluginUpdates_tick);
-
             Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
             loadPluginsThread.Start();
 
@@ -128,7 +124,7 @@
 
                         if (method.ObjectName == "SERVICE-" + Common.ComputerName)
                         {
-                            switch (method.ObjectName)
+                            switch (method.MethodName)
                             {
                                 case "EXECUTE" : 
                                     logging.AddToLog("Recieved Execute Method Name", true);

@@ -33,7 +33,8 @@ namespace Manager_WPF
                     if (filename.EndsWith("osapp", StringComparison.Ordinal))
                     {
                         // its a plugin package
-                        PluginInstallerHelper.InstallPlugin(System.IO.Path.GetFullPath(args[1]));
+                        PluginInstallerHelper pInst = new PluginInstallerHelper();
+                        pInst.InstallPlugin(System.IO.Path.GetFullPath(args[1]));
                     }
                 }
             }
