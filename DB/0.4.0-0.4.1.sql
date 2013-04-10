@@ -61,6 +61,100 @@ END
 $$
 
 --
+-- Alter procedure "osae_sp_system_count_occupants"
+--
+DROP PROCEDURE osae_sp_system_count_occupants$$
+CREATE PROCEDURE osae_sp_system_count_occupants()
+BEGIN
+DECLARE vOccupantCount INT;
+DECLARE vOldCount INT;
+DECLARE vTemp VARCHAR(200);
+DECLARE vOutput VARCHAR(200);
+DECLARE bDone INT;
+DECLARE var1 CHAR(40);
+DECLARE var2 CHAR(40);
+DECLARE oCount INT;
+
+DECLARE curs CURSOR FOR SELECT object_name FROM osae_v_object WHERE object_type='PERSON' AND state_name='ON';
+DECLARE curs2 Cursor FOR SELECT object_name FROM osae_v_object WHERE object_type='PLACE' AND state_name='ON';
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET bDone = 1;
+  SET vOldCount = (SELECT property_value FROM osae_v_object_property WHERE object_name='SYSTEM' AND property_name='Occupants');
+    SELECT COUNT(object_id) INTO vOccupantCount FROM osae_v_object WHERE object_type='PERSON' AND state_name='ON';
+    IF vOldCount != vOccupantCount THEN
+        CALL osae_sp_object_property_set('SYSTEM','Occupants',vOccupantCount,'SYSTEM','osae_sp_system_count_occupants');
+        CASE vOccupantCount
+          WHEN 0 THEN 
+            SET vOutput = 'Nobody is here';
+            CALL osae_sp_object_property_set('SYSTEM','Occupant String',vOutput,'SYSTEM','osae_sp_system_count_occupants');            
+          WHEN 1 THEN 
+            SET vOutput = (SELECT COALESCE(object_name,'Nobody') FROM osae_v_object WHERE object_type='PERSON' AND state_name='ON' LIMIT 1);
+            SET vOutput = CONCAT(vOutput,' is here');
+            CALL osae_sp_object_property_set('SYSTEM','Occupant String',vOutput,'SYSTEM','osae_sp_system_count_occupants');
+          ELSE
+            
+            OPEN curs;
+            SET oCount = 0;
+            SET bDone = 0;
+            SET vOutput = '';
+            REPEAT
+              FETCH curs INTO var1;
+              IF oCount < vOccupantCount THEN
+                IF oCount = 0 THEN
+                  SET vOutput = CONCAT(vOutput,CONCAT(' and ', var1, ' are here'));
+                ELSEIF oCount = 1 THEN
+                  SET vOutput = CONCAT(var1, vOutput);
+                ELSE
+                  SET vOutput = CONCAT(var1, ', ', vOutput);
+                END IF;
+                SET oCount = oCount + 1;
+              END IF;
+            UNTIL bDone END REPEAT;
+          
+            CLOSE curs;
+            CALL osae_sp_object_property_set('SYSTEM','Occupant String',vOutput,'SYSTEM','osae_sp_system_count_occupants');
+         END CASE;
+    END IF;
+    SET vOldCount = 0;
+    SET vOldCount = (SELECT COALESCE(property_value,0) FROM osae_v_object_property WHERE object_name='SYSTEM' AND property_name='Occupied Locations');
+    SELECT COUNT(object_id) INTO vOccupantCount FROM osae_v_object WHERE object_type='PLACE' AND state_name='ON';
+    #CALL osae_sp_debug_log_add(CONCAT('Counted Places: ',vOccupantCount, ' Old count = ',vOldCount),'SYSTEM');
+    IF vOldCount != vOccupantCount THEN
+        CALL osae_sp_object_property_set('SYSTEM','Occupied Locations',vOccupantCount,'SYSTEM','osae_sp_system_count_occupants');
+        CASE vOccupantCount
+          WHEN 0 THEN 
+            SET vOutput = 'All Locations are Vacant';
+            CALL osae_sp_object_property_set('SYSTEM','Occupied Location String',vOutput,'SYSTEM','osae_sp_system_count_occupants');            
+          WHEN 1 THEN 
+            SET vOutput = (SELECT object_name FROM osae_v_object WHERE object_type='PLACE' AND state_name='ON' LIMIT 1);
+            SET vOutput = CONCAT('The ',vOutput,' is occupied');
+            CALL osae_sp_object_property_set('SYSTEM','Occupied Location String',vOutput,'SYSTEM','osae_sp_system_count_occupants');
+          ELSE
+            OPEN curs2;
+            SET oCount = 0;
+            SET bDone = 0;
+            SET vOutput = '';
+            REPEAT
+              FETCH curs2 INTO var2;
+              IF oCount < vOccupantCount THEN
+                IF oCount = 0 THEN
+                  SET vOutput = CONCAT(vOutput,CONCAT(' and the ', var2, ' are occupied'));
+                ELSEIF oCount = 1 THEN
+                  SET vOutput = CONCAT('the ', var2, vOutput);
+                ELSE
+                  SET vOutput = CONCAT('the ', var2, ', ', vOutput);
+                END IF;
+                SET oCount = oCount + 1;
+              END IF;
+            UNTIL bDone END REPEAT;
+          
+            CLOSE curs2;
+            CALL osae_sp_object_property_set('SYSTEM','Occupied Location String',vOutput,'SYSTEM','osae_sp_system_count_occupants');
+         END CASE;
+    END IF;    
+END
+$$
+
+--
 -- Alter trigger "tr_osae_event_log_after_insert"
 --
 DROP TRIGGER IF EXISTS tr_osae_event_log_after_insert$$
@@ -117,11 +211,6 @@ END
 $$
 
 DELIMITER ;
-
---
--- Enable foreign keys
---
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 
 
 -- Set DB version 
