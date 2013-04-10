@@ -30,7 +30,7 @@
         {
             try
             {
-                logging.AddToLog("received message: " + e.Message, false);
+                logging.AddToLog("received message: " + e.Message.Type + " - " + e.Message.Message, false);
                 if (e.Message.Type == WCF.OSAEWCFMessageType.CONNECT)
                 {
                     try
@@ -125,9 +125,9 @@
                     {
                         foreach (Plugin plugin in masterPlugins)
                         {
-                            if (plugin.PluginName == arguments[1])
+                            if (plugin.PluginType == arguments[1])
                             {
-                                if (plugin.Status == "Running")
+                                if (plugin.Status == "ON")
                                 {
                                     disablePlugin(plugin);
                                     sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
@@ -161,7 +161,6 @@
         {
             try
             {
-                logging.AddToLog("Sending message to clients: " + msgType + " - " + message, false);
                 WCF.OSAEWCFMessage msg = new WCF.OSAEWCFMessage();
                 msg.Type = msgType;
                 msg.Message = message;

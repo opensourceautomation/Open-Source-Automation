@@ -107,6 +107,7 @@
                 logging.AddToLog("type.AssemblyName: " + type.AssemblyName, false);
 
                 var domain = Common.CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet, typeof(OSAEService));
+                domain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledPluginExceptions);
 
                 plugins.Add(new Plugin(type.AssemblyName, type.TypeName, domain, type.Location));
             }
@@ -192,6 +193,12 @@
                     logging.AddToLog("Error loading plugin: " + ex.Message, true);
                 }
             }
-        }       
+        }
+
+        void UnhandledPluginExceptions(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
+            logging.AddToLog("Unhandled Plugin Exceptions : " + e.Message + " - InnerException: " + e.InnerException.Message, true);
+        }
     }
 }

@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.MediaCenter", "OSAE.MediaCenter.csproj", "{D87E5DED-7F82-41DF-9A54-FD3BD4B3EB66}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D87E5DED-7F82-41DF-9A54-FD3BD4B3EB66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D87E5DED-7F82-41DF-9A54-FD3BD4B3EB66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D87E5DED-7F82-41DF-9A54-FD3BD4B3EB66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D87E5DED-7F82-41DF-9A54-FD3BD4B3EB66}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -62,7 +62,7 @@
         private void StartThreads()
         {
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
-            QueryCommandQueueThread.Start();           
+            QueryCommandQueueThread.Start();
 
             Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
             loadPluginsThread.Start();
@@ -124,7 +124,7 @@
 
                         if (method.ObjectName == "SERVICE-" + Common.ComputerName)
                         {
-                            switch (method.ObjectName)
+                            switch (method.MethodName)
                             {
                                 case "EXECUTE" : 
                                     logging.AddToLog("Recieved Execute Method Name", true);
@@ -141,6 +141,12 @@
                                     break;
                             }                                                                            
 
+                            OSAEMethodManager.MethodQueueDelete(method.Id);
+                        }
+                        else if (method.ObjectName.Split('-')[0] == "SERVICE")
+                        {
+                            if(method.MethodName == "EXECUTE")
+                                sendMessageToClients(WCF.OSAEWCFMessageType.CMDLINE, method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8));
                             OSAEMethodManager.MethodQueueDelete(method.Id);
                         }
                         else

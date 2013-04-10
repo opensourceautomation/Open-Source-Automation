@@ -53,7 +53,8 @@
                         if (filename.EndsWith("osapp", StringComparison.Ordinal))
                         {
                             // its a plugin package
-                            PluginInstallerHelper.InstallPlugin(System.IO.Path.GetFullPath(args[0]));
+                            PluginInstallerHelper pInst = new PluginInstallerHelper();
+                            pInst.InstallPlugin(System.IO.Path.GetFullPath(args[0]));
                         }
                     }
                 }
@@ -205,17 +206,6 @@
                 else
                 {
                     txblWiki.Visibility = System.Windows.Visibility.Hidden;
-                }
-
-                if (p.Upgrade != string.Empty)
-                {
-                    imgUpdate.Visibility = System.Windows.Visibility.Visible;
-                    Uri u = new Uri("http://www.opensourceautomation.com/plugin_details.php?pid=" + p.ID);
-                    hypUpdate.NavigateUri = u;
-                }
-                else
-                {
-                    imgUpdate.Visibility = System.Windows.Visibility.Hidden;
                 }
 
                 string pluginPath = Common.ApiPath + "\\Plugins\\" + p.Path + "\\";
@@ -429,14 +419,7 @@
                             pr.Start();
                         }
                         break;
-                    case WCFServiceReference.OSAEWCFMessageType.SERVICE:
-                        string[] serv = message.Message.Split('|');
-                        if (serv[0] != serv[1] && txblNewVersion.Visibility == Visibility.Hidden)
-                        {
-                            ShowNewVersion("Version " + serv[1] + " Available");
-                        }
-
-                        break;
+                    
                 }
             //});
         }
@@ -606,30 +589,6 @@
             }
         }
 
-        void ShowNewVersion(string label)
-        {
-            if (hypNewVersion.Dispatcher.CheckAccess() == false)
-            {
-                hypNewVersion.Dispatcher.Invoke(
-                    System.Windows.Threading.DispatcherPriority.Normal,
-                    new Action(
-                      delegate()
-                      {
-                          Run run = new Run(label);
-                          hypNewVersion.Inlines.Clear();
-                          hypNewVersion.Inlines.Add(run);
-                          txblNewVersion.Visibility = Visibility.Visible;
-                      }
-                  ));
-            }
-            else
-            {
-                Run run = new Run(label);
-                hypNewVersion.Inlines.Clear();
-                hypNewVersion.Inlines.Add(run);
-                txblNewVersion.Visibility = Visibility.Visible;
-            }
-         }
 
         private void InstallPlugin_Click(object sender, RoutedEventArgs e)
         {
@@ -646,7 +605,8 @@
             if (result == true)
             {
                 // Open Plugin Package 
-                PluginInstallerHelper.InstallPlugin(dlg.FileName);
+                PluginInstallerHelper pInst = new PluginInstallerHelper();
+                pInst.InstallPlugin(dlg.FileName);
                 loadPlugins();
             }
         }

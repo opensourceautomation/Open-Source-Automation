@@ -228,7 +228,7 @@
         {
             try
             {
-                EndpointAddress ep = new EndpointAddress("net.tcp://" + Common.ConnectionString + ":8731/WCFService/");
+                EndpointAddress ep = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
                 InstanceContext context = new InstanceContext(this);
                 wcfObj = new WCFServiceReference.WCFServiceClient(context, "NetTcpBindingEndpoint", ep);
                 wcfObj.Subscribe();
@@ -245,6 +245,8 @@
 
         public void OnMessageReceived(string msgType, string message, string from, DateTime timestamp)
         {
+            logging.AddToLog("received message: " + msgType + " | " + message, false);
+            
             if(string.IsNullOrEmpty(msgType))
             {
                 throw new ArgumentNullException("msgType");               
@@ -260,7 +262,7 @@
                 throw new ArgumentNullException("from");
             }
 
-            logging.AddToLog("received message: " + msgType + " | " + message, false);
+            
             switch (msgType)
             {
                 case "plugin":

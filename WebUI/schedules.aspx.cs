@@ -224,7 +224,7 @@ public partial class schedules : System.Web.UI.Page
             }
             else
             {
-                OSAEScheduleManager.ScheduleQueueAdd(dt, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, ddlScript.SelectedItem.Text, 0);
+                OSAEScheduleManager.ScheduleQueueAdd(dt, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, "", 0);
             }
         }
         else
@@ -238,7 +238,7 @@ public partial class schedules : System.Web.UI.Page
             }
             else
             {
-                OSAEScheduleManager.ScheduleRecurringAdd(txtName.Text, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, ddlScript.SelectedItem.Text, tsTime.Text + ":00",
+                OSAEScheduleManager.ScheduleRecurringAdd(txtName.Text, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, "", tsTime.Text + ":00",
                     chkSunday.Checked, chkMonday.Checked, chkTuesday.Checked, chkWednesday.Checked, chkThursday.Checked, chkFriday.Checked, chkSaturday.Checked, rbScheduleType.SelectedValue,
                     Int32.Parse(txtMinutes.Text), ddlMonthDay.SelectedValue, txtPickedDate.Text);
             }
