@@ -161,7 +161,6 @@
         {
             try
             {
-                logging.AddToLog("Sending message to clients: " + msgType + " - " + message, false);
                 WCF.OSAEWCFMessage msg = new WCF.OSAEWCFMessage();
                 msg.Type = msgType;
                 msg.Message = message;

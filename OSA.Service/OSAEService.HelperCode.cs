@@ -143,6 +143,12 @@
 
                             OSAEMethodManager.MethodQueueDelete(method.Id);
                         }
+                        else if (method.ObjectName.Split('-')[0] == "SERVICE")
+                        {
+                            if(method.MethodName == "EXECUTE")
+                                sendMessageToClients(WCF.OSAEWCFMessageType.CMDLINE, method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8));
+                            OSAEMethodManager.MethodQueueDelete(method.Id);
+                        }
                         else
                         {
                             bool processed = false;                            

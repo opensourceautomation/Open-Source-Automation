@@ -30,6 +30,7 @@
             {
                 subscribers.ForEach(delegate(IMessageCallback callback)
                 {
+                    logging.AddToLog("Sending message to client: " + message.Type + " - " + message.Message, false);
                     if (((ICommunicationObject)callback).State == CommunicationState.Opened)
                     {
                         try

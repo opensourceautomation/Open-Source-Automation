@@ -91,7 +91,8 @@
 //#if (DEBUG)
             Debugger.Launch(); //<-- Simple form to debug a web services 
 //#endif
-
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptions);
             try
             {
                 Common.InitialiseLogFolder();
@@ -139,6 +140,11 @@
             ShutDownSystems();
         }
 
+        void UnhandledExceptions(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
+            logging.AddToLog("UnhandledExceptions caught : " + e.Message + " - InnerException: " + e.InnerException.Message, true);
+        }
         #endregion
     }
 }
