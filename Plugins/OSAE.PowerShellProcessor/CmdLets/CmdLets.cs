@@ -4,26 +4,7 @@
     using System.Collections.ObjectModel;
     using System.Management.Automation;
     using System.Management.Automation.Runspaces;
-    using System.Text;
-
-    [Cmdlet(VerbsCommon.Get, "OSA")]
-    public class OSAPS : Cmdlet
-    {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
-
-        [Parameter(Mandatory = true)]
-        public string Name { get; set; }
-               
-        protected override void ProcessRecord()
-        {
-            logging.AddToLog("Get-OSA - ProcessRecord - Started", false);
-            OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
-            WriteObject(obj);
-        }
-    }
+    using System.Text;    
 
     [Cmdlet(VerbsCommon.Set, "OSA")]
     public class OSAPSSet : Cmdlet
@@ -38,13 +19,20 @@
         /// </summary>
         private const string source = "PowerShell CmdLet";
 
-        [Parameter(Mandatory = true)]
+        [Parameter(
+            Mandatory = true,
+            HelpMessage = "The name of the object that has the property to set")]
         public string Name { get; set; }
 
-        [Parameter(Mandatory = true)]
+        [Parameter(
+            Mandatory = true,
+            HelpMessage = "The name of the property to set")]
+        [Alias("Prop")]
         public string Property { get; set; }
 
-        [Parameter(Mandatory = true)]
+        [Parameter(
+            Mandatory = true,
+            HelpMessage = "The value to set the property to")]
         public string Value { get; set; }
                 
         protected override void ProcessRecord()
@@ -55,60 +43,7 @@
 
             WriteObject(true);
         }
-    }
-
-    [Cmdlet(VerbsLifecycle.Invoke, "OSA")]
-    public class OSAPSInvoke : Cmdlet
-    {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
-
-        [Parameter(Mandatory = true)]
-        public string Name { get; set; }
-
-        [Parameter(Mandatory = true)]
-        public string Method { get; set; }
-
-        private string parameter1 = string.Empty;
-        
-        [Parameter(Mandatory = false)]
-        public string Parameter1 
-        {
-            get
-            {
-                return parameter1;
-            }
-            set
-            {
-                parameter1 = value;
-            }
-        }
-
-        private string parameter2 = string.Empty;
-
-        [Parameter(Mandatory = false)]
-        public string Parameter2
-        {
-            get
-            {
-                return parameter2;
-            }
-            set
-            {
-                parameter2 = value;
-            }
-        }
-               
-        protected override void ProcessRecord()
-        {
-            logging.AddToLog("Invoke-OSA - ProcessRecord - Started", false);
-            OSAEMethodManager.MethodQueueAdd(Name, Method, parameter1, parameter2, "PowerShell");
-
-            WriteObject(true);
-        }
-    }
+    }    
 
     [Cmdlet(VerbsCommon.Show, "OSA")]
     public class OSAPSShow : Cmdlet
@@ -170,6 +105,7 @@
         public string Name { get; set; }
 
         [Parameter(Mandatory = false)]
+        [Alias("P2")]
         public string Parameter2 { get; set; }
 
         [Parameter(Mandatory = false)]

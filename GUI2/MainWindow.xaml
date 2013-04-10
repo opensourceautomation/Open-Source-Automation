@@ -1,7 +1,7 @@
 ﻿<Window x:Class="GUI2.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Open Source Automation - Main Window" Height="195" Width="576" Loaded="Window_Loaded" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Closing="Window_Closing_1" Icon="icon.png">
+        Title="Open Source Automation - Main Window" Height="195" Width="576" Loaded="Window_Loaded" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Closing="Window_Closing_1" Icon="icon.png" WindowStyle="ToolWindow">
     <Grid>
         <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FFFFFFFE" Focusable="True" MouseRightButtonDown="canvas1_RightButtonDown">
             <Canvas.ContextMenu>
@@ -17,6 +17,15 @@
                         <MenuItem Name="menuAddTimerLabel" Header="Timer Label" Click="menuAddTimerLabel_Click" />
                         <MenuItem Name="menuAddCameraViewer" Header="Camera Viewer" Click="menuAddCameraViewer_Click" />
                         <MenuItem Name="menuAddUserControl" Header="User Control" Click="menuAddUserControl_Click" />
+                    </MenuItem>
+                    <MenuItem Header="Window">
+                        <MenuItem Name="menuFrameShow" Header="Show Frame" Click="menuFrameShow_Click"  />
+                        <MenuItem Name="menuFrameHide" Header="Hide Frame" Click="menuFrameHide_Click"  />
+                        <MenuItem Header="Position">
+                            <MenuItem Name="menuFrameTopLeft" Header="Top Left" Click="menuFrameTopLeft_Click"   />
+                            <MenuItem Name="menuFrameBottomRight" Header="Bottom Right" Click="menuFrameBottomRight_Click"  />
+                            <MenuItem Name="menuFrameCenter" Header="Centre" Click="menuFrameCentre_Click"  />
+                        </MenuItem>        
                     </MenuItem>
                 </ContextMenu>
             </Canvas.ContextMenu>
