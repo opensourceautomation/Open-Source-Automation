@@ -31,11 +31,24 @@
         {
             try
             {
-                string script = OSAEScriptManager.GetScript(method.Parameter1);
+                string script = "";
+
+                int scriptId;
+                if (int.TryParse(method.Parameter1, out scriptId))
+                {
+                    script = OSAEScriptManager.GetScript(method.Parameter1);
+                }
+                else
+                {
+                    script = OSAEScriptManager.GetScriptByName(method.Parameter1);                    
+                }                
 
                 logging.AddToLog("running script: " + script, false);
 
-                RunScript(script, method);
+                if(!string.IsNullOrEmpty(script))
+                {                    
+                    RunScript(script, method);
+                }
             }
             catch (Exception exc)
             {

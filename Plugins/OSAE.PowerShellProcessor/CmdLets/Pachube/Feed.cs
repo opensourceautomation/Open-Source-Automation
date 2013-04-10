@@ -30,7 +30,7 @@ namespace PachubeDataAccess
                 req.Headers.Add("X-PachubeApiKey", AssociatedAccount.ApiKey);
 
                 Logging.GetLogger("PowerShell").AddToLog("Pachube request details: " + AssociatedAccount.EventsUrl + this.Id.ToString() , false);
-                //JavaScriptSerializer js = new JavaScriptSerializer();
+
                 using (WebResponse resp = req.GetResponse())
                 {
                     using (StreamReader respStream = new StreamReader(resp.GetResponseStream()))
