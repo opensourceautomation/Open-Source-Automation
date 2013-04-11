@@ -20,31 +20,39 @@
 
         public  void InstallPlugin(string filepath)
         {
-            string ErrorText = string.Empty;
-            connectToService();
-
-            InstallPlugin pi = new InstallPlugin(filepath);
-            pi.ShowDialog();
-                        
-            if (pi.install)
+            try
             {
-                if (!InstallPlugin(filepath, ref ErrorText))
-                {
-                    MessageBox.Show("Package was not successfully installed.");
-                }
+                string ErrorText = string.Empty;
+                connectToService();
 
-                else if (!string.IsNullOrEmpty(ErrorText))
-                {
-                    MessageBox.Show("Package installed.");
-                    
-                }
+                InstallPlugin pi = new InstallPlugin(filepath);
+                pi.ShowDialog();
 
-                else
+                if (pi.install)
                 {
-                    MessageBox.Show("Package installed.");
-                    
+                    if (!InstallPlugin(filepath, ref ErrorText))
+                    {
+                        MessageBox.Show("Package was not successfully installed.");
+                    }
+
+                    else if (!string.IsNullOrEmpty(ErrorText))
+                    {
+                        MessageBox.Show("Package installed.");
+
+                    }
+
+                    else
+                    {
+                        MessageBox.Show("Package installed.");
+
+                    }
+                    if (wcfObj.State == CommunicationState.Opened)
+                        wcfObj.Close();
                 }
-                wcfObj.Close();
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 

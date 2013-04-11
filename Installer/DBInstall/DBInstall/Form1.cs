@@ -19,7 +19,7 @@ namespace DBInstall
         string directory = "";
         string existing = "";
         string current = "0.1.0";
-        string newVersion = "0.4.0";
+        string newVersion = "0.4.1";
         string machine = "";
         MySqlConnection connection;
 

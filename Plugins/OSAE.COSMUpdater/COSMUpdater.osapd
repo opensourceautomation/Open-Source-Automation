@@ -4,15 +4,12 @@
 <plugin-id>5b636360-2246-44f6-8bdb-67af917574c3</plugin-id>
 <plugin-version>0.1.1</plugin-version>
 <plugin-state>alpha</plugin-state>
-<short-description>
- Write Data to COSM</short-description>
+<short-description>Write Data to COSM</short-description>
 <author>Stuart MacKay, Matthew Stebbings</author>
 <destination-folder>COSMUpdater</destination-folder>
-<main-file></main-file>
-<wiki-url>
-http://www.opensourceautomation.com/wiki/index.php?title=http://www.opensourceautomation.com/wiki/index.php?title=COSMUpdater</wiki-url>
+<main-file>OSAE.COSMUpdater.dll</main-file>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=COSMUpdater</wiki-url>
 <additional-assemblies>
-<name>OSAE.COSMUpdater.dll</name>
 </additional-assemblies>
 <x64-additional-assemblies>
 </x64-additional-assemblies>

@@ -4,7 +4,7 @@
 	</Manufacturer>
 	<Manufacturer id="0098" name="2GIG Technologies">
 		<Product type="1e12" id="015c" name="CT30 Thermostat" config="2gig/ct30.xml"/>
-		<Product type="6401" id="0105" name="CT30 Thermostat" config="2gig/ct100.xml"/>
+		<Product type="6401" id="0105" name="CT100 Thermostat" config="2gig/ct100.xml"/>
 	</Manufacturer>
 	<Manufacturer id="002a" name="3e Technologies">
 	</Manufacturer>
@@ -45,7 +45,7 @@
 		<Product type="0003" id="000c" name="Micro Smart Energy Switch"/>
 		<Product type="0003" id="000d" name="Micro Smart Energy Illuminator"/>
 		<Product type="0003" id="000e" name="Micro Motor Controller"/>
-		<Product type="0001" id="0016" name="Key Fob"/>
+		<Product type="0001" id="0016" name="Key Fob" config="aeon_labs/keyfob.xml"/>
 	</Manufacturer>
 	<Manufacturer id="0094" name="Alarm.com">
 	</Manufacturer>
@@ -57,6 +57,12 @@
 	<Manufacturer id="002b" name="Atech">
 	</Manufacturer>
 	<Manufacturer id="0018" name="Balboa Inst.">
+	</Manufacturer>
+	<Manufacturer id="008a" name="BeNext">
+		<Product type="0004" id="0100" name="Door Sensor" config="BeNext/DoorSensor.xml"/>
+		<Product type="0006" id="0101" name="Energy Switch" config="BeNext/EnergySwitch.xml"/>
+		<Product type="0007" id="0101" name="Tag Reader" config="BeNext/TagReader.xml"/>
+		<Product type="0008" id="0101" name="Power Switch"/>
 	</Manufacturer>
 	<Manufacturer id="002c" name="BeSafer">
 	</Manufacturer>
@@ -87,6 +93,7 @@
 	<Manufacturer id="0030" name="Cytech Tech">
 	</Manufacturer>
 	<Manufacturer id="0002" name="Danfoss">
+	  	<Product type="0005" id="0003" name="Z Thermostat"/>
 		<Product type="0064" id="0001" name="RA Plus-W Radiator Thermostat"/>
 		<Product type="8005" id="0001" name="Living Connect Radiator Thermostat" config="danfoss/living.xml"/>
 	</Manufacturer>
@@ -116,14 +123,16 @@
 		<Product type="0104" id="0001" name="AN145 Lamp Screw In Module" config="everspring/an145.xml"/>
 		<Product type="0004" id="0002" name="AN158 Plug-in Meter Appliance Module" config="everspring/an158.xml"/>
 		<Product type="0004" id="0001" name="AN157 Plug-in Appliance Module"/>
-		<Product type="000C" id="0001" name="SE812 Siren"/>
+		<Product type="000C" id="0001" name="SE812 Siren" config="everspring/se812.xml"/>
 		<Product type="000D" id="0001" name="SF812 Smoke Alarm" config="everspring/sf812.xml"/>
 		<Product type="0202" id="0001" name="SM103 Door/Window Sensor" config="everspring/sm103.xml"/>
 		<Product type="0002" id="0001" name="SM103 Door/Window Sensor" config="everspring/sm103.xml"/>
 		<Product type="0101" id="0001" name="SP103 PIR Motion Sensor" config="everspring/sp103.xml"/>
 		<Product type="0001" id="0002" name="SP814 Motion Detector" config="everspring/sp814.xml"/>
 		<Product type="0006" id="0001" name="ST814 Temperature and Humidity Sensor" config="everspring/st814.xml"/>
+		<Product type="0007" id="0001" name="ST815 Illumination Sensor" config="everspring/st815.xml"/>
 		<Product type="000b" id="0001" name="ST812 Flood Detector"/>
+		<Product type="0009" id="0001" name="TSE03 Door Bell" config="everspring/tse03.xml"/>
 	</Manufacturer>
 	<Manufacturer id="0116" name="Everspring CT">
 		<Product type="0002" id="0001" name="HSM02 Mini Door/Window Detector" config="everspringct/hsm02.xml" />
@@ -139,21 +148,30 @@
 	<Manufacturer id="0085" name="Fakro">
 	</Manufacturer>
 	<Manufacturer id="010f" name="FIBARO System">
-	  <Product type="0501" id="0102" name="FGBS001 Universal Binary Sensor" />
-	  <Product type="0100" id="0104" name="FGD211 Universal Dimmer 500W" />
-	  <Product type="0100" id="0107" name="FGD211 Universal Dimmer 500W" config="fibaro/fgd211.xml" />
-	  <Product type="0300" id="0106" name="FGR221 Roller Shutter Controller" />
-	  <Product type="0300" id="0107" name="FGR221 Roller Shutter Controller" />
-	  <Product type="0400" id="0104" name="FGS211 Switch 3KW" config="fibaro/fgs211.xml" />
-	  <Product type="0200" id="0104" name="FGS221 Double Relay Switch 2x1,5kW" config="fibaro/fgs221.xml" />
-	  <Product type="0200" id="0105" name="FGS221 Double Relay Switch 2x1,5kW" config="fibaro/fgs221.xml" />
-	  <Product type="0200" id="0106" name="FGS221 Double Relay Switch 2x1,5kW" config="fibaro/fgs221.xml" />
-	  <Product type="0200" id="0107" name="FGS221 Double Relay Switch 2x1,5kW" config="fibaro/fgs221.xml" />
+		<Product type="0501" id="0102" name="FGBS001 Universal Binary Sensor" config="fibaro/fgbs001.xml" />
+		<Product type="0100" id="0104" name="FGD211 Universal Dimmer 500W" />
+		<Product type="0100" id="0107" name="FGD211 Universal Dimmer 500W" config="fibaro/fgd211.xml" />
+		<Product type="0700" id="1000" name="FGK101 Door Opening Sensor" config="fibaro/fgk001.xml" />
+		<Product type="0300" id="100a" name="FGR221 Roller Shutter Controller" config="fibaro/fgs221.xml"/>
+		<Product type="0300" id="0106" name="FGR221 Roller Shutter Controller" />
+		<Product type="0300" id="0107" name="FGR221 Roller Shutter Controller" />
+		<Product type="0400" id="0104" name="FGS211 Switch 3kW" config="fibaro/fgs211.xml" />
+		<Product type="0400" id="0105" name="FGS211 Switch 3kW" config="fibaro/fgs211.xml" />
+		<Product type="0400" id="0106" name="FGS211 Switch 3kW" config="fibaro/fgs211.xml" />
+		<Product type="0400" id="0107" name="FGS211 Switch 3kW" config="fibaro/fgs211.xml" />
+		<Product type="0400" id="0108" name="FGS211 Switch 3kW" config="fibaro/fgs211.xml" />
+		<Product type="0400" id="0109" name="FGS221 Switch 3kW" config="fibaro/fgs221.xml" />
+		<Product type="0200" id="0104" name="FGS221 Double Relay Switch 2x1,5kW" config="fibaro/fgs221.xml" />
+		<Product type="0200" id="0105" name="FGS221 Double Relay Switch 2x1,5kW" config="fibaro/fgs221.xml" />
+		<Product type="0200" id="0106" name="FGS221 Double Relay Switch 2x1,5kW" config="fibaro/fgs221.xml" />
+		<Product type="0200" id="0107" name="FGS221 Double Relay Switch 2x1,5kW" config="fibaro/fgs221.xml" />
+		<Product type="0200" id="0109" name="FGS221 Double Relay Switch 2x1,5kW" config="fibaro/fgs221.xml" />
 	</Manufacturer>
 	<Manufacturer id="0037" name="Foard Sys">
 	</Manufacturer>
 	<Manufacturer id="0110" name="Frostdale">
 		<Product type="2411" id="0001" name="Nanogrid: FDN2nxx light switch - where n is 1, 2, 3 or 4 buttons"/>
+		<Product type="7333" id="0031" name="Nanogrid: FDN2nxx light switch - where n is 1, 2, 3 or 4 buttons" config="frostdale/fdn2nxx.xml"/>
 	</Manufacturer>
 	<Manufacturer id="0020" name="General Electric">
 		<Product type="8007" id="1390" name="Wireless Lighting Control"/>
@@ -235,6 +253,7 @@
 	<Manufacturer id="001d" name="Leviton">
 		<Product type="0101" id="0206" name="RZP15-1LW Binary Scene Switch"/>
 		<Product type="0201" id="0206" name="RZP03-1LW Binary Scene Switch"/>
+		<Product type="0202" id="030b" name="VRP03-1LW Lamp Module"/>
 		<Product type="0301" id="0206" name="RZS15-1LX Binary Scene Switch"/>
 		<Product type="0301" id="0209" name="VRS15-1LZ Binary Scene Switch"/>
 		<Product type="0401" id="0206" name="RZI10-1LX Multilevel Scene Switch" config="leviton/rzi10.xml"/>
@@ -245,7 +264,7 @@
 		<Product type="0901" id="0215" name="VRC51-1LX One Scene Controller"/>
 		<Product type="0702" id="0261" name="VRCZ4-M0Z 4-Button Zone Controller"/>
 		<Product type="0b02" id="030b" name="VRC0P-1LW Plug-in Serial Interface Module"/>
-		<Product type="0c01" id="0206" name="VRCPG-SG RF Handheld Remote Controller"/>
+		<Product type="0c01" id="0206" name="VRCPG-SG RF Handheld Remote Controller" config="leviton/vrcpg.xml"/>
 		<Product type="1001" id="0209" name="VRF01-1LZ Multilevel Scene Switch - 1.5A Fan" config="leviton/vrf01.xml"/>
 		<Product type="1102" id="0243" name="VRCS2-MRZ 2-Button Scene Controller with Switches"/>
 	</Manufacturer>
@@ -288,13 +307,20 @@
 	<Manufacturer id="0041" name="OpenPeak Inc.">
 	</Manufacturer>
 	<Manufacturer id="0064" name="Popp / Duwi">
-	  <Product type="3001" id="0000" name="Plugin Switch" />
+		<Product type="0001" id="0000" name="ZW EDAN 300 Flush Mounted Dimmer" />
+		<Product type="1001" id="0000" name="Plugin Dimmer" />
+		<Product type="2001" id="0000" name="ZW ES 1000 Flush Mounted Switch" config="duwi/ZWES1000.xml" />
+		<Product type="3001" id="0000" name="ZW ZS 3500 Plugin Switch" />
+		<Product type="3002" id="0000" name="ZW ZSA 3500 Plugin Switch" />
+		<Product type="4001" id="0000" name="ZW ESJ Blind Control" />
 	</Manufacturer>
 	<Manufacturer id="0016" name="PowerLynx">
 	</Manufacturer>
 	<Manufacturer id="0042" name="Pragmatic Cons">
 	</Manufacturer>
 	<Manufacturer id="0095" name="Qees">
+		<Product type="3101" id="0001" name="RETO Dimmer Plus 2013"/>
+		<Product type="3103" id="0001" name="RETO Plug-in Switch Plus"/>
 	</Manufacturer>
 	<Manufacturer id="0100" name="Reitz-Group.de">
 	</Manufacturer>
@@ -318,6 +344,7 @@
 		<Product type="634b" id="504c" name="FE599GR Wireless Door Lock"/>
 	</Manufacturer>
 	<Manufacturer id="0097" name="Schlage Link">
+		<Product type="1182" id="4501" name="iTemp Dual Sensor" config="schlagelink/itemp.xml" />
 		<Product type="6941" id="5501" name="LE120 Appliance Module"/>
 	</Manufacturer>
 	<Manufacturer id="001f" name="Scientia Tech">
@@ -343,6 +370,7 @@
 	<Manufacturer id="008b" name="Trane">
 		<Product type="5452" id="5431" name="Model TZEMT400AB32MAA" config="trane/TZEMT400AB32MAA.xml"/>
 		<Product type="5452" id="5433" name="Model TZEMT400BB32MAA" config="trane/TZEMT400BB32MAA.xml"/>
+		<Product type="5452" id="5436" name="Model TZEMT400BB32MAA" config="trane/TZEMT400BB32MAA.xml"/>
 	</Manufacturer>
 	<Manufacturer id="006b" name="Tricklestar">
 	</Manufacturer>
@@ -353,6 +381,17 @@
 	<Manufacturer id="005e" name="ViewSonic">
 	</Manufacturer>
 	<Manufacturer id="0007" name="Vimar CRS">
+	</Manufacturer>
+	<Manufacturer id="010a" name="Vitrum">
+		<Product type="1100" id="4900" name="Vitrum I EU Wireless Dimmer"/> 
+		<Product type="1100" id="4a00" name="Vitrum II EU Wireless Dimmer"/> 
+		<Product type="1200" id="5100" name="Vitrum I EU Wireless On-off"/> 
+		<Product type="1200" id="5200" name="Vitrum II EU Wireless On-off"/> 
+		<Product type="1300" id="5A00" name="Vitrum II EU Roller Blind Control"/> 
+		<Product type="2100" id="8a00" name="Vitrum II BS Wireless Dimmer"/>
+		<Product type="2200" id="9100" name="Vitrum I BS Wireless On-off"/>
+		<Product type="2200" id="9200" name="Vitrum II BS Wireless On-off"/>
+		<Product type="2200" id="9400" name="Vitrum IV BS Wireless On-off"/>
 	</Manufacturer>
 	<Manufacturer id="004a" name="Visualize">
 	</Manufacturer>
@@ -377,6 +416,8 @@
 	<Manufacturer id="0115" name="Z-Wave.Me">
 		<Product type="1000" id="0002" name="ZME_06433 Wall Flush-Mountable Dimmer" config="zwave.me/ZME_06433.xml"/>
 		<Product type="1000" id="0003" name="ZME_06435 Motor Control"/>
+		<Product type="1000" id="0004" name="ZME_064435 Wall Controller"/>
+		<Product type="0100" id="0001" name="ZME_KFOB 4 Button Key Fob" config="zwave.me/kfob.xml"/>
 	</Manufacturer>
 	<Manufacturer id="004f" name="Z-Wave Technologia">
 	</Manufacturer>

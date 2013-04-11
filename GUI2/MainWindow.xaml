@@ -19,12 +19,11 @@
                         <MenuItem Name="menuAddUserControl" Header="User Control" Click="menuAddUserControl_Click" />
                     </MenuItem>
                     <MenuItem Header="Window">
-                        <MenuItem Name="menuFrameShow" Header="Show Frame" Click="menuFrameShow_Click"  />
-                        <MenuItem Name="menuFrameHide" Header="Hide Frame" Click="menuFrameHide_Click"  />
+                        <MenuItem Name="menuFrameShow" Header="Show Frame" IsCheckable="True" IsChecked="True" Checked="menuFrameShow_Click" Unchecked="menuFrameHide_Click" />
                         <MenuItem Header="Position">
                             <MenuItem Name="menuFrameTopLeft" Header="Top Left" Click="menuFrameTopLeft_Click"   />
                             <MenuItem Name="menuFrameBottomRight" Header="Bottom Right" Click="menuFrameBottomRight_Click"  />
-                            <MenuItem Name="menuFrameCenter" Header="Centre" Click="menuFrameCentre_Click"  />
+                            <MenuItem Name="menuFrameCenter" Header="Center" Click="menuFrameCentre_Click"  />
                         </MenuItem>        
                     </MenuItem>
                 </ContextMenu>

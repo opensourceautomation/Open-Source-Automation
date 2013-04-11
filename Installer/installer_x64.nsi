@@ -14,7 +14,7 @@
 
   ;Name and file
   Name "Open Source Automation"
-  OutFile "OSA Setup v0.4.0_x64.exe"
+  OutFile "OSA Setup v0.4.1_x64.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES64\OSA"
@@ -90,6 +90,8 @@ SectionEnd
 Section Server s1
   SectionIn 1
   
+  SimpleSC::StopService "OSAE" 1 30
+  
   SetOutPath $INSTDIR
   
   SimpleSC::ExistsService "MySql"
@@ -140,6 +142,7 @@ Section Server s1
   SetOutPath "$INSTDIR"  
   File "..\DB\osae.sql"
   File "..\DB\0.3.9-0.4.0.sql"
+  File "..\DB\0.4.0-0.4.1.sql"
   File "MySql.Data.dll"
   File "DBInstall\DBInstall\bin\Debug\DBInstall.exe"
   ExecWait 'DBInstall.exe "$INSTDIR" "Server"'
@@ -149,7 +152,6 @@ Section Server s1
   
   SetRegView 64 
   
-  SimpleSC::StopService "OSAE" 1 30
   
   SetOutPath "$INSTDIR"
   Delete "..\output\OSAE Manager.exe"
@@ -242,6 +244,7 @@ Section Server s1
   CreateDirectory "Images"
   CreateDirectory "css"
   CreateDirectory "js"
+  CreateDirectory "App_WebReferences"
   
   SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\bootstrap"
   CreateDirectory "css"
@@ -278,6 +281,11 @@ Section Server s1
 
   SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\js"
   File "..\WebUI\js\*.*"
+
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\App_WebReferences"
+  CreateDirectory "WCFServiceReference"
+  SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\App_WebReferences\WCFServiceReference"
+  File "..\WebUI\App_WebReferences\WCFServiceReference\*.*"
  
   SetOutPath $INSTDIR
   File "UltiDev.WebServer.msi"

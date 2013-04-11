@@ -77,7 +77,7 @@ public partial class config : System.Web.UI.Page
     {
         try
         {
-            string url = "http://www.opensourceautomation.com/getLatestVersion.php";
+            string url = "http://www.opensourceautomation.com/getLatestVersion.php?v=" + OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM","DB Version").Value;
             //logging.AddToLog("Checking for plugin updates: " + url, false);
             WebRequest request = HttpWebRequest.Create(url);
             WebResponse response = request.GetResponse();
