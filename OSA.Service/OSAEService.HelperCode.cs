@@ -136,7 +136,7 @@
                                 case "STOP PLUGIN":
                                     StopPlugin(method);
                                     break;
-                                case "LOAD PLUGIN":
+                                case "RELOAD PLUGINS":
                                     LoadPlugins();
                                     break;
                             }                                                                            

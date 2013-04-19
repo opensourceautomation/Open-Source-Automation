@@ -525,29 +525,32 @@
         {
             try
             {
-                PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
-
-                logging.AddToLog("checked: " + pd.Name, true);
-
-                if (wcfObj.State == CommunicationState.Opened)
+                if (dgLocalPlugins.SelectedItem != null)
                 {
-                    Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|True"));
-                    thread.Start();
-                    logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
-                    if (myService.Status == ServiceControllerStatus.Running)
+                    PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
+
+                    logging.AddToLog("checked: " + pd.Name, true);
+
+                    if (wcfObj.State == CommunicationState.Opened)
                     {
-                        foreach (PluginDescription plugin in pluginList)
+                        Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|True"));
+                        thread.Start();
+                        logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
+                        if (myService.Status == ServiceControllerStatus.Running)
                         {
-                            if (plugin.Name == pd.Name && plugin.Name != null)
+                            foreach (PluginDescription plugin in pluginList)
                             {
-                                plugin.Status = "Starting...";
+                                if (plugin.Name == pd.Name && plugin.Name != null)
+                                {
+                                    plugin.Status = "Starting...";
+                                }
                             }
                         }
                     }
-                }
 
-                OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
-                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);                
+                    OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
+                    OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+                }
             }
             catch (Exception ex)
             {

@@ -274,7 +274,8 @@
         CMDLINE = 4,
         METHOD = 5,
         UPDATESCREEN = 6,
-        SERVICE = 7
+        SERVICE = 7,
+        LOADPLUGINS = 8
 
 
     }

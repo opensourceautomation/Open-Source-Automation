@@ -48,6 +48,10 @@
                         logging.AddToLog("Error sending plugin messages to clients: " + ex.Message, true);
                     }
                 }
+                else if (e.Message.Type == WCF.OSAEWCFMessageType.LOADPLUGINS)
+                {
+                    LoadPlugins();
+                }
                 else
                 {
                     string[] arguments = e.Message.Message.Split('|');
@@ -93,7 +97,7 @@
                     {
                         bool found = false;
                         foreach (Plugin plugin in masterPlugins)
-                        {                              
+                        {
                             if (plugin.PluginName == arguments[1])
                             {
                                 if (arguments[4].ToLower() == "true")

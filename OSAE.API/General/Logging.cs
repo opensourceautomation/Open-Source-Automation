@@ -10,7 +10,7 @@
     {
          private static Logging privateInstance = null;
 
-         private static string debug = "FALSE";
+         private static string debug;
 
         /// <summary>
         /// Provides exlusive writes to the log file
@@ -35,14 +35,7 @@
                     privateInstance = new Logging("Default");
                 }
             }
-            try
-            {
-                debug = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value;
-            }
-            catch
-            {
-                debug = "FALSE";
-            }
+            debug = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value;
             return privateInstance;
         }
 
@@ -67,7 +60,7 @@
         {
             try
             {
-                if (debug == "TRUE" || alwaysLog)
+                if (debug != "FALSE" || alwaysLog)
                 {
                     lock (logLocker)
                     {
