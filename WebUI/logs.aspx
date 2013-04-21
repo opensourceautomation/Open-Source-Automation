@@ -34,6 +34,7 @@
                 </div>
             </div>
             <asp:Button runat="server" ID="btnRefresh" Text="Refresh" class="btn" OnClick="btnRefresh_Click"/>
+            <asp:Button runat="server" ID="clearLogs" Text="Clear All" class="btn" OnClick="clearLogs_Click"/>
         </div>
         <div class="span10">
             <asp:Panel ID="panelLogContent" runat="server" Visible="false">

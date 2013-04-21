@@ -16,7 +16,7 @@
 
                     <tr>
                         <td style="padding-right: 20px">
-                            Current Version:
+                            <b>Current Version:</b>
                         </td>
                         <td>
                             <asp:Label ID="lblVersion" runat="server"></asp:Label>
@@ -27,7 +27,7 @@
                     </tr>
                     <tr>
                         <td>
-                            Debug Mode: 
+                            <b>Debug Mode: </b>
                         </td>
                         <td>
                             <asp:DropDownList ID="ddlDebug" AutoPostBack="true" runat="server" OnSelectedIndexChanged="ddlDebug_SelectedIndexChanged">
@@ -38,7 +38,7 @@
                     </tr>
                      <tr>
                         <td>
-                            Service:
+                           <b> Service:</b>
                         </td>
                         <td>
                             <asp:Label ID="serviceLabel" runat="server" Text="" />
@@ -46,10 +46,34 @@
                     </tr>
                     <tr>
                         <td>
-                            DB Size:
+                           <b> DB Size:</b>
                         </td>
                         <td>
                             <asp:Label ID="dbSize" runat="server" Text="" />
+                        </td>
+                    </tr>
+                     <tr>
+                        <td>
+                            <b>Export</b>
+                        </td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                           Scripts:
+                        </td>
+                        <td>
+                            <asp:Button ID="scriptsExportButton"  class="btn" runat="server" Text="Export" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Objects:
+                        </td>
+                        <td>
+                            <asp:Button ID="objectsExportButton"  class="btn" runat="server" Text="Export" />
                         </td>
                     </tr>
                 </table>

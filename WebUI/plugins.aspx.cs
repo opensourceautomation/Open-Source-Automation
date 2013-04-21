@@ -11,6 +11,7 @@ using System.Threading;
 using System.Xml.Linq;
 using System.Net;
 using OSAE;
+using ICSharpCode.SharpZipLib.Zip;
 
 [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Single, UseSynchronizationContext = false)]
 public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServiceCallback
@@ -19,12 +20,12 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
     WCFServiceReference.WCFServiceClient wcfObj;
 
     protected void Page_Load(object sender, EventArgs e)
-    {
+    {      
         if (!Page.IsPostBack)
         {
             loadPlugins();
         }
-    }
+    }    
 
     private void loadPlugins()
     {
@@ -42,8 +43,6 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
                 desc.Deserialize(path);
                 desc.Status = "Stopped";
                 desc.Enabled = false;
-
-                
 
                 OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                 foreach (OSAEObject o in objs)
@@ -92,8 +91,6 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
             }
             else
                 hyp.Visible = false;
-
-
         }
     }
 
@@ -197,16 +194,16 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
 
             int curMajor, curMinor, curRevion, latestMajor = 0, latestMinor = 0, latestRevision = 0;
 
+            var query = from e in xml.Elements("plugin")
+                        select new { A = e.Element("name").Value, B = e.Element("major").Value, C = e.Element("minor").Value, D = e.Element("revision").Value, link = e.Element("link").Value };
+
             foreach (PluginDescription d in pluginList)
             {
                 string[] split = d.Version.Split('.');
                 curMajor = Int32.Parse(split[0]);
                 curMinor = Int32.Parse(split[1]);
                 curRevion = Int32.Parse(split[2]);
-
-                var query = from e in xml.Elements("plugin")
-                            select new { A = e.Element("name").Value, B = e.Element("major").Value, C = e.Element("minor").Value, D = e.Element("revision").Value };
-
+                
                 foreach (var e in query)
                 {
                     if (e.A == d.Type)
@@ -226,7 +223,7 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
                     }
                 }
                 response.Close();
-            }
+            }            
         }
         catch (Exception ex)
         { 
@@ -237,5 +234,9 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
     public void OnMessageReceived(WCFServiceReference.OSAEWCFMessage message)
     {
         
+    }
+    protected void btnGetMorePlugins_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("~/morePlugins.aspx");
     }
 }
