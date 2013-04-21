@@ -130,6 +130,9 @@ namespace Manager_WPF.WCFServiceReference {
         
         [System.Runtime.Serialization.EnumMemberAttribute()]
         SERVICE = 7,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        LOADPLUGINS = 8,
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]

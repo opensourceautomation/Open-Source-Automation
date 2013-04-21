@@ -220,19 +220,20 @@ public partial class schedules : System.Web.UI.Page
             DateTime dt = Convert.ToDateTime(date);  
             if(rblAction.SelectedValue == "1")
             {
-                OSAEScheduleManager.ScheduleQueueAdd(dt, "", "", "", "", ddlScript.SelectedItem.Text, 0);
+                OSAEScheduleManager.ScheduleQueueAdd(dt, null, null, null, null, ddlScript.SelectedItem.Text, 0);
             }
             else
             {
                 OSAEScheduleManager.ScheduleQueueAdd(dt, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, "", 0);
             }
+            lblAlert.Text = "One time schedule added successfully";
         }
         else
         {
             if(rblAction.SelectedValue == "1")
             {
 
-                OSAEScheduleManager.ScheduleRecurringAdd(txtName.Text, "", "", "", "", ddlScript.SelectedItem.Text, tsTime.Text + ":00",
+                OSAEScheduleManager.ScheduleRecurringAdd(txtName.Text, null, null, null, null, ddlScript.SelectedItem.Text, tsTime.Text + ":00",
                     chkSunday.Checked, chkMonday.Checked, chkTuesday.Checked, chkWednesday.Checked, chkThursday.Checked, chkFriday.Checked, chkSaturday.Checked, rbScheduleType.SelectedValue,
                     Int32.Parse(txtMinutes.Text), ddlMonthDay.SelectedValue, txtPickedDate.Text);
             }
@@ -242,10 +243,11 @@ public partial class schedules : System.Web.UI.Page
                     chkSunday.Checked, chkMonday.Checked, chkTuesday.Checked, chkWednesday.Checked, chkThursday.Checked, chkFriday.Checked, chkSaturday.Checked, rbScheduleType.SelectedValue,
                     Int32.Parse(txtMinutes.Text), ddlMonthDay.SelectedValue, txtPickedDate.Text);
             }
+            lblAlert.Text = "Recurring schedule added successfully";
         }
         loadQueue();
         loadRecurring();
-        lblAlert.Text = "Recurring schedule added successfully";
+        
         alert.Visible = true;
     }
     protected void btnUpdate_Click(object sender, EventArgs e)

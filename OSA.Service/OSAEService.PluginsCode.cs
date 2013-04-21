@@ -96,6 +96,7 @@
         /// </summary>
         public void LoadPlugins()
         {
+            OSAEPluginCollection newPlugins = new OSAEPluginCollection();
             var pluginAssemblies = new List<OSAEPluginBase>();
             var types = PluginFinder.FindPlugins();
 
@@ -109,13 +110,17 @@
                 var domain = Common.CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet, typeof(OSAEService));
                 domain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledPluginExceptions);
 
-                plugins.Add(new Plugin(type.AssemblyName, type.TypeName, domain, type.Location));
+                Plugin p = new Plugin(type.AssemblyName, type.TypeName, domain, type.Location);
+                if (!pluginLoaded(p.PluginType))
+                {
+                    newPlugins.Add(p);
+                }
             }
 
             logging.AddToLog("Found " + plugins.Count.ToString() + " plugins", true);
             MySqlConnection connection = new MySqlConnection(Common.ConnectionString);
 
-            foreach (Plugin plugin in plugins)
+            foreach (Plugin plugin in newPlugins)
             {
                 try
                 {
@@ -185,6 +190,7 @@
                             sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
 
                         }
+                        plugins.Add(plugin);
                         masterPlugins.Add(plugin);
                     }
                 }
@@ -193,6 +199,16 @@
                     logging.AddToLog("Error loading plugin: " + ex.Message, true);
                 }
             }
+        }
+
+        private bool pluginLoaded(string type)
+        {
+            foreach (Plugin p in plugins)
+            {
+                if (p.PluginType == type)
+                    return true;
+            }
+            return false;
         }
 
         void UnhandledPluginExceptions(object sender, UnhandledExceptionEventArgs args)

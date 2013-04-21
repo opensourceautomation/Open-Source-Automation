@@ -8,27 +8,20 @@
   <xs:element name="ArrayOfOSAEObject" nillable="true" type="tns:ArrayOfOSAEObject" />
   <xs:complexType name="OSAEObject">
     <xs:sequence>
-      <xs:element name="_address" nillable="true" type="xs:string" />
-      <xs:element name="_baseType" nillable="true" type="xs:string" />
-      <xs:element name="_container" nillable="true" type="xs:string" />
-      <xs:element name="_description" nillable="true" type="xs:string" />
-      <xs:element name="_enabled" type="xs:int" />
-      <xs:element name="_lastUpd" nillable="true" type="xs:string" />
-      <xs:element name="_name" nillable="true" type="xs:string" />
-      <xs:element name="_state" nillable="true" type="tns:OSAEObjectState" />
-      <xs:element name="_type" nillable="true" type="xs:string" />
-      <xs:element name="_x003C_Methods_x003E_k__BackingField" nillable="true" type="tns:ArrayOfOSAEMethod" />
-      <xs:element name="_x003C_Properties_x003E_k__BackingField" nillable="true" type="tns:ArrayOfOSAEObjectProperty" />
+      <xs:element minOccurs="0" name="Address" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="BaseType" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Container" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Enabled" type="xs:int" />
+      <xs:element minOccurs="0" name="LastUpd" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Methods" nillable="true" type="tns:ArrayOfOSAEMethod" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Properties" nillable="true" type="tns:ArrayOfOSAEObjectProperty" />
+      <xs:element minOccurs="0" name="State" nillable="true" type="tns:OSAEObjectState" />
+      <xs:element minOccurs="0" name="Type" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="OSAEObject" nillable="true" type="tns:OSAEObject" />
-  <xs:complexType name="OSAEObjectState">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="TimeInState" type="xs:long" />
-      <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="OSAEObjectState" nillable="true" type="tns:OSAEObjectState" />
   <xs:complexType name="ArrayOfOSAEMethod">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="unbounded" name="OSAEMethod" nillable="true" type="tns:OSAEMethod" />
@@ -37,13 +30,12 @@
   <xs:element name="ArrayOfOSAEMethod" nillable="true" type="tns:ArrayOfOSAEMethod" />
   <xs:complexType name="OSAEMethod">
     <xs:sequence>
-      <xs:element name="_x003C_Address_x003E_k__BackingField" nillable="true" type="xs:string" />
-      <xs:element name="_x003C_Id_x003E_k__BackingField" type="xs:int" />
-      <xs:element name="_x003C_MethodName_x003E_k__BackingField" nillable="true" type="xs:string" />
-      <xs:element name="_x003C_ObjectName_x003E_k__BackingField" nillable="true" type="xs:string" />
-      <xs:element name="_x003C_Owner_x003E_k__BackingField" nillable="true" type="xs:string" />
-      <xs:element name="_x003C_Parameter1_x003E_k__BackingField" nillable="true" type="xs:string" />
-      <xs:element name="_x003C_Parameter2_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Address" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MethodName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ObjectName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Owner" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Parameter1" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Parameter2" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="OSAEMethod" nillable="true" type="tns:OSAEMethod" />
@@ -63,4 +55,11 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="OSAEObjectProperty" nillable="true" type="tns:OSAEObjectProperty" />
+  <xs:complexType name="OSAEObjectState">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="TimeInState" type="xs:long" />
+      <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="OSAEObjectState" nillable="true" type="tns:OSAEObjectState" />
 </xs:schema>

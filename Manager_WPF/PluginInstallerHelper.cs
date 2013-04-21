@@ -58,8 +58,6 @@
 
         public  bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
-            Logging logging = Logging.GetLogger("Plugin Installer");
-
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
             if (Directory.Exists(exePath + "/tempDir/"))
             {
@@ -74,8 +72,8 @@
             bool NoError = true;
 
             FastZip fastZip = new FastZip();
-            //try
-            //{
+            try
+            {
                 fastZip.ExtractZip(zipFileName, tempfolder, null);
                 // find all included plugin descriptions and install the plugins
                 List<string> osapdFiles = new List<string>();
@@ -176,20 +174,21 @@
                             logging.AddToLog("Sending message to service to load plugin.", true);
                             if (wcfObj.State == CommunicationState.Opened)
                             {
-                                Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + PluginManager.GetPluginName(desc.Type, Common.ComputerName) + "|True"));
-                                thread.Start();
+                                //Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + PluginManager.GetPluginName(desc.Type, Common.ComputerName) + "|True"));
+                                //thread.Start();
                             }
 
                         }
                     }
-
+                    else
+                        return false;
                 }
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show("catch: " + ex.Message);
-            //    return false;
-            //}
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("catch: " + ex.Message);
+                return false;
+            }
                 if (Directory.Exists(exePath + "/tempDir/"))
                 {
                     deleteFolder(exePath + "/tempDir/");
@@ -209,7 +208,7 @@
             bool returnValue = false;
             if (wcfObj.State == CommunicationState.Opened)
             {
-                Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "updatePlugin|" + desc.Type + "|True"));
+                Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + desc.Type + "|False"));
                 thread.Start();
             }
             Thread.Sleep(2000);
@@ -226,6 +225,8 @@
                 if (Directory.Exists(pluginFolder))
                     returnValue = false;
             }
+            else
+                returnValue = true;
             return returnValue;
         }
 
@@ -272,7 +273,7 @@
             }
             catch (Exception ex)
             {
-                //logging.AddToLog("Error messaging host: " + ex.Message, true);
+                logging.AddToLog("Error messaging host: " + ex.Message, true);
             }
         }
 

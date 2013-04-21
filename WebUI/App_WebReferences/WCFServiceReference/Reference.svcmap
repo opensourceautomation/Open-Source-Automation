@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="15a3e1b7-6d98-4693-a329-b3ab157bd57f" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="a4904a88-976f-41a0-a7f9-9ccbc4d4a5eb" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <EnableDataBinding>true</EnableDataBinding>
@@ -21,12 +21,12 @@
     <MetadataSource Address="net.tcp://127.0.0.1:8731/WCFService/mex" Protocol="mex" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="5eabcccb-a735-43d8-bcf7-ebf5bea8cefc" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
-    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="fc2ca38c-057e-47b9-9673-2375a8a2e53b" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
-    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="3cb56a96-60bf-449c-aa7e-fa17dca669a1" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
-    <MetadataFile FileName="WCF.xsd" MetadataType="Schema" ID="dc0e1c83-0dd9-4133-a004-76dae193aac4" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
-    <MetadataFile FileName="OSAE.xsd" MetadataType="Schema" ID="e3b5d908-5d15-4eee-a10e-0f4982514edd" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
-    <MetadataFile FileName="service2.xsd" MetadataType="Schema" ID="c7e79e83-4f93-41dd-a117-8da76157d9a5" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="8f9f7134-9fc3-422c-99fa-4ff059b2e8ef" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="68bdecad-32cd-415b-90ba-163bb71d4a39" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="59e069ea-85f1-4806-871b-c4c9c98c9ba3" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
+    <MetadataFile FileName="WCF.xsd" MetadataType="Schema" ID="32016a2f-31ec-4e5a-8fea-c477355e26e6" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
+    <MetadataFile FileName="OSAE.xsd" MetadataType="Schema" ID="57aba1fd-72f5-4b9f-873a-4f7ea19bd8c9" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
+    <MetadataFile FileName="service2.xsd" MetadataType="Schema" ID="3a861fc7-de8a-4787-a2d9-92d1e4a487c3" SourceId="1" SourceUrl="net.tcp://127.0.0.1:8731/WCFService/mex" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
