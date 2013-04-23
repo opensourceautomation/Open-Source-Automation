@@ -65,7 +65,7 @@
                            Scripts:
                         </td>
                         <td>
-                            <asp:Button ID="scriptsExportButton"  class="btn" runat="server" Text="Export" />
+                            <asp:Button ID="scriptsExportButton"  class="btn" runat="server" Text="Export" OnClick="scriptsExportButton_Click" />
                         </td>
                     </tr>
                     <tr>
@@ -73,7 +73,7 @@
                             Objects:
                         </td>
                         <td>
-                            <asp:Button ID="objectsExportButton"  class="btn" runat="server" Text="Export" />
+                            <asp:Button ID="objectsExportButton"  class="btn" runat="server" Text="Export" OnClick="objectsExportButton_Click" />
                         </td>
                     </tr>
                 </table>
