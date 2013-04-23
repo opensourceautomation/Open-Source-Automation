@@ -38,9 +38,9 @@
                 </Columns>  
             </asp:GridView>            
         </div>
+      <%--  <br />
         <br />
-        <br />
-        <asp:Button runat="server" ID="btnGetMorePlugins" Text="Get More Plugins" class="btn" OnClick="btnGetMorePlugins_Click" />
+        <asp:Button runat="server" ID="btnGetMorePlugins" Text="Get More Plugins" class="btn" OnClick="btnGetMorePlugins_Click" />--%>
     </div>
 </asp:Content>
 
