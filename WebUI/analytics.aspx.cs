@@ -37,7 +37,7 @@ public partial class analytics : System.Web.UI.Page
 
             this.GVAnnotatedTimeline1.DataSource = null;
             List<GoogleChartsNGraphsControls.TimelineEvent> evts = new List<GoogleChartsNGraphsControls.TimelineEvent>();
-            foreach (System.Data.DataRow dr in OSAESql.RunSQL("SELECT history_timestamp, property_value FROM osae_v_object_property_history WHERE object_property_id =" + hdnSelectedPropID.Text + " ORDER BY history_timestamp asc").Tables[0].Rows)
+            foreach (System.Data.DataRow dr in OSAESql.RunSQL("SELECT history_timestamp, CASE property_datatype WHEN 'Boolean' THEN IF(property_value='TRUE', 1, 0) ELSE property_value END AS property_value FROM osae_v_object_property_history WHERE object_property_id =" + hdnSelectedPropID.Text + " ORDER BY history_timestamp asc").Tables[0].Rows)
             {
                 evts.Add(new GoogleChartsNGraphsControls.TimelineEvent("Value", DateTime.Parse(dr[0].ToString()), Decimal.Parse(dr[1].ToString())));
             }
@@ -61,7 +61,7 @@ public partial class analytics : System.Web.UI.Page
 
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT DISTINCT CONCAT(object_name,' - ',property_name)as prop_name, object_property_id as prop_id FROM osae_v_object_property_history");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT DISTINCT CONCAT(object_name,' - ',property_name)as prop_name, object_property_id as prop_id FROM osae_v_object_property_history WHERE property_datatype IN ('Integer', 'Float', 'Boolean') ORDER BY prop_name");
         gvProperties.DataBind();
 
 
