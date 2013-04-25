@@ -14,7 +14,7 @@
 
   ;Name and file
   Name "Open Source Automation"
-  OutFile "OSA Setup v0.4.2_x64.exe"
+  OutFile "OSA Setup v0.4.1_x64.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES64\OSA"
@@ -143,7 +143,6 @@ Section Server s1
   File "..\DB\osae.sql"
   File "..\DB\0.3.9-0.4.0.sql"
   File "..\DB\0.4.0-0.4.1.sql"
-  File "..\DB\0.4.1-0.4.2.sql"
   File "MySql.Data.dll"
   File "DBInstall\DBInstall\bin\Debug\DBInstall.exe"
   ExecWait 'DBInstall.exe "$INSTDIR" "Server"'
