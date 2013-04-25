@@ -263,6 +263,7 @@
                                          <asp:ListItem Selected = "True" Text = "String" Value = "String"></asp:ListItem>
                                          <asp:ListItem Text = "Boolean" Value = "Boolean"></asp:ListItem>
                                          <asp:ListItem Text = "Integer" Value = "Integer"></asp:ListItem>
+                                         <asp:ListItem Text = "Float" Value = "Float"></asp:ListItem>
                                          <asp:ListItem Text = "List" Value = "List"></asp:ListItem>
                                          <asp:ListItem Text = "Password" Value = "Password"></asp:ListItem>
                                          <asp:ListItem Text = "File" Value = "File"></asp:ListItem>

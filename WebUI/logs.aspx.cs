@@ -79,4 +79,23 @@ public partial class logs : System.Web.UI.Page
         GetLogs();
         LoadLogContent();        
     }
+    protected void clearLogs_Click(object sender, EventArgs e)
+    {
+        string[] files = Directory.GetFiles(Common.ApiPath + @"\Logs\");
+
+        try
+        {
+            foreach (string file in files)
+            {
+                File.Delete(file);
+            }
+        }
+        catch (Exception ex)
+        {
+            // not going to do anything as the file may be in use so just carry on
+        }
+
+        GetLogs();
+        LoadLogContent();       
+    }
 }

@@ -1,8 +1,9 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="plugins.aspx.cs" Inherits="plugins" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server">
-    <div class="row-fluid">
+    <div class="row-fluid">        
         <div class="span12" id="pluginGrid" style="overflow: auto; border:solid; max-height:500px;"  onscroll="SetPluginDivPosition()">
+            
             <asp:GridView runat="server" ID="gvPlugins"
                 AutoGenerateColumns="False"  
                 GridLines="None"  
@@ -35,10 +36,11 @@
                         </ItemTemplate>
                     </asp:TemplateField>
                 </Columns>  
-            </asp:GridView>
+            </asp:GridView>            
         </div>
+      <%--  <br />
+        <br />
+        <asp:Button runat="server" ID="btnGetMorePlugins" Text="Get More Plugins" class="btn" OnClick="btnGetMorePlugins_Click" />--%>
     </div>
-
-
 </asp:Content>
 
