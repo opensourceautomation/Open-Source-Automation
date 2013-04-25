@@ -14,7 +14,7 @@
 
   ;Name and file
   Name "Open Source Automation"
-  OutFile "OSA Setup v0.4.2_x64.exe"
+  OutFile "OSA Setup v0.4.3_x64.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES64\OSA"
@@ -144,6 +144,7 @@ Section Server s1
   File "..\DB\0.3.9-0.4.0.sql"
   File "..\DB\0.4.0-0.4.1.sql"
   File "..\DB\0.4.1-0.4.2.sql"
+  File "..\DB\0.4.2-0.4.3.sql"
   File "MySql.Data.dll"
   File "DBInstall\DBInstall\bin\Debug\DBInstall.exe"
   ExecWait 'DBInstall.exe "$INSTDIR" "Server"'
@@ -288,17 +289,21 @@ Section Server s1
   SetOutPath "$INSTDIR\Plugins\Web Server\wwwroot\App_WebReferences\WCFServiceReference"
   File "..\WebUI\App_WebReferences\WCFServiceReference\*.*"
  
+  SimpleSC::ExistsService "UWS LoPriv Services"
+  Pop $0
+  
+  ${If} $0 != 0
   SetOutPath $INSTDIR
-  File "UltiDev.WebServer.msi"
+    File "UltiDev.WebServer.msi"
 
-  DetailPrint "Installing UltiDev Web Server Pro"
-  ExecWait 'msiexec.exe /passive /i "$INSTDIR\UltiDev.WebServer.msi"'
-
+    DetailPrint "Installing UltiDev Web Server Pro"
+    ExecWait 'msiexec.exe /passive /i "$INSTDIR\UltiDev.WebServer.msi"'
+  ${EndIf} 
   ; Unregister website to make sure no files are in use by webserver while upgrading 
   ; and to pick up any changes in how we register it now
 
-  DetailPrint "Unregistering Website"
-  ExecWait '"$PROGRAMFILES64\UltiDev\Web Server\UWS.RegApp.exe" /unreg /AppID:{58fe03ca-9975-4df2-863e-a228614258c4}'
+  ; DetailPrint "Unregistering Website"
+  ; ExecWait '"$PROGRAMFILES64\UltiDev\Web Server\UWS.RegApp.exe" /unreg /AppID:{58fe03ca-9975-4df2-863e-a228614258c4}'
   ; Register the website 
 
   ExecWait '"$PROGRAMFILES64\UltiDev\Web Server\UWS.RegApp.exe" /r /AppId={58fe03ca-9975-4df2-863e-a228614258c4} /path:"$INSTDIR\Plugins\Web Server\wwwroot" "/EndPoints:http://*:8081/" /ddoc:default.aspx /appname:"Open Source Automation" /apphost=SharedLocalSystem /clr:4 /vpath:"/"'
