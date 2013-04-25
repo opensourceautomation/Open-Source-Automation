@@ -52,3 +52,5 @@ DELIMITER ;
 
 -- Set DB version 
 CALL osae_sp_object_property_set('SYSTEM', 'DB Version', '0.4.2', '', '');
+
+CALL osae_sp_object_type_method_add ('RELOAD PLUGINS','Reload plugins','SERVICE','','','','');

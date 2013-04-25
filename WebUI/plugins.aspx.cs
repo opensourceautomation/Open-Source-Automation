@@ -231,7 +231,7 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
         }
     }
 
-    public void OnMessageReceived(WCFServiceReference.OnMessageReceived request)
+    public void OnMessageReceived(WCFServiceReference.OSAEWCFMessage request)
     {
        
     }
