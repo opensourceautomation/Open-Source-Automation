@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>PowerShell</plugin-name>
 <plugin-id>ee8cea7f-affe-4085-a151-2f8d3d1b86f1</plugin-id>
-<plugin-version>0.0.5</plugin-version>
+<plugin-version>0.0.6</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>
 Allows OSA Scripts to be processed by PowerShell</short-description>
