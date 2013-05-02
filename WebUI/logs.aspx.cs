@@ -32,7 +32,10 @@ public partial class logs : System.Web.UI.Page
         {
             logContentTextBox.Text = File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\" + gvLogs.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["logName"].ToString() + ".log");
             panelLogContent.Visible = true;
+            btnClearLog.Visible = true;
         }
+        else
+            btnClearLog.Visible = false;
     }
 
 
@@ -97,5 +100,20 @@ public partial class logs : System.Web.UI.Page
 
         GetLogs();
         LoadLogContent();       
+    }
+    protected void clearLog_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\" + gvLogs.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["logName"].ToString() + ".log");
+        }
+        catch (Exception ex)
+        {
+            // not going to do anything as the file may be in use so just carry on
+        }
+
+        GetLogs();
+        panelLogContent.Visible = false;
+        btnClearLog.Visible = false;
     }
 }

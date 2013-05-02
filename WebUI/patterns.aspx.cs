@@ -172,12 +172,22 @@ public partial class patterns : System.Web.UI.Page
     }
     protected void btnPatternDelete_Click(object sender, EventArgs e)
     {
-        OSAEScriptManager.PatternDelete(hdnSelectedPatternName.Text);
-        loadPatterns();
-        int selectedRow = Int32.Parse(hdnSelectedPatternRow.Text) - 1;
-        if (selectedRow < 0)
-            hdnSelectedPatternRow.Text = "";
+        if (OSAEScriptManager.PatternDelete(hdnSelectedPatternName.Text))
+        {
+            loadPatterns();
+            int selectedRow = Int32.Parse(hdnSelectedPatternRow.Text) - 1;
+            if (selectedRow < 0)
+                hdnSelectedPatternRow.Text = "";
+            else
+                hdnSelectedPatternRow.Text = selectedRow.ToString();
+        }
         else
-            hdnSelectedPatternRow.Text = selectedRow.ToString();
+        {
+            Page.ClientScript.RegisterStartupScript(
+                GetType(),
+                "MyKey",
+                "alert('Unable to delete pattern.  Maybe a script is attached?');",
+                true);
+        }
     }
 }

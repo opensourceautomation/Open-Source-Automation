@@ -191,7 +191,7 @@
             }
         }
 
-        public static void PatternDelete(string name)
+        public static bool PatternDelete(string name)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -205,7 +205,9 @@
                 catch (Exception ex)
                 {
                     Logging.GetLogger().AddToLog("API - PatternDelete error: " + command.CommandText + " - error: " + ex.Message, true);
+                    return false;
                 }
+                return true;
             }
         }
 

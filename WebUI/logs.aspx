@@ -40,6 +40,7 @@
             <asp:Panel ID="panelLogContent" runat="server" Visible="false">
                 <asp:TextBox ID="logContentTextBox" runat="server" Width="99%" Height="50em" TextMode="MultiLine" ReadOnly="false" />
             </asp:Panel>
+            <asp:Button runat="server" ID="btnClearLog" Text="Clear" class="btn" OnClick="clearLog_Click" Visible="false"/>
         </div>
     </div>
 
