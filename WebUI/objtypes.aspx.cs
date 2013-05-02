@@ -36,7 +36,7 @@ public partial class objtypes : System.Web.UI.Page
             hdnSelectedPropRow.Text = args[1];
             panelPropForm.Visible = true;
             hdnSelectedPropName.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_name"].ToString();
-            
+            loadPropertyOptions();
         }
         else if (args[0] == "gvStates")
         {
@@ -220,6 +220,20 @@ public partial class objtypes : System.Web.UI.Page
 
     }
 
+    protected void gvPropOptions_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
+    {
+        if ((e.Row.RowType == DataControlRowType.DataRow))
+        {
+            e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
+            if (e.Row.RowState == DataControlRowState.Alternate)
+                e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
+            else
+                e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+            e.Row.Attributes.Add("onclick", "selectPropOptionsItem('" + gvPropOptions.DataKeys[e.Row.RowIndex]["option_name"].ToString() + "', this);");
+        }
+
+    }
+
     private void loadDDLs()
     {
         ddlBaseType.DataSource = OSAESql.RunSQL("SELECT object_type as Text, object_type as Value FROM osae_object_type"); ;
@@ -247,7 +261,7 @@ public partial class objtypes : System.Web.UI.Page
     }
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_datatype, property_default, track_history FROM osae_v_object_type_property where object_type='" + hdnSelectedObjectName.Text + "'");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_datatype, property_default, track_history, property_id FROM osae_v_object_type_property where object_type='" + hdnSelectedObjectName.Text + "'");
         gvProperties.DataBind();
     }
 
@@ -449,5 +463,25 @@ public partial class objtypes : System.Web.UI.Page
         OSAEObjectTypeManager.ObjectTypeUpdate(hdnSelectedObjectName.Text, txtName.Text, txtDescr.Text, ddlOwnedBy.SelectedValue, ddlBaseType.SelectedValue, owner, systype, container, hideevents);
         hdnSelectedObjectName.Text = txtName.Text;
         loadObjectTypes();
+    }
+
+    private void loadPropertyOptions()
+    {
+        gvPropOptions.DataSource = OSAESql.RunSQL("SELECT option_name FROM osae_object_type_property_option WHERE property_id = " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_id"].ToString());
+        gvPropOptions.DataBind();
+    }
+
+    protected void btnOptionsItemSave_Click(object sender, EventArgs e)
+    {
+        OSAEObjectTypeManager.ObjectTypePropertyOptionAdd(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtOptionsItem.Text);
+        hdnEditingPropOptions.Value = "1";
+        loadPropertyOptions();
+    }
+
+    protected void btnOptionsItemDelete_Click(object sender, EventArgs e)
+    {
+        OSAEObjectTypeManager.ObjectTypePropertyOptionDelete(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, hdnPropOptionsItemName.Value);
+        hdnEditingPropOptions.Value = "1";
+        loadPropertyOptions();
     }
 }

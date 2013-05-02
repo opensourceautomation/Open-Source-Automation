@@ -152,7 +152,7 @@ public partial class patterns : System.Web.UI.Page
     }
     protected void btnMatchDelete_Click(object sender, EventArgs e)
     {
-        OSAEScriptManager.PatternDelete(hdnSelectedMatchName.Text);
+        OSAEScriptManager.PatternMatchDelete(hdnSelectedMatchName.Text);
         loadMatches();
         int selectedRow = Int32.Parse(hdnSelectedMatchRow.Text) - 1;
         if (selectedRow < 0)

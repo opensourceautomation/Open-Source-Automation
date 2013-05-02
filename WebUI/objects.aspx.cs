@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Data;
 using OSAE;
 
 public partial class home : System.Web.UI.Page
@@ -32,7 +33,7 @@ public partial class home : System.Web.UI.Page
             panelPropForm.Visible = true;
             hdnSelectedPropName.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_name"].ToString();
             lblPropName.Text = hdnSelectedPropName.Text;
-            txtPropValue.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+            hdnSelectedPropType.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString();
 
             if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "List")
             {
@@ -41,10 +42,43 @@ public partial class home : System.Web.UI.Page
                 btnPropSave.Visible = false;
                 lblPropName.Visible = false;
                 btnEditPropList.Visible = true;
+                ddlPropValue.Visible = false;
+            }
+            else if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "Boolean")
+            {
+                ddlPropValue.Items.Add(new ListItem("TRUE", "TRUE"));
+                ddlPropValue.Items.Add(new ListItem("FALSE", "FALSE"));
+                ddlPropValue.SelectedValue = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = true;
+                lblPropName.Visible = true;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = true;
             }
             else
             {
-                txtPropValue.Visible = true;
+                string propID = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["object_property_id"].ToString();
+                DataSet options = OSAESql.RunSQL("SELECT option_name FROM osae_object_type_property_option ootpo INNER JOIN osae_object_property oop ON oop.object_type_property_id = ootpo.property_id WHERE oop.object_property_id=" + propID);
+                ddlPropValue.Items.Clear();
+
+                if (options.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow dr in options.Tables[0].Rows)
+                    {
+                        ddlPropValue.Items.Add(new ListItem(dr["option_name"].ToString(), dr["option_name"].ToString()));
+                    }
+                    if(!string.IsNullOrEmpty(gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString()))
+                        ddlPropValue.SelectedValue = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+                    txtPropValue.Visible = false;
+                    ddlPropValue.Visible = true;
+                }
+                else
+                {
+                    txtPropValue.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+                    txtPropValue.Visible = true;
+                    ddlPropValue.Visible = false;
+                }
+
                 btnPropSave.Visible = true;
                 lblPropName.Visible = true;
                 btnEditPropList.Visible = false;
@@ -217,7 +251,18 @@ public partial class home : System.Web.UI.Page
 
     protected void btnPropSave_Click(object sender, EventArgs e)
     {
-        OSAEObjectPropertyManager.ObjectPropertySet(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtPropValue.Text, "Web UI");
+        string value = "";
+        if (hdnSelectedPropType.Text.ToUpper() == "BOOLEAN")
+            value = ddlPropValue.SelectedValue;
+        else
+        {
+            if(ddlPropValue.Visible)
+                value = ddlPropValue.SelectedValue;
+            else
+                value = txtPropValue.Text;
+        }
+
+        OSAEObjectPropertyManager.ObjectPropertySet(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, value, "Web UI");
         loadProperties();
     }
     protected void btnAdd_Click(object sender, EventArgs e)
