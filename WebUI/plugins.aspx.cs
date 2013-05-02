@@ -16,11 +16,18 @@ using ICSharpCode.SharpZipLib.Zip;
 [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Single, UseSynchronizationContext = false)]
 public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServiceCallback
 {
+    Logging logging = Logging.GetLogger("Web UI");
+
     private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
     WCFServiceReference.WCFServiceClient wcfObj;
 
     protected void Page_Load(object sender, EventArgs e)
-    {      
+    {
+        if (wcfObj == null)
+        {
+            connectToService();
+        }
+
         if (!Page.IsPostBack)
         {
             loadPlugins();
@@ -112,6 +119,7 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
                 if (chkBx == ckbx)
                 {
                     pluginName = ((Label)rw.FindControl("lblObject")).Text;
+                    break;
                 }
             }
         
@@ -134,11 +142,12 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(pluginName);
             OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+            OSAEMethodManager.MethodQueueAdd("SERVICE-" + Common.ComputerName, "RELOAD PLUGINS", "", "", "Plugin Installer");
             loadPlugins();
         }
         catch (Exception ex)
         {
-            //logging.AddToLog("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException, true);
+            logging.AddToLog("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException, true);
         }
     }
 
@@ -174,7 +183,7 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
         }
         catch (Exception ex)
         {
-            //logging.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
+            logging.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
             return false;
         }
     }
@@ -239,4 +248,53 @@ public partial class plugins : System.Web.UI.Page, WCFServiceReference.IWCFServi
     {
         Response.Redirect("~/morePlugins.aspx");
     }
+
+
+
+    public void OnMessageReceived(WCFServiceReference.OSAEWCFMessage message)
+    {
+
+    }
+
+    //private void messageHost(WCFServiceReference.OSAEWCFMessageType msgType, string message)
+    //{
+    //    try
+    //    {
+    //        if (wcfObj.State == CommunicationState.Opened)
+    //            wcfObj.messageHost(msgType, message, Common.ComputerName);
+    //        else
+    //        {
+    //            if (connectToService())
+    //                wcfObj.messageHost(msgType, message, Common.ComputerName);
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        //logging.AddToLog("Error messaging host: " + ex.Message, true);
+    //    }
+    //}
+
+    //private bool connectToService()
+    //{
+    //    try
+    //    {
+    //        EndpointAddress ep = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
+    //        InstanceContext context = new InstanceContext(this);
+    //        wcfObj = new WCFServiceReference.WCFServiceClient(context, "NetTcpBindingEndpoint", ep);
+    //        wcfObj.Subscribe();
+    //        //logging.AddToLog("Connected to Service", true);
+    //        //reloadPlugins();
+    //        return true;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        //logging.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
+    //        return false;
+    //    }
+    //}
+
+    //public void OnMessageReceived(WCFServiceReference.OnMessageReceived request)
+    //{
+
+    //}
 }
