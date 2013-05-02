@@ -21,6 +21,7 @@ public partial class home : System.Web.UI.Page
             hdnSelectedRow.Text = args[1];
             panelEditForm.Visible = true;
             panelPropForm.Visible = false;
+            divParameters.Visible = false;
             hdnSelectedPropRow.Text = "";
             hdnSelectedObjectName.Text = gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString();
             loadDDLs();
@@ -33,6 +34,7 @@ public partial class home : System.Web.UI.Page
             panelPropForm.Visible = true;
             hdnSelectedPropName.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_name"].ToString();
             lblPropName.Text = hdnSelectedPropName.Text;
+            lblPropLastUpd.Text = "Last Updated: " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["last_updated"].ToString();
             hdnSelectedPropType.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString();
 
             if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "List")
@@ -167,10 +169,34 @@ public partial class home : System.Web.UI.Page
     }
     protected void ddlMethod_SelectedIndexChanged(object sender, EventArgs e)
     {
-        OSAEMethodManager.MethodQueueAdd(hdnSelectedObjectName.Text, ddlMethod.SelectedItem.Value, "", "", "Web UI");
+        DataSet ds = OSAESql.RunSQL("SELECT param_1_label, param_2_label, param_1_default, param_2_default FROM osae_v_object_type_method otm INNER JOIN osae_object oo ON oo.object_type_id = otm.object_type_id WHERE object_name = '" + hdnSelectedObjectName.Text + "' AND method_name = '" + ddlMethod.SelectedItem.Value + "'");
+        DataTable dt = ds.Tables[0];
+        if (dt.Rows.Count > 0)
+        {
+            divParameters.Visible = true;
+            txtParam1.Text = dt.Rows[0]["param_1_default"].ToString();
+            txtParam2.Text = dt.Rows[0]["param_2_default"].ToString();
+            if(!String.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
+                lblParam1.Text = "(" + dt.Rows[0]["param_1_label"].ToString() + ")";
+            if(!String.IsNullOrEmpty(dt.Rows[0]["param_2_label"].ToString()))
+                lblParam2.Text = "(" + dt.Rows[0]["param_2_label"].ToString() + ")";
+        }
+        else
+        {
+            OSAEMethodManager.MethodQueueAdd(hdnSelectedObjectName.Text, ddlMethod.SelectedItem.Value, "", "", "Web UI");
+            lblAlert.Text = "Method successfuly executed: " + ddlMethod.SelectedItem.Text;
+            alert.Visible = true;
+        }
+    }
+
+    protected void btnExecute_Click(object sender, EventArgs e)
+    {
+        OSAEMethodManager.MethodQueueAdd(hdnSelectedObjectName.Text, ddlMethod.SelectedItem.Value, txtParam1.Text, txtParam2.Text, "Web UI");
         lblAlert.Text = "Method successfuly executed: " + ddlMethod.SelectedItem.Text;
         alert.Visible = true;
+        divParameters.Visible = false;
     }
+
     protected void ddlEvent_SelectedIndexChanged(object sender, EventArgs e)
     {
         logging.EventLogAdd(hdnSelectedObjectName.Text, ddlEvent.SelectedItem.Value);
@@ -223,7 +249,7 @@ public partial class home : System.Web.UI.Page
 
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, last_updated FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
         gvProperties.DataBind();
     }
 
