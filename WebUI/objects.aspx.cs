@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Data;
 using OSAE;
 
 public partial class home : System.Web.UI.Page
@@ -20,6 +21,7 @@ public partial class home : System.Web.UI.Page
             hdnSelectedRow.Text = args[1];
             panelEditForm.Visible = true;
             panelPropForm.Visible = false;
+            divParameters.Visible = false;
             hdnSelectedPropRow.Text = "";
             hdnSelectedObjectName.Text = gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString();
             loadDDLs();
@@ -32,7 +34,8 @@ public partial class home : System.Web.UI.Page
             panelPropForm.Visible = true;
             hdnSelectedPropName.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_name"].ToString();
             lblPropName.Text = hdnSelectedPropName.Text;
-            txtPropValue.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+            lblPropLastUpd.Text = "Last Updated: " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["last_updated"].ToString();
+            hdnSelectedPropType.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString();
 
             if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "List")
             {
@@ -41,10 +44,43 @@ public partial class home : System.Web.UI.Page
                 btnPropSave.Visible = false;
                 lblPropName.Visible = false;
                 btnEditPropList.Visible = true;
+                ddlPropValue.Visible = false;
+            }
+            else if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "Boolean")
+            {
+                ddlPropValue.Items.Add(new ListItem("TRUE", "TRUE"));
+                ddlPropValue.Items.Add(new ListItem("FALSE", "FALSE"));
+                ddlPropValue.SelectedValue = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = true;
+                lblPropName.Visible = true;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = true;
             }
             else
             {
-                txtPropValue.Visible = true;
+                string propID = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["object_property_id"].ToString();
+                DataSet options = OSAESql.RunSQL("SELECT option_name FROM osae_object_type_property_option ootpo INNER JOIN osae_object_property oop ON oop.object_type_property_id = ootpo.property_id WHERE oop.object_property_id=" + propID);
+                ddlPropValue.Items.Clear();
+
+                if (options.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow dr in options.Tables[0].Rows)
+                    {
+                        ddlPropValue.Items.Add(new ListItem(dr["option_name"].ToString(), dr["option_name"].ToString()));
+                    }
+                    if(!string.IsNullOrEmpty(gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString()))
+                        ddlPropValue.SelectedValue = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+                    txtPropValue.Visible = false;
+                    ddlPropValue.Visible = true;
+                }
+                else
+                {
+                    txtPropValue.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+                    txtPropValue.Visible = true;
+                    ddlPropValue.Visible = false;
+                }
+
                 btnPropSave.Visible = true;
                 lblPropName.Visible = true;
                 btnEditPropList.Visible = false;
@@ -133,10 +169,34 @@ public partial class home : System.Web.UI.Page
     }
     protected void ddlMethod_SelectedIndexChanged(object sender, EventArgs e)
     {
-        OSAEMethodManager.MethodQueueAdd(hdnSelectedObjectName.Text, ddlMethod.SelectedItem.Value, "", "", "Web UI");
+        DataSet ds = OSAESql.RunSQL("SELECT param_1_label, param_2_label, param_1_default, param_2_default FROM osae_v_object_type_method otm INNER JOIN osae_object oo ON oo.object_type_id = otm.object_type_id WHERE object_name = '" + hdnSelectedObjectName.Text + "' AND method_name = '" + ddlMethod.SelectedItem.Value + "'");
+        DataTable dt = ds.Tables[0];
+        if (dt.Rows.Count > 0)
+        {
+            divParameters.Visible = true;
+            txtParam1.Text = dt.Rows[0]["param_1_default"].ToString();
+            txtParam2.Text = dt.Rows[0]["param_2_default"].ToString();
+            if(!String.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
+                lblParam1.Text = "(" + dt.Rows[0]["param_1_label"].ToString() + ")";
+            if(!String.IsNullOrEmpty(dt.Rows[0]["param_2_label"].ToString()))
+                lblParam2.Text = "(" + dt.Rows[0]["param_2_label"].ToString() + ")";
+        }
+        else
+        {
+            OSAEMethodManager.MethodQueueAdd(hdnSelectedObjectName.Text, ddlMethod.SelectedItem.Value, "", "", "Web UI");
+            lblAlert.Text = "Method successfuly executed: " + ddlMethod.SelectedItem.Text;
+            alert.Visible = true;
+        }
+    }
+
+    protected void btnExecute_Click(object sender, EventArgs e)
+    {
+        OSAEMethodManager.MethodQueueAdd(hdnSelectedObjectName.Text, ddlMethod.SelectedItem.Value, txtParam1.Text, txtParam2.Text, "Web UI");
         lblAlert.Text = "Method successfuly executed: " + ddlMethod.SelectedItem.Text;
         alert.Visible = true;
+        divParameters.Visible = false;
     }
+
     protected void ddlEvent_SelectedIndexChanged(object sender, EventArgs e)
     {
         logging.EventLogAdd(hdnSelectedObjectName.Text, ddlEvent.SelectedItem.Value);
@@ -189,7 +249,7 @@ public partial class home : System.Web.UI.Page
 
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, last_updated FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
         gvProperties.DataBind();
     }
 
@@ -217,7 +277,18 @@ public partial class home : System.Web.UI.Page
 
     protected void btnPropSave_Click(object sender, EventArgs e)
     {
-        OSAEObjectPropertyManager.ObjectPropertySet(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtPropValue.Text, "Web UI");
+        string value = "";
+        if (hdnSelectedPropType.Text.ToUpper() == "BOOLEAN")
+            value = ddlPropValue.SelectedValue;
+        else
+        {
+            if(ddlPropValue.Visible)
+                value = ddlPropValue.SelectedValue;
+            else
+                value = txtPropValue.Text;
+        }
+
+        OSAEObjectPropertyManager.ObjectPropertySet(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, value, "Web UI");
         loadProperties();
     }
     protected void btnAdd_Click(object sender, EventArgs e)

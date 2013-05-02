@@ -61,6 +61,7 @@ public partial class scripts : System.Web.UI.Page
             txtName.Text = hdnSelectedScriptName.Text;
             ddlScriptProcessor.SelectedValue = gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_processor_name"].ToString();
             hdnScript.Value = OSAEScriptManager.GetScript(gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_id"].ToString());
+            loadLinkage(gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_id"].ToString());
         }
         if (hdnSelectedEventScriptRow.Text != "")
         {
@@ -116,7 +117,7 @@ public partial class scripts : System.Web.UI.Page
         }
 
     }
-
+    
     private void loadScripts()
     {
         gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, script_id, s.script_processor_id, script_processor_name FROM osae_script s INNER JOIN osae_script_processors sp ON sp.script_processor_id = s.script_processor_id ORDER BY script_name");
@@ -180,6 +181,12 @@ public partial class scripts : System.Web.UI.Page
 
         ddlObjTypeScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
         ddlObjTypeScript.DataBind();
+    }
+
+    private void loadLinkage(string id)
+    {
+        gvLinkage.DataSource = OSAESql.RunSQL("SELECT object_name, event_name FROM osae_v_object_event_script WHERE script_id=" + id);
+        gvLinkage.DataBind();
     }
 
     protected void btnAdd_Click(object sender, EventArgs e)

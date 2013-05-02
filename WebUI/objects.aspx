@@ -157,6 +157,20 @@
                             </asp:DropDownList>
                         </div>
                     </div>
+                    <div class="row-fluid" runat="server" id="divParameters" visible ="False">
+                        <div class="span6">
+                            Parameter 1 <asp:Label  runat="server" ID="lblParam1"></asp:Label>
+                            <br />
+                            <asp:TextBox class="input-xlarge" runat="server" ID="txtParam1"></asp:TextBox>
+                        </div>
+                        <div class="span6">
+                            Parameter 2 <asp:Label  runat="server" ID="lblParam2"></asp:Label>
+                            <br />
+                            <asp:TextBox class="input-xlarge" runat="server" ID="txtParam2"></asp:TextBox>
+                        </div>
+                        <br />
+                        <asp:Button class="btn" runat="server" ID="btnExecute" Text="Execute" OnClick="btnExecute_Click"/>
+                    </div>
                     <div class="row-fluid" runat="server" id="divEvent">
                         <div class="span3" style="text-align:right;">
                             Event:
@@ -173,12 +187,13 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value, property_datatype, object_property_id" ShowHeaderWhenEmpty="true">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value, property_datatype, object_property_id, last_updated" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="property_name" HeaderText="Property" /> 
                                     <asp:BoundField DataField="property_value" HeaderText="Value" /> 
                                     <asp:BoundField DataField="property_datatype" Visible="false" />
                                     <asp:BoundField DataField="object_property_id" Visible="false" /> 
+                                    <asp:BoundField DataField="last_updated" Visible="false" /> 
                                 </Columns>  
 
                             </asp:GridView>
@@ -191,8 +206,11 @@
                         <div class="span10">
                         <asp:Panel runat="server" ID="panelPropForm" Visible ="false">
                             <form class="form-inline">
-                                <asp:Label  runat="server" ID="lblPropName"></asp:Label>
+                                <strong><asp:Label  runat="server" ID="lblPropName"></asp:Label></strong><br />
+                                <asp:Label  runat="server" ID="lblPropLastUpd"></asp:Label><br />
                                 <asp:Textbox class="input-xlarge" runat="server" ID="txtPropValue"></asp:Textbox>
+                                <asp:DropDownList runat="server" ID="ddlPropValue">
+                                </asp:DropDownList>
                                 <asp:Button class="btn btn-primary" runat="server" ID="btnPropSave" Text="Save" OnClick="btnPropSave_Click"/>
                                 <asp:Button class="btn btn-primary" runat="server" ID="btnEditPropList" Text="Edit List" href="#myPropListModal" data-toggle="modal"/>
                             </form>
@@ -234,6 +252,7 @@
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>
+    <asp:Label runat="server" ID="hdnSelectedPropType" Visible="false"></asp:Label>
     <asp:HiddenField runat="server" ID="hdnEditingPropList"/>
     <asp:HiddenField runat="server" ID="hdnPropListItemName"/>
 </asp:Content>
