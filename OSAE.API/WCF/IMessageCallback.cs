@@ -4,7 +4,7 @@
     using System.ServiceModel;
     using OSAE;
 
-    interface IMessageCallback
+    public interface IMessageCallback
     {
         [OperationContract(IsOneWay = true)]
         void OnMessageReceived(OSAEWCFMessage message);

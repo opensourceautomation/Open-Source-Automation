@@ -8,14 +8,15 @@
     using System.Windows.Forms;
     using ICSharpCode.SharpZipLib.Zip;
     using OSAE;
+    using WCF;
 
     /// <summary>
     /// Helper class used to install new plugins
     /// </summary>
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Single, UseSynchronizationContext = false)]
-    public partial class PluginInstallerHelper : WCFServiceReference.IWCFServiceCallback
+    public partial class PluginInstallerHelper : IMessageCallback
     {
-        WCFServiceReference.WCFServiceClient wcfObj;
+        IWCFService wcfObj;
         private  Logging logging = Logging.GetLogger("Manager");
 
         public  void InstallPlugin(string filepath)
@@ -46,8 +47,6 @@
                         MessageBox.Show("Package installed.");
 
                     }
-                    if (wcfObj.State == CommunicationState.Opened)
-                        wcfObj.Close();
                 }
             }
             catch (Exception ex)
@@ -172,12 +171,7 @@
                                 System.IO.File.Delete(str);
 
                             logging.AddToLog("Sending message to service to load plugin.", true);
-                            if (wcfObj.State == CommunicationState.Opened)
-                            {
-                                //Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + PluginManager.GetPluginName(desc.Type, Common.ComputerName) + "|True"));
-                                //thread.Start();
-                            }
-
+                            
                         }
                     }
                     else
@@ -206,11 +200,9 @@
         public  bool UninstallPlugin(PluginDescription desc)
         {
             bool returnValue = false;
-            if (wcfObj.State == CommunicationState.Opened)
-            {
-                Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + desc.Type + "|False"));
-                thread.Start();
-            }
+            Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + desc.Type + "|False"));
+            thread.Start();
+
             Thread.Sleep(2000);
 
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
@@ -259,17 +251,12 @@
             }
         }
 
-        private  void messageHost(WCFServiceReference.OSAEWCFMessageType msgType, string message)
+        private  void messageHost(OSAEWCFMessageType msgType, string message)
         {
             try
             {
-                if (wcfObj.State == CommunicationState.Opened)
-                    wcfObj.messageHost(msgType, message, Common.ComputerName);
-                else
-                {
-                    if (connectToService())
-                        wcfObj.messageHost(msgType, message, Common.ComputerName);
-                }
+                wcfObj.messageHost(msgType, message, Common.ComputerName);
+                
             }
             catch (Exception ex)
             {
@@ -281,9 +268,20 @@
         {
             try
             {
-                EndpointAddress ep = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
-                InstanceContext context = new InstanceContext(this);
-                wcfObj = new WCFServiceReference.WCFServiceClient(context, "NetTcpBindingEndpoint", ep);
+                InstanceContext site = new InstanceContext(this);
+                NetTcpBinding tcpBinding = new NetTcpBinding();
+                tcpBinding.TransactionFlow = false;
+                tcpBinding.ReliableSession.Ordered = true;
+                tcpBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
+                tcpBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
+                tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+                tcpBinding.Security.Mode = SecurityMode.None;
+
+                EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
+                var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
+
+
+                wcfObj = myChannelFactory.CreateChannel(myEndpoint);
                 wcfObj.Subscribe();
                 logging.AddToLog("Connected to Service", true);
                 //reloadPlugins();
@@ -297,7 +295,7 @@
         }
 
 
-        public void OnMessageReceived(WCFServiceReference.OSAEWCFMessage message)
+        public void OnMessageReceived(OSAEWCFMessage message)
         {
             
         }

@@ -211,11 +211,11 @@
         {
             try
             {
-                FileInfo file = new FileInfo(Common.ApiPath + "/Logs/");
+                FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\");
                 file.Directory.Create();
                 if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
                 {
-                    string[] files = Directory.GetFiles(Common.ApiPath + "/Logs/");
+                    string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\");
                     foreach (string f in files)
                         File.Delete(f);
                 }

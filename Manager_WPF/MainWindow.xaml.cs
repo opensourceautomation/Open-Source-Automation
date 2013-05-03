@@ -15,16 +15,17 @@
     using System.Windows.Media.Imaging;
     using System.Windows.Navigation;
     using OSAE;
+    using WCF;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Single, UseSynchronizationContext = false)]
-    public partial class MainWindow : Window, WCFServiceReference.IWCFServiceCallback
+    public partial class MainWindow : Window, IMessageCallback
     {
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
         ServiceController myService = new ServiceController();
-        WCFServiceReference.WCFServiceClient wcfObj;
+        IWCFService wcfObj;
 
         /// <summary>
         /// Used to get access to the logging facility
@@ -33,6 +34,7 @@
 
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
+        System.Timers.Timer pingTimer = new System.Timers.Timer();
         private bool clicked = true;
         private bool starting = false;
         private const string Unique = "OSAE Manager";
@@ -95,11 +97,25 @@
 
             loadPlugins();
 
-            if (connectToService())
-            {
-                Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.CONNECT, "connected"));
-                thread.Start();
-            }
+            InstanceContext site = new InstanceContext(this);
+            NetTcpBinding tcpBinding = new NetTcpBinding();
+            tcpBinding.TransactionFlow = false;
+            tcpBinding.ReliableSession.Ordered = true;
+            tcpBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
+            tcpBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
+            tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+            tcpBinding.Security.Mode = SecurityMode.None;
+
+            EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
+            var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
+
+
+            wcfObj = myChannelFactory.CreateChannel(myEndpoint);
+            wcfObj.Subscribe();
+
+            Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.CONNECT, "connected"));
+            thread.Start();
+            
             
             try
             {
@@ -145,39 +161,18 @@
             Clock.Elapsed += new System.Timers.ElapsedEventHandler(CheckService);
             Clock.Start();
 
+            pingTimer.Interval = 30000;
+            pingTimer.Elapsed += new System.Timers.ElapsedEventHandler(Ping);
+            pingTimer.Start();
+
             //dgLocalPlugins.SelectedIndex = 0;
         }
 
-        private bool connectToService()
+        private void messageHost(OSAEWCFMessageType msgType, string message)
         {
             try
             {
-                EndpointAddress ep = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
-                InstanceContext context = new InstanceContext(this);
-                wcfObj = new WCFServiceReference.WCFServiceClient(context, "NetTcpBindingEndpoint", ep);
-                wcfObj.Subscribe();
-                logging.AddToLog("Connected to Service", true);
-                //reloadPlugins();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
-                return false;
-            }
-        }
-
-        private void messageHost(WCFServiceReference.OSAEWCFMessageType msgType, string message)
-        {
-            try
-            {
-                if (wcfObj.State == CommunicationState.Opened)
-                    wcfObj.messageHost(msgType, message, Common.ComputerName);
-                else
-                {
-                    if (connectToService())
-                        wcfObj.messageHost(msgType, message, Common.ComputerName);
-                }
+                wcfObj.messageHost(msgType, message, Common.ComputerName);
             }
             catch (Exception ex)
             {
@@ -244,14 +239,6 @@
             {
                 setLabel(Brushes.Green, "RUNNING");
                 setButton("Stop", true);
-                if (wcfObj == null || wcfObj.State == CommunicationState.Closed || wcfObj.State == CommunicationState.Faulted)
-                {
-                    if (connectToService())
-                    {
-                        Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.CONNECT, "connected"));
-                        thread.Start();
-                    }
-                }
                 starting = false;
             }
             else if (svcStatus == "Stopped" && !starting)
@@ -370,14 +357,14 @@
             e.Handled = true;
         }
 
-        public void OnMessageReceived(WCFServiceReference.OSAEWCFMessage message)
+        public void OnMessageReceived(OSAEWCFMessage message)
         {
             logging.AddToLog("Message received: " + message.Type + " - " + message.Message, false);
             //this.Invoke((MethodInvoker)delegate
             //{
                 switch (message.Type)
                 {
-                    case WCFServiceReference.OSAEWCFMessageType.PLUGIN:
+                    case OSAEWCFMessageType.PLUGIN:
                         string[] split = message.Message.Split('|');
                         bool enabled = false;
                         if (split[1].Trim() == "True")
@@ -408,7 +395,7 @@
                             }
                         }
                         break;
-                    case WCFServiceReference.OSAEWCFMessageType.CMDLINE:
+                    case OSAEWCFMessageType.CMDLINE:
                         string[] param = message.Message.Split('|');
                         if (param[2].Trim() == Common.ComputerName)
                         {
@@ -531,19 +518,16 @@
 
                     logging.AddToLog("checked: " + pd.Name, true);
 
-                    if (wcfObj.State == CommunicationState.Opened)
+                    Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|True"));
+                    thread.Start();
+                    logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
+                    if (myService.Status == ServiceControllerStatus.Running)
                     {
-                        Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|True"));
-                        thread.Start();
-                        logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
-                        if (myService.Status == ServiceControllerStatus.Running)
+                        foreach (PluginDescription plugin in pluginList)
                         {
-                            foreach (PluginDescription plugin in pluginList)
+                            if (plugin.Name == pd.Name && plugin.Name != null)
                             {
-                                if (plugin.Name == pd.Name && plugin.Name != null)
-                                {
-                                    plugin.Status = "Starting...";
-                                }
+                                plugin.Status = "Starting...";
                             }
                         }
                     }
@@ -565,20 +549,17 @@
                 PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
                 logging.AddToLog("unchecked: " + pd.Name, true);
 
-                if (wcfObj.State == CommunicationState.Opened)
-                {
-                    Thread thread = new Thread(() => messageHost(WCFServiceReference.OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|False"));
-                    thread.Start();
-                    logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
+                Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|False"));
+                thread.Start();
+                logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
 
-                    if (myService.Status == ServiceControllerStatus.Running)
+                if (myService.Status == ServiceControllerStatus.Running)
+                {
+                    foreach (PluginDescription plugin in pluginList)
                     {
-                        foreach (PluginDescription plugin in pluginList)
+                        if (plugin.Name == pd.Name && plugin.Name != null)
                         {
-                            if (plugin.Name == pd.Name && plugin.Name != null)
-                            {
-                                plugin.Status = "Stopping...";
-                            }
+                            plugin.Status = "Stopping...";
                         }
                     }
                 }
@@ -592,6 +573,11 @@
             }
         }
 
+        private void Ping(object sender, EventArgs e)
+        {
+            Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.CONNECT, "connected"));
+            thread.Start();
+        }
 
         private void InstallPlugin_Click(object sender, RoutedEventArgs e)
         {

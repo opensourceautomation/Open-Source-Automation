@@ -1,4 +1,5 @@
 ﻿using OSAE;
+using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -115,5 +116,33 @@ public partial class logs : System.Web.UI.Page
         GetLogs();
         panelLogContent.Visible = false;
         btnClearLog.Visible = false;
+    }
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        //try
+        //{
+            string zipFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\OSA_Logs.zip";
+
+            FastZip fastZip = new FastZip();
+            if (File.Exists(zipFileName))
+                File.Delete(zipFileName);
+            
+            fastZip.CreateZip(zipFileName, Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs", true, "");
+
+            Response.Clear();
+            Response.ClearHeaders();
+            Response.ClearContent();
+            Response.AddHeader("Content-Disposition", "attachment; filename=OSA_Logs.zip");
+            Response.AddHeader("Content-Length", new FileInfo(zipFileName).Length.ToString());
+            Response.ContentType = "application/octet-stream";
+            Response.Flush();
+            Response.TransmitFile(zipFileName);
+            Response.End();
+        ///}
+        //catch (Exception ex)
+        //{
+            // not going to do anything as the file may be in use so just carry on
+        //}
+
     }
 }
