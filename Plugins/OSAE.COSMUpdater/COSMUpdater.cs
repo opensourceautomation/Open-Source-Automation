@@ -153,7 +153,7 @@ namespace OSAE.COSMUpdater
                 {
                     logging.AddToLog(string.Format("Sending {0} monitoring OSA Object {1} Property {2} and sending to COSM Feed {3} and DataStream {4} and Current Value of {5}", item, osaObj.Value, osaProp.Value, cosmFeed.Value, cosmDataStream.Value, osaCurrValue.Value), false);
                 }
-                var timestamp = DateTime.Now.ToString("s") + "Z";
+                var timestamp = DateTime.UtcNow.ToString("s") + "Z";
                 var bulk = string.Format("{0},{1}", timestamp, osaCurrValue.Value);
                 cosmTest.Send(cosmAPIKey.Value, cosmFeed.Value, cosmDataStream.Value, bulk);
             }
