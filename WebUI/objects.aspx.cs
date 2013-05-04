@@ -48,9 +48,11 @@ public partial class home : System.Web.UI.Page
             }
             else if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "Boolean")
             {
+                ddlPropValue.Items.Clear(); 
                 ddlPropValue.Items.Add(new ListItem("TRUE", "TRUE"));
                 ddlPropValue.Items.Add(new ListItem("FALSE", "FALSE"));
-                ddlPropValue.SelectedValue = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
+                if (!String.IsNullOrEmpty(gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString()) && ddlPropValue.Items.FindByValue(gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString()) != null)
+                    ddlPropValue.SelectedValue = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
                 txtPropValue.Visible = false;
                 btnPropSave.Visible = true;
                 lblPropName.Visible = true;
@@ -69,7 +71,7 @@ public partial class home : System.Web.UI.Page
                     {
                         ddlPropValue.Items.Add(new ListItem(dr["option_name"].ToString(), dr["option_name"].ToString()));
                     }
-                    if(!string.IsNullOrEmpty(gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString()))
+                    if(!string.IsNullOrEmpty(gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString()) && ddlPropValue.Items.FindByValue(gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString()) != null)
                         ddlPropValue.SelectedValue = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_value"].ToString();
                     txtPropValue.Visible = false;
                     ddlPropValue.Visible = true;
@@ -173,13 +175,22 @@ public partial class home : System.Web.UI.Page
         DataTable dt = ds.Tables[0];
         if (dt.Rows.Count > 0)
         {
-            divParameters.Visible = true;
-            txtParam1.Text = dt.Rows[0]["param_1_default"].ToString();
-            txtParam2.Text = dt.Rows[0]["param_2_default"].ToString();
-            if(!String.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
-                lblParam1.Text = "(" + dt.Rows[0]["param_1_label"].ToString() + ")";
-            if(!String.IsNullOrEmpty(dt.Rows[0]["param_2_label"].ToString()))
-                lblParam2.Text = "(" + dt.Rows[0]["param_2_label"].ToString() + ")";
+            if (string.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
+            {
+                divParameters.Visible = true;
+                txtParam1.Text = dt.Rows[0]["param_1_default"].ToString();
+                txtParam2.Text = dt.Rows[0]["param_2_default"].ToString();
+                if (!String.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
+                    lblParam1.Text = "(" + dt.Rows[0]["param_1_label"].ToString() + ")";
+                if (!String.IsNullOrEmpty(dt.Rows[0]["param_2_label"].ToString()))
+                    lblParam2.Text = "(" + dt.Rows[0]["param_2_label"].ToString() + ")";
+            }
+            else
+            {
+                OSAEMethodManager.MethodQueueAdd(hdnSelectedObjectName.Text, ddlMethod.SelectedItem.Value, "", "", "Web UI");
+                lblAlert.Text = "Method successfuly executed: " + ddlMethod.SelectedItem.Text;
+                alert.Visible = true;
+            }
         }
         else
         {

@@ -90,11 +90,6 @@
       <DependentUpon>LogWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="PluginInstallerHelper.cs" />
-    <Compile Include="Service References\WCFServiceReference\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="SingleInstance.cs" />
     <Page Include="InstallPlugin.xaml">
       <SubType>Designer</SubType>
@@ -147,22 +142,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Service References\WCFServiceReference\OSAE.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\WCFServiceReference\service.wsdl" />
-    <None Include="Service References\WCFServiceReference\service.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\WCFServiceReference\service1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\WCFServiceReference\service2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\WCFServiceReference\WCF.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\upgrade.png" />
@@ -181,21 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\screen.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\WCFServiceReference\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\WCFServiceReference\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\WCFServiceReference\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\WCFServiceReference\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\logs.jpg" />

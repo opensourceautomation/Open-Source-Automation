@@ -63,11 +63,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service References\WCFServiceReference\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSAE.API\OSAE.API.csproj">
@@ -84,37 +79,6 @@
     </None>
     <None Include="Properties\DataSources\OSAE.OSAEObject.datasource" />
     <None Include="Properties\DataSources\System.Data.DataSet.datasource" />
-    <None Include="Service References\WCFServiceReference\Arrays1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\WCFServiceReference\OSAE1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\WCFServiceReference\service1.wsdl" />
-    <None Include="Service References\WCFServiceReference\service3.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\WCFServiceReference\service31.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\WCFServiceReference\service32.xsd">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\WCFServiceReference\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\WCFServiceReference\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\WCFServiceReference\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\WCFServiceReference\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
