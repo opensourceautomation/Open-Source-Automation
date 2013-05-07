@@ -191,7 +191,12 @@ namespace VR2
                 grammerList.Add(gSleepPhrase);
                 for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
                 {
-                    grammerList.Add(dsResults.Tables[0].Rows[i][0].ToString());
+                    string grammer = dsResults.Tables[0].Rows[i][0].ToString();
+
+                    if (!string.IsNullOrEmpty(grammer))
+                    {
+                        grammerList.Add(grammer);
+                    }
                 }
             }
             catch (Exception ex)

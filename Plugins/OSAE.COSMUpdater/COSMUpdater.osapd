@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>COSMUpdater</plugin-name>
 <plugin-id>5b636360-2246-44f6-8bdb-67af917574c3</plugin-id>
-<plugin-version>0.1.1</plugin-version>
+<plugin-version>0.1.2</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Write Data to COSM</short-description>
 <author>Stuart MacKay, Matthew Stebbings</author>
