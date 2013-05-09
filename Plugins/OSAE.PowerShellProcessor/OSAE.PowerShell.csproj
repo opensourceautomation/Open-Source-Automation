@@ -55,6 +55,7 @@
     <Compile Include="CmdLets\CmdLets.cs" />
     <Compile Include="CmdLets\get-osa.cs" />
     <Compile Include="CmdLets\invoke-osa.cs" />
+    <Compile Include="CmdLets\invoke-osalog.cs" />
     <Compile Include="CmdLets\invoke-osanma.cs" />
     <Compile Include="CmdLets\Pachube\Account.cs" />
     <Compile Include="CmdLets\Pachube\DoubleFeedItem.cs" />

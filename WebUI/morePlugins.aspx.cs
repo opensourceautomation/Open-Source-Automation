@@ -51,11 +51,11 @@ public partial class morePlugins : System.Web.UI.Page
 
     protected void AvailablePluginsGridView_RowCommand(object sender, GridViewCommandEventArgs e)
     {
-        if (e.CommandName == "install")
-        {
-            PluginInstaller pi = new PluginInstaller();
-            pi.DownloadAndInstallPlugin((string)e.CommandArgument);
-        }
+        //if (e.CommandName == "install")
+        //{
+        //    PluginInstaller pi = new PluginInstaller();
+        //    pi.DownloadAndInstallPlugin((string)e.CommandArgument);
+        //}
     }
 
     protected void AvailablePluginsGridView_RowCreated(object sender, GridViewRowEventArgs e)

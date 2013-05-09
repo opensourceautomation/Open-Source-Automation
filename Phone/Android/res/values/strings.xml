@@ -1,8 +1,0 @@
-<resources>
-
-    <string name="app_name">OSA</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">Open Source Automation</string>
-    <string name="Initiate_Speech_Recognition">Press to initiate speech recognition</string>
-
-</resources>
