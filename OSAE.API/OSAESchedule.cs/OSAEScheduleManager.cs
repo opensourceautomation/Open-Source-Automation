@@ -89,13 +89,13 @@
         /// <param name="recurringDate"></param>
         public static void ScheduleRecurringAdd(string scheduleName, string obj, string method, string parameter1, string parameter2, string script,
             string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
-            string interval, int recurringMinutes, string recurringDay, string recurringDate)
+            string interval, int recurringMinutes, string recurringDay, string recurringDate, bool active)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
                 command.CommandText = "CALL osae_sp_schedule_recurring_add(@ScheduleName, @Object, @Method, @Parameter1, @Parameter2, ";
                 command.CommandText = command.CommandText + "@Script, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
-                command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate)";
+                command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate, @Active)";
                 command.Parameters.AddWithValue("@ScheduleName", scheduleName);
                 command.Parameters.AddWithValue("@Object", obj);
                 command.Parameters.AddWithValue("@Method", method);
@@ -114,7 +114,7 @@
                 command.Parameters.AddWithValue("@RecurringMinutes", recurringMinutes);
                 command.Parameters.AddWithValue("@RecurringDay", recurringDay);
                 command.Parameters.AddWithValue("@RecurringDate", recurringDate);
-
+                command.Parameters.AddWithValue("@Active", active);
                 try
                 {
                     OSAESql.RunQuery(command);
@@ -171,13 +171,13 @@
         /// <param name="recurringDate"></param>
         public static void ScheduleRecurringUpdate(string oldScheduleName, string newScheduleName, string obj, string method, string parameter1, string parameter2, string script,
             string recurringTime, bool sunday, bool monday, bool tuesday, bool wednesday, bool thursday, bool friday, bool saturday,
-            string interval, int recurringMinutes, string recurringDay, string recurringDate)
+            string interval, int recurringMinutes, string recurringDay, string recurringDate, bool active)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
                 command.CommandText = "CALL osae_sp_schedule_recurring_update(@OldScheduleName, @NewScheduleName, @Object, @Method, @Parameter1, @Parameter2, ";
                 command.CommandText = command.CommandText + "@Script, @RecurringTime, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, ";
-                command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate)";
+                command.CommandText = command.CommandText + "@Saturday, @Interval, @RecurringMinutes, @RecurringDay, @RecurringDate, @Active)";
                 command.Parameters.AddWithValue("@OldScheduleName", oldScheduleName);
                 command.Parameters.AddWithValue("@NewScheduleName", newScheduleName);
                 command.Parameters.AddWithValue("@Object", obj);
@@ -197,6 +197,7 @@
                 command.Parameters.AddWithValue("@RecurringMinutes", recurringMinutes);
                 command.Parameters.AddWithValue("@RecurringDay", recurringDay);
                 command.Parameters.AddWithValue("@RecurringDate", recurringDate);
+                command.Parameters.AddWithValue("@Active", active);
                 try
                 {
                     OSAESql.RunQuery(command);
@@ -219,7 +220,7 @@
                     OSAEScreenControl ctrl = new OSAEScreenControl();
 
                     command.CommandText = "SELECT schedule_name, parameter_1, parameter_2, recurring_time, monday, tuesday, wednesday, thursday, friday, saturday, sunday, interval_unit, recurring_minutes," + 
-                                            "recurring_day, recurring_date, script_name, method_name, object_name " +
+                                            "recurring_day, recurring_date, script_name, method_name, object_name, active " +
                                             "FROM osae.osae_v_schedule_recurring WHERE schedule_name=@Name";
                     command.Parameters.AddWithValue("@Name", name);
                     dataset = OSAESql.RunQuery(command);
@@ -245,7 +246,7 @@
                         schedule.Script = dataset.Tables[0].Rows[0]["script_name"].ToString();
                         schedule.Method = dataset.Tables[0].Rows[0]["method_name"].ToString();
                         schedule.Object = dataset.Tables[0].Rows[0]["object_name"].ToString();
-
+                        schedule.Active = dataset.Tables[0].Rows[0]["active"].ToString();
                         return schedule;
                     }
                 }
