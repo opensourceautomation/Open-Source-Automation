@@ -175,7 +175,7 @@ public partial class home : System.Web.UI.Page
         DataTable dt = ds.Tables[0];
         if (dt.Rows.Count > 0)
         {
-            if (string.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
+            if (!string.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
             {
                 divParameters.Visible = true;
                 txtParam1.Text = dt.Rows[0]["param_1_default"].ToString();
