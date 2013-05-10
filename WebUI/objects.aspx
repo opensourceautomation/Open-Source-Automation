@@ -224,7 +224,7 @@
     </div>
 
     <!-- Property List Modal -->
-    <div id="myPropListModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="myPropListModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Edit Property List</h3>
@@ -234,16 +234,26 @@
             AutoGenerateColumns="False"  
             GridLines="None"  
             CssClass="mGrid"  
-            AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvPropList_RowDataBound" DataKeyNames="item_name" ShowHeaderWhenEmpty="true">  
+            AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvPropList_RowDataBound" DataKeyNames="item_name,item_label" ShowHeaderWhenEmpty="true">  
             <Columns>  
-                <asp:BoundField DataField="item_name" HeaderText="Item" />
+                <asp:BoundField DataField="item_name" HeaderText="Item" ItemStyle-Width="50%" />
+                <asp:BoundField DataField="item_label" HeaderText="Label" />
             </Columns>  
         </asp:GridView>
       </div>
       <div class="modal-footer">
-        <asp:Textbox class="input-xlarge" runat="server" ID="txtListItem"></asp:Textbox>
+        <div class="row-fluid">
+            <div class="span6" style="text-align:left;">
+                <asp:Textbox class="input-large" runat="server" ID="txtListItem"></asp:Textbox>
+            </div>
+            <div class="span6" style="text-align:left;">
+                <asp:Textbox class="input-large" runat="server" ID="txtListItemLabel"></asp:Textbox>
+            </div>
+        </div>
+          
+        <br />
         <asp:Button class="btn btn-primary" runat="server" ID="btnAddListItem" Text="Add" OnClick="btnListItemSave_Click"/>
-          <asp:Button class="btn btn" runat="server" ID="btnListItemDelete" Text="Delete" OnClick="btnListItemDelete_Click"/>
+        <asp:Button class="btn btn" runat="server" ID="btnListItemDelete" Text="Delete" OnClick="btnListItemDelete_Click"/>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>
     </div>
