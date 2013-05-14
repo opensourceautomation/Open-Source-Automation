@@ -31,7 +31,7 @@ public partial class logs : System.Web.UI.Page
     {
         if (hdnSelectedRow.Text != string.Empty)
         {
-            logContentTextBox.Text = File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\" + gvLogs.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["logName"].ToString() + ".log");
+            logContentTextBox.Text = File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\" + gvLogs.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["logName"].ToString() + ".log");
             panelLogContent.Visible = true;
             btnClearLog.Visible = true;
         }
@@ -46,9 +46,9 @@ public partial class logs : System.Web.UI.Page
     private void GetLogs()
     {
         List<string> logsList = new List<string>();
-        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\"))
+        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\"))
         {
-            string[] fileList = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\");
+            string[] fileList = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\");
 
             var list = from f in fileList
                        select new { logName = Path.GetFileNameWithoutExtension(f) };
@@ -85,7 +85,7 @@ public partial class logs : System.Web.UI.Page
     }
     protected void clearLogs_Click(object sender, EventArgs e)
     {
-        string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\");
+        string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\");
 
         try
         {
@@ -106,7 +106,7 @@ public partial class logs : System.Web.UI.Page
     {
         try
         {
-            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\" + gvLogs.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["logName"].ToString() + ".log");
+            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\" + gvLogs.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["logName"].ToString() + ".log");
         }
         catch (Exception ex)
         {
@@ -121,13 +121,13 @@ public partial class logs : System.Web.UI.Page
     {
         //try
         //{
-            string zipFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\OSA_Logs.zip";
+        string zipFileName = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\OSA_Logs.zip";
 
             FastZip fastZip = new FastZip();
             if (File.Exists(zipFileName))
                 File.Delete(zipFileName);
-            
-            fastZip.CreateZip(zipFileName, Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs", true, "");
+
+            fastZip.CreateZip(zipFileName, Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs", true, "");
 
             Response.Clear();
             Response.ClearHeaders();

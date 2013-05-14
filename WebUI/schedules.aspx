@@ -77,9 +77,20 @@
                             CssClass="mGrid" ShowHeader="true" 
                             AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvRecurring_RowDataBound" DataKeyNames="recurring_id, schedule_name" ShowHeaderWhenEmpty="true">  
                             <Columns>  
-                                <asp:BoundField DataField="schedule_name" HeaderText="Name" />
+                                <asp:TemplateField HeaderText="Name" Visible="True">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblRecurringName" runat="server" Text='<%# Eval("schedule_name") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
                                 <asp:BoundField DataField="interval_unit" HeaderText="Interval" />
                                 <asp:BoundField DataField="recurring_id" Visible="false" /> 
+                                <asp:TemplateField HeaderText="Active" Visible="True">
+                                    <ItemTemplate>
+                                        <asp:CheckBox ID="chkActive" runat="server" AutoPostback="true" Enabled="false" />
+                                        <asp:Label ID="lblActive" runat="server" Text='<%# Eval("active") %>' Visible="false"></asp:Label>
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Center" />
+                                </asp:TemplateField>
                             </Columns>  
                         </asp:GridView>
                     </div>
@@ -106,7 +117,14 @@
                          
                         </div>
                     </div>
-                
+                    <div class="row-fluid">
+                        <div class="span2" style="text-align:right;">
+                            Active: 
+                        </div>
+                        <div class="span10">
+                            <asp:CheckBox runat="server" ID="chkActive" />
+                        </div>
+                    </div>
                     <div class="row-fluid">
                         <div class="span12">
                             <asp:RadioButtonList runat="server" ID="rbScheduleType" OnSelectedIndexChanged="rbScheduleType_SelectedIndexChanged"  CssClass="radioButtonList"

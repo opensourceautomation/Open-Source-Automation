@@ -175,7 +175,7 @@ public partial class home : System.Web.UI.Page
         DataTable dt = ds.Tables[0];
         if (dt.Rows.Count > 0)
         {
-            if (string.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
+            if (!string.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
             {
                 divParameters.Visible = true;
                 txtParam1.Text = dt.Rows[0]["param_1_default"].ToString();
@@ -266,7 +266,7 @@ public partial class home : System.Web.UI.Page
 
     private void loadPropertyList()
     {
-        gvPropList.DataSource = OSAESql.RunSQL("SELECT item_name FROM osae_object_property_array WHERE object_property_id = " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["object_property_id"].ToString());
+        gvPropList.DataSource = OSAESql.RunSQL("SELECT item_name,item_label FROM osae_object_property_array WHERE object_property_id = " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["object_property_id"].ToString());
         gvPropList.DataBind();
     }
 
@@ -345,7 +345,7 @@ public partial class home : System.Web.UI.Page
 
     protected void btnListItemSave_Click(object sender, EventArgs e)
     {
-        OSAEObjectPropertyManager.ObjectPropertyArrayAdd(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtListItem.Text, txtListItem.Text);
+        OSAEObjectPropertyManager.ObjectPropertyArrayAdd(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtListItem.Text, txtListItemLabel.Text);
         hdnEditingPropList.Value = "1";
         loadPropertyList();
     }

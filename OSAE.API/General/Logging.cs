@@ -64,7 +64,7 @@
                 {
                     lock (logLocker)
                     {
-                        string filePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\OSAE\Logs\" + logFile + ".log";
+                        string filePath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\" + logFile + ".log";
                         System.IO.FileInfo file = new System.IO.FileInfo(filePath);
                         file.Directory.Create();
                         StreamWriter sw = File.AppendText(filePath);
@@ -86,7 +86,7 @@
             {
                 lock (logLocker)
                 {
-                    string filePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/Logs/" + logFile + ".log";
+                    string filePath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "/Logs/" + logFile + ".log";
                     System.IO.FileInfo file = new System.IO.FileInfo(filePath);
                     file.Directory.Create();
                     StreamWriter sw = File.AppendText(filePath);

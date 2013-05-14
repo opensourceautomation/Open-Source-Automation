@@ -89,7 +89,7 @@
         protected override void OnStart(string[] args)
         {
 //#if (DEBUG)
-            Debugger.Launch(); //<-- Simple form to debug a web services 
+//            Debugger.Launch(); //<-- Simple form to debug a web services 
 //#endif
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptions);
