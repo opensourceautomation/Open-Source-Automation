@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">  
+  <Product Id="*" Name="OSA" Language="1033" Version="0.4.2" Manufacturer="Open Source Automation" UpgradeCode="021e76ad-bb43-41b2-a2d0-5b21c7d66a74" >
+    
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high"  />
+
+    
+    <!--<Condition Message="This installer does not support 64-bit Windows! Please download the 32-bit version of the installer ">
+      <![CDATA[NOT VersionNT64]]>
+    </Condition>-->
+
+    <!--<PropertyRef Id="NETFRAMEWORK10"/>
+    <Condition Message='This setup requires the .NET Framework 1.0 installed.'>
+      <![CDATA[Installed OR NETFRAMEWORK10]]>
+    </Condition>-->
+    
+    <Feature Id="ProductFeature" Title="OSA" Level="1">
+      <ComponentGroupRef Id="Core" />
+      <ComponentGroupRef Id="Screens" />
+      <ComponentGroupRef Id="Plugins" />      
+      <ComponentGroupRef Id="Server" />
+    </Feature>
+
+    
+  </Product>
+  
+	<Fragment>    
+    <Icon Id="icon.ico" SourceFile="icon.ico"/>
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <!--<WixVariable Id="WixUIBannerBmp" Value="OSA.bmp" />-->
+    <WixVariable Id="WixUIExclamationIco" Value="icon_3_32x32x32.bmp" />
+    <Property Id="WIXUI_INSTALLDIR" Value="APPLICATIONFOLDER" />
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+    <Property Id="ApplicationFolderName" Value="My Application Folder" />
+    
+    
+    
+    <Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+        <Directory Id="APPLICATIONFOLDER" Name="OSA" >        
+          <Directory Id="Logs" Name="Logs" />
+          <Directory Id="Plugins" Name="Plugins"  />
+          </Directory>        
+			</Directory>
+		</Directory>   
+	</Fragment>  
+</Wix>
