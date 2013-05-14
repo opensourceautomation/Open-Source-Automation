@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+    <ComponentGroup Id="Core" Directory="APPLICATIONFOLDER">
+      <Component Id="OSARegKeys" >
+        <RegistryKey Root="HKLM"
+                     Key="Software\OSAE2\DBSETTINGS"
+              Action="createAndRemoveOnUninstall" >
+          <RegistryValue Type="string" Name="DBCONNECTION" Value="localhost" KeyPath="yes"/>
+          <RegistryValue Type="string" Value="Default Value"/>
+          <RegistryValue Type="string" Name="DBPORT" Value="3306"/>
+        </RegistryKey>
+      </Component>
+      <!--UI Controls-->
+      <Component Id="OSAE.UI.Controls.dll">
+        <File Id='OSAE.UI.Controls.dll' Name='OSAE.UI.Controls.dll' DiskId='1' Source='..\..\output\OSAE.UI.Controls.dll' KeyPath='yes' />       
+      </Component>
+       <!--Api-->
+      <Component Id="OSAE.API.dll">
+        <File Id='OSAE.API.dll' Name='OSAE.API.dll' DiskId='1' Source='..\..\output\OSAE.API.dll' KeyPath='yes' />       
+      </Component>
+      <!--Mpeg Processor-->
+      <Component Id="MjpegProcessor.dll">
+        <File Id='MjpegProcessor.dll' Name='MjpegProcessor.dll' DiskId='1' Source='..\..\Assemblies\MjpegProcessor.dll' KeyPath='yes' />
+      </Component>
+      <!--MySQL.data.dll-->
+      <Component Id="MySQL.data.dll">
+        <File Id='MySQL.data.dll' Name='MySQL.data.dll' DiskId='1' Source='..\..\Assemblies\MySQL.data.dll' KeyPath='yes' />
+      </Component>
+      <!--ICSharp-->
+      <Component Id="ICSharpCode.SharpZipLib.dll">
+        <File Id='ICSharpCode.SharpZipLib.dll' Name='ICSharpCode.SharpZipLib.dll' DiskId='1' Source='..\..\Assemblies\ICSharpCode.SharpZipLib.dll' KeyPath='yes' />
+      </Component>
+    </ComponentGroup>
+	</Fragment>
+</Wix>

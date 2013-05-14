@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Product ProductCode="UltiDev.Web.Server.Pro" xmlns="http://schemas.microsoft.com/developer/2004/01/bootstrapper">
+  <PackageFiles CopyAllPackageFiles="false">
+    <!-- URL needs to be changed for each release -->
+    <PackageFile Name="UltiDev.WebServer.msi" HomeSite="http://download.ultidev.com/Products/Cassini/Pro/Build18/UltiDev.WebServer.msi" />
+  </PackageFiles>
+  <RelatedProducts>
+    <DependsOnProduct Code="Microsoft.Windows.Installer.3.1" />
+  </RelatedProducts>
+  <InstallChecks>
+    <!-- Product code needs to be changed for each release -->
+    <MsiProductCheck Property="UWS" Product="{F60DFD1A-209E-4E12-9CF1-70820249A0C3}" />
+  </InstallChecks>
+  <Commands Reboot="Defer">
+    <Command PackageFile="UltiDev.WebServer.msi">
+      <InstallConditions>
+        <BypassIf Property="UWS" Compare="ValueGreaterThan" Value="0" />
+      </InstallConditions>
+      <ExitCodes>
+        <ExitCode Value="0" Result="Success" />
+        <ExitCode Value="1638" Result="Success" />
+        <ExitCode Value="1603" Result="Success" />
+        <DefaultExitCode Result="Fail" String="Anunexpected" FormatMessageFromSystem="true" />
+      </ExitCodes>
+    </Command>
+  </Commands>
+</Product>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>       
+    <PackageGroup Id="MySQL">     
+      <MsiPackage Id="MySQL"
+                  Cache="no"
+                  Compressed="no"                  
+                  Permanent="yes"
+                  Vital="yes"
+                  SourceFile="$(var.SolutionDir)\Dependencies\mysql-installer-community-5.5.29.0.msi"
+                   />
+      <!--DownloadUrl="http://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-5.6.11.0.msi/from/http://cdn.mysql.com/" -->
+      <!--DetectCondition="Netfx4FullVersion AND (NOT VersionNT64 OR Netfx4x64FullVersion)"-->
+    </PackageGroup>
+	</Fragment>
+</Wix>
