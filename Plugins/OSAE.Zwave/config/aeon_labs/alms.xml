@@ -20,7 +20,7 @@
 			<Item label="No" value="0" />
 			<Item label="Yes" value="1" />
                </Value>
-                <Value type="short" index="3" genre="config" label="On time" units="minutes" min="1" max="15300" value="240">
+                <Value type="short" index="3" genre="config" label="On time" units="seconds" min="1" max="15300" value="240">
                         <Help>
 				How long should the device associated to multi sensor keep
 				state On before sending it Off command (if the value is bigger
@@ -89,6 +89,11 @@
 			<Help>
 				The interval of sending report group 3.
 				1 seconds - 2678400 seconds
+			</Help>
+		</Value>
+		<Value type="button" index="255" genre="config" label="Reset to default" write_only="true" value="0" >
+			<Help>
+				Reset to factory defaults.
 			</Help>
 		</Value>
         </CommandClass>

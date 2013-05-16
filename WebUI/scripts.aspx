@@ -101,17 +101,24 @@
                 </div>
             </div>
             <div class="row-fluid">
-                <div class="span12" style="text-align:right;">
+                <div class="span3" style="text-align:left;">
                     <br />
+                    <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Linkage</a>
+                    <a href="#myModal" role="button" class="btn" data-toggle="modal" onclick="copyScript();">Copy</a>
+                </div>
+                <div class="span6" style="text-align:left;">
                     <div class="alert alert-error" runat="server" id="alert" visible="false"  >Must enter script name and Script Processor</div> &nbsp;
                     <div class="alert alert-success" runat="server" id="saveAlert" visible="false" >Saved!</div> &nbsp;
                     <div class="alert alert-warning" runat="server" id="deleteAlert" visible="false" >Deleted!</div> &nbsp;
+                </div>
+                <div class="span3" style="text-align:right;">
+                    <br />
                     <asp:Button runat="server" ID="btnAdd" class="btn" OnClientClick="saveScriptAdd();" Text="Add" /> &nbsp;
                     <asp:Button runat="server" ID="btnUpdate" class="btn" OnClientClick="saveScriptUpdate();" Text="Update" /> &nbsp;
                     <asp:Button runat="server" ID="btnDelete" class="btn" OnClick="btnDelete_Click" Text="Delete" OnClientClick="return confirm('Are you sure you want to delete the script?');"/>
                     <asp:Button runat="server" ID="btnAdd2" OnClick="btnAdd_Click" style="display:none;" /> &nbsp;
                     <asp:Button runat="server" ID="btnUpdate2" OnClick="btnUpdate_Click" style="display:none;" /> &nbsp;
-                    <a href="#myModal" role="button" class="btn" data-toggle="modal" onclick="copyScript();">Copy</a>
+                    
                 </div>
             </div>
         </div>
@@ -243,6 +250,29 @@
       </div>
       <div ID="dvmodalbody" class="modal-body">
         
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="linkModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="H1">Script Linkage</h3>
+      </div>
+      <div ID="dvlinkmodalbody" class="modal-body">
+        <asp:GridView runat="server" ID="gvLinkage"
+            AutoGenerateColumns="False"  
+            GridLines="None"  
+            CssClass="mGrid"  
+            AlternatingRowStyle-CssClass="alt" ShowHeaderWhenEmpty="true">  
+            <Columns>  
+                <asp:BoundField DataField="object_name" HeaderText="Object" />
+                <asp:BoundField DataField="event_name" HeaderText="Event" />
+            </Columns>  
+        </asp:GridView>
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>

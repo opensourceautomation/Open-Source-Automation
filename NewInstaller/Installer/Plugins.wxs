@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+    <ComponentGroup Id="Plugins" Directory="Plugins">
+      <!--Bluetooth-->
+      
+      <!--<Component Id='Bluetooth'>
+        --><!--<File Id='Bluetooth.osapd' Name='Bluetooth.osapd' DiskId='1' Source='..\output\Plugins\Bluetooth\Bluetooth.osapd' KeyPath='yes' />--><!--
+        --><!--<File Id='LogViewer' Name='LogViewer.exe' DiskId='1' Source='..\output\LogViewer.exe' />--><!--
+      </Component>-->
+      <!--Email-->
+      
+      <!--Jabber-->
+      
+      <!--Network Monitor-->
+      
+      <!--Rest-->
+      
+      <!--Script Processor-->
+      
+      <!--Speech-->
+      
+      <!--Web Server-->
+      
+      <!--WUnderground-->
+    </ComponentGroup>
+	</Fragment>
+</Wix>

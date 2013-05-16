@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+    <ComponentGroup Id="Client" Directory="APPLICATIONFOLDER">
+      <!--Manager-->
+      <Component Id='OSAE.OSAManager'>
+        <File Id='OSAE.OSAManager' Name='OSAE.Manager.exe' DiskId='1' Source='..\output\OSAE.Manager.exe' KeyPath='yes' />
+      </Component>
+      <Component Id='OSAE.OSAManagerConfig'>
+        <File Id='OSAE.OSAManagerConfig' Name='OSAE.Manager.exe.config' DiskId='1' Source='..\output\OSAE.Manager.exe.config' KeyPath='yes' />
+      </Component>
+      <!--Log Viewer-->
+      <Component Id='LogViewer'>
+        <File Id='LogViewer' Name='LogViewer.exe' DiskId='1' Source='..\output\LogViewer.exe' KeyPath='yes' />
+      </Component>
+      <!--VR2-->
+      <Component Id="VR2">
+        <!--<File Source="$(var.VR2.TargetPath)" />-->
+      </Component>
+      
+      
+      <!--Client Service-->
+      
+      
+    </ComponentGroup>
+	</Fragment>
+</Wix>

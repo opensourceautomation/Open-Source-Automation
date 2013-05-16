@@ -10,6 +10,8 @@
     {
          private static Logging privateInstance = null;
 
+         private static string debug;
+
         /// <summary>
         /// Provides exlusive writes to the log file
         /// </summary>
@@ -33,7 +35,7 @@
                     privateInstance = new Logging("Default");
                 }
             }
-
+            debug = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value;
             return privateInstance;
         }
 
@@ -58,11 +60,11 @@
         {
             try
             {
-                if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE" || alwaysLog)
+                if (debug != "FALSE" || alwaysLog)
                 {
                     lock (logLocker)
                     {
-                        string filePath = Common.ApiPath + "/Logs/" + logFile + ".log";
+                        string filePath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\" + logFile + ".log";
                         System.IO.FileInfo file = new System.IO.FileInfo(filePath);
                         file.Directory.Create();
                         StreamWriter sw = File.AppendText(filePath);
@@ -84,7 +86,7 @@
             {
                 lock (logLocker)
                 {
-                    string filePath = Common.ApiPath + "/Logs/" + logFile + ".log";
+                    string filePath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "/Logs/" + logFile + ".log";
                     System.IO.FileInfo file = new System.IO.FileInfo(filePath);
                     file.Directory.Create();
                     StreamWriter sw = File.AppendText(filePath);

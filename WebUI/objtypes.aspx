@@ -4,6 +4,8 @@
 
 <asp:Content ID="Content1" runat="server" ContentPlaceHolderID="ContentPlaceHolder">
     <script type="text/javascript">
+        var lastSelected = null;
+
         window.onload = function () {
             var strCook = document.cookie;
             if (strCook.indexOf("!~") != 0) {
@@ -56,6 +58,26 @@
             var intY = document.getElementById("methodGrid").scrollTop;
             document.cookie = "yPos=@~" + intY + "~@";
         }
+
+        function selectPropOptionsItem(name, element) {
+            if (lastSelected != null) {
+                lastSelected.style.backgroundColor = 'white';
+                $(lastSelected).attr("onmouseout", "this.style.cursor='hand';this.style.background='white';");
+                $(lastSelected).attr("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
+            }
+            $('#<%=hdnPropOptionsItemName.ClientID%>').val(name);
+            element.style.backgroundColor = 'lightblue';
+            $(element).removeAttr("onmouseout");
+
+            lastSelected = element;
+        }
+
+        $(function () {
+            if ($('#<%=hdnEditingPropOptions.ClientID%>').val() == "1") {
+                $('#<%=hdnEditingPropOptions.ClientID%>').val("0");
+                $('#myPropOptionsModal').modal('show');
+            }
+        });
     </script> 
     <style>
 
@@ -244,7 +266,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_default, track_history" ShowHeaderWhenEmpty="true">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_default, track_history, property_id" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="property_name" HeaderText="Property" /> 
                                     <asp:BoundField DataField="property_datatype" HeaderText="Type" /> 
@@ -257,26 +279,27 @@
                         <div class="span6">
                             <asp:Panel runat="server" ID="panelPropForm">
                                 
-                                    Name: <asp:TextBox  runat="server" ID="txtPropName" style="width:225px;"></asp:TextBox>
-                                    <br />
-                                    Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;">
-                                         <asp:ListItem Selected = "True" Text = "String" Value = "String"></asp:ListItem>
-                                         <asp:ListItem Text = "Boolean" Value = "Boolean"></asp:ListItem>
-                                         <asp:ListItem Text = "Integer" Value = "Integer"></asp:ListItem>
-                                         <asp:ListItem Text = "List" Value = "List"></asp:ListItem>
-                                         <asp:ListItem Text = "Password" Value = "Password"></asp:ListItem>
-                                         <asp:ListItem Text = "File" Value = "File"></asp:ListItem>
-                                         <asp:ListItem Text = "DateTime" Value = "DateTime"></asp:ListItem>
-                                    </asp:DropDownList>
-                                    <br />
-                                    Default: <asp:TextBox  runat="server" ID="txtPropDefault" style="width:215px;"></asp:TextBox>
-                                    <br />
-                                    <asp:CheckBox runat="server" ID="chkTrackChanges" /> Track Changes &nbsp;
-                                    <br />
-                                    <asp:Button class="btn btn" runat="server" ID="btnPropSave" Text="Save" OnClick="btnPropSave_Click"/>
-                                    <asp:Button class="btn btn" runat="server" ID="btnPropAdd" Text="Add" OnClick="btnPropAdd_Click"/>
-                                    <asp:Button class="btn btn" runat="server" ID="btnPropDelete" Text="Delete" OnClick="btnPropDelete_Click"/>
-                                
+                                Name: <asp:TextBox  runat="server" ID="txtPropName" style="width:225px;"></asp:TextBox>
+                                <br />
+                                Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;">
+                                        <asp:ListItem Selected = "True" Text = "String" Value = "String"></asp:ListItem>
+                                        <asp:ListItem Text = "Boolean" Value = "Boolean"></asp:ListItem>
+                                        <asp:ListItem Text = "Integer" Value = "Integer"></asp:ListItem>
+                                        <asp:ListItem Text = "Float" Value = "Float"></asp:ListItem>
+                                        <asp:ListItem Text = "List" Value = "List"></asp:ListItem>
+                                        <asp:ListItem Text = "Password" Value = "Password"></asp:ListItem>
+                                        <asp:ListItem Text = "File" Value = "File"></asp:ListItem>
+                                        <asp:ListItem Text = "DateTime" Value = "DateTime"></asp:ListItem>
+                                </asp:DropDownList>
+                                <br />
+                                Default: <asp:TextBox  runat="server" ID="txtPropDefault" style="width:215px;"></asp:TextBox>
+                                <br />
+                                <asp:CheckBox runat="server" ID="chkTrackChanges" /> Track Changes &nbsp;
+                                <br />
+                                <asp:Button class="btn btn" runat="server" ID="btnPropSave" Text="Save" OnClick="btnPropSave_Click"/>
+                                <asp:Button class="btn btn" runat="server" ID="btnPropAdd" Text="Add" OnClick="btnPropAdd_Click"/>
+                                <asp:Button class="btn btn" runat="server" ID="btnPropDelete" Text="Delete" OnClick="btnPropDelete_Click"/>
+                                <asp:Button class="btn btn" runat="server" ID="btnEditPropOptions" Text="Edit Options" href="#myPropOptionsModal" data-toggle="modal"/>
                            </asp:Panel>
                         </div>
                     </div>
@@ -284,7 +307,30 @@
             </asp:Panel> 
         </div>
     </div>
-
+    <!-- Property Options Modal -->
+    <div id="myPropOptionsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Edit Property Options</h3>
+      </div>
+      <div ID="dvmodalbody" class="modal-body">
+        <asp:GridView runat="server" ID="gvPropOptions"
+            AutoGenerateColumns="False"  
+            GridLines="None"  
+            CssClass="mGrid"  
+            AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvPropOptions_RowDataBound" DataKeyNames="option_name" ShowHeaderWhenEmpty="true">  
+            <Columns>  
+                <asp:BoundField DataField="option_name" HeaderText="Item" />
+            </Columns>  
+        </asp:GridView>
+      </div>
+      <div class="modal-footer">
+        <asp:Textbox class="input-xlarge" runat="server" ID="txtOptionsItem"></asp:Textbox>
+        <asp:Button class="btn btn-primary" runat="server" ID="btnAddOptionsItem" Text="Add" OnClick="btnOptionsItemSave_Click"/>
+          <asp:Button class="btn btn" runat="server" ID="btnOptionsItemDelete" Text="Delete" OnClick="btnOptionsItemDelete_Click"/>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      </div>
+    </div>
     
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
@@ -296,4 +342,6 @@
     <asp:Label runat="server" ID="hdnSelectedMethodRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedEventName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedEventRow" Visible="false"></asp:Label>
+    <asp:HiddenField runat="server" ID="hdnEditingPropOptions"/>
+    <asp:HiddenField runat="server" ID="hdnPropOptionsItemName"/>
 </asp:Content>

@@ -335,7 +335,7 @@ namespace Manager_WPF
                 // the app is launched and the app can obtain its commandline arguments from the 
                 // shared location               
                 string appFolderPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), uniqueApplicationName);
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), uniqueApplicationName);
 
                 string cmdLinePath = Path.Combine(appFolderPath, "cmdline.txt");
                 if (File.Exists(cmdLinePath))

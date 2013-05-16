@@ -64,10 +64,6 @@
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
             QueryCommandQueueThread.Start();
 
-            updates.Interval = 86400000;
-            updates.Enabled = true;
-            updates.Elapsed += new ElapsedEventHandler(getPluginUpdates_tick);
-
             Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
             loadPluginsThread.Start();
 
@@ -128,7 +124,7 @@
 
                         if (method.ObjectName == "SERVICE-" + Common.ComputerName)
                         {
-                            switch (method.ObjectName)
+                            switch (method.MethodName)
                             {
                                 case "EXECUTE" : 
                                     logging.AddToLog("Recieved Execute Method Name", true);
@@ -140,11 +136,17 @@
                                 case "STOP PLUGIN":
                                     StopPlugin(method);
                                     break;
-                                case "LOAD PLUGIN":
+                                case "RELOAD PLUGINS":
                                     LoadPlugins();
                                     break;
                             }                                                                            
 
+                            OSAEMethodManager.MethodQueueDelete(method.Id);
+                        }
+                        else if (method.ObjectName.Split('-')[0] == "SERVICE")
+                        {
+                            if(method.MethodName == "EXECUTE")
+                                sendMessageToClients(WCF.OSAEWCFMessageType.CMDLINE, method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8));
                             OSAEMethodManager.MethodQueueDelete(method.Id);
                         }
                         else

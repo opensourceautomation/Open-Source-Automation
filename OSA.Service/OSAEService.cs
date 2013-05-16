@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.ServiceModel;
     using System.ServiceProcess;
+    using System.Diagnostics;
 
     #endregion
 
@@ -34,8 +35,6 @@
 
         private bool running = true;
         
-        private System.Timers.Timer updates = new System.Timers.Timer();
-
         /// <summary>
         /// Timer used to periodically check if plugins are still running
         /// </summary>
@@ -92,7 +91,8 @@
 //#if (DEBUG)
 //            Debugger.Launch(); //<-- Simple form to debug a web services 
 //#endif
-
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptions);
             try
             {
                 Common.InitialiseLogFolder();
@@ -140,6 +140,11 @@
             ShutDownSystems();
         }
 
+        void UnhandledExceptions(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
+            logging.AddToLog("UnhandledExceptions caught : " + e.Message + " - InnerException: " + e.InnerException.Message, true);
+        }
         #endregion
     }
 }

@@ -1,4 +1,5 @@
 ﻿using OSAE;
+using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,9 +31,12 @@ public partial class logs : System.Web.UI.Page
     {
         if (hdnSelectedRow.Text != string.Empty)
         {
-            logContentTextBox.Text = File.ReadAllText(Common.ApiPath + @"\Logs\" + gvLogs.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["logName"].ToString() + ".log");
+            logContentTextBox.Text = File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\" + gvLogs.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["logName"].ToString() + ".log");
             panelLogContent.Visible = true;
+            btnClearLog.Visible = true;
         }
+        else
+            btnClearLog.Visible = false;
     }
 
 
@@ -42,9 +46,9 @@ public partial class logs : System.Web.UI.Page
     private void GetLogs()
     {
         List<string> logsList = new List<string>();
-        if (Directory.Exists(Common.ApiPath + @"\Logs"))
+        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\"))
         {
-            string[] fileList = Directory.GetFiles(Common.ApiPath + @"\Logs");
+            string[] fileList = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\");
 
             var list = from f in fileList
                        select new { logName = Path.GetFileNameWithoutExtension(f) };
@@ -78,5 +82,67 @@ public partial class logs : System.Web.UI.Page
     {
         GetLogs();
         LoadLogContent();        
+    }
+    protected void clearLogs_Click(object sender, EventArgs e)
+    {
+        string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\");
+
+        try
+        {
+            foreach (string file in files)
+            {
+                File.Delete(file);
+            }
+        }
+        catch (Exception ex)
+        {
+            // not going to do anything as the file may be in use so just carry on
+        }
+
+        GetLogs();
+        LoadLogContent();       
+    }
+    protected void clearLog_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs\" + gvLogs.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["logName"].ToString() + ".log");
+        }
+        catch (Exception ex)
+        {
+            // not going to do anything as the file may be in use so just carry on
+        }
+
+        GetLogs();
+        panelLogContent.Visible = false;
+        btnClearLog.Visible = false;
+    }
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        //try
+        //{
+        string zipFileName = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\OSA_Logs.zip";
+
+            FastZip fastZip = new FastZip();
+            if (File.Exists(zipFileName))
+                File.Delete(zipFileName);
+
+            fastZip.CreateZip(zipFileName, Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\OSAE\Logs", true, "");
+
+            Response.Clear();
+            Response.ClearHeaders();
+            Response.ClearContent();
+            Response.AddHeader("Content-Disposition", "attachment; filename=OSA_Logs.zip");
+            Response.AddHeader("Content-Length", new FileInfo(zipFileName).Length.ToString());
+            Response.ContentType = "application/octet-stream";
+            Response.Flush();
+            Response.TransmitFile(zipFileName);
+            Response.End();
+        ///}
+        //catch (Exception ex)
+        //{
+            // not going to do anything as the file may be in use so just carry on
+        //}
+
     }
 }
