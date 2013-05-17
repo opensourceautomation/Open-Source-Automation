@@ -32,6 +32,7 @@ public partial class analytics : System.Web.UI.Page
     {
         if (hdnSelectedRow.Text != "")
         {
+            GVAnnotatedTimeline1.Visible = true;
             gvProperties.Rows[Int32.Parse(hdnSelectedRow.Text)].Attributes.Remove("onmouseout");
             gvProperties.Rows[Int32.Parse(hdnSelectedRow.Text)].Style.Add("background", "lightblue");
 
@@ -42,6 +43,10 @@ public partial class analytics : System.Web.UI.Page
                 evts.Add(new GoogleChartsNGraphsControls.TimelineEvent("Value", DateTime.Parse(dr[0].ToString()), Decimal.Parse(dr[1].ToString())));
             }
             this.GVAnnotatedTimeline1.ChartData(evts.ToArray());
+        }
+        else
+        {
+            GVAnnotatedTimeline1.Visible = false;
         }
     }
 
