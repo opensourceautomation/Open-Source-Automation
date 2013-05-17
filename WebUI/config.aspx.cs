@@ -23,6 +23,7 @@ public partial class config : System.Web.UI.Page
             }
             CheckServiceStatus();
             GetDBSize();
+            GetTableSizes();
             checkForUpdates();
         }
     }
@@ -71,6 +72,31 @@ public partial class config : System.Web.UI.Page
         DataSet d = OSAESql.RunSQL(sql);
         decimal size = (decimal)d.Tables[0].Rows[0]["size"];
         dbSize.Text = String.Format("{0:0.##}", size) + "Mb";
+    }
+
+    private void GetTableSizes()
+    {
+        imagesSize.Text = GetTableSize("osae_images");
+        debugLog.Text = GetTableSize("osae_debug_log");
+        objectsSize.Text = GetTableSize("osae_object");
+        eventLogSize.Text = GetTableSize("osae_event_log");
+        methodLogSize.Text = GetTableSize("osae_method_log");
+        scriptSize.Text = GetTableSize("osae_script");
+        objectStateHistory.Text = GetTableSize("osae_object_state_history");
+        objectPropertyHistory.Text = GetTableSize("osae_object_property_history");
+        methodQueueSize.Text = GetTableSize("osae_method_queue");
+    }
+
+    private string GetTableSize(string tableName)
+    {
+        decimal size = 0;
+        string sql;
+        DataSet d;
+
+        sql = "SELECT SUM( data_length + index_length) / 1024 / 1024 AS size FROM information_schema.TABLES WHERE table_schema = 'OSAE' AND TABLE_NAME = '" + tableName + "';";
+        d = OSAESql.RunSQL(sql);
+        size = (decimal)d.Tables[0].Rows[0]["size"];
+        return String.Format("{0:0.##}", size) + "Mb";
     }
 
     private void checkForUpdates()
