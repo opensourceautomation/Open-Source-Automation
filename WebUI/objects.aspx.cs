@@ -139,6 +139,15 @@ public partial class home : System.Web.UI.Page
     {
         if ((e.Row.RowType == DataControlRowType.DataRow))
         {
+            DataRowView drv = (DataRowView)e.Row.DataItem;
+            if (drv["property_datatype"] != DBNull.Value)
+            {
+                if ((string)drv["property_datatype"] == "Password")
+                {
+                    e.Row.Cells[1].Text = "*****";
+                }
+            } 
+           
             e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
             if (e.Row.RowState == DataControlRowState.Alternate)
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
