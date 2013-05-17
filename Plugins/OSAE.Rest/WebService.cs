@@ -134,14 +134,15 @@
 
         public Boolean AddObject(string name, string description, string type, string address, string container, string enabled)
         {
-            OSAEObjectManager.ObjectAdd(name, description, type, address, container, Convert.ToBoolean(enabled));
+
+            OSAEObjectManager.ObjectAdd(name, description, type, address, container, StringToBoolean(enabled));
 
             return true;
         }
 
         public Boolean UpdateObject(string oldName, string newName, string description, string type, string address, string container, string enabled)
         {
-            OSAEObjectManager.ObjectUpdate(oldName, newName, description, type, address, container, Int32.Parse(enabled));
+            OSAEObjectManager.ObjectUpdate(oldName, newName, description, type, address, container, Convert.ToInt32(StringToBoolean(enabled)));
 
             return true;
         }
@@ -227,5 +228,26 @@
             }
             return properties;
         }
+
+        private Boolean StringToBoolean(string passedvalue)
+        {
+
+            Boolean booleanvalue = false;  //if we fail to convert we will just default to false
+
+            if (!Boolean.TryParse(passedvalue, out booleanvalue)) //if they passed "true"/"false" this will work and booleanvalue will contain our converted value
+            {
+                // otherwise it is probably a "1" or "0" and we will try to convert that to boolean
+                int intvalue;
+                if (Int32.TryParse(passedvalue, out intvalue))
+                {
+                    booleanvalue = Convert.ToBoolean(intvalue);
+                }
+            }
+
+            return booleanvalue;
+        }
+
     }
+
+
 }
