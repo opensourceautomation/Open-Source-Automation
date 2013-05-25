@@ -99,8 +99,8 @@ namespace OSAE.Zwave
             set { m_valueID = value; }
         }
 
-        private String m_genre;
-        public String Genre
+        private ZWValueID.ValueGenre m_genre;
+        public ZWValueID.ValueGenre Genre
         {
             get { return m_genre; }
             set { m_genre = value; }
@@ -120,8 +120,8 @@ namespace OSAE.Zwave
             set { m_index = value; }
         }
 
-        private String m_type;
-        public String Type
+        private ZWValueID.ValueType m_type;
+        public ZWValueID.ValueType Type
         {
             get { return m_type; }
             set { m_type = value; }

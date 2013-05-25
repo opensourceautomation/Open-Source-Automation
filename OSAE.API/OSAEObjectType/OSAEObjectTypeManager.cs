@@ -84,7 +84,7 @@
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@Description", Description);
                 command.Parameters.AddWithValue("@OwnedBy", OwnedBy);
-                command.Parameters.AddWithValue("@BaseType", OwnedBy);
+                command.Parameters.AddWithValue("@BaseType", BaseType);
                 command.Parameters.AddWithValue("@TypeOwner", TypeOwner);
                 command.Parameters.AddWithValue("@System", System);
                 command.Parameters.AddWithValue("@Container", Container);
