@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Package Name="DisplayName" Culture="Culture" xmlns="http://schemas.microsoft.com/developer/2004/01/bootstrapper">
-  <Strings>
-    <String Name="Culture">en</String>
-    <String Name="DisplayName">UltiDev Web Server Pro</String>
-    <String Name="Anunexpected">An unexpected exit code was returned from the installer. Installation has failed.</String>
-    <String Name="DisplayName_1">UltiDev Web Server Pro</String>
-  </Strings>
-</Package>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="Open Source Automation - Client" Language="1033" Version="0.4.3" Manufacturer="Open Source Automation" UpgradeCode="ff9098da-832c-41d7-9d87-ceb07c516e87">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high"  />
+    <Binary Id="RegKeyBinary" SourceFile="$(var.SolutionDir)\RegKeys\bin\Release\RegKeys.CA.dll" />
+
+		<Feature Id="ProductFeature" Title="Client_Installer_x64" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+    <CustomAction Id="RegKeysCustomAction"
+					  BinaryKey="RegKeyBinary"
+					  DllEntry="CheckServerIp"
+					  Execute="deferred"
+					  Return="check" />
+
+    <InstallExecuteSequence>
+      <Custom Action="RegKeysCustomAction" Before="InstallFinalize">
+        NOT Installed
+      </Custom>
+    </InstallExecuteSequence>
+  
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="Client_Installer_x64" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!-- <Component Id="ProductComponent"> -->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			<!-- </Component> -->
+		</ComponentGroup>
+	</Fragment>
+</Wix>

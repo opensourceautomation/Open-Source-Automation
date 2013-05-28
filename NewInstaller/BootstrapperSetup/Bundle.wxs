@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
-  <Bundle Name="OSA" Version="1.0.0.0" Manufacturer="Open Source Automation" UpgradeCode="CF34383C-751A-43B8-90BF-A250F7BC2863">
+  <Bundle Name="OSA" Version="1.0.0.0" Manufacturer="Open Source Automation" UpgradeCode="CFF3383C-751A-43B8-90BF-A250F7BC2863">
     <BootstrapperApplicationRef Id="ManagedBootstrapperApplicationHost">
       <Payload SourceFile="$(var.SolutionDir)\UI\BootstrapperCore.config"/>
       <Payload SourceFile="$(var.SolutionDir)\UI\bin\x86\Debug\OSA.dll"/>
