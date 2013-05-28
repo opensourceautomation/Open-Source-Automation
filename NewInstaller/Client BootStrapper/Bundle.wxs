@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?ifndef Version?>
+<?define Version = "0.4.3" ?>
+<?endif ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Bundle 
+    Name="Open Source Automation - Client"
+    Version="$(var.Version)"
+          Manufacturer="Open Source Automation"
+          UpgradeCode="ce5b0991-791e-4085-b206-f6cccdf4437b"
+          IconSourceFile="$(var.SolutionDir)Resources\icon.ico"
+          HelpUrl="http://www.opensourceautomation.com/"
+          SplashScreenSourceFile="$(var.SolutionDir)Resources\OSASplashScreen.png">
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense" />
+
+    <WixVariable Id="WixStdbaLicenseRtf" Value="$(var.SolutionDir)Resources\License.rtf" />
+    <WixVariable Id="WixStdbaLogo" Value="$(var.SolutionDir)Resources\logoSmall.bmp" />
+    <!--<RegistryValue Root="HKLM" Key="Software\company\InstallLocation" Value="[INSTALLLOCATION]" Type="string" Action="write" />-->
+    <Variable Name="InstallFolder" Type="string" Value="[ProgramFiles6432Folder]OSA" >
+      <!--<RegistrySearch Id='MyRegistry' Type='raw' Root='HKCU' Key='Software\MyApp\Foo' Name='InstallDir' />-->
+    </Variable>
+
+    <Chain>
+      <PackageGroupRef Id='Netfx4Full'/>
+      <RollbackBoundary Id="Net4FullInstalled" />
+      <!-- 32 bit-->
+      <MsiPackage SourceFile="$(var.SolutionDir)Screens Installer\bin\x86\Combined\Screens Installer.msi"
+                  Id="OSAInstallerPackageId"
+                  Cache="yes"
+                  Vital="yes"
+                  InstallCondition="NOT VersionNT64"
+                  Visible="no">
+        <MsiProperty Name="INSTALLFOLDER" Value="[InstallFolder]" />
+      </MsiPackage>
+
+      <!-- 64 bit-->
+      <MsiPackage SourceFile="$(var.SolutionDir)Screens Installer x64\bin\x64\Combined\Screens Installer x64.msi"
+                  Id="OSAInstallerPackageIdx64"
+                  Cache="yes"
+                  Vital="yes"
+                  InstallCondition="VersionNT64"
+                  Visible="no">
+        <MsiProperty Name="INSTALLFOLDER" Value="[InstallFolder]" />
+      </MsiPackage>
+    </Chain>
+	</Bundle>
+</Wix>

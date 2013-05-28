@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="{07939A2A-61BA-4249-B953-0E9803C7E688}" Name="Open Source Automation - Server x64" Language="1033" Version="0.4.3" Manufacturer="Open Source Automation" UpgradeCode="1c604626-1e6c-4bf9-83a3-1010f65a7c83">
+    <Package InstallerVersion="200" Compressed="yes" Platform="x64" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high"  />
+    <Binary Id="RegKeyBinary" SourceFile="$(var.SolutionDir)\RegKeys\bin\Release\RegKeys.CA.dll" />
+
+    <Feature Id="ProductFeature" Title="OSA Server" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="group_WebServer" />
+      <MergeRef Id='Plugins' />
+      <MergeRef Id='ServerMergeModule' />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLFOLDER" Name="INSTALLLOCATION" >
+        <Merge Id='ServerMergeModule' Language='1033' src='$(var.SolutionDir)Server\bin\Release\server.msm' DiskId='1' />
+        <Directory Id="PluginsFolder" Name="Plugins" >
+          <Merge Id='Plugins' Language='1033' src='$(var.SolutionDir)\Plugins\bin\Release\Plugins.msm' DiskId='1' />         
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+    </ComponentGroup>
+  </Fragment>
+</Wix>
