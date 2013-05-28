@@ -52,7 +52,9 @@
 
               $("#callback").append('<ul id="places" data-role="listview" data-theme="g">');
               $.each(data, function (i, obj) {
-                  $("#places").append('<li><a href="#" onclick="openObject(\'' + place + '\',\'' + obj.Name + '\');" >' + obj.Name + '</a></li>');
+                  if (obj.Name != place) {
+                      $("#places").append('<li><a href="#" onclick="openObject(\'' + place + '\',\'' + obj.Name + '\');" >' + obj.Name + '</a></li>');
+                  }
               });
               $('#places').listview();
           });
@@ -76,7 +78,7 @@
                       $("#callback").append('<center>Power State<br /><select name="slider" id="flip-a" data-role="slider"><option value="off">Off</option><option value="on">On</option></select></center>');
                   }
                   var lvl = 0;
-                  if (data.Type == 'ZWAVE DIMMER' || data.Type == 'X10 DIMMER') {
+                  if (data.BaseType == 'MULTILEVEL SWITCH') {
                       $.each(data.Properties, function (i, prop) {
                           if (prop.Name == 'Level') {
                               lvl = prop.Value;
@@ -178,7 +180,7 @@
               else {
                   $("#callback").append('<center><br /><br /><h2>Methods</h2></center>');
                   $.each(data.Methods, function (i, meth) {
-                      $("#callback").append('<a id="btn' + i + '"href="#" data-role="button" onclick="runMethod(\'' + object + '\',\'' + meth + '\', \'\',\'\');" >' + meth + '</a>');
+                      $("#callback").append('<a id="btn' + i + '"href="#" data-role="button" onclick="runMethod(\'' + object + '\',\'' + meth.MethodName + '\', \'\',\'\');" >' + meth.MethodLabel + '</a>');
                       $('#btn' + i).button();
                   });
               }

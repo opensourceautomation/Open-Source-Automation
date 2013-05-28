@@ -444,7 +444,7 @@
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    command.CommandText = "SELECT method_id, method_name FROM osae_v_object_method WHERE object_name=@ObjectName ORDER BY method_name";
+                    command.CommandText = "SELECT method_id, method_name, method_label FROM osae_v_object_method WHERE object_name=@ObjectName ORDER BY method_name";
                     command.Parameters.AddWithValue("@ObjectName", ObjectName);
                     dataset = OSAESql.RunQuery(command);
                 }
@@ -453,6 +453,7 @@
                 {
                     OSAEMethod method = new OSAEMethod();
                     method.MethodName = drp["method_name"].ToString();
+                    method.MethodLabel = drp["method_label"].ToString();
                     method.Id = int.Parse(drp["method_id"].ToString());
                     method.ObjectName = ObjectName;
                     methods.Add(method);

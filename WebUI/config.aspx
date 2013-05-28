@@ -2,7 +2,15 @@
 
 
 <asp:Content ID="Content1" runat="server" ContentPlaceHolderID="ContentPlaceHolder">
-
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script>
+        $(function () {
+            $("#accordion").accordion({
+                active: false,
+                collapsible: true
+            });
+        });
+    </script>
     <div class="row-fluid">
         <div class="span2">
         </div>
@@ -43,15 +51,29 @@
                         <td>
                             <asp:Label ID="serviceLabel" runat="server" Text="" />
                         </td>
-                    </tr>
+                    </tr>                   
                     <tr>
                         <td>
                            <b> DB Size:</b>
                         </td>
                         <td>
-                            <asp:Label ID="dbSize" runat="server" Text="" />
+                            <div id="accordion">
+                            <h3><asp:Label ID="dbSize" runat="server" Text="" /></h3>
+                                <div>
+                                    &emsp;<b>Images:</b><asp:Label ID="imagesSize" runat="server" Text="" /> <br />
+                                    &emsp;<b>Debug Log:</b><asp:Label ID="debugLog" runat="server" Text="" /><br /> 
+                                    &emsp;<b>Event Log:</b><asp:Label ID="eventLogSize" runat="server" Text="" /> <br />
+                                    &emsp;<b>Method Log:</b><asp:Label ID="methodLogSize" runat="server" Text="" /> <br />
+                                    &emsp;<b>Method Queue:</b><asp:Label ID="methodQueueSize" runat="server" Text="" /> <br />
+                                    &emsp;<b>Objects:</b><asp:Label ID="objectsSize" runat="server" Text="" /> <br />
+                                    &emsp;<b>Object State History:</b><asp:Label ID="objectStateHistory" runat="server" Text="" /> <br />
+                                    &emsp;<b>Object Property History:</b><asp:Label ID="objectPropertyHistory" runat="server" Text="" /> <br />
+                                    &emsp;<b>Scripts:</b><asp:Label ID="scriptSize" runat="server" Text="" /> <br />
+                                 </div>
+                            </div>
+                           
                         </td>
-                    </tr>
+                    </tr>                                       
                      <tr>
                         <td>
                             <b>Export</b>
@@ -81,6 +103,6 @@
         </div>
     </div>
     <div class="span2">
-    </div>    
+    </div>
 </asp:Content>
 
