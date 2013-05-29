@@ -1,0 +1,8 @@
+﻿<Window x:Class="Manager_WPF.LogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LogWindow" Height="616" Width="835" xmlns:controls="clr-namespace:OSAE.UI.Controls;assembly=OSAE.UI.Controls" Icon="/OSAE.Manager;component/Resources/icon_3_32x32x32.png">
+    <Grid>
+        <controls:Logs></controls:Logs>
+    </Grid>
+</Window>

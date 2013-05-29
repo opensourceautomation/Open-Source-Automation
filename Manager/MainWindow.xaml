@@ -1,0 +1,81 @@
+﻿<Window x:Class="Manager_WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Open Source Automation - Manager" Height="663" Width="702" Loaded="Window_Loaded" Closing="Window_Closing" StateChanged="Window_StateChanged" Icon="/OSAE.Manager;component/Resources/icon_3_32x32x32.png">
+    <DockPanel Width="Auto" 
+            Height="Auto" LastChildFill="True">
+        <Menu Width="Auto" Height="20" 
+            Background="#FFD9D9D9"
+            DockPanel.Dock="Top">
+
+            <!-- File Menu -->
+            <MenuItem Header="File">
+                <MenuItem Header="Settings" Click="hypSettings_Click" />
+                <MenuItem Header="Open GUI" Click="hypGUI_Click" />
+                <Separator/>
+                <MenuItem Header="Exit"/>
+            </MenuItem>
+            <MenuItem Header="Plugins">
+                <MenuItem Header="Install Plugin" Click="InstallPlugin_Click" />
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <!--Top Menu Area-->
+
+            <DataGrid CanUserAddRows="False" AutoGenerateColumns="False" HorizontalAlignment="Stretch" Name="dgLocalPlugins" VerticalAlignment="Stretch" SelectionMode="Single" AlternatingRowBackground="#CDEBEBEB" Margin="5,87,5,143" Width="Auto" SelectionChanged="dgLocalPlugins_SelectionChanged">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Enabled" Width="55" >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel HorizontalAlignment="Center">
+                                    <CheckBox IsChecked="{Binding Path=Enabled, UpdateSourceTrigger=PropertyChanged}" Checked="OnChecked" Unchecked="OnUnchecked"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Plugin" Binding="{Binding Path=Type}" IsReadOnly="True" Width="*" />
+                    <DataGridTextColumn Header="Status" Binding="{Binding Path=Status}" IsReadOnly="True" Width="*" />
+                    <DataGridTextColumn Header="Author" Binding="{Binding Path=Author}" IsReadOnly="True" Width="*" />
+                    <DataGridTextColumn Header="OSA Object" Binding="{Binding Path=Name}" IsReadOnly="True" Width="*" />
+                    <DataGridTextColumn Header="Version" Binding="{Binding Path=Version}" IsReadOnly="True" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button Content="Start" Height="23" HorizontalAlignment="Left" Margin="13,45,0,0" Name="btnService" VerticalAlignment="Top" Width="75" Click="btnService_Click" />
+            <GroupBox Header="Plugin Info" HorizontalAlignment="Stretch" Margin="5,424,5,5" Name="gbPluginInfo" VerticalAlignment="Bottom" Visibility="Hidden">
+                <Grid>
+                    <Image Height="100" HorizontalAlignment="Left" Margin="6,6,0,0" Name="imgPlugin" Stretch="Fill" VerticalAlignment="Top" Width="100" />
+                    <Label Content="Plugin Name" Height="34" HorizontalAlignment="Stretch" Margin="112,6,0,0" Name="lblPluginName" VerticalAlignment="Top" Width="Auto" FontSize="16" FontWeight="Bold" />
+                    <Label Content="by" Height="28" HorizontalAlignment="Left" Margin="112,30,0,0" Name="lblAuthor" VerticalAlignment="Top" />
+                    <Label Content="Installed Version: " Height="28" HorizontalAlignment="Left" Margin="112,78,0,0" Name="label1" VerticalAlignment="Top" Width="101" />
+                    <Label Content="Label" Height="28" HorizontalAlignment="Left" Margin="210,78,0,0" Name="lblVersion" VerticalAlignment="Top" />
+                    
+                    <TextBlock HorizontalAlignment="Left" Margin="117,60,0,29" Width="35" Name="txblWiki" Height="20">
+                    <Hyperlink RequestNavigate="HandleRequestNavigate" TextDecorations="None" Name="hypWiki">
+                        Wiki
+                    </Hyperlink>
+                    </TextBlock>
+                    <TextBlock Height="92" HorizontalAlignment="Left" Margin="352,14,0,0" Name="txbkDescription" Text="TextBlock" VerticalAlignment="Top" Width="300" TextWrapping="Wrap" FontSize="14" />
+                </Grid>
+            </GroupBox>
+            <TextBlock HorizontalAlignment="Right" Margin="0,11,28,0" Width="30" Height="30" Name="txblSettings" VerticalAlignment="Top">
+            <Hyperlink TextDecorations="None" RequestNavigate="HandleRequestNavigate" Name="hypSettings" NavigateUri="http://localhost:8081/default.aspx">
+                <Image Source="Resources/settings.png" Name="image1" Stretch="Fill" ToolTip="Configuration" />
+            </Hyperlink>
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Right" Margin="0,11,63,0" Width="38" Height="30" Name="txblGUI" VerticalAlignment="Top">
+            <Hyperlink TextDecorations="None" Name="hypGUI" Click="hypGUI_Click">
+                <Image Height="30" Source="Resources/screen.jpg" Name="imgGUI" Stretch="Fill" Width="38" ToolTip="Open GUI"  />
+            </Hyperlink>
+            </TextBlock>
+            <Label Content="The OSAE service is:" Height="28" HorizontalAlignment="Left" Margin="10,11,0,0" Name="label2" VerticalAlignment="Top" />
+            <Label Content="RUNNING" Height="28" HorizontalAlignment="Left" Margin="119,12,0,0" Name="lbl_isRunning" VerticalAlignment="Top" />
+        </Grid>
+    </DockPanel>
+    <Window.Resources>
+        <ContextMenu x:Key="NotifierContextMenu"
+                    Placement="MousePoint">
+            <MenuItem Header="Manager" Click="Menu_Manager"/>
+            <MenuItem Header="GUI" Click="Menu_GUI"/>
+        </ContextMenu>
+    </Window.Resources>
+</Window>

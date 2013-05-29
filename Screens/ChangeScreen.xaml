@@ -1,0 +1,9 @@
+﻿<Window x:Class="GUI2.ChangeScreen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Child="clr-namespace:OSAE.UI.Controls;assembly=OSAE.UI.Controls"
+        Title="Change Screen" Height="540" Width="770" Icon="icon.png">
+    <Grid>
+        <Child:ctrlChangeScreen Name="uc_Child" />
+    </Grid>
+</Window>
