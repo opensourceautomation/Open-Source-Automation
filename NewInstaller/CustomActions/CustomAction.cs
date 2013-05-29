@@ -1,14 +1,14 @@
-﻿using Microsoft.Deployment.WindowsInstaller;
-using OSAE;
-
-namespace RegKeys
+﻿namespace OSAInstallCustomActions
 {
+    using Microsoft.Deployment.WindowsInstaller;
+    using OSAE;
+
     public class CustomActions
     {
         [CustomAction]
         public static ActionResult CheckServerIp(Session session)
         {
-            session.Log("Begin RegKeys CustomAction");
+            session.Log("Begin OSAInstallCustomActions CustomAction");
 
             ModifyRegistry registry = new ModifyRegistry();
             registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
@@ -26,7 +26,7 @@ namespace RegKeys
                 }
                 else
                 {
-                    session.Log("RegKeys CustomAction - User exited");
+                    session.Log("OSAInstallCustomActions CustomAction - User exited");
                     return ActionResult.UserExit;
                 }
             }
@@ -37,20 +37,20 @@ namespace RegKeys
         }
 
         [CustomAction]
-        public static ActionResult MySQLLoginDetails(Session session)
+        public static ActionResult DatabaseUpdate(Session session)
         {
-            session.Log("Begin RegKeys CustomAction");
+            session.Log("Begin DatabaseUpdate CustomAction");
 
-            ServerDetails details = new ServerDetails(session);
+            DatabaseInstall databaseInstall = new DatabaseInstall("", "");
 
-            if (details.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                
+
+            if (databaseInstall.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {                
                 return ActionResult.Success;
             }
             else
             {
-                session.Log("RegKeys CustomAction - User exited");
+                session.Log("OSAInstallCustomActions CustomAction - User exited");
                 return ActionResult.UserExit;
             }
         }

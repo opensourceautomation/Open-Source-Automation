@@ -5,7 +5,10 @@
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high"  />
-    <Binary Id="RegKeyBinary" SourceFile="$(var.SolutionDir)\RegKeys\bin\Release\RegKeys.CA.dll" />
+    <Binary Id="CustomActionsBinary" SourceFile="$(var.SolutionDir)RegKeys\bin\x86\Combined\OSAInstallCustomActions.CA.dll" />
+    
+    <!-- Required by the Installer for DB installation and upgrades -->
+    <Binary Id="MySQLBinary" SourceFile="..\..\Assemblies\MySql.Data.dll" />
 
     <Feature Id="ProductFeature" Title="OSA Server" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
@@ -13,8 +16,21 @@
       <MergeRef Id='Plugins' />
       <MergeRef Id='ServerMergeModule' />
     </Feature>
-  </Product>
 
+    <CustomAction Id="DBUpdateCustomAction"
+          BinaryKey="CustomActionsBinary"
+          DllEntry="DatabaseUpdate"
+          Execute="deferred"
+          Return="check" />
+
+    <InstallExecuteSequence>
+      <Custom Action="DBUpdateCustomAction" Before="InstallFinalize">
+        NOT Installed
+      </Custom>
+    </InstallExecuteSequence>
+    
+  </Product>
+  
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="INSTALLFOLDER" Name="INSTALLLOCATION" >

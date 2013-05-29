@@ -48,10 +48,9 @@
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <PropertyGroup>
-    <PreBuildEvent>e:
-cd $(SolutionDir)
-$(SolutionDir)Paraffin.exe -dir "..\output\Plugins\Web Server" -custom WebServer "$(SolutionDir)Server Installer x64\WebServer.wxs" -guids -dirref PluginsFolder 
-$(SolutionDir)Paraffin.exe -dir "..\output\Plugins\Web Server" -custom WebServer "$(SolutionDir)Server Installer\WebServer.wxs" -guids -dirref PluginsFolder</PreBuildEvent>
+    <PreBuildEvent>CD /D $(SolutionDir)
+$(SolutionDir)Paraffin.exe -dir "..\output\Plugins\Web Server" -custom WebServer "$(SolutionDir)Server Installer x64\WebServer.wxs" -guids -dirref PluginsFolder -update
+$(SolutionDir)Paraffin.exe -dir "..\output\Plugins\Web Server" -custom WebServer "$(SolutionDir)Server Installer\WebServer.wxs" -guids -dirref PluginsFolder -update</PreBuildEvent>
   </PropertyGroup>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -40,7 +40,7 @@
         <MsiProperty Name="INSTALLFOLDER" Value="[InstallFolder]" />
       </MsiPackage>
 
-      <MsiPackage SourceFile="$(var.SolutionDir)Server Installer\bin\Release\Server Installer.msi"
+      <MsiPackage SourceFile="$(var.SolutionDir)Server Installer\bin\x86\Combined\Server Installer.msi"
                   Id="ServerPackageId"
                   Cache="yes"
                   Vital="yes"

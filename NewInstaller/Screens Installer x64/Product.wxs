@@ -5,7 +5,7 @@
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high"  />
-    <Binary Id="RegKeyBinary" SourceFile="$(var.SolutionDir)\RegKeys\bin\Release\RegKeys.CA.dll" />
+    <Binary Id="CustomActionsBinary" SourceFile="$(var.SolutionDir)RegKeys\bin\x86\Combined\OSAInstallCustomActions.CA.dll" />
    
     <Feature Id="ProductFeature" Title="Screens_Installer" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
@@ -13,7 +13,7 @@
     </Feature>
 
     <CustomAction Id="RegKeysCustomAction"
-					  BinaryKey="RegKeyBinary"
+					  BinaryKey="CustomActionsBinary"
 					  DllEntry="CheckServerIp"
 					  Execute="deferred"
 					  Return="check" />

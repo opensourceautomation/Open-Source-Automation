@@ -1,4 +1,4 @@
-﻿namespace RegKeys
+﻿namespace OSAInstallCustomActions
 {
     partial class ServerDetails
     {

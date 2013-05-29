@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace RegKeys
+namespace OSAInstallCustomActions
 {
     public partial class ServerDetails : Form
     {

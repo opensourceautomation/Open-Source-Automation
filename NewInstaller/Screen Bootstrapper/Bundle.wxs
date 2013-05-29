@@ -11,7 +11,7 @@
           UpgradeCode="ce5b0991-791e-4085-b206-f6cccdf4437b"
           IconSourceFile="$(var.SolutionDir)Resources\icon.ico"
           HelpUrl="http://www.opensourceautomation.com/" 
-          SplashScreenSourceFile="$(var.SolutionDir)Resources\OSASplashScreen.png">
+          SplashScreenSourceFile="$(var.SolutionDir)Resources\OSASplashScreen.bmp">
 		<BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense" />
     
     <WixVariable Id="WixStdbaLicenseRtf" Value="$(var.SolutionDir)Resources\License.rtf" />
