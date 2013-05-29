@@ -4,12 +4,13 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.7</ProductVersion>
-    <ProjectGuid>1e10018e-2297-44a2-a8d2-45c616cca2f5</ProjectGuid>
+    <ProjectGuid>ce5b0991-791e-4085-b206-f6cccdf4437b</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>MergeModule1</OutputName>
-    <OutputType>Module</OutputType>
+    <OutputName>OSA - Screens</OutputName>
+    <OutputType>Bundle</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <Name>Screens Bootstrapper</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
@@ -21,7 +22,18 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MergeModule.wxs" />
+    <Compile Include="Bundle.wxs" />
+    <Compile Include="DotNet.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixBalExtension">
+      <HintPath>$(WixExtDir)\WixBalExtension.dll</HintPath>
+      <Name>WixBalExtension</Name>
+    </WixExtension>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--
