@@ -20,6 +20,9 @@
         public string MethodName { get; set; }
 
         [DataMember]
+        public string MethodLabel { get; set; }
+
+        [DataMember]
         public string ObjectName { get; set; }
 
         /// <summary>
@@ -47,9 +50,10 @@
 
         }
        
-        public OSAEMethod(string methodName, string objName, string param1, string param2, string address, string owner)
+        public OSAEMethod(string methodName, string methodLabel, string objName, string param1, string param2, string address, string owner)
         {
             MethodName = methodName;
+            MethodLabel = methodLabel;
             ObjectName = objName;
             Parameter1 = param1;
             Parameter2 = param2;
@@ -57,10 +61,11 @@
             Owner = owner;
         }
 
-        public OSAEMethod(int id, string methodName, string objName, string param1, string param2, string address, string owner)
+        public OSAEMethod(int id, string methodName, string methodLabel, string objName, string param1, string param2, string address, string owner)
         {
             Id = id;
             MethodName = methodName;
+            MethodLabel = methodLabel;
             ObjectName = objName;
             Parameter1 = param1;
             Parameter2 = param2;

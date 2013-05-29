@@ -17,8 +17,7 @@
     <script type="text/javascript" src="js/jquery-ui-sliderAccess.js"></script>
     <script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
-
-
+    
     <!-- Le styles -->
     <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" />
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
@@ -55,6 +54,7 @@
                             <li><a href="schedules.aspx">Schedules</a></li>
                             <li><a href="plugins.aspx">Plugins</a></li>
                             <li><a href="analytics.aspx">Analytics</a></li>
+                            <li><a href="analytics.aspx">Images</a></li>
                             <li><a href="eventlogs.aspx">Event Logs</a></li>
                             <li><a href="logs.aspx">Server Logs</a></li>
                         </ul>

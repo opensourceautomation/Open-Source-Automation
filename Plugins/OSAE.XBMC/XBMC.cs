@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Timers;
+using System.Threading.Tasks;
 using XBMCRPC;
 using All = XBMCRPC.List.Fields.All;
 using Player = XBMCRPC.Methods.Player;
@@ -14,35 +15,34 @@ namespace OSAE.XBMC
         private Logging logging = Logging.GetLogger("XBMC");
         private List<XBMCSystem> Systems = new List<XBMCSystem>();
         private string pName;
-        //private System.Timers.Timer Clock;
+        private System.Timers.Timer Clock;
 
 
 
 
         public override void ProcessCommand(OSAEMethod method)
         {
-            //System.Data.DataRow row = table.Rows[0];
-            //logging.AddToLog("Found Command: " + row["method_name"].ToString() + " | param1: " + row["parameter_1"].ToString() + " | param2: " + row["parameter_1"].ToString(), false);
+            logging.AddToLog("Found Command: " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2, false);
 
-            //XBMCSystem s = getXBMCSystem(row["object_name"].ToString());
-            //if (s != null)
-            //{
-            //    switch (row["method_name"].ToString())
-            //    {
-            //        case "VPLAYPAUSE":
-            //            s.Connection.Player.PlayPause();
-            //            break;
-            //        case "VSTOP":
-            //            s.Connection.Player.Stop();
-            //            break;
-            //        case "VBIGSKIPFORWARD":
-            //            s.Connection.Player.BigSkipForward();
-            //            break;
-            //        case "VBIGSKIPBACK":
-            //            s.Connection.Player.BigSkipBackward();
-            //            break;
-            //    }
-            //}
+            XBMCSystem s = getXBMCSystem(method.ObjectName);
+            if (s != null)
+            {
+                switch (method.MethodName)
+                {
+                    case "VPLAYPAUSE":
+                        s.xbmcSystem.Player.PlayPause();
+                        break;
+                    case "VSTOP":
+                        s.xbmcSystem.Player.Stop();
+                        break;
+                    case "VBIGSKIPFORWARD":
+                        s.xbmcSystem.Player.Seek2(0,Player.Seekvalue.bigforward);
+                        break;
+                    case "VBIGSKIPBACK":
+                        s.xbmcSystem.Player.Seek2(0, Player.Seekvalue.bigbackward);
+                        break;
+                }
+            }
 
         }
 
@@ -79,14 +79,15 @@ namespace OSAE.XBMC
                 }
                 logging.AddToLog("Creating new XBMC System connection: " + obj.Name + " - " + ip, false);
                 XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
-                system.Connect();
-                Systems.Add(system);
+                if(system.Connect())
+                    Systems.Add(system);
             }
 
-            //Clock = new System.Timers.Timer();
-            //Clock.Interval = 5000;
-            //Clock.Start();
-            //Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
+            Clock = new System.Timers.Timer();
+            Clock.Interval = 5000;
+            
+            Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
+            Clock.Start();
         }
 
         public override void Shutdown()
@@ -110,30 +111,58 @@ namespace OSAE.XBMC
             {
                 foreach (XBMCSystem r in Systems)
                 {
-
-
-                    //if (!r.isConnected())
-                    //{
-                    //    logging.AddToLog("Trying to reconnect", false);
-                    //    r.Connect();
-                    //}
-                    r.getStatus();
-
-                    if (r.Playing)
+                    if (!r.Pinging)
                     {
-                        logging.AddToLog("Checking " + r.Name + " - Playing", false);
-                        OSAEObjectStateManager.ObjectStateSet(r.Name, "Playing", "XBMC");
-                    }
-                    else
-                    {
-                        logging.AddToLog("Checking " + r.Name + " - Stopped", false);
-                        OSAEObjectStateManager.ObjectStateSet(r.Name, "Stopped", "XBMC");
+                        if (!r.Connected)
+                        {
+                            logging.AddToLog("Removing system from list", true);
+                            Systems.Remove(r);
+                        }
                     }
                 }
+
+                OSAEObjectCollection XBMCInstances = OSAEObjectManager.GetObjectsByType("XBMC System");
+                foreach (OSAEObject obj in XBMCInstances)
+                {
+                    foreach (XBMCSystem r in Systems)
+                    {
+                        if (obj.Name == r.Name)
+                            XBMCInstances.Remove(obj);
+                    }
+                }
+                foreach (OSAEObject obj in XBMCInstances)
+                {
+                    string ip = "", username = "", password = "";
+                    int port = 0;
+
+                    foreach (OSAEObjectProperty p in obj.Properties)
+                    {
+                        switch (p.Name)
+                        {
+                            case "IP":
+                                ip = p.Value;
+                                break;
+                            case "Port":
+                                port = Int32.Parse(p.Value);
+                                break;
+                            case "Username":
+                                username = p.Value;
+                                break;
+                            case "Password":
+                                password = p.Value;
+                                break;
+                        }
+                    }
+                    logging.AddToLog("Creating new XBMC System connection: " + obj.Name + " - " + ip, false);
+                    XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
+                    if (system.Connect())
+                        Systems.Add(system);
+                }
+            
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error on timer tick: " + ex.Message, true);
+                logging.AddToLog("Error on timer tick: " + ex.Message + " - " + ex.InnerException.Message, true);
             }
 
         }
@@ -149,6 +178,7 @@ namespace OSAE.XBMC
         private int _port = 0;
         private bool _connected;
         private bool _playing;
+        private bool _pinging;
         private Client _xbmcSystem;
         private Logging logging = Logging.GetLogger("XBMC");
 
@@ -157,15 +187,72 @@ namespace OSAE.XBMC
             get { return _name; }
             set { _name = value; }
         }
+        public string Username
+        {
+            get { return _username; }
+            set { _username = value; }
+        }
+        public string Password
+        {
+            get { return _password; }
+            set { _password = value; }
+        }
+        public string IP
+        {
+            get { return _ip; }
+            set { _ip = value; }
+        }
+        public int Port
+        {
+            get { return _port; }
+            set { _port = value; }
+        }
         public bool Connected
         {
-            get { return _connected; }
+            get 
+            {
+                try
+                {
+                    _pinging = true;
+                    string ping = "";
+                    if (_xbmcSystem != null)
+                    {
+                        logging.AddToLog("Pinging client: " + _name, false);
+                        var task = Task.Run(async () =>
+                        {
+                            return await _xbmcSystem.JSONRPC.Ping();
+                        });
+                        ping = task.Result;
+                        logging.AddToLog(_name + " status: " + ping, false);
+                    }
+                    if (ping == "pong")
+                    {
+                        _pinging = false;
+                        return true;
+                    }
+                    else
+                    {
+                        _pinging = false;
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("Ping failed: " + ex.Message + " - " + ex.InnerException.Message, true);
+                    return false;
+                }
+            }
             set { _connected = value; }
         }
         public bool Playing
         {
             get { return _playing; }
             set { _playing = value; }
+        }
+        public bool Pinging
+        {
+            get { return _pinging; }
+            set { _pinging = value; }
         }
         public Client xbmcSystem
         {
@@ -180,20 +267,40 @@ namespace OSAE.XBMC
             _port = port;
             _username = username;
             _password = password;
-
         }
 
-        public void Connect()
+        public bool Connect()
         {
-            _xbmcSystem = new Client(_ip, _port, _username, _password);
-            logging.AddToLog("Client connected", false);
+            try
+            {
+                _pinging = true;
+                _xbmcSystem = new Client(_ip, _port, _username, _password);
+                var task = Task.Run(async () =>
+                {
+                    return await _xbmcSystem.JSONRPC.Ping();
+                });
+                if (task.Result == "pong")
+                {
+                    logging.AddToLog("Client connected", false);
 
-            _xbmcSystem.Player.OnPlay += Player_OnPlay;
-            _xbmcSystem.Player.OnStop += Player_OnStop;
-            _xbmcSystem.Player.OnPause += Player_OnPause;
+                    _xbmcSystem.Player.OnPlay += Player_OnPlay;
+                    _xbmcSystem.Player.OnStop += Player_OnStop;
+                    _xbmcSystem.Player.OnPause += Player_OnPause;
 
-            _xbmcSystem.StartNotificationListener();
-            logging.AddToLog("Events wired up", false);
+                    _xbmcSystem.StartNotificationListener();
+                    logging.AddToLog("Events wired up", false);
+                    _pinging = false;
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch(Exception ex)
+            {
+                logging.AddToLog("Error connecting to XBMC system: " + ex.Message + " - " + ex.InnerException.Message, true);
+                _pinging = false;
+                return false;
+            }
         }
 
 

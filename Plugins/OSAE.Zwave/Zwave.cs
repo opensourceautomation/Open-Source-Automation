@@ -57,12 +57,6 @@
                     logging.AddToLog("Zwave plugin initialized", true);
                 }
 
-                #region Screen Init
-                //OSAEObjectPropertyManager.ObjectPropertySet("Screen - ZWave Manager - ZWave - ADD CONTROLLER", "Object Name", pName);
-                //OSAEObjectPropertyManager.ObjectPropertySet("Screen - ZWave Manager - ZWave - ADD DEVICE", "Object Name", pName);
-                //OSAEObjectPropertyManager.ObjectPropertySet("Screen - ZWave Manager - ZWave - REMOVE CONTROLLER", "Object Name", pName);
-                //OSAEObjectPropertyManager.ObjectPropertySet("Screen - ZWave Manager - ZWave - REMOVE DEVICE", "Object Name", pName);
-                #endregion
             }
             catch (Exception ex)
             {
@@ -109,259 +103,53 @@
                         m_manager.SetNodeOn(m_homeId, nid);
                         OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
                         logging.AddToLog("Turned on: " + method.ObjectName, false);
-
-                        //foreach (Value value in node.Values)
-                        //    {
-                        //        if (value.Label == "Switch")
-                        //            m_manager.SetValue(value.ValueID, true);
-                        //    }
-                        //OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
-                        //logging.AddToLog("Turned light on: " + method.ObjectName, false);
                     }
                     else if(method.MethodName == "OFF")
                     {
                         m_manager.SetNodeOff(m_homeId, nid);
                         OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
                         logging.AddToLog("Turned off: " + method.ObjectName, false);
-
-                        //foreach (Value value in node.Values)
-                        //{
-                        //    if (value.Label == "Switch")
-                        //        m_manager.SetValue(value.ValueID, false);
-                        //}
-                        //OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
-                        //logging.AddToLog("Turned light off: " + method.ObjectName, false);
                     }
                     else
                     {
-                        if (method.Parameter1 != "")
+                        foreach (Value value in node.Values)
                         {
-                            foreach (Value value in node.Values)
+                            if (value.Label == method.MethodName)
                             {
-                                if (value.Label == method.MethodName)
+                                if (method.Parameter1 != "")
                                 {
-                                    if (value.Type == "String")
+
+                                    if (value.Type == ZWValueID.ValueType.String)
                                         m_manager.SetValue(value.ValueID, method.Parameter1);
-                                    else if (value.Type == "List")
+                                    else if (value.Type == ZWValueID.ValueType.List)
                                         m_manager.SetValueListSelection(value.ValueID, method.Parameter1);
-                                    else if (value.Type == "Int")
+                                    else if (value.Type == ZWValueID.ValueType.Int)
                                         m_manager.SetValue(value.ValueID, Int32.Parse(method.Parameter1));
-                                    else if (value.Type == "Byte")
+                                    else if (value.Type == ZWValueID.ValueType.Byte)
                                         m_manager.SetValue(value.ValueID, (byte)Int32.Parse(method.Parameter1));
-                                    else if (value.Type == "Bool")
+                                    else if (value.Type == ZWValueID.ValueType.Bool)
                                     {
                                         if (method.Parameter1 == "TRUE")
                                             m_manager.SetValue(value.ValueID, true);
                                         else
                                             m_manager.SetValue(value.ValueID, false);
                                     }
-                                    else if (value.Type == "Decimal")
+                                    else if (value.Type == ZWValueID.ValueType.Decimal)
                                         m_manager.SetValue(value.ValueID, Convert.ToSingle(method.Parameter1));
 
                                     logging.AddToLog("Set " + method.MethodName + " to " + method.Parameter1 + ": " + method.ObjectName, false);
                                 }
+                                else if(value.Type == ZWValueID.ValueType.Button)
+                                {
+                                    if (value.Label == method.MethodName)
+                                    {
+                                        m_manager.PressButton(value.ValueID);
+                                        m_manager.ReleaseButton(value.ValueID);
+                                    }
+                                }
                             }
                         }
-
-                        //switch (node.Label)
-                        //{
-                        //    #region Binary Switch
-                        //    case "Binary Switch":
-                        //    case "Binary Power Switch":
-                        //        if (method.MethodName == "ON")
-                        //        {
-                        //            if (instance != 0)
-                        //            {
-                        //                foreach (Value value in node.Values)
-                        //                {
-                        //                    if (value.Label == "Switch" && value.ValueID.GetInstance() == instance)
-                        //                        m_manager.SetValue(value.ValueID, true);
-                        //                }
-
-                        //            }
-                        //            else
-                        //                m_manager.SetNodeOn(m_homeId, nid);
-                        //            OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
-                        //            logging.AddToLog("Turned light on: " + method.ObjectName, false);
-                        //        }
-                        //        else
-                        //        {
-                        //            if (instance != 0)
-                        //            {
-                        //                foreach (Value value in node.Values)
-                        //                {
-                        //                    if (value.Label == "Switch" && value.ValueID.GetInstance() == instance)
-                        //                        m_manager.SetValue(value.ValueID, false);
-                        //                }
-
-                        //            }
-                        //            else
-                        //                m_manager.SetNodeOff(m_homeId, nid);
-                        //            OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
-                        //            logging.AddToLog("Turned light off: " + method.ObjectName, false);
-                        //        }
-                        //        break;
-                        //    #endregion
-
-                        //    #region Dimmers
-                        //    case "Multilevel Switch":
-                        //    case "Multilevel Power Switch":
-                        //    case "Multilevel Scene Switch":
-                        //        if (method.MethodName == "ON")
-                        //        {
-                        //            byte lvl;
-                        //            if (method.Parameter1 != "")
-                        //                lvl = (byte)Int32.Parse(method.Parameter1);
-                        //            else if (OSAEObjectPropertyManager.GetObjectPropertyValue(method.ObjectName, "Default Dim").Value != "")
-                        //                lvl = (byte)Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(method.ObjectName, "Default Dim").Value);
-                        //            else
-                        //                lvl = (byte)100;
-
-                        //            m_manager.SetNodeLevel(m_homeId, nid, lvl);
-                        //            OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
-                        //            logging.AddToLog("Turned light on: " + method.ObjectName + "|" + method.Parameter1, false);
-                        //        }
-                        //        else
-                        //        {
-                        //            m_manager.SetNodeOff(m_homeId, nid);
-                        //            OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
-                        //            logging.AddToLog("Turned light off: " + method.ObjectName, false);
-                        //        }
-                        //        break;
-                        //    #endregion
-
-                        //    #region Thermostats
-                        //    case "General Thermostat V2":
-                        //        if (method.MethodName == "ON")
-                        //        {
-                        //            m_manager.SetNodeOn(m_homeId, nid);
-                        //            OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
-                        //            logging.AddToLog("Turned thermostat on: " + method.ObjectName, false);
-                        //        }
-                        //        else if (method.MethodName == "OFF")
-                        //        {
-                        //            m_manager.SetNodeOff(m_homeId, nid);
-                        //            OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
-                        //            logging.AddToLog("Turned thermostat off: " + nid.ToString(), false);
-                        //        }
-                        //        else if (method.MethodName == "COOLSP")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Cooling 1")
-                        //                {
-                        //                    m_manager.SetValue(value.ValueID, Convert.ToSingle(method.Parameter1));
-                        //                    logging.AddToLog("Set cool target temperature to " + method.Parameter1 + ": " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        else if (method.MethodName == "HEATSP")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Heating 1")
-                        //                {
-                        //                    m_manager.SetValue(value.ValueID, Convert.ToSingle(method.Parameter1));
-                        //                    logging.AddToLog("Set heat target temperature to " + method.Parameter1 + ": " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        else if (method.MethodName == "UNIT OFF")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Mode")
-                        //                {
-                        //                    m_manager.SetValueListSelection(value.ValueID, "Off");
-                        //                    logging.AddToLog("Set Unit Mode to Off: " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        else if (method.MethodName == "HEAT")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Mode")
-                        //                {
-                        //                    m_manager.SetValueListSelection(value.ValueID, "Heat");
-                        //                    logging.AddToLog("Set Unit Mode to Heat: " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        else if (method.MethodName == "COOL")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Mode")
-                        //                {
-                        //                    m_manager.SetValueListSelection(value.ValueID, "Cool");
-                        //                    logging.AddToLog("Set Unit Mode to Cool: " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        else if (method.MethodName == "AUTO")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Mode")
-                        //                {
-                        //                    m_manager.SetValueListSelection(value.ValueID, "Auto");
-                        //                    logging.AddToLog("Set Unit Mode to Auto: " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        else if (method.MethodName == "AUX HEAT")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Mode")
-                        //                {
-                        //                    m_manager.SetValueListSelection(value.ValueID, "Aux Heat");
-                        //                    logging.AddToLog("Set Unit Mode to Aux Heat: " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        else if (method.MethodName == "FAN ON")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Fan Mode")
-                        //                {
-                        //                    m_manager.SetValueListSelection(value.ValueID, "On Low");
-                        //                    logging.AddToLog("Set Fan Mode to On: " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        else if (method.MethodName == "FAN AUTO")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Fan Mode")
-                        //                {
-                        //                    m_manager.SetValueListSelection(value.ValueID, "Auto Low");
-                        //                    logging.AddToLog("Set Fan Mode to Auto: " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        break;
-                        //    #endregion
-
-                        //    #region MultiSensor
-                        //    case "Binary Routing Sensor":
-                        //        if (method.MethodName == "SET WAKEUP INTERVAL")
-                        //        {
-                        //            foreach (Value value in node.Values)
-                        //            {
-                        //                if (value.Label == "Wake-up Interval")
-                        //                {
-                        //                    m_manager.SetValue(value.ValueID, Convert.ToSingle(method.Parameter1));
-                        //                    logging.AddToLog("Set wake-up interval to " + method.Parameter1 + ": " + method.ObjectName, false);
-                        //                }
-                        //            }
-                        //        }
-                        //        break;
-                        //    #endregion
-                        //}
+                        
                     }
                 }
                 else
@@ -400,7 +188,6 @@
                                     logging.AddToLog("Add Device Failed", true);
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                                 }
-                                //osae.MethodQueueAdd(osae.GetPluginName("GUI CLIENT", osae.ComputerName), "POPUP MESSAGE", "Press the program button on the Z-Wave device to add it to the network.\nFor security reasons, the PC Z-Wave Controller must be close to the device being added.", "");
                                 break;
                             case "REMOVE DEVICE":
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
@@ -413,7 +200,6 @@
                                     logging.AddToLog("Remove Device Failed", true);
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                                 }
-                                //osae.MethodQueueAdd(osae.GetPluginName("GUI CLIENT", osae.ComputerName), "POPUP MESSAGE", "Press the program button on the Z-Wave device to remove it from the network.\nFor security reasons, the PC Z-Wave Controller must be close to the device being removed.", "");
                                 break;
                             case "REMOVE FAILED NODE":
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
@@ -428,7 +214,7 @@
                                 }
                                 break;
                             case "RESET CONTROLLER":
-                                logging.AddToLog("Resetting Controller and deleting all ZWave objects", true);
+                                logging.AddToLog("Resetting Controller", true);
                                 m_manager.ResetController(m_homeId);
                                 //DataSet ds = osae.GetObjectsByType("ZWAVE DIMMER");
                                 //foreach (DataRow dr in ds.Tables[0].Rows)
@@ -505,57 +291,63 @@
                     {
 
                         Node node = GetNode(m_homeId, m_notification.GetNodeId());
+                        logging.AddToLog("ValueAdded start: node:" + node.ID.ToString(), true);
                         Value value = new Value();
-                        //logging.AddToLog("ValueAdded start: node:" + node.ID.ToString(), true);
                         ZWValueID vid = m_notification.GetValueID();
                         value.ValueID = vid;
                         value.Label = m_manager.GetValueLabel(vid);
-                        value.Genre = vid.GetGenre().ToString();
+                        value.Genre = vid.GetGenre();
                         value.Index = vid.GetIndex().ToString();
-                        value.Type = vid.GetType().ToString();
+                        value.Type = vid.GetType();
                         value.CommandClassID = vid.GetCommandClassId().ToString();
+                        node.AddValue(value);
+
                         string objType = m_manager.GetNodeProductName(m_homeId, node.ID);
                         string propType;
 
-                        if (m_manager.IsValueReadOnly(value.ValueID))
+                        if (!string.IsNullOrEmpty(objType))
                         {
-                            if (value.Type == "Bool")
-                                propType = "Boolean";
-                            else if (value.Type == "Byte" || value.Type == "Int")
-                                propType = "Integer";
-                            else
-                                propType = "String";
-
-                            OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, propType, "", objType, false);
-                        }
-                        else
-                        {
-                            if (value.Genre == "User")
+                            if (m_manager.IsValueReadOnly(value.ValueID))
                             {
-                                if (value.Label == "Switch" || value.Label == "Level")
-                                {
-                                    OSAEObjectTypeManager.ObjectTypeStateAdd("ON", "On", objType);
-                                    OSAEObjectTypeManager.ObjectTypeStateAdd("OFF", "Off", objType);
-                                    OSAEObjectTypeManager.ObjectTypeEventAdd("ON", "On", objType);
-                                    OSAEObjectTypeManager.ObjectTypeEventAdd("OFF", "Off", objType);
-                                    OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "", "", "", "");
-                                    OSAEObjectTypeManager.ObjectTypeMethodAdd("OFF", "Off", objType, "", "", "", "");
-                                }
+                                if (value.Type == ZWValueID.ValueType.Bool)
+                                    propType = "Boolean";
+                                else if (value.Type == ZWValueID.ValueType.Byte || value.Type == ZWValueID.ValueType.Int)
+                                    propType = "Integer";
                                 else
+                                    propType = "String";
+
+                                OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, propType, "", objType, false);
+                            }
+                            else
+                            {
+                                if (value.Genre == ZWValueID.ValueGenre.User)
                                 {
-                                    if (value.Type == "Byte" || value.Type == "Decimal" || value.Type == "Int")
+                                    if (value.Label == "Switch" || value.Label == "Level")
                                     {
-                                        OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, value.Label, objType, "Value", "", "", "");
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd("ON", "On", objType);
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd("OFF", "Off", objType);
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd("ON", "On", objType);
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd("OFF", "Off", objType);
+                                        OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "", "", "", "");
+                                        OSAEObjectTypeManager.ObjectTypeMethodAdd("OFF", "Off", objType, "", "", "", "");
+                                        if(value.Label == "Level")
+                                            OSAEObjectTypeManager.ObjectTypePropertyAdd("Level", "Integer", "", objType, false);
                                     }
-                                    else if(value.Type == "Button")
+                                    else
                                     {
-                                        OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, value.Label, objType, "", "", "", "");
+                                        if (value.Type == ZWValueID.ValueType.Byte || value.Type == ZWValueID.ValueType.Decimal || value.Type == ZWValueID.ValueType.Int)
+                                        {
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, value.Label, objType, "Value", "", "", "");
+                                        }
+                                        else if (value.Type == ZWValueID.ValueType.Button)
+                                        {
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, value.Label, objType, "", "", "", "");
+                                        }
                                     }
                                 }
                             }
                         }
                         
-                        node.AddValue(value);
 
                         logging.AddToLog("ValueAdded: node:" + node.ID + " | type: " + value.Type
                             + " | genre: " + value.Genre + " | cmdClsID:" + value.CommandClassID
@@ -602,7 +394,7 @@
 
                             if (m_manager.IsValueReadOnly(value.ValueID))
                             {
-                                if (value.Genre == "User")
+                                if (value.Genre == ZWValueID.ValueGenre.User)
                                 {
                                     OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, value.Label, value.Val, "ZWave");
                                     logging.AddToLog("Set property " + value.Label + " of " + nodeObject.Name + " to: " + value.Val.ToString(), false);
@@ -610,7 +402,7 @@
                             }
                             else
                             {
-                                if (value.Genre == "User")
+                                if (value.Genre == ZWValueID.ValueGenre.User)
                                 {
                                     if (value.Label == "Switch")
                                     {
@@ -618,6 +410,15 @@
                                             OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF", "ZWave");
                                         else
                                             OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON", "ZWave");
+                                    }
+                                    else if (value.Label == "Level")
+                                    {
+                                        if (value.Val == "0")
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF", "ZWave");
+                                        else
+                                            OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON", "ZWave");
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, value.Label, value.Val, "ZWave");
+                                        logging.AddToLog("Set property " + value.Label + " of " + nodeObject.Name + " to: " + value.Val.ToString(), false);
                                     }
                                     else
                                     {
@@ -691,18 +492,7 @@
                             node.Label = m_manager.GetNodeType(m_homeId, node.ID);
                         }
 
-                        if (OSAEObjectManager.GetObjectByAddress("Z" + node.ID.ToString()) == null)
-                        {
-                            OSAEObjectTypeManager.ObjectTypeAdd(m_manager.GetNodeProductName(m_homeId, node.ID), m_manager.GetNodeType(m_homeId, node.ID), pName, "ZWAVE DEVICE", 0, 0, 0, 1);
-                            OSAEObjectTypeManager.ObjectTypeMethodAdd("NODE NEIGHBOR UPDATE", "Node Neighbor Update", m_manager.GetNodeProductName(m_homeId, node.ID), "", "", "", "");
-                            OSAEObjectTypeManager.ObjectTypePropertyAdd("Home ID", "String", "", m_manager.GetNodeProductName(m_homeId, node.ID), false);
-                            OSAEObjectTypeManager.ObjectTypePropertyAdd("Poll", "Boolean", "", m_manager.GetNodeProductName(m_homeId, node.ID), false);
-                            
-
-                            OSAEObjectManager.ObjectAdd(m_manager.GetNodeProductName(m_homeId, node.ID) + " - Z" + node.ID.ToString(), m_manager.GetNodeProductName(m_homeId, node.ID), m_manager.GetNodeProductName(m_homeId, node.ID), "Z" + node.ID.ToString(), "", true);
-                            OSAEObjectPropertyManager.ObjectPropertySet(m_manager.GetNodeProductName(m_homeId, node.ID) + " - Z" + node.ID.ToString(), "Home ID", m_homeId.ToString(), pName);
-                        }
-                        logging.AddToLog("NodeProtocolInfo: node: " + node.ID + " | " + m_manager.GetNodeType(m_homeId, node.ID) + " | " + m_manager.GetNodeProductName(m_homeId, node.ID), true);
+                        logging.AddToLog("NodeProtocolInfo: node: " + node.ID + " | " + node.Label, true);
 
                         break;
                     }
@@ -716,6 +506,84 @@
                         {
                             node.Manufacturer = m_manager.GetNodeManufacturerName(m_homeId, node.ID);
                             node.Product = m_manager.GetNodeProductName(m_homeId, node.ID);
+
+                            // Create object type dynamically
+                            if (OSAEObjectManager.GetObjectByAddress("Z" + node.ID.ToString()) == null)
+                            {
+                                string baseType = "ZWAVE DEVICE";
+                                switch (node.Label)
+                                {
+                                    case "Binary Switch":
+                                    case "Binary Power Switch":
+                                        {
+                                            baseType = "BINARY SWITCH";
+                                            break;
+                                        }
+                                    case "Multilevel Switch":
+                                    case "Multilevel Scene Switch":
+                                        {
+                                            baseType = "MULTILEVEL SWITCH";
+                                            break;
+                                        }
+                                    case "General Thermostat V2":
+                                        {
+                                            baseType = "THERMOSTAT";
+                                            break;
+                                        }
+                                }
+
+                                OSAEObjectTypeManager.ObjectTypeAdd(node.Product, node.Label, pName, baseType,  0, 0, 0, 1);
+                                OSAEObjectTypeManager.ObjectTypeMethodAdd("NODE NEIGHBOR UPDATE", "Node Neighbor Update", node.Product, "", "", "", "");
+                                OSAEObjectTypeManager.ObjectTypePropertyAdd("Home ID", "String", "", node.Product, false);
+                                OSAEObjectTypeManager.ObjectTypePropertyAdd("Poll", "Boolean", "", node.Product, false);
+
+                                string propType;
+                                foreach (Value v in node.Values)
+                                {
+                                    if (m_manager.IsValueReadOnly(v.ValueID))
+                                    {
+                                        if (v.Type == ZWValueID.ValueType.Bool)
+                                            propType = "Boolean";
+                                        else if (v.Type == ZWValueID.ValueType.Byte || v.Type == ZWValueID.ValueType.Int)
+                                            propType = "Integer";
+                                        else
+                                            propType = "String";
+
+                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(v.Label, propType, "", node.Product, false);
+                                    }
+                                    else
+                                    {
+                                        if (v.Genre == ZWValueID.ValueGenre.User)
+                                        {
+                                            if (v.Label == "Switch" || v.Label == "Level")
+                                            {
+                                                OSAEObjectTypeManager.ObjectTypeStateAdd("ON", "On", node.Product);
+                                                OSAEObjectTypeManager.ObjectTypeStateAdd("OFF", "Off", node.Product);
+                                                OSAEObjectTypeManager.ObjectTypeEventAdd("ON", "On", node.Product);
+                                                OSAEObjectTypeManager.ObjectTypeEventAdd("OFF", "Off", node.Product);
+                                                OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", node.Product, "", "", "", "");
+                                                OSAEObjectTypeManager.ObjectTypeMethodAdd("OFF", "Off", node.Product, "", "", "", "");
+                                            }
+                                            else
+                                            {
+                                                if (v.Type == ZWValueID.ValueType.Byte || v.Type == ZWValueID.ValueType.Decimal || v.Type == ZWValueID.ValueType.Int)
+                                                {
+                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(v.Label, v.Label, node.Product, "Value", "", "", "");
+                                                }
+                                                else if (v.Type == ZWValueID.ValueType.Button)
+                                                {
+                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(v.Label, v.Label, node.Product, "", "", "", "");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+
+                                OSAEObjectManager.ObjectAdd(node.Product + " - Z" + node.ID.ToString(), node.Product, node.Product, "Z" + node.ID.ToString(), "", true);
+                                OSAEObjectPropertyManager.ObjectPropertySet(node.Product + " - Z" + node.ID.ToString(), "Home ID", m_homeId.ToString(), pName);
+                            }
+
                         }
 
                         logging.AddToLog("NodeNaming: Manufacturer: " + node.Manufacturer + " | Product: " + node.Product, true);
@@ -958,7 +826,7 @@
                     case "Multilevel Power Switch":
                         foreach (Value v in n.Values)
                         {
-                            if ((v.Genre == "User" && v.Label == "Level") || v.Label == "Power")
+                            if ((v.Genre == ZWValueID.ValueGenre.User && v.Label == "Level") || v.Label == "Power")
                                 zv.Add(v.ValueID);
                         }
                         break;
@@ -994,4 +862,5 @@
             }
         }
     }
+
 }
