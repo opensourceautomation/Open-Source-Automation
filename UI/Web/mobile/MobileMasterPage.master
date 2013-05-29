@@ -1,0 +1,27 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MobileMasterPage.master.cs" Inherits="mobile_MobileMasterPage" %>
+
+<!DOCTYPE html>
+
+<html>        
+  <head>        
+    <title>OSA Web Gui
+    </title>        
+    <link rel="stylesheet"  href="jquery/jquery.mobile-1.1.0.min.css" />        
+    <script src="jquery/jquery-1.7.2.min.js"></script>        
+    <script src="jquery/jquery.mobile-1.1.0.min.js"></script>        
+    <link rel="shortcut icon" href="favicon.ico"/>        
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>        
+    <meta content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport"/>        
+    <meta content="telephone=no" name="format-detection"/>        
+    <meta content="address=no" name="format-detection"/>    
+  </head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+        <asp:ContentPlaceHolder id="ContentPlaceHolder" runat="server">
+        
+        </asp:ContentPlaceHolder>
+    </div>
+    </form>
+</body>
+</html>
