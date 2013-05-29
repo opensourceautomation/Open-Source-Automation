@@ -7,85 +7,85 @@
 			<Directory Id="MergeRedirectFolder">
         <Directory Id="BlueTooth" Name="Bluetooth">
           <Component Id='Bluetooth' Guid="{13099D79-FC3C-411C-B0F5-4B7A08BC3A85}">
-            <File Id='Bluetooth.osapd' Name='Bluetooth.osapd' DiskId='1' Source='..\..\output\Plugins\Bluetooth\Bluetooth.osapd' KeyPath='yes' />
+            <File Id='Bluetooth.osapd' Name='Bluetooth.osapd' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Bluetooth\Bluetooth.osapd' KeyPath='yes' />
           </Component>
           <Component Id='InTheHand.Net.Personal.dll' Guid="{C3C7130F-90DF-45BD-9CAA-0882E185C335}">
-            <File Id='InTheHand.Net.Personal.dll' Name='InTheHand.Net.Personal.dll' DiskId='1' Source='..\..\output\Plugins\Bluetooth\InTheHand.Net.Personal.dll' KeyPath='yes' />
+            <File Id='InTheHand.Net.Personal.dll' Name='InTheHand.Net.Personal.dll' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Bluetooth\InTheHand.Net.Personal.dll' KeyPath='yes' />
           </Component>
           <Component Id='BlueToothScreenshot.jpg' Guid="{5A64002F-C8CE-4899-B00C-AE07D5A11FF3}">
-            <File Id='BlueToothScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='..\..\output\Plugins\Bluetooth\Screenshot.jpg' KeyPath='yes' />
+            <File Id='BlueToothScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Bluetooth\Screenshot.jpg' KeyPath='yes' />
           </Component>
           <Component Id='OSAE.Bluetooth.dll' Guid="{A72FAE7D-B77E-4645-B4CD-8F9C1EFBF843}">
-            <File Id='OSAE.Bluetooth.dll' Name='OSAE.Bluetooth.dll' DiskId='1' Source='..\..\output\Plugins\Bluetooth\OSAE.Bluetooth.dll' KeyPath='yes' />
+            <File Id='OSAE.Bluetooth.dll' Name='OSAE.Bluetooth.dll' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Bluetooth\OSAE.Bluetooth.dll' KeyPath='yes' />
           </Component>
         </Directory>
         <Directory Id="Email" Name="Email">
           <Component Id='Email.osapd' Guid="{AA239B32-B2E0-4F29-9FAE-A9598241D961}">
-            <File Id='Email.osapd' Name='Email.osapd' DiskId='1' Source='..\..\output\Plugins\Email\Email.osapd' KeyPath='yes' />
+            <File Id='Email.osapd' Name='Email.osapd' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Email\Email.osapd' KeyPath='yes' />
           </Component>
           <Component Id='OSAE.Email.dll' Guid="{6515D045-5F86-4490-AC5E-9597A3823EDD}">
-            <File Id='OSAE.Email.dll' Name='OSAE.Email.dll' DiskId='1' Source='..\..\output\Plugins\Email\OSAE.Email.dll' KeyPath='yes' />
+            <File Id='OSAE.Email.dll' Name='OSAE.Email.dll' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Email\OSAE.Email.dll' KeyPath='yes' />
           </Component>
           <Component Id='EmailScreenshot.jpg' Guid="{4094032D-D3B7-4919-87D1-61803B826091}">
-            <File Id='EmailScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='..\..\output\Plugins\Email\Screenshot.jpg' KeyPath='yes' />
+            <File Id='EmailScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Email\Screenshot.jpg' KeyPath='yes' />
           </Component>
         </Directory>
         <Directory Id="Jabber" Name="Jabber">
           <Component Id='agsXMPP.dll' Guid="{F23EBDEF-932E-4940-B891-6E8BE4541C00}">
-            <File Id='agsXMPP.dll' Name='agsXMPP.dll' DiskId='1' Source='..\..\output\Plugins\Jabber\agsXMPP.dll' KeyPath='yes' />
+            <File Id='agsXMPP.dll' Name='agsXMPP.dll' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Jabber\agsXMPP.dll' KeyPath='yes' />
           </Component>
           <Component Id='Jabber.osapd' Guid="{3655237B-A222-4DA1-84D1-A98C0DB0076F}">
-            <File Id='Jabber.osapd' Name='Jabber.osapd' DiskId='1' Source='..\..\output\Plugins\Jabber\Jabber.osapd' KeyPath='yes' />
+            <File Id='Jabber.osapd' Name='Jabber.osapd' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Jabber\Jabber.osapd' KeyPath='yes' />
           </Component>
           <Component Id='OSAE.Jabber.dll' Guid="{B1C3CACC-C60E-477A-AA49-870B110710F3}">
-            <File Id='OSAE.Jabber.dll' Name=' OSAE.Jabber.dll' DiskId='1' Source='..\..\output\Plugins\Jabber\OSAE.Jabber.dll' KeyPath='yes' />
+            <File Id='OSAE.Jabber.dll' Name=' OSAE.Jabber.dll' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Jabber\OSAE.Jabber.dll' KeyPath='yes' />
           </Component>
           <Component Id='JabberScreenshot.jpg' Guid="{D93E641D-2BCE-48A0-A204-1A4E31C17E22}">
-            <File Id='JabberScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='..\..\output\Plugins\Jabber\Screenshot.jpg' KeyPath='yes' />
+            <File Id='JabberScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Jabber\Screenshot.jpg' KeyPath='yes' />
           </Component>
         </Directory>
         <Directory Id="NetworkMonitor" Name="Network Monitor">
           <Component Id='NetworkMonitor.osapd' Guid="{776503C1-9D02-450B-96E2-7504367646BB}">
-            <File Id='NetworkMonitor.osapd' Name='Network Monitor.osapd' DiskId='1' Source='..\..\output\Plugins\Network Monitor\Network Monitor.osapd' KeyPath='yes' />
+            <File Id='NetworkMonitor.osapd' Name='Network Monitor.osapd' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Network Monitor\Network Monitor.osapd' KeyPath='yes' />
           </Component>
           <Component Id='OSAE.NetworkMonitor.dll' Guid="{68B76358-4379-4DAD-876F-F3092B04F33A}">
-            <File Id='OSAE.NetworkMonitor.dll' Name='OSAE.NetworkMonitor.dll' DiskId='1' Source='..\..\output\Plugins\Network Monitor\OSAE.NetworkMonitor.dll' KeyPath='yes' />
+            <File Id='OSAE.NetworkMonitor.dll' Name='OSAE.NetworkMonitor.dll' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Network Monitor\OSAE.NetworkMonitor.dll' KeyPath='yes' />
           </Component>
           <Component Id='NetworkMonitorScreenshot.jpg' Guid="{D8C339E0-7EFD-454A-97B9-E1E98B7EE537}">
-            <File Id='NetworkMonitorScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='..\..\output\Plugins\Network Monitor\Screenshot.jpg' KeyPath='yes' />
+            <File Id='NetworkMonitorScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Network Monitor\Screenshot.jpg' KeyPath='yes' />
           </Component>
         </Directory>
         <Directory Id="Rest" Name="Rest">
           <Component Id='OSAE.Rest.dll' Guid="{EE40AFE5-0E06-49E1-B3B5-D15DB5F51A77}">
-            <File Id='OSAE.Rest.dll' Name='OSAE.Rest.dll' DiskId='1' Source='..\..\output\Plugins\Rest\OSAE.Rest.dll' KeyPath='yes' />
+            <File Id='OSAE.Rest.dll' Name='OSAE.Rest.dll' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Rest\OSAE.Rest.dll' KeyPath='yes' />
           </Component>
           <Component Id='Rest.osapd' Guid="{BA8807EF-B376-4FB7-848B-BC3011E22728}">
-            <File Id='Rest.osapd' Name='Rest.osapd' DiskId='1' Source='..\..\output\Plugins\Rest\Rest.osapd' KeyPath='yes' />
+            <File Id='Rest.osapd' Name='Rest.osapd' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Rest\Rest.osapd' KeyPath='yes' />
           </Component>
           <Component Id='RestScreenshot.jpg' Guid="{7E87C78F-0AB5-4C55-B5AD-DB57A6CBDA40}">
-            <File Id='RestScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='..\..\output\Plugins\Rest\Screenshot.jpg' KeyPath='yes' />
+            <File Id='RestScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Rest\Screenshot.jpg' KeyPath='yes' />
           </Component>
         </Directory>
         <Directory Id="ScriptProcessor" Name="Script Processor">
           <Component Id='OSAE.ScriptProcessor.dll' Guid="{557B6BF9-1F2A-408B-9E6B-6390F984023C}">
-            <File Id='OSAE.ScriptProcessor.dll' Name='OSAE.ScriptProcessor.dll' DiskId='1' Source='..\..\output\Plugins\Script Processor\OSAE.ScriptProcessor.dll' KeyPath='yes' />
+            <File Id='OSAE.ScriptProcessor.dll' Name='OSAE.ScriptProcessor.dll' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Script Processor\OSAE.ScriptProcessor.dll' KeyPath='yes' />
           </Component>
           <Component Id='ScriptProcessorScreenshot.jpg' Guid="{66A3D149-4F88-4A91-919C-1BC1D626BDFC}">
-            <File Id='ScriptProcessorScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='..\..\output\Plugins\Script Processor\Screenshot.jpg' KeyPath='yes' />
+            <File Id='ScriptProcessorScreenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Script Processor\Screenshot.jpg' KeyPath='yes' />
           </Component>
           <Component Id='ScriptProcessor.osapd' Guid="{9C1734B9-FCA6-40CF-B6FA-CD9BA1F989D5}">
-            <File Id='ScriptProcessor.osapd' Name='Script Processor.osapd' DiskId='1' Source='..\..\output\Plugins\Script Processor\Script Processor.osapd' KeyPath='yes' />
+            <File Id='ScriptProcessor.osapd' Name='Script Processor.osapd' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Script Processor\Script Processor.osapd' KeyPath='yes' />
           </Component>
         </Directory>
         <Directory Id="Speech" Name="Speech">
           <Component Id='OSAE.Speech.dll' Guid="{5DAF2857-5933-4EFA-A43F-4B64066357F1}">
-            <File Id='OSAE.Speech.dll' Name='OSAE.Speech.dll' DiskId='1' Source='..\..\output\Plugins\Speech\OSAE.Speech.dll' KeyPath='yes' />
+            <File Id='OSAE.Speech.dll' Name='OSAE.Speech.dll' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Speech\OSAE.Speech.dll' KeyPath='yes' />
           </Component>
           <Component Id='SpeechScreenshot.jpg' Guid="{BD2E3D93-AB63-4E11-AAC8-3EDF9FF79994}">
-            <File Id='Screenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='..\..\output\Plugins\Speech\Screenshot.jpg' KeyPath='yes' />
+            <File Id='Screenshot.jpg' Name='Screenshot.jpg' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Speech\Screenshot.jpg' KeyPath='yes' />
           </Component>
           <Component Id='Speech.osapd' Guid="{A7463DB1-B485-4B26-BC18-A5C0550331D9}">
-            <File Id='Speech.osapd' Name='Speech.osapd' DiskId='1' Source='..\..\output\Plugins\Speech\Speech.osapd' KeyPath='yes' />
+            <File Id='Speech.osapd' Name='Speech.osapd' DiskId='1' Source='$(var.SolutionDir)output\Plugins\Speech\Speech.osapd' KeyPath='yes' />
           </Component>
         </Directory>        
         <Directory Id="WebServer" Name="Web Server">       

@@ -5,7 +5,7 @@
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high"  />
-    <Binary Id="CustomActionsBinary" SourceFile="$(var.SolutionDir)RegKeys\bin\x86\Combined\OSAInstallCustomActions.CA.dll" />
+    <Binary Id="CustomActionsBinary" SourceFile="$(var.SolutionDir)CustomActions\bin\x86\Combined\OSAInstallCustomActions.CA.dll" />
     
 		<Feature Id="ProductFeature" Title="Screens_Installer" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
@@ -45,7 +45,7 @@
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER"   >
       <Component Id="OSAE.GUI.exe" Guid="A7B96657-0DA3-454E-9ED2-58A4F121DD85" >
-        <File Id='OSAE.GUI.exe' Name='OSAE.GUI.exe' DiskId='1' Source='..\..\output\OSAE.GUI.exe' KeyPath='yes'  >
+        <File Id='OSAE.GUI.exe' Name='OSAE.GUI.exe' DiskId='1' Source='$(var.SolutionDir)output\OSAE.GUI.exe' KeyPath='yes'  >
           <Shortcut Id="startmenuManual" Directory="ProgramMenuDir" Name="Screens" Advertise="yes" >
             <Icon Id="OSAE.GUI.exe" SourceFile="$(var.SolutionDir)Resources\icon.ico" />
           </Shortcut>
@@ -54,21 +54,21 @@
         </File>
       </Component>
       <Component Id="OSA.png" Guid="A7B96657-0DA3-454E-9ED2-58A4F121DD83">
-        <File Id='OSA.png' Name='OSA.png' DiskId='1' Source='..\..\Resources\Images\OSA.png' KeyPath='no' />
+        <File Id='OSA.png' Name='OSA.png' DiskId='1' Source='$(var.SolutionDir)output\OSA.png' KeyPath='no' />
       </Component>
       <Component Id="apiDll" Guid="0F6BDFFE-5FA3-452B-8640-3661857F567F" >
-        <File Id='OSAE.API.dll' Name='OSAE.API.dll' DiskId='1' Source='..\..\output\OSAE.API.dll' KeyPath='yes' />
+        <File Id='OSAE.API.dll' Name='OSAE.API.dll' DiskId='1' Source='$(var.SolutionDir)output\OSAE.API.dll' KeyPath='yes' />
       </Component>
       <Component Id="uiDll" Guid="9DD2C57B-DC42-418A-B29E-F161A69D9C56" >
-        <File Id='OSAE.UI.Controls.dll' Name='OSAE.UI.Controls.dll' DiskId='1' Source='..\..\output\OSAE.UI.Controls.dll' KeyPath='yes' />
+        <File Id='OSAE.UI.Controls.dll' Name='OSAE.UI.Controls.dll' DiskId='1' Source='$(var.SolutionDir)output\OSAE.UI.Controls.dll' KeyPath='yes' />
       </Component>
       <!--Mpeg Processor-->
       <Component Id="MjpegProcessor.dll">
-        <File Id='MjpegProcessor.dll' Name='MjpegProcessor.dll' DiskId='1' Source='..\..\Assemblies\MjpegProcessor.dll' KeyPath='yes' />
+        <File Id='MjpegProcessor.dll' Name='MjpegProcessor.dll' DiskId='1' Source='$(var.SolutionDir)output\MjpegProcessor.dll' KeyPath='yes' />
       </Component>
       <!--MySQL.data.dll-->
       <Component Id="MySQL.data.dll">
-        <File Id='MySQL.data.dll' Name='MySQL.data.dll' DiskId='1' Source='..\..\Assemblies\MySQL.data.dll' KeyPath='yes' />
+        <File Id='MySQL.data.dll' Name='MySQL.data.dll' DiskId='1' Source='$(var.SolutionDir)output\MySQL.data.dll' KeyPath='yes' />
       </Component>
       <Component Id="OSARegKeys" >
         <RegistryKey Root="HKLM"

@@ -5,7 +5,9 @@
 <?endif ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Bundle Name="Open Source Automation - Server" Version="0.4.3" Manufacturer="Open Source Automation" 
+	<Bundle Name="Open Source Automation - Server" 
+          Version="$(var.Version)" 
+          Manufacturer="Open Source Automation" 
           UpgradeCode="7c272b37-1d4c-4027-872a-59469f9265dd"
           IconSourceFile="$(var.SolutionDir)Resources\icon.ico"
           HelpUrl="http://www.opensourceautomation.com/"
@@ -14,15 +16,13 @@
 
     <WixVariable Id="WixStdbaLicenseRtf" Value="$(var.SolutionDir)Resources\License.rtf" />
     <WixVariable Id="WixStdbaLogo" Value="$(var.SolutionDir)Resources\logoSmall.bmp" />
-    <!--<RegistryValue Root="HKLM" Key="Software\company\InstallLocation" Value="[INSTALLLOCATION]" Type="string" Action="write" />-->
     <Variable Name="InstallFolder" Type="string" Value="[ProgramFiles6432Folder]OSA" >
-      <!--<RegistrySearch Id='MyRegistry' Type='raw' Root='HKCU' Key='Software\MyApp\Foo' Name='InstallDir' />-->
     </Variable>
 
     <Chain>
       <PackageGroupRef Id='Netfx4Full'/>
       <RollbackBoundary Id="Net4FullInstalled" />
-      <MsiPackage SourceFile="$(var.SolutionDir)Screens Installer\bin\x86\Combined\Screens Installer.msi"
+      <MsiPackage SourceFile="$(var.SolutionDir)InstallComponents\Screens Installer\bin\x86\Combined\Screens Installer.msi"
                   Id="ScreensPackageId"
                   Cache="yes"
                   Vital="yes"
@@ -31,7 +31,7 @@
         <MsiProperty Name="INSTALLFOLDER" Value="[InstallFolder]" />
 
       </MsiPackage>
-      <MsiPackage SourceFile="$(var.SolutionDir)Screens Installer x64\bin\x64\Combined\Screens Installer x64.msi"
+      <MsiPackage SourceFile="$(var.SolutionDir)InstallComponents\Screens Installer x64\bin\x64\Combined\Screens Installer x64.msi"
                   Id="ScreensPackageIdx64"
                   Cache="yes"
                   Vital="yes"
@@ -40,7 +40,7 @@
         <MsiProperty Name="INSTALLFOLDER" Value="[InstallFolder]" />
       </MsiPackage>
 
-      <MsiPackage SourceFile="$(var.SolutionDir)Server Installer\bin\x86\Combined\Server Installer.msi"
+      <MsiPackage SourceFile="$(var.SolutionDir)InstallComponents\Server Installer\bin\x86\Combined\Server Installer.msi"
                   Id="ServerPackageId"
                   Cache="yes"
                   Vital="yes"
@@ -49,7 +49,7 @@
         <MsiProperty Name="INSTALLFOLDER" Value="[InstallFolder]" />
 
       </MsiPackage>
-      <MsiPackage SourceFile="$(var.SolutionDir)Server Installer x64\bin\x64\Combined\Server Installer x64.msi"
+      <MsiPackage SourceFile="$(var.SolutionDir)InstallComponents\Server Installer x64\bin\x64\Combined\Server Installer x64.msi"
                   Id="ServerPackageIdx64"
                   Cache="yes"
                   Vital="yes"
@@ -64,7 +64,7 @@
                  Permanent="yes"
                  Vital="yes"
                  InstallCommand="/q"
-                 SourceFile="..\Dependencies\UltiDev Web Server Setup.exe" />      
+                 SourceFile="$(var.SolutionDir)Dependencies\UltiDev Web Server Setup.exe" />      
     </Chain>
 	</Bundle>
 </Wix>
