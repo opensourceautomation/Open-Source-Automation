@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?ifndef Version?>
+<?define Version = "0.4.3" ?>
+<?endif ?>
+
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="{07939A2A-61BA-4249-B953-0E9803C7E688}" Name="Server_Installer" Language="1033" Version="1.0.0.0" Manufacturer="Open Source Automation" UpgradeCode="337e7999-a302-4c1e-b448-b3b9ca94c998">
+	<Product Id="{07939A2A-61BA-4249-B953-0E9803C7E688}"
+           Name="Open Source Automation - Server"
+           Language="1033" Version="$(var.Version)"
+           Manufacturer="Open Source Automation"
+           UpgradeCode="1c604626-1e6c-4bf9-83a3-1010f65a7c83">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high"  />
     <Binary Id="CustomActionsBinary" SourceFile="$(var.SolutionDir)CustomActions\bin\x86\Combined\OSAInstallCustomActions.CA.dll" />
-    
-    <!-- Required by the Installer for DB installation and upgrades -->
-    <Binary Id="MySQLBinary" SourceFile="$(var.SolutionDir)output\MySql.Data.dll" />
 
     <Feature Id="ProductFeature" Title="OSA Server" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
@@ -18,25 +24,24 @@
     </Feature>
 
     <CustomAction Id="DBUpdateCustomAction"
-          BinaryKey="CustomActionsBinary"
-          DllEntry="DatabaseUpdate"
-          Execute="deferred"
-          Return="check" />
+           BinaryKey="CustomActionsBinary"
+           DllEntry="DatabaseUpdate"
+           Execute="deferred"
+           Return="check" />
 
     <InstallExecuteSequence>
       <Custom Action="DBUpdateCustomAction" Before="InstallFinalize">
-        NOT Installed
+        <!--NOT Installed-->
       </Custom>
     </InstallExecuteSequence>
-    
   </Product>
-  
+
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="INSTALLFOLDER" Name="INSTALLLOCATION" >
         <Merge Id='ServerMergeModule' Language='1033' src='$(var.SolutionDir)MergeModules\Server\bin\Release\server.msm' DiskId='1' />
         <Directory Id="PluginsFolder" Name="Plugins" >
-          <Merge Id='Plugins' Language='1033' src='$(var.SolutionDir)MergeModules\Plugins\bin\Release\Plugins.msm' DiskId='1' />        
+          <Merge Id='Plugins' Language='1033' src='$(var.SolutionDir)MergeModules\Plugins\bin\Release\Plugins.msm' DiskId='1' />
         </Directory>
       </Directory>
     </Directory>

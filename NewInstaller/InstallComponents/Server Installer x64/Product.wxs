@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?ifndef Version?>
+<?define Version = "0.4.3" ?>
+<?endif ?>
+
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="{07939A2A-61BA-4249-B953-0E9803C7E688}" Name="Open Source Automation - Server x64" Language="1033" Version="0.4.3" Manufacturer="Open Source Automation" UpgradeCode="1c604626-1e6c-4bf9-83a3-1010f65a7c83">
+  <Product Id="{07939A2A-61BA-4249-B953-0E9803C7E688}" 
+           Name="Open Source Automation - Server x64" 
+           Language="1033" Version="$(var.Version)" 
+           Manufacturer="Open Source Automation" 
+           UpgradeCode="1c604626-1e6c-4bf9-83a3-1010f65a7c83">
     <Package InstallerVersion="200" Compressed="yes" Platform="x64" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />

@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?ifndef Version?>
+<?define Version = "0.4.3" ?>
+<?endif ?>
+
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="9A00B4D7-E5D4-42BA-A0E3-0E33607C3847" Name="Screens Installer" Language="1033"   Version="0.4.3"  Manufacturer="Open Source Automation" UpgradeCode="28e14f5d-5c07-4f3e-9973-163143009269">
+  <Product Id="9A00B4D7-E5D4-42BA-A0E3-0E33607C3847" 
+           Name="Screens Installer" 
+           Language="1033"
+           Version="$(var.Version)"
+           Manufacturer="Open Source Automation" 
+           UpgradeCode="28e14f5d-5c07-4f3e-9973-163143009269">
     <Package InstallerVersion="200" Compressed="yes" Platform="x64" InstallScope="perMachine"  />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
