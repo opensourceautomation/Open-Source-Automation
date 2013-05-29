@@ -71,6 +71,19 @@ namespace OSAE.Android
 
                         break;
 
+                    case "EXECUTEALL":
+                        log("EXECUTEALL event triggered", false);
+
+                        log("EXECUTEALL devices to loop:" + mdevices.Count, false);
+
+                        foreach (AndroidDevice d in mdevices)
+                        {
+                            log("EXECUTEALL loop for device:" + d.Name, false);
+                            d.ProcessCommand("EXECUTE", parameter_1, parameter_2);
+                        }
+
+                        break;
+
                 }
             }
             else
