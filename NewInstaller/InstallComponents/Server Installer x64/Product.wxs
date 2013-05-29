@@ -5,7 +5,7 @@
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high"  />
-    <Binary Id="CustomActionsBinary" SourceFile="$(var.SolutionDir)RegKeys\bin\x86\Combined\OSAInstallCustomActions.CA.dll" />
+    <Binary Id="CustomActionsBinary" SourceFile="$(var.SolutionDir)CustomActions\bin\x86\Combined\OSAInstallCustomActions.CA.dll" />
     
     <Feature Id="ProductFeature" Title="OSA Server" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
@@ -30,9 +30,9 @@
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="INSTALLFOLDER" Name="INSTALLLOCATION" >
-        <Merge Id='ServerMergeModule' Language='1033' src='$(var.SolutionDir)Server\bin\Release\server.msm' DiskId='1' />
+        <Merge Id='ServerMergeModule' Language='1033' src='$(var.SolutionDir)MergeModules\Server\bin\Release\server.msm' DiskId='1' />
         <Directory Id="PluginsFolder" Name="Plugins" >
-          <Merge Id='Plugins' Language='1033' src='$(var.SolutionDir)\Plugins\bin\Release\Plugins.msm' DiskId='1' />         
+          <Merge Id='Plugins' Language='1033' src='$(var.SolutionDir)MergeModules\Plugins\bin\Release\Plugins.msm' DiskId='1' />         
         </Directory>
       </Directory>
     </Directory>
