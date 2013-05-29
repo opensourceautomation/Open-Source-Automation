@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="9A00B4D7-E5D4-42BA-A0E3-0E33607C3847" Name="Screens Installer" Language="1033"   Version="0.4.3"  Manufacturer="Open Source Automation" UpgradeCode="28e14f5d-5c07-4f3e-9973-163143009269">
+    <Package InstallerVersion="200" Compressed="yes" Platform="x64" InstallScope="perMachine"  />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high"  />
+    <Binary Id="CustomActionsBinary" SourceFile="$(var.SolutionDir)RegKeys\bin\x86\Combined\OSAInstallCustomActions.CA.dll" />
+   
+    <Feature Id="ProductFeature" Title="Screens_Installer" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ProgramMenuDir" />      
+    </Feature>
+
+    <CustomAction Id="RegKeysCustomAction"
+					  BinaryKey="CustomActionsBinary"
+					  DllEntry="CheckServerIp"
+					  Execute="deferred"
+					  Return="check" />
+
+    <InstallExecuteSequence>
+      <Custom Action="RegKeysCustomAction" Before="InstallFinalize">
+        NOT Installed
+      </Custom>
+    </InstallExecuteSequence>
+    
+  </Product>
+
+  <Fragment >
+    <Directory Id="TARGETDIR" Name="SourceDir" >
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="OSA">
+          <Component Id="ProgramMenuDir" Guid="{5E965BEC-2EF3-4B2A-96EB-7C38FDB5E984}">
+            <RemoveFolder Id="ProgramMenuDir" On="uninstall" />
+            <RegistryValue Root="HKMU" Key="Software\OSA\Screens" Type="string" Value="" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="INSTALLLOCATION" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER"   >
+      <Component Id="OSAE.GUI.exe" Guid="A7B96657-0DA3-454E-9ED2-58A4F121DD85" >
+        <File Id='OSAE.GUI.exe' Name='OSAE.GUI.exe' DiskId='1' Source='..\..\output\OSAE.GUI.exe' KeyPath='yes'  >
+          <Shortcut Id="startmenuManual" Directory="ProgramMenuDir" Name="Screens" Advertise="yes" >
+            <Icon Id="OSAE.GUI.exe" SourceFile="$(var.SolutionDir)Resources\icon.ico" />
+          </Shortcut>
+          <Shortcut Id="desktopIcon" Directory="DesktopFolder" Name="Screens" WorkingDirectory="INSTALLFOLDER" Icon="OSAE.GUI.exe" Advertise="yes" >            
+          </Shortcut>
+        </File>
+      </Component>
+      <Component Id="OSA.png" Guid="A7B96657-0DA3-454E-9ED2-58A4F121DD83">
+        <File Id='OSA.png' Name='OSA.png' DiskId='1' Source='..\..\Resources\Images\OSA.png' KeyPath='no' />
+      </Component>
+      <Component Id="apiDll" Guid="0F6BDFFE-5FA3-452B-8640-3661857F567F" >
+        <File Id='OSAE.API.dll' Name='OSAE.API.dll' DiskId='1' Source='..\..\output\OSAE.API.dll' KeyPath='yes' />
+      </Component>
+      <Component Id="uiDll" Guid="9DD2C57B-DC42-418A-B29E-F161A69D9C56" >
+        <File Id='OSAE.UI.Controls.dll' Name='OSAE.UI.Controls.dll' DiskId='1' Source='..\..\output\OSAE.UI.Controls.dll' KeyPath='yes' />
+      </Component>
+      <!--Mpeg Processor-->
+      <Component Id="MjpegProcessor.dll">
+        <File Id='MjpegProcessor.dll' Name='MjpegProcessor.dll' DiskId='1' Source='..\..\Assemblies\MjpegProcessor.dll' KeyPath='yes' />
+      </Component>
+      <!--MySQL.data.dll-->
+      <Component Id="MySQL.data.dll">
+        <File Id='MySQL.data.dll' Name='MySQL.data.dll' DiskId='1' Source='..\..\Assemblies\MySQL.data.dll' KeyPath='yes' />
+      </Component>    
+      <Component Id="OSARegKeys" >
+        <RegistryKey Root="HKLM"
+                     Key="Software\OSAE\DBSETTINGS"
+              Action="createAndRemoveOnUninstall" >
+          <RegistryValue Type="string" Value="Default Value"/>
+          <RegistryValue Type="string" Name="DBCONNECTION" Value="default" KeyPath="yes"/>
+          <RegistryValue Type="string" Name="DBNAME"  Value="osae"/>
+          <RegistryValue Type="string" Name="DBPASSWORD"  Value="osaePass"/>
+          <RegistryValue Type="string" Name="DBPORT" Value="3306"/>
+          <RegistryValue Type="string" Name="DBUSERNAME" Value="osae"/>
+          <RegistryValue Type="string" Name="INSTALLDIR" Value="[INSTALLFOLDER]"/>
+        </RegistryKey>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
