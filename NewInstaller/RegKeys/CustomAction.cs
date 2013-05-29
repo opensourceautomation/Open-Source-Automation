@@ -41,29 +41,17 @@ namespace RegKeys
         {
             session.Log("Begin RegKeys CustomAction");
 
-            ModifyRegistry registry = new ModifyRegistry();
-            registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
+            ServerDetails details = new ServerDetails(session);
 
-            string db = registry.Read("DBCONNECTION");
-
-            if (string.IsNullOrEmpty(db) || db == "default")
+            if (details.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                ServerDetails details = new ServerDetails(session);
-
-                if (details.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    registry.Write("DBCONNECTION", details.ServerIP());
-                    return ActionResult.Success;
-                }
-                else
-                {
-                    session.Log("RegKeys CustomAction - User exited");
-                    return ActionResult.UserExit;
-                }
+                
+                return ActionResult.Success;
             }
             else
             {
-                return ActionResult.Success;
+                session.Log("RegKeys CustomAction - User exited");
+                return ActionResult.UserExit;
             }
         }
     }

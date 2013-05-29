@@ -41,6 +41,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\Assemblies\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -53,8 +56,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomAction.cs" />
+    <Compile Include="DatabaseInstall.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DatabaseInstall.Designer.cs">
+      <DependentUpon>DatabaseInstall.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModifyRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ServerDetails.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,8 +76,16 @@
       <DependentUpon>ServerDetails.cs</DependentUpon>
     </Compile>
     <Content Include="CustomAction.config" />
+    <None Include="Resources\logomysql.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DatabaseInstall.resx">
+      <DependentUpon>DatabaseInstall.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="ServerDetails.resx">
       <DependentUpon>ServerDetails.cs</DependentUpon>
     </EmbeddedResource>
