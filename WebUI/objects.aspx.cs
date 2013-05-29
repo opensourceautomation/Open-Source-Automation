@@ -142,7 +142,7 @@ public partial class home : System.Web.UI.Page
             DataRowView drv = (DataRowView)e.Row.DataItem;
             if (drv["property_datatype"] != DBNull.Value)
             {
-                if ((string)drv["property_datatype"] == "Password")
+                if (((string)drv["property_datatype"]).ToUpper() == "PASSWORD")
                 {
                     e.Row.Cells[1].Text = "*****";
                 }

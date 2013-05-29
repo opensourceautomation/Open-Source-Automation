@@ -61,6 +61,7 @@ public partial class plugins : System.Web.UI.Page, WCF.IMessageCallback
                 desc.Deserialize(path);
                 desc.Status = "Stopped";
                 desc.Enabled = false;
+                
 
                 OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                 foreach (OSAEObject o in objs)
@@ -164,8 +165,7 @@ public partial class plugins : System.Web.UI.Page, WCF.IMessageCallback
     {
         try
         {
-            
-                    wcfObj.messageHost(msgType, message, Common.ComputerName);
+             wcfObj.messageHost(msgType, message, Common.ComputerName);
            
         }
         catch (Exception ex)
