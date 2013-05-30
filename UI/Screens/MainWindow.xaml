@@ -1,0 +1,33 @@
+﻿<Window x:Class="GUI2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Open Source Automation - Main Window" Height="195" Width="576" Loaded="Window_Loaded" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Closing="Window_Closing_1" Icon="icon.png" WindowStyle="ToolWindow">
+    <Grid>
+        <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FFFFFFFE" Focusable="True" MouseRightButtonDown="canvas1_RightButtonDown">
+            <Canvas.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Name="menuEditMode" Header="Edit Mode" IsCheckable="True" Checked="menuEditMode_Checked" Unchecked="menuEditMode_Unchecked"/>
+                    <MenuItem Name="menuChangeScreen" Header="Change Screen" Click="menuChangeScreen_Click"/>
+                    <MenuItem Name="menuCreateScreen" Header="Create Screen" Click="menuCreateScreen_Click" />
+                    <MenuItem Header="Add Control">
+                        <MenuItem Name="menuAddStateImage" Header="State Image" Click="menuAddStateImage_Click" />
+                        <MenuItem Name="menuAddPropertyLabel" Header="Property Label" Click="menuAddPropertyLabel_Click" />
+                        <MenuItem Name="menuAddMethodImage" Header="Method Image" Click="menuAddMethodImage_Click" />
+                        <MenuItem Name="menuAddNavImage" Header="Navigation Image" Click="menuAddNavImage_Click" />
+                        <MenuItem Name="menuAddTimerLabel" Header="Timer Label" Click="menuAddTimerLabel_Click" />
+                        <MenuItem Name="menuAddCameraViewer" Header="Camera Viewer" Click="menuAddCameraViewer_Click" />
+                        <MenuItem Name="menuAddUserControl" Header="User Control" Click="menuAddUserControl_Click" />
+                    </MenuItem>
+                    <MenuItem Header="Window">
+                        <MenuItem Name="menuFrameShow" Header="Show Frame" IsCheckable="True" IsChecked="True" Checked="menuFrameShow_Click" Unchecked="menuFrameHide_Click" />
+                        <MenuItem Header="Position">
+                            <MenuItem Name="menuFrameTopLeft" Header="Top Left" Click="menuFrameTopLeft_Click"   />
+                            <MenuItem Name="menuFrameBottomRight" Header="Bottom Right" Click="menuFrameBottomRight_Click"  />
+                            <MenuItem Name="menuFrameCenter" Header="Center" Click="menuFrameCentre_Click"  />
+                        </MenuItem>        
+                    </MenuItem>
+                </ContextMenu>
+            </Canvas.ContextMenu>
+        </Canvas>
+    </Grid>
+</Window>

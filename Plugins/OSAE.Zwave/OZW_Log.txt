@@ -1,0 +1,483 @@
+
+Logging started 2013-05-23 14:00:04.550 
+
+2013-05-23 14:00:04.553 mgr,     Added driver for controller \\.\COM3
+2013-05-23 14:00:04.553   Opening controller \\.\COM3
+2013-05-23 14:00:04.553     Trying to open serial port \\.\COM3 (Attempt 1)
+2013-05-23 14:00:04.636     Serial port \\.\COM3 opened (attempt 1)
+2013-05-23 14:00:04.636 contrlr, Queuing (Command) FUNC_ID_ZW_GET_VERSION: 0x01, 0x03, 0x00, 0x15, 0xe9
+2013-05-23 14:00:04.637 contrlr, Queuing (Command) FUNC_ID_ZW_MEMORY_GET_ID: 0x01, 0x03, 0x00, 0x20, 0xdc
+2013-05-23 14:00:04.637 contrlr, Queuing (Command) FUNC_ID_ZW_GET_CONTROLLER_CAPABILITIES: 0x01, 0x03, 0x00, 0x05, 0xf9
+2013-05-23 14:00:04.637 contrlr, Queuing (Command) FUNC_ID_SERIAL_API_GET_CAPABILITIES: 0x01, 0x03, 0x00, 0x07, 0xfb
+2013-05-23 14:00:04.638 contrlr, Queuing (Command) FUNC_ID_ZW_GET_SUC_NODE_ID: 0x01, 0x03, 0x00, 0x56, 0xaa
+2013-05-23 14:00:04.638 
+2013-05-23 14:00:04.638 contrlr, Sending (Command) message (Callback ID=0x00, Expected Reply=0x15) - FUNC_ID_ZW_GET_VERSION: 0x01, 0x03, 0x00, 0x15, 0xe9
+2013-05-23 14:00:04.641 contrlr,   Received: 0x01, 0x10, 0x01, 0x15, 0x5a, 0x2d, 0x57, 0x61, 0x76, 0x65, 0x20, 0x32, 0x2e, 0x37, 0x38, 0x00, 0x01, 0x9b
+2013-05-23 14:00:04.643 
+2013-05-23 14:00:04.643 contrlr, Received reply to FUNC_ID_ZW_GET_VERSION:
+2013-05-23 14:00:04.643 contrlr,     Static Controller library, version Z-Wave 2.78
+2013-05-23 14:00:04.643 contrlr,   Expected reply was received
+2013-05-23 14:00:04.643 contrlr,   Message transaction complete
+2013-05-23 14:00:04.643 
+2013-05-23 14:00:04.644 contrlr, Removing current message
+2013-05-23 14:00:04.644 
+2013-05-23 14:00:04.644 contrlr, Sending (Command) message (Callback ID=0x00, Expected Reply=0x20) - FUNC_ID_ZW_MEMORY_GET_ID: 0x01, 0x03, 0x00, 0x20, 0xdc
+2013-05-23 14:00:04.646 contrlr,   Received: 0x01, 0x08, 0x01, 0x20, 0x10, 0x01, 0x63, 0x02, 0x01, 0xa7
+2013-05-23 14:00:04.649 
+2013-05-23 14:00:04.649 contrlr, Received reply to FUNC_ID_ZW_MEMORY_GET_ID. Home ID = 0x10016302.  Our node ID = 1
+2013-05-23 14:00:04.650 contrlr,   Expected reply was received
+2013-05-23 14:00:04.650 contrlr,   Message transaction complete
+2013-05-23 14:00:04.650 
+2013-05-23 14:00:04.650 contrlr, Removing current message
+2013-05-23 14:00:04.650 
+2013-05-23 14:00:04.650 contrlr, Sending (Command) message (Callback ID=0x00, Expected Reply=0x05) - FUNC_ID_ZW_GET_CONTROLLER_CAPABILITIES: 0x01, 0x03, 0x00, 0x05, 0xf9
+2013-05-23 14:00:04.652 contrlr,   Received: 0x01, 0x04, 0x01, 0x05, 0x08, 0xf7
+2013-05-23 14:00:04.654 
+2013-05-23 14:00:04.654 contrlr, Received reply to FUNC_ID_ZW_GET_CONTROLLER_CAPABILITIES:
+2013-05-23 14:00:04.654 contrlr,     There is no SUC ID Server (SIS) in this network.
+2013-05-23 14:00:04.654 contrlr,     The PC controller is a primary controller.
+2013-05-23 14:00:04.655 contrlr,   Expected reply was received
+2013-05-23 14:00:04.655 contrlr,   Message transaction complete
+2013-05-23 14:00:04.655 
+2013-05-23 14:00:04.655 contrlr, Removing current message
+2013-05-23 14:00:04.655 
+2013-05-23 14:00:04.655 contrlr, Sending (Command) message (Callback ID=0x00, Expected Reply=0x07) - FUNC_ID_SERIAL_API_GET_CAPABILITIES: 0x01, 0x03, 0x00, 0x07, 0xfb
+2013-05-23 14:00:04.661 contrlr,   Received: 0x01, 0x2b, 0x01, 0x07, 0x03, 0x07, 0x00, 0x86, 0x00, 0x02, 0x00, 0x01, 0xfe, 0x80, 0xfe, 0x88, 0x0f, 0x00, 0x00, 0x00, 0xfb, 0x97, 0x7f, 0x82, 0x07, 0x00, 0x00, 0x80, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc2
+2013-05-23 14:00:04.661 
+2013-05-23 14:00:04.662 contrlr,  Received reply to FUNC_ID_SERIAL_API_GET_CAPABILITIES
+2013-05-23 14:00:04.662 contrlr,     Serial API Version:   3.7
+2013-05-23 14:00:04.662 contrlr,     Manufacturer ID:      0x0086
+2013-05-23 14:00:04.662 contrlr,     Product Type:         0x0002
+2013-05-23 14:00:04.662 contrlr,     Product ID:           0x0001
+2013-05-23 14:00:04.663 contrlr, Queuing (Command) FUNC_ID_ZW_GET_RANDOM: 0x01, 0x04, 0x00, 0x1c, 0x20, 0xc7
+2013-05-23 14:00:04.663 contrlr, Queuing (Command) FUNC_ID_SERIAL_API_GET_INIT_DATA: 0x01, 0x03, 0x00, 0x02, 0xfe
+2013-05-23 14:00:04.663 contrlr, Queuing (Command) FUNC_ID_SERIAL_API_SET_TIMEOUTS: 0x01, 0x05, 0x00, 0x06, 0x64, 0x0f, 0x97
+2013-05-23 14:00:04.663 contrlr, Queuing (Command) FUNC_ID_SERIAL_API_APPL_NODE_INFORMATION: 0x01, 0x07, 0x00, 0x03, 0x01, 0x02, 0x01, 0x00, 0xf9
+2013-05-23 14:00:04.664 contrlr,   Expected reply was received
+2013-05-23 14:00:04.664 contrlr,   Message transaction complete
+2013-05-23 14:00:04.664 
+2013-05-23 14:00:04.664 contrlr, Removing current message
+2013-05-23 14:00:04.664 
+2013-05-23 14:00:04.665 contrlr, Sending (Command) message (Callback ID=0x00, Expected Reply=0x56) - FUNC_ID_ZW_GET_SUC_NODE_ID: 0x01, 0x03, 0x00, 0x56, 0xaa
+2013-05-23 14:00:04.667 contrlr,   Received: 0x01, 0x04, 0x01, 0x56, 0x00, 0xac
+2013-05-23 14:00:04.667 
+2013-05-23 14:00:04.667 contrlr, Received reply to GET_SUC_NODE_ID.  Node ID = 0
+2013-05-23 14:00:04.667 contrlr,   Expected reply was received
+2013-05-23 14:00:04.668 contrlr,   Message transaction complete
+2013-05-23 14:00:04.668 
+2013-05-23 14:00:04.668 contrlr, Removing current message
+2013-05-23 14:00:04.668 
+2013-05-23 14:00:04.668 contrlr, Sending (Command) message (Callback ID=0x00, Expected Reply=0x1c) - FUNC_ID_ZW_GET_RANDOM: 0x01, 0x04, 0x00, 0x1c, 0x20, 0xc7
+2013-05-23 14:00:04.722 contrlr,   Received: 0x01, 0x25, 0x01, 0x1c, 0x01, 0x20, 0xdf, 0x50, 0x3f, 0xa9, 0x9c, 0xb7, 0xeb, 0xed, 0x2f, 0x8f, 0xfa, 0x33, 0xe6, 0x93, 0xc4, 0xdc, 0xd1, 0x81, 0xa0, 0x85, 0xc8, 0x74, 0x22, 0x12, 0x40, 0xe8, 0xef, 0x8d, 0xf9, 0x5c, 0x85, 0x28, 0xed
+2013-05-23 14:00:04.723 
+2013-05-23 14:00:04.723 contrlr, Received reply to FUNC_ID_ZW_GET_RANDOM: true
+2013-05-23 14:00:04.723 contrlr,   Expected reply was received
+2013-05-23 14:00:04.723 contrlr,   Message transaction complete
+2013-05-23 14:00:04.723 
+2013-05-23 14:00:04.724 contrlr, Removing current message
+2013-05-23 14:00:04.724 
+2013-05-23 14:00:04.724 contrlr, Sending (Command) message (Callback ID=0x00, Expected Reply=0x02) - FUNC_ID_SERIAL_API_GET_INIT_DATA: 0x01, 0x03, 0x00, 0x02, 0xfe
+2013-05-23 14:00:04.773 contrlr,   Received: 0x01, 0x25, 0x01, 0x02, 0x05, 0x00, 0x1d, 0x17, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x01, 0xd1
+2013-05-23 14:00:04.774 
+2013-05-23 14:00:04.774 mgr,     Driver with Home ID of 0x10016302 is now ready.
+2013-05-23 14:00:04.774 
+2013-05-23 14:00:04.774 contrlr, Received reply to FUNC_ID_SERIAL_API_GET_INIT_DATA:
+2013-05-23 14:00:04.775 contrlr,     Node 001 - New
+2013-05-23 14:00:04.775 Node001, AdvanceQueries queryPending=0 queryRetries=0 queryStage=ProtocolInfo live=1
+2013-05-23 14:00:04.775 Node001, QueryStage_ProtocolInfo
+2013-05-23 14:00:04.775 Node001, Queuing (Query) Get Node Protocol Info (Node=1): 0x01, 0x04, 0x00, 0x41, 0x01, 0xbb
+2013-05-23 14:00:04.775 Node001, Queuing (Query) Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:04.776 contrlr,     Node 002 - New
+2013-05-23 14:00:04.776 Node002, AdvanceQueries queryPending=0 queryRetries=0 queryStage=ProtocolInfo live=1
+2013-05-23 14:00:04.776 Node002, QueryStage_ProtocolInfo
+2013-05-23 14:00:04.776 Node002, Queuing (Query) Get Node Protocol Info (Node=2): 0x01, 0x04, 0x00, 0x41, 0x02, 0xb8
+2013-05-23 14:00:04.776 Node002, Queuing (Query) Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:04.777 contrlr,     Node 003 - New
+2013-05-23 14:00:04.777 Node003, AdvanceQueries queryPending=0 queryRetries=0 queryStage=ProtocolInfo live=1
+2013-05-23 14:00:04.777 Node003, QueryStage_ProtocolInfo
+2013-05-23 14:00:04.777 Node003, Queuing (Query) Get Node Protocol Info (Node=3): 0x01, 0x04, 0x00, 0x41, 0x03, 0xb9
+2013-05-23 14:00:04.777 Node003, Queuing (Query) Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:04.777 contrlr,     Node 005 - New
+2013-05-23 14:00:04.778 Node005, AdvanceQueries queryPending=0 queryRetries=0 queryStage=ProtocolInfo live=1
+2013-05-23 14:00:04.778 Node005, QueryStage_ProtocolInfo
+2013-05-23 14:00:04.778 Node005, Queuing (Query) Get Node Protocol Info (Node=5): 0x01, 0x04, 0x00, 0x41, 0x05, 0xbf
+2013-05-23 14:00:04.778 Node005, Queuing (Query) Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:04.778 contrlr,     Node 009 - New
+2013-05-23 14:00:04.778 Node009, AdvanceQueries queryPending=0 queryRetries=0 queryStage=ProtocolInfo live=1
+2013-05-23 14:00:04.779 Node009, QueryStage_ProtocolInfo
+2013-05-23 14:00:04.779 Node009, Queuing (Query) Get Node Protocol Info (Node=9): 0x01, 0x04, 0x00, 0x41, 0x09, 0xb3
+2013-05-23 14:00:04.779 Node009, Queuing (Query) Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:04.779 contrlr,     Node 011 - New
+2013-05-23 14:00:04.779 Node011, AdvanceQueries queryPending=0 queryRetries=0 queryStage=ProtocolInfo live=1
+2013-05-23 14:00:04.779 Node011, QueryStage_ProtocolInfo
+2013-05-23 14:00:04.780 Node011, Queuing (Query) Get Node Protocol Info (Node=11): 0x01, 0x04, 0x00, 0x41, 0x0b, 0xb1
+2013-05-23 14:00:04.780 Node011, Queuing (Query) Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:04.780 contrlr,   Expected reply was received
+2013-05-23 14:00:04.780 contrlr,   Message transaction complete
+2013-05-23 14:00:04.780 
+2013-05-23 14:00:04.781 contrlr, Removing current message
+2013-05-23 14:00:05.217 
+2013-05-23 14:00:05.218 contrlr, Sending (Command) message (Callback ID=0x00, Expected Reply=0x06) - FUNC_ID_SERIAL_API_SET_TIMEOUTS: 0x01, 0x05, 0x00, 0x06, 0x64, 0x0f, 0x97
+2013-05-23 14:00:05.220 contrlr,   Received: 0x01, 0x05, 0x01, 0x06, 0x64, 0x0f, 0x96
+2013-05-23 14:00:05.220 
+2013-05-23 14:00:05.220 contrlr, Received reply to FUNC_ID_SERIAL_API_SET_TIMEOUTS
+2013-05-23 14:00:05.220 contrlr,   Expected reply was received
+2013-05-23 14:00:05.221 contrlr,   Message transaction complete
+2013-05-23 14:00:05.221 
+2013-05-23 14:00:05.221 contrlr, Removing current message
+2013-05-23 14:00:05.221 
+2013-05-23 14:00:05.221 contrlr, Sending (Command) message (Callback ID=0x00, Expected Reply=0x00) - FUNC_ID_SERIAL_API_APPL_NODE_INFORMATION: 0x01, 0x07, 0x00, 0x03, 0x01, 0x02, 0x01, 0x00, 0xf9
+2013-05-23 14:00:05.222 contrlr, Removing current message
+2013-05-23 14:00:05.222 
+2013-05-23 14:00:05.223 Node001, Sending (Query) message (Callback ID=0x00, Expected Reply=0x41) - Get Node Protocol Info (Node=1): 0x01, 0x04, 0x00, 0x41, 0x01, 0xbb
+2013-05-23 14:00:05.226 Node001,   Received: 0x01, 0x09, 0x01, 0x41, 0x92, 0x16, 0x00, 0x02, 0x02, 0x01, 0x33
+2013-05-23 14:00:05.227 
+2013-05-23 14:00:05.227 Node001, Received reply to FUNC_ID_ZW_GET_NODE_PROTOCOL_INFO
+2013-05-23 14:00:05.227 Node001,   Protocol Info for Node 1:
+2013-05-23 14:00:05.227 Node001,     Listening     = true
+2013-05-23 14:00:05.227 Node001,     Beaming       = true
+2013-05-23 14:00:05.227 Node001,     Routing       = false
+2013-05-23 14:00:05.227 Node001,     Max Baud Rate = 40000
+2013-05-23 14:00:05.227 Node001,     Version       = 3
+2013-05-23 14:00:05.227 Node001,     Security      = false
+2013-05-23 14:00:05.228 Node001,   Basic device class    (0x02) - Static Controller
+2013-05-23 14:00:05.228 Node001,   Generic device Class  (0x02) - Static Controller
+2013-05-23 14:00:05.229 Node001,   Specific device class (0x01) - Static PC Controller
+2013-05-23 14:00:05.229 Node001,     COMMAND_CLASS_BASIC is not mapped
+2013-05-23 14:00:05.229 Node001,   Mandatory Command Classes for Node 1:
+2013-05-23 14:00:05.229 Node001,     None
+2013-05-23 14:00:05.229 Node001,   Mandatory Command Classes controlled by Node 1:
+2013-05-23 14:00:05.229 Node001,     COMMAND_CLASS_BASIC
+2013-05-23 14:00:05.229 Node001,   Expected reply was received
+2013-05-23 14:00:05.229 Node001,   Message transaction complete
+2013-05-23 14:00:05.229 
+2013-05-23 14:00:05.229 Node001, Removing current message
+2013-05-23 14:00:05.288 Node001, Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:05.288 Node001, AdvanceQueries queryPending=0 queryRetries=0 queryStage=Probe live=1
+2013-05-23 14:00:05.288 Node001, QueryStage_Probe
+2013-05-23 14:00:05.289 Node001, QueryStage_WakeUp
+2013-05-23 14:00:05.289 Node001, QueryStage_ManufacturerSpecific1
+2013-05-23 14:00:05.291 Node001, QueryStage_NodeInfo
+2013-05-23 14:00:05.291 Node001, Queuing (Query) Request Node Info (Node=1): 0x01, 0x04, 0x00, 0x60, 0x01, 0x9a
+2013-05-23 14:00:05.291 Node001, Queuing (Query) Query Stage Complete (NodeInfo)
+2013-05-23 14:00:05.291 
+2013-05-23 14:00:05.291 Node002, Sending (Query) message (Callback ID=0x00, Expected Reply=0x41) - Get Node Protocol Info (Node=2): 0x01, 0x04, 0x00, 0x41, 0x02, 0xb8
+2013-05-23 14:00:05.294 Node002,   Received: 0x01, 0x09, 0x01, 0x41, 0xd1, 0x8c, 0x00, 0x04, 0x10, 0x01, 0xfe
+2013-05-23 14:00:05.294 
+2013-05-23 14:00:05.294 Node002, Received reply to FUNC_ID_ZW_GET_NODE_PROTOCOL_INFO
+2013-05-23 14:00:05.294 Node002,   Protocol Info for Node 2:
+2013-05-23 14:00:05.294 Node002,     Listening     = true
+2013-05-23 14:00:05.294 Node002,     Beaming       = false
+2013-05-23 14:00:05.294 Node002,     Routing       = true
+2013-05-23 14:00:05.294 Node002,     Max Baud Rate = 40000
+2013-05-23 14:00:05.295 Node002,     Version       = 2
+2013-05-23 14:00:05.295 Node002,     Security      = false
+2013-05-23 14:00:05.295 Node002,   Basic device class    (0x04) - Routing Slave
+2013-05-23 14:00:05.295 Node002,   Generic device Class  (0x10) - Binary Switch
+2013-05-23 14:00:05.295 Node002,   Specific device class (0x01) - Binary Power Switch
+2013-05-23 14:00:05.295 Node002,     COMMAND_CLASS_BASIC will be mapped to COMMAND_CLASS_SWITCH_BINARY
+2013-05-23 14:00:05.295 Node002,   Mandatory Command Classes for Node 2:
+2013-05-23 14:00:05.295 Node002,     COMMAND_CLASS_BASIC
+2013-05-23 14:00:05.295 Node002,     COMMAND_CLASS_SWITCH_BINARY
+2013-05-23 14:00:05.295 Node002,     COMMAND_CLASS_SWITCH_ALL
+2013-05-23 14:00:05.296 Node002,   Mandatory Command Classes controlled by Node 2:
+2013-05-23 14:00:05.296 Node002,     None
+2013-05-23 14:00:05.296 Node002,   Expected reply was received
+2013-05-23 14:00:05.296 Node002,   Message transaction complete
+2013-05-23 14:00:05.296 
+2013-05-23 14:00:05.296 Node002, Removing current message
+2013-05-23 14:00:05.459 Node002, Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:05.460 Node002, AdvanceQueries queryPending=0 queryRetries=0 queryStage=Probe live=1
+2013-05-23 14:00:05.460 Node002, QueryStage_Probe
+2013-05-23 14:00:05.460 Node002, NoOperation::Set - Routing=true
+2013-05-23 14:00:05.460 Node002, Queuing (NoOp) NoOperation_Set (Node=2): 0x01, 0x09, 0x00, 0x13, 0x02, 0x02, 0x00, 0x00, 0x25, 0x01, 0xc1
+2013-05-23 14:00:05.460 Node002, Queuing (Query) Query Stage Complete (Probe)
+2013-05-23 14:00:05.460 
+2013-05-23 14:00:05.460 Node002, Sending (NoOp) message (Callback ID=0x01, Expected Reply=0x13) - NoOperation_Set (Node=2): 0x01, 0x09, 0x00, 0x13, 0x02, 0x02, 0x00, 0x00, 0x25, 0x01, 0xc1
+2013-05-23 14:00:05.465 Node002,   Received: 0x01, 0x04, 0x01, 0x13, 0x01, 0xe8
+2013-05-23 14:00:05.465 Node002,   ZW_SEND_DATA delivered to Z-Wave stack
+2013-05-23 14:00:05.634 Node002,   Received: 0x01, 0x05, 0x00, 0x13, 0x01, 0x00, 0xe8
+2013-05-23 14:00:05.635 Node002,   ZW_SEND_DATA Request with callback ID 0x01 received (expected 0x01)
+2013-05-23 14:00:05.635 Node002, Request RTT 174 Average Request RTT 174
+2013-05-23 14:00:05.635 Node002,   Expected reply was received
+2013-05-23 14:00:05.635 Node002,   Message transaction complete
+2013-05-23 14:00:05.635 
+2013-05-23 14:00:05.636 Node002, Removing current message
+2013-05-23 14:00:05.655 
+2013-05-23 14:00:05.656 Node003, Sending (Query) message (Callback ID=0x00, Expected Reply=0x41) - Get Node Protocol Info (Node=3): 0x01, 0x04, 0x00, 0x41, 0x03, 0xb9
+2013-05-23 14:00:05.659 Node003,   Received: 0x01, 0x09, 0x01, 0x41, 0xc9, 0x0c, 0x00, 0x04, 0x11, 0x04, 0x62
+2013-05-23 14:00:05.659 
+2013-05-23 14:00:05.659 Node003, Received reply to FUNC_ID_ZW_GET_NODE_PROTOCOL_INFO
+2013-05-23 14:00:05.659 Node003,   Protocol Info for Node 3:
+2013-05-23 14:00:05.660 Node003,     Listening     = true
+2013-05-23 14:00:05.660 Node003,     Beaming       = false
+2013-05-23 14:00:05.660 Node003,     Routing       = true
+2013-05-23 14:00:05.660 Node003,     Max Baud Rate = 9600
+2013-05-23 14:00:05.660 Node003,     Version       = 2
+2013-05-23 14:00:05.661 Node003,     Security      = false
+2013-05-23 14:00:05.661 Node003,   Basic device class    (0x04) - Routing Slave
+2013-05-23 14:00:05.661 Node003,   Generic device Class  (0x11) - Multilevel Switch
+2013-05-23 14:00:05.661 Node003,   Specific device class (0x04) - Multilevel Scene Switch
+2013-05-23 14:00:05.661 Node003,     COMMAND_CLASS_BASIC will be mapped to COMMAND_CLASS_SWITCH_MULTILEVEL
+2013-05-23 14:00:05.662 Node003,   Mandatory Command Classes for Node 3:
+2013-05-23 14:00:05.662 Node003,     COMMAND_CLASS_BASIC
+2013-05-23 14:00:05.662 Node003,     COMMAND_CLASS_SWITCH_MULTILEVEL
+2013-05-23 14:00:05.662 Node003,     COMMAND_CLASS_SWITCH_ALL
+2013-05-23 14:00:05.662 Node003,     COMMAND_CLASS_SCENE_ACTIVATION
+2013-05-23 14:00:05.662 Node003,     COMMAND_CLASS_MANUFACTURER_SPECIFIC
+2013-05-23 14:00:05.663 Node003,   Mandatory Command Classes controlled by Node 3:
+2013-05-23 14:00:05.663 Node003,     None
+2013-05-23 14:00:05.663 Node003,   Expected reply was received
+2013-05-23 14:00:05.663 Node003,   Message transaction complete
+2013-05-23 14:00:05.663 
+2013-05-23 14:00:05.664 Node003, Removing current message
+2013-05-23 14:00:05.982 Node003, Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:05.983 Node003, AdvanceQueries queryPending=0 queryRetries=0 queryStage=Probe live=1
+2013-05-23 14:00:05.983 Node003, QueryStage_Probe
+2013-05-23 14:00:05.983 Node003, NoOperation::Set - Routing=true
+2013-05-23 14:00:05.983 Node003, Queuing (NoOp) NoOperation_Set (Node=3): 0x01, 0x09, 0x00, 0x13, 0x03, 0x02, 0x00, 0x00, 0x25, 0x02, 0xc3
+2013-05-23 14:00:05.983 Node003, Queuing (Query) Query Stage Complete (Probe)
+2013-05-23 14:00:05.983 
+2013-05-23 14:00:05.983 Node003, Sending (NoOp) message (Callback ID=0x02, Expected Reply=0x13) - NoOperation_Set (Node=3): 0x01, 0x09, 0x00, 0x13, 0x03, 0x02, 0x00, 0x00, 0x25, 0x02, 0xc3
+2013-05-23 14:00:05.988 Node003,   Received: 0x01, 0x04, 0x01, 0x13, 0x01, 0xe8
+2013-05-23 14:00:05.989 Node003,   ZW_SEND_DATA delivered to Z-Wave stack
+2013-05-23 14:00:06.159 Node003,   Received: 0x01, 0x05, 0x00, 0x13, 0x02, 0x00, 0xeb
+2013-05-23 14:00:06.160 Node003,   ZW_SEND_DATA Request with callback ID 0x02 received (expected 0x02)
+2013-05-23 14:00:06.160 Node003, Request RTT 176 Average Request RTT 176
+2013-05-23 14:00:06.160 Node003,   Expected reply was received
+2013-05-23 14:00:06.160 Node003,   Message transaction complete
+2013-05-23 14:00:06.160 
+2013-05-23 14:00:06.161 Node003, Removing current message
+2013-05-23 14:00:06.182 
+2013-05-23 14:00:06.182 Node005, Sending (Query) message (Callback ID=0x00, Expected Reply=0x41) - Get Node Protocol Info (Node=5): 0x01, 0x04, 0x00, 0x41, 0x05, 0xbf
+2013-05-23 14:00:06.185 Node005,   Received: 0x01, 0x09, 0x01, 0x41, 0xc9, 0x04, 0x00, 0x03, 0x10, 0x00, 0x68
+2013-05-23 14:00:06.185 
+2013-05-23 14:00:06.186 Node005, Received reply to FUNC_ID_ZW_GET_NODE_PROTOCOL_INFO
+2013-05-23 14:00:06.186 Node005,   Protocol Info for Node 5:
+2013-05-23 14:00:06.186 Node005,     Listening     = true
+2013-05-23 14:00:06.186 Node005,     Beaming       = false
+2013-05-23 14:00:06.186 Node005,     Routing       = true
+2013-05-23 14:00:06.187 Node005,     Max Baud Rate = 9600
+2013-05-23 14:00:06.187 Node005,     Version       = 2
+2013-05-23 14:00:06.187 Node005,     Security      = false
+2013-05-23 14:00:06.187 Node005,   Basic device class    (0x03) - Slave
+2013-05-23 14:00:06.187 Node005,   Generic device Class  (0x10) - Binary Switch
+2013-05-23 14:00:06.187 Node005,   No specific device class defined
+2013-05-23 14:00:06.187 Node005,     COMMAND_CLASS_BASIC will be mapped to COMMAND_CLASS_SWITCH_BINARY
+2013-05-23 14:00:06.187 Node005,   Mandatory Command Classes for Node 5:
+2013-05-23 14:00:06.187 Node005,     COMMAND_CLASS_BASIC
+2013-05-23 14:00:06.187 Node005,     COMMAND_CLASS_SWITCH_BINARY
+2013-05-23 14:00:06.187 Node005,   Mandatory Command Classes controlled by Node 5:
+2013-05-23 14:00:06.188 Node005,     None
+2013-05-23 14:00:06.188 Node005,   Expected reply was received
+2013-05-23 14:00:06.188 Node005,   Message transaction complete
+2013-05-23 14:00:06.188 
+2013-05-23 14:00:06.188 Node005, Removing current message
+2013-05-23 14:00:06.308 Node005, Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:06.308 Node005, AdvanceQueries queryPending=0 queryRetries=0 queryStage=Probe live=1
+2013-05-23 14:00:06.308 Node005, QueryStage_Probe
+2013-05-23 14:00:06.308 Node005, NoOperation::Set - Routing=true
+2013-05-23 14:00:06.308 Node005, Queuing (NoOp) NoOperation_Set (Node=5): 0x01, 0x09, 0x00, 0x13, 0x05, 0x02, 0x00, 0x00, 0x25, 0x03, 0xc4
+2013-05-23 14:00:06.309 Node005, Queuing (Query) Query Stage Complete (Probe)
+2013-05-23 14:00:06.309 
+2013-05-23 14:00:06.309 Node005, Sending (NoOp) message (Callback ID=0x03, Expected Reply=0x13) - NoOperation_Set (Node=5): 0x01, 0x09, 0x00, 0x13, 0x05, 0x02, 0x00, 0x00, 0x25, 0x03, 0xc4
+2013-05-23 14:00:06.314 Node005,   Received: 0x01, 0x04, 0x01, 0x13, 0x01, 0xe8
+2013-05-23 14:00:06.314 Node005,   ZW_SEND_DATA delivered to Z-Wave stack
+2013-05-23 14:00:06.357 Node005,   Received: 0x01, 0x05, 0x00, 0x13, 0x03, 0x00, 0xea
+2013-05-23 14:00:06.358 Node005,   ZW_SEND_DATA Request with callback ID 0x03 received (expected 0x03)
+2013-05-23 14:00:06.358 Node005, Request RTT 49 Average Request RTT 49
+2013-05-23 14:00:06.358 Node005,   Expected reply was received
+2013-05-23 14:00:06.358 Node005,   Message transaction complete
+2013-05-23 14:00:06.358 
+2013-05-23 14:00:06.359 Node005, Removing current message
+2013-05-23 14:00:06.368 
+2013-05-23 14:00:06.369 Node009, Sending (Query) message (Callback ID=0x00, Expected Reply=0x41) - Get Node Protocol Info (Node=9): 0x01, 0x04, 0x00, 0x41, 0x09, 0xb3
+2013-05-23 14:00:06.371 Node009,   Received: 0x01, 0x09, 0x01, 0x41, 0x52, 0xdc, 0x00, 0x04, 0x08, 0x06, 0x32
+2013-05-23 14:00:06.371 
+2013-05-23 14:00:06.372 Node009, Received reply to FUNC_ID_ZW_GET_NODE_PROTOCOL_INFO
+2013-05-23 14:00:06.372 Node009,   Protocol Info for Node 9:
+2013-05-23 14:00:06.372 Node009,     Listening     = false
+2013-05-23 14:00:06.372 Node009,     Frequent      = true
+2013-05-23 14:00:06.372 Node009,     Beaming       = true
+2013-05-23 14:00:06.372 Node009,     Routing       = true
+2013-05-23 14:00:06.372 Node009,     Max Baud Rate = 40000
+2013-05-23 14:00:06.372 Node009,     Version       = 3
+2013-05-23 14:00:06.373 Node009,     Security      = false
+2013-05-23 14:00:06.373 Node009,   Basic device class    (0x04) - Routing Slave
+2013-05-23 14:00:06.373 Node009,   Generic device Class  (0x08) - Thermostat
+2013-05-23 14:00:06.373 Node009,   Specific device class (0x06) - General Thermostat V2
+2013-05-23 14:00:06.373 Node009,     COMMAND_CLASS_BASIC will be mapped to COMMAND_CLASS_THERMOSTAT_MODE
+2013-05-23 14:00:06.373 Node009,   Mandatory Command Classes for Node 9:
+2013-05-23 14:00:06.373 Node009,     COMMAND_CLASS_BASIC
+2013-05-23 14:00:06.373 Node009,     COMMAND_CLASS_THERMOSTAT_MODE
+2013-05-23 14:00:06.373 Node009,     COMMAND_CLASS_THERMOSTAT_SETPOINT
+2013-05-23 14:00:06.373 Node009,     COMMAND_CLASS_MANUFACTURER_SPECIFIC
+2013-05-23 14:00:06.373 Node009,     COMMAND_CLASS_WAKE_UP
+2013-05-23 14:00:06.374 Node009,     COMMAND_CLASS_VERSION
+2013-05-23 14:00:06.374 Node009,   Mandatory Command Classes controlled by Node 9:
+2013-05-23 14:00:06.374 Node009,     None
+2013-05-23 14:00:06.374 Node009,   Expected reply was received
+2013-05-23 14:00:06.374 Node009,   Message transaction complete
+2013-05-23 14:00:06.374 
+2013-05-23 14:00:06.374 Node009, Removing current message
+2013-05-23 14:00:06.608 Node009, Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:06.608 Node009, AdvanceQueries queryPending=0 queryRetries=0 queryStage=Probe live=1
+2013-05-23 14:00:06.608 Node009, QueryStage_Probe
+2013-05-23 14:00:06.608 Node009, NoOperation::Set - Routing=true
+2013-05-23 14:00:06.608 Node009, Queuing (NoOp) NoOperation_Set (Node=9): 0x01, 0x09, 0x00, 0x13, 0x09, 0x02, 0x00, 0x00, 0x25, 0x04, 0xcf
+2013-05-23 14:00:06.609 Node009, Queuing (Query) Query Stage Complete (Probe)
+2013-05-23 14:00:06.609 
+2013-05-23 14:00:06.609 Node009, Sending (NoOp) message (Callback ID=0x04, Expected Reply=0x13) - NoOperation_Set (Node=9): 0x01, 0x09, 0x00, 0x13, 0x09, 0x02, 0x00, 0x00, 0x25, 0x04, 0xcf
+2013-05-23 14:00:06.614 Node009,   Received: 0x01, 0x04, 0x01, 0x13, 0x01, 0xe8
+2013-05-23 14:00:06.614 Node009,   ZW_SEND_DATA delivered to Z-Wave stack
+2013-05-23 14:00:07.781 Node009,   Received: 0x01, 0x05, 0x00, 0x13, 0x04, 0x00, 0xed
+2013-05-23 14:00:07.781 Node009,   ZW_SEND_DATA Request with callback ID 0x04 received (expected 0x04)
+2013-05-23 14:00:07.782 Node009, Request RTT 1173 Average Request RTT 1173
+2013-05-23 14:00:07.782 Node009,   Expected reply was received
+2013-05-23 14:00:07.782 Node009,   Message transaction complete
+2013-05-23 14:00:07.782 
+2013-05-23 14:00:07.782 Node009, Removing current message
+2013-05-23 14:00:07.802 
+2013-05-23 14:00:07.803 Node011, Sending (Query) message (Callback ID=0x00, Expected Reply=0x41) - Get Node Protocol Info (Node=11): 0x01, 0x04, 0x00, 0x41, 0x0b, 0xb1
+2013-05-23 14:00:07.805 Node011,   Received: 0x01, 0x09, 0x01, 0x41, 0xd1, 0x8c, 0x00, 0x04, 0x10, 0x01, 0xfe
+2013-05-23 14:00:07.806 
+2013-05-23 14:00:07.806 Node011, Received reply to FUNC_ID_ZW_GET_NODE_PROTOCOL_INFO
+2013-05-23 14:00:07.806 Node011,   Protocol Info for Node 11:
+2013-05-23 14:00:07.807 Node011,     Listening     = true
+2013-05-23 14:00:07.807 Node011,     Beaming       = false
+2013-05-23 14:00:07.807 Node011,     Routing       = true
+2013-05-23 14:00:07.807 Node011,     Max Baud Rate = 40000
+2013-05-23 14:00:07.807 Node011,     Version       = 2
+2013-05-23 14:00:07.807 Node011,     Security      = false
+2013-05-23 14:00:07.808 Node011,   Basic device class    (0x04) - Routing Slave
+2013-05-23 14:00:07.808 Node011,   Generic device Class  (0x10) - Binary Switch
+2013-05-23 14:00:07.808 Node011,   Specific device class (0x01) - Binary Power Switch
+2013-05-23 14:00:07.808 Node011,     COMMAND_CLASS_BASIC will be mapped to COMMAND_CLASS_SWITCH_BINARY
+2013-05-23 14:00:07.809 Node011,   Mandatory Command Classes for Node 11:
+2013-05-23 14:00:07.809 Node011,     COMMAND_CLASS_BASIC
+2013-05-23 14:00:07.809 Node011,     COMMAND_CLASS_SWITCH_BINARY
+2013-05-23 14:00:07.809 Node011,     COMMAND_CLASS_SWITCH_ALL
+2013-05-23 14:00:07.809 Node011,   Mandatory Command Classes controlled by Node 11:
+2013-05-23 14:00:07.810 Node011,     None
+2013-05-23 14:00:07.810 Node011,   Expected reply was received
+2013-05-23 14:00:07.810 Node011,   Message transaction complete
+2013-05-23 14:00:07.810 
+2013-05-23 14:00:07.810 Node011, Removing current message
+2013-05-23 14:00:07.982 Node011, Query Stage Complete (ProtocolInfo)
+2013-05-23 14:00:07.983 Node011, AdvanceQueries queryPending=0 queryRetries=0 queryStage=Probe live=1
+2013-05-23 14:00:07.983 Node011, QueryStage_Probe
+2013-05-23 14:00:07.983 Node011, NoOperation::Set - Routing=true
+2013-05-23 14:00:07.983 Node011, Queuing (NoOp) NoOperation_Set (Node=11): 0x01, 0x09, 0x00, 0x13, 0x0b, 0x02, 0x00, 0x00, 0x25, 0x05, 0xcc
+2013-05-23 14:00:07.983 Node011, Queuing (Query) Query Stage Complete (Probe)
+2013-05-23 14:00:07.983 
+2013-05-23 14:00:07.983 Node011, Sending (NoOp) message (Callback ID=0x05, Expected Reply=0x13) - NoOperation_Set (Node=11): 0x01, 0x09, 0x00, 0x13, 0x0b, 0x02, 0x00, 0x00, 0x25, 0x05, 0xcc
+2013-05-23 14:00:07.988 Node011,   Received: 0x01, 0x04, 0x01, 0x13, 0x01, 0xe8
+2013-05-23 14:00:07.989 Node011,   ZW_SEND_DATA delivered to Z-Wave stack
+2013-05-23 14:00:08.000 Node011,   Received: 0x01, 0x05, 0x00, 0x13, 0x05, 0x00, 0xec
+2013-05-23 14:00:08.001 Node011,   ZW_SEND_DATA Request with callback ID 0x05 received (expected 0x05)
+2013-05-23 14:00:08.001 Node011, Request RTT 17 Average Request RTT 17
+2013-05-23 14:00:08.001 Node011,   Expected reply was received
+2013-05-23 14:00:08.001 Node011,   Message transaction complete
+2013-05-23 14:00:08.001 
+2013-05-23 14:00:08.001 Node011, Removing current message
+2013-05-23 14:00:08.018 
+2013-05-23 14:00:08.018 Node001, Sending (Query) message (Callback ID=0x00, Expected Reply=0x49) - Request Node Info (Node=1): 0x01, 0x04, 0x00, 0x60, 0x01, 0x9a
+2013-05-23 14:00:08.044 Node001,   Received: 0x01, 0x04, 0x01, 0x60, 0x01, 0x9b
+2013-05-23 14:00:08.044 
+2013-05-23 14:00:08.044 Node001, FUNC_ID_ZW_REQUEST_NODE_INFO Request successful.
+2013-05-23 14:00:13.274 Node001,   Received: 0x01, 0x06, 0x00, 0x49, 0x81, 0x00, 0x00, 0x31
+2013-05-23 14:00:13.274 
+2013-05-23 14:00:13.275 WARNING: FUNC_ID_ZW_APPLICATION_UPDATE: UPDATE_STATE_NODE_INFO_REQ_FAILED received
+2013-05-23 14:00:13.275 Node001, QueryStageRetry stage NodeInfo requested stage NodeInfo max 2 retries 0 pending 1
+2013-05-23 14:00:13.275 Node001,   Expected reply was received
+2013-05-23 14:00:13.275 Node001,   Message transaction complete
+2013-05-23 14:00:13.275 
+2013-05-23 14:00:13.275 Node001, Removing current message
+2013-05-23 14:00:13.276 Node001, Query Stage Complete (NodeInfo)
+2013-05-23 14:00:13.276 Node001, AdvanceQueries queryPending=0 queryRetries=1 queryStage=NodeInfo live=1
+2013-05-23 14:00:13.276 Node001, QueryStage_NodeInfo
+2013-05-23 14:00:13.276 Node001, Queuing (Query) Request Node Info (Node=1): 0x01, 0x04, 0x00, 0x60, 0x01, 0x9a
+2013-05-23 14:00:13.276 Node001, Queuing (Query) Query Stage Complete (NodeInfo)
+2013-05-23 14:00:13.276 Node002, Query Stage Complete (Probe)
+2013-05-23 14:00:13.277 Node002, AdvanceQueries queryPending=0 queryRetries=0 queryStage=WakeUp live=1
+2013-05-23 14:00:13.277 Node002, QueryStage_WakeUp
+2013-05-23 14:00:13.277 Node002, QueryStage_ManufacturerSpecific1
+2013-05-23 14:00:13.277 Node002, QueryStage_NodeInfo
+2013-05-23 14:00:13.277 Node002, Queuing (Query) Request Node Info (Node=2): 0x01, 0x04, 0x00, 0x60, 0x02, 0x99
+2013-05-23 14:00:13.277 Node002, Queuing (Query) Query Stage Complete (NodeInfo)
+2013-05-23 14:00:13.278 Node003, Query Stage Complete (Probe)
+2013-05-23 14:00:13.278 Node003, AdvanceQueries queryPending=0 queryRetries=0 queryStage=WakeUp live=1
+2013-05-23 14:00:13.278 Node003, QueryStage_WakeUp
+2013-05-23 14:00:13.278 Node003, QueryStage_ManufacturerSpecific1
+2013-05-23 14:00:13.278 Node003, Queuing (Query) ManufacturerSpecificCmd_Get (Node=3): 0x01, 0x09, 0x00, 0x13, 0x03, 0x02, 0x72, 0x04, 0x25, 0x06, 0xb1
+2013-05-23 14:00:13.278 Node003, Queuing (Query) Query Stage Complete (ManufacturerSpecific1)
+2013-05-23 14:00:13.279 Node005, Query Stage Complete (Probe)
+2013-05-23 14:00:13.279 Node005, AdvanceQueries queryPending=0 queryRetries=0 queryStage=WakeUp live=1
+2013-05-23 14:00:13.279 Node005, QueryStage_WakeUp
+2013-05-23 14:00:13.279 Node005, QueryStage_ManufacturerSpecific1
+2013-05-23 14:00:13.279 Node005, QueryStage_NodeInfo
+2013-05-23 14:00:13.279 Node005, Queuing (Query) Request Node Info (Node=5): 0x01, 0x04, 0x00, 0x60, 0x05, 0x9e
+2013-05-23 14:00:13.280 Node005, Queuing (Query) Query Stage Complete (NodeInfo)
+2013-05-23 14:00:13.280 Node009, Query Stage Complete (Probe)
+2013-05-23 14:00:13.280 Node009, AdvanceQueries queryPending=0 queryRetries=0 queryStage=WakeUp live=1
+2013-05-23 14:00:13.280 Node009, QueryStage_WakeUp
+2013-05-23 14:00:13.280 Node009, QueryStage_ManufacturerSpecific1
+2013-05-23 14:00:13.281 Node009, Queuing (Query) ManufacturerSpecificCmd_Get (Node=9): 0x01, 0x09, 0x00, 0x13, 0x09, 0x02, 0x72, 0x04, 0x25, 0x07, 0xba
+2013-05-23 14:00:13.281 Node009, Queuing (Query) Query Stage Complete (ManufacturerSpecific1)
+2013-05-23 14:00:13.281 Node011, Query Stage Complete (Probe)
+2013-05-23 14:00:13.281 Node011, AdvanceQueries queryPending=0 queryRetries=0 queryStage=WakeUp live=1
+2013-05-23 14:00:13.281 Node011, QueryStage_WakeUp
+2013-05-23 14:00:13.281 Node011, QueryStage_ManufacturerSpecific1
+2013-05-23 14:00:13.282 Node011, QueryStage_NodeInfo
+2013-05-23 14:00:13.282 Node011, Queuing (Query) Request Node Info (Node=11): 0x01, 0x04, 0x00, 0x60, 0x0b, 0x90
+2013-05-23 14:00:13.282 Node011, Queuing (Query) Query Stage Complete (NodeInfo)
+2013-05-23 14:00:13.282 
+2013-05-23 14:00:13.282 Node001, Sending (Query) message (Callback ID=0x00, Expected Reply=0x49) - Request Node Info (Node=1): 0x01, 0x04, 0x00, 0x60, 0x01, 0x9a
+2013-05-23 14:00:13.308 Node001,   Received: 0x01, 0x04, 0x01, 0x60, 0x01, 0x9b
+2013-05-23 14:00:13.309 
+2013-05-23 14:00:13.309 Node001, FUNC_ID_ZW_REQUEST_NODE_INFO Request successful.
+2013-05-23 14:00:17.824 Node001,   Received: 0x01, 0x06, 0x00, 0x49, 0x81, 0x00, 0x00, 0x31
+2013-05-23 14:00:17.824 
+2013-05-23 14:00:17.825 WARNING: FUNC_ID_ZW_APPLICATION_UPDATE: UPDATE_STATE_NODE_INFO_REQ_FAILED received
+2013-05-23 14:00:17.825 Node001, QueryStageRetry stage NodeInfo requested stage NodeInfo max 2 retries 1 pending 1
+2013-05-23 14:00:17.825 Node001,   Expected reply was received
+2013-05-23 14:00:17.825 Node001,   Message transaction complete
+2013-05-23 14:00:17.826 
+2013-05-23 14:00:17.826 Node001, Removing current message
+2013-05-23 14:00:17.826 Node001, Query Stage Complete (NodeInfo)
+2013-05-23 14:00:17.826 Node001, AdvanceQueries queryPending=0 queryRetries=0 queryStage=ManufacturerSpecific2 live=1
+2013-05-23 14:00:17.826 Node001, QueryStage_ManufacturerSpecific2
+2013-05-23 14:00:17.827 Node001, QueryStage_Versions
+2013-05-23 14:00:17.827 Node001, QueryStage_Instances
+2013-05-23 14:00:17.827 Node001, Essential node queries are complete
+2013-05-23 14:00:17.827 Node001, QueryStage_Static
+2013-05-23 14:00:17.827 Node001, QueryStage_Associations
+2013-05-23 14:00:17.827 Node001, QueryStage_Neighbors
+2013-05-23 14:00:17.827 Requesting routing info (neighbor list) for Node 1
+2013-05-23 14:00:17.828 Node001, Queuing (Command) Get Routing Info (Node=1): 0x01, 0x07, 0x00, 0x80, 0x01, 0x00, 0x00, 0x03, 0x7a
+2013-05-23 14:00:17.828 Node001, Queuing (Query) Query Stage Complete (Neighbors)
+2013-05-23 14:00:17.842 
+2013-05-23 14:00:17.843 Node001, Sending (Command) message (Callback ID=0x00, Expected Reply=0x80) - Get Routing Info (Node=1): 0x01, 0x07, 0x00, 0x80, 0x01, 0x00, 0x00, 0x03, 0x7a
+2013-05-23 14:00:17.848 Node001,   Received: 0x01, 0x20, 0x01, 0x80, 0x16, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4d
+2013-05-23 14:00:17.849 
+2013-05-23 14:00:17.849 Node001, Received reply to FUNC_ID_ZW_GET_ROUTING_INFO
+2013-05-23 14:00:17.849 Node001,     Neighbors of this node are:
+2013-05-23 14:00:17.849 Node001,     Node 2
+2013-05-23 14:00:17.849 Node001,     Node 3
+2013-05-23 14:00:17.850 Node001,     Node 5
+2013-05-23 14:00:17.850 Node001,     Node 9
+2013-05-23 14:00:17.850 Node001,     Node 11
+2013-05-23 14:00:17.850 Node001,   Expected reply was received
+2013-05-23 14:00:17.850 Node001,   Message transaction complete
+2013-05-23 14:00:17.851 
+2013-05-23 14:00:17.851 Node001, Removing current message
+2013-05-23 14:00:17.851 
+2013-05-23 14:00:17.851 Node002, Sending (Query) message (Callback ID=0x00, Expected Reply=0x49) - Request Node Info (Node=2): 0x01, 0x04, 0x00, 0x60, 0x02, 0x99
+2013-05-23 14:00:17.856 Node002,   Received: 0x01, 0x04, 0x01, 0x60, 0x01, 0x9b
+2013-05-23 14:00:17.857 
+2013-05-23 14:00:17.857 Node002, FUNC_ID_ZW_REQUEST_NODE_INFO Request successful.
+2013-05-23 14:00:57.851 
+2013-05-23 14:00:57.851 Node002, Sending (Query) message (Attempt 2, Callback ID=0x00, Expected Reply=0x49) - Request Node Info (Node=2): 0x01, 0x04, 0x00, 0x60, 0x02, 0x99
+2013-05-23 14:00:57.872 Node002,   Received: 0x01, 0x04, 0x01, 0x60, 0x01, 0x9b
+2013-05-23 14:00:57.873 
+2013-05-23 14:00:57.873 Node002, FUNC_ID_ZW_REQUEST_NODE_INFO Request successful.
