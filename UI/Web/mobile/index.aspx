@@ -8,22 +8,26 @@
     }
     
     .ui-grid-a .ui-block-a { width: 80% }
-    .ui-grid-a .ui-block-b { width: 20%; } 
-  </style>
+    .ui-grid-a .ui-block-b { width: 20%; }
+    .ui-content {
+        overflow-x: visible;
+    }
+
+    .fliper { position:absolute; right:8px; top:-4px; }
+
+
+    div.ui-slider-switch {
+        width: 7.1em;
+    }
+
+    </style>
   
   <script type="text/javascript">
       var host = '';
 
       $(document).ready(function () {
           host = window.location.hostname;
-          $.getJSON('http://' + host + ':8732/api/objects/type/place?callback=?', null, function (data) {
-              //$('#callback').html(data);
-              $("#callback").append('<ul id="places" data-role="listview" data-theme="g">');
-              $.each(data, function (i, obj) {
-                  $("#places").append('<li><a href="#" onclick="openPlace(\'' + obj.Name + '\');" >' + obj.Name + '</a></li>');
-              });
-              $('#places').listview();
-          });
+          load();
       });
 
 
@@ -38,9 +42,24 @@
               //$('#callback').html(data);
               $("#callback").append('<ul id="places" data-role="listview" data-theme="g">');
               $.each(data, function (i, obj) {
-                  $("#places").append('<li><a href="#" onclick="openPlace(\'' + obj.Name + '\');" >' + obj.Name + '</a></li>');
+                  if (obj.State.Value.toUpperCase() == 'ON') {
+                      $("#places").append('<li><a href="#" onclick="openPlace(\'' + obj.Name + '\');" >' + obj.Name + '</a><span class="fliper"><select name="' + obj.Name + '" id="flip-a" data-role="slider"><option value="off">Vacant</option><option value="on" selected>Occupied</option></select></span></li>');
+                  }
+                  else {
+                      $("#places").append('<li><a href="#" onclick="openPlace(\'' + obj.Name + '\');" >' + obj.Name + '</a><span class="fliper"><select name="' + obj.Name + '" id="flip-a" data-role="slider"><option value="off" selected>Vacant</option><option value="on">Occupied</option></select></span></li>');
+                  }
               });
               $('#places').listview();
+              $('select').slider();
+
+              $('select').bind("change", function (event, ui) {
+                  if (event.target.value == 'on') {
+                      runMethod(event.target.name, 'ON', '', '');
+                  }
+                  else {
+                      runMethod(event.target.name, 'OFF', '', '');
+                  }
+              });
           });
 
           $('#header').html('<center><img src="images/osa_logo.png" /></center><br />');
@@ -53,15 +72,35 @@
               $("#callback").append('<ul id="places" data-role="listview" data-theme="g">');
               $.each(data, function (i, obj) {
                   if (obj.Name != place) {
-                      $("#places").append('<li><a href="#" onclick="openObject(\'' + place + '\',\'' + obj.Name + '\');" >' + obj.Name + '</a></li>');
+                      if (obj.State.Value.toUpperCase() == 'ON') {
+                          $("#places").append('<li><a href="#" onclick="openObject(\'' + place + '\',\'' + obj.Name + '\');" >' + obj.Name + '</a><span class="fliper"><select name="' + obj.Name + '" id="flip-a" data-role="slider"><option value="off">Off</option><option value="on" selected>On</option></select></span></li>');
+                      }
+                      else if(obj.State.Value.toUpperCase() == 'OFF'){
+                          $("#places").append('<li><a href="#" onclick="openObject(\'' + place + '\',\'' + obj.Name + '\');" >' + obj.Name + '</a><span class="fliper"><select name="' + obj.Name + '" id="flip-a" data-role="slider"><option value="off" selected>Off</option><option value="on">On</option></select></span></li>');
+                      }
+                      else{
+                          $("#places").append('<li><a href="#" onclick="openObject(\'' + place + '\',\'' + obj.Name + '\');" >' + obj.Name + '</a></li>');
+                      }
+
                   }
               });
               $('#places').listview();
+              $('select').slider();
+
+              $('select').bind("change", function (event, ui) {
+                  if (event.target.value == 'on') {
+                      runMethod(event.target.name, 'ON', '', '');
+                  }
+                  else {
+                      runMethod(event.target.name, 'OFF', '', '');
+                  }
+              });
+
           });
           $('#header').html('<h1 style="white-space: normal" class="ui-title" role="heading" aria-level="1" >' + place + '</h1><a href="index.php" onClick="window.location.reload()" id="backBtn" class="ui-btn-left" data-icon="arrow-l">Back</a>');
           $('#header').attr('data-position', 'inline');
           $('#backBtn').button();
-
+          
       }
 
       function openObject(place, object) {
@@ -262,18 +301,19 @@
                   var array = obj.split(':=');
                   $.getJSON('http://' + host + ':8732/api/object/' + array[0] + '?callback=?', null, function (data2) {
                       var val = '';
-                      if (array[1].toLowerCase() == 'state') {
+                      var objName = array[1];
+                      if (objName.toLowerCase() == 'state') {
                           val = data2.State.Value;
                       }
                       else {
 
                           $.each(data2.Properties, function (i, prop) {
-                              if (prop.Name.toLowerCase() == array[1].toLowerCase()) {
+                              if (prop.Name.toLowerCase() == objName.toLowerCase()) {
                                   val = prop.Value;
                               }
                           });
                       }
-                      $("#props").append('<div class="ui-block-a" ><strong>' + array[0] + '</strong></div><div class="ui-block-b" ><strong>' + val + '</strong></div><br /><br />');
+                      $("#props").append('<div class="ui-block-a" ><strong>' + array[0] + ' - ' + array[1] + '</strong></div><div class="ui-block-b" ><strong>' + val + '</strong></div><br /><br />');
                   });
 
               });
