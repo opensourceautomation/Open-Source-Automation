@@ -15,7 +15,8 @@ public partial class _Default : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if(OSAEObjectManager.GetObjectsByType("PERSON").Count == 0)
-            Response.Redirect("~/firstrun.aspx");        
+            Response.Redirect("~/firstrun.aspx");
+        txtUserName.Focus();
     }
 
     protected void imgSubmit_Click(object sender, EventArgs e)
