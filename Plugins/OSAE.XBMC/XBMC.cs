@@ -107,10 +107,12 @@ namespace OSAE.XBMC
 
         public void Timer_Tick(object sender, EventArgs eArgs)
         {
+            
             try
             {
                 foreach (XBMCSystem r in Systems)
                 {
+                    logging.AddToLog("Checking " + r.Name + " - pinging: " + r.Pinging.ToString(), false);
                     if (!r.Pinging)
                     {
                         if (!r.Connected)
