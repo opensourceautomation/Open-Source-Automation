@@ -1,0 +1,13 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="OSAE.PowerShellProcessor.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="EX1" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">$data = get-osa -name "Weather"
+$wc = New-Object System.Net.WebClient
+
+$url = "http://192.168.0.7/emoncms/input/post.json?json={Outside:" + $data.properties["Temp"].value + "}&amp;apikey=507ee7ec14130b874b02c241b5740b5e"
+$wc.UploadString($url, "")</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

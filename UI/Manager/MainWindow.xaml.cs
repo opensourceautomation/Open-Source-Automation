@@ -106,7 +106,7 @@
             tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
             tcpBinding.Security.Mode = SecurityMode.None;
 
-            EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
+            EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.WcfServer + ":8731/WCFService/");
             var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
 
 
