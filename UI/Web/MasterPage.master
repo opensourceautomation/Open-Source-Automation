@@ -19,6 +19,7 @@
     <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
     <script type="text/javascript" src="js/jquery.flot.js"></script>
     <script type="text/javascript" src="js/jquery.flot.time.js"></script>
+    <script type="text/javascript" src="js/jquery.flot.selection.js"></script>
     
     <!-- Le styles -->
     <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" />

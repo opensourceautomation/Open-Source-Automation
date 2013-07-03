@@ -261,15 +261,14 @@
             DataSet ds = OSAEObjectPropertyManager.ObjectPropertyHistoryGet(objName, propName);
             OSAEPropertyHistory ph = new OSAEPropertyHistory();
             ph.label = objName + " - " + propName;
-            List<List<long>> vals = new List<List<long>>();
+            List<List<double>> vals = new List<List<double>>();
             ph.data = vals;
 
             foreach (DataRow dr in ds.Tables[0].Rows)
             {
-                List<long> p = new List<long>();
-                logging.AddToLog("converting date: " + DateTime.Parse(dr["history_timestamp"].ToString()).ToString(), true);
-                p.Add((long)Common.GetJavascriptTimestamp(DateTime.Parse(dr["history_timestamp"].ToString())));
-                p.Add(Int32.Parse(dr["property_value"].ToString().Split('.')[0]));
+                List<double> p = new List<double>();
+                p.Add((double)Common.GetJavascriptTimestamp(DateTime.Parse(dr["history_timestamp"].ToString())));
+                p.Add(double.Parse(dr["property_value"].ToString()));
                 vals.Add(p);
             }
             list.Add(ph);
@@ -281,7 +280,7 @@
     public class OSAEPropertyHistory
     {
         public string label;
-        public List<List<long>> data;
+        public List<List<double>> data;
     }
 
 }
