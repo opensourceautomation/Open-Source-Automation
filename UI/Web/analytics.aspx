@@ -3,7 +3,13 @@
 <%@ Register Assembly="GoogleChartsNGraphsControls" Namespace="GoogleChartsNGraphsControls" TagPrefix="cc1" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server">
+    
     <script>
+        $(document).ready(function () {
+            $('#loading').hide();
+            host = window.location.hostname;
+        });
+
         window.onload = function () {
             var strCook = document.cookie;
             if (strCook.indexOf("!~") != 0) {
@@ -17,6 +23,26 @@
         function SetDivPosition() {
             var intY = document.getElementById("PropertyGrid").scrollTop;
             document.cookie = "yPos=!~" + intY + "~!";
+        }
+
+
+        function load(obj, prop) {
+            $('#chart').html('');
+            $('#loading').show();
+            var datasets;
+
+            $.getJSON('http://' + host + ':8732/api/analytics/' + obj + '/' + prop + '?callback=?', null, function (data) {
+                $('#loading').hide();
+                $.plot("#chart", data, {
+                    yaxis: {
+                        min: 0
+                    },
+                    xaxis: {
+                        mode: "time",
+                        timeformat: "%Y/%m/%d"
+                    }
+                    });
+            });
         }
 
     </script>
@@ -38,10 +64,11 @@
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid" ShowHeader="true" 
-                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="prop_name,prop_id" ShowHeaderWhenEmpty="true">  
+                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="prop_name, property_name, object_name" ShowHeaderWhenEmpty="true">  
                         <Columns>  
                             <asp:BoundField DataField="prop_name" HeaderText="Property" /> 
-                            <asp:BoundField DataField="prop_id" Visible="false" /> 
+                            <asp:BoundField DataField="object_name" Visible="false" />   
+                            <asp:BoundField DataField="property_name" Visible="false" />  
                         </Columns>  
                     </asp:GridView>
                 </div>
@@ -49,8 +76,9 @@
         </div>
         <div class="span9">
             <div class="row-fluid">
-                <div class="span12">
-                    <cc1:GVAnnotatedTimeline ID="GVAnnotatedTimeline1" runat="server"  Width="100%" Height="400" GVIDisplayAnnotations="True" GviDisplayDateBarSeparator="true" GviAllowRedraw="true"/>
+                <img ID="loading" src="Images/loading.GIF" style="display:block; max-height:100px; margin-left:auto; margin-right:auto;"/>
+                <div ID="chart" class="span12" style="height: 300px;">
+                    
                 </div>
             </div>
         </div>

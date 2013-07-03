@@ -51,7 +51,7 @@
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show("Error installing plugin: " + ex.Message);
             }
         }
 

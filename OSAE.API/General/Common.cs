@@ -291,5 +291,10 @@
 
             return AppDomain.CreateDomain(name, null, setup);
         }
+
+        public static long GetJavascriptTimestamp(System.DateTime input)
+        {
+            return (long)input.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+        }
     }
 }
