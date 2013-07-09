@@ -7,6 +7,8 @@
         $(document).ready(function () {
             $('#loading').hide();
             host = window.location.hostname;
+
+
         });
 
         window.onload = function () {
@@ -25,71 +27,88 @@
         }
 
 
-        function load(obj, prop) {
+        function load() {
             $('#chart').html('');
             $('#loading').show();
-            var datasets;
+            var datasets = [];
+            var size = $('#PropertyGrid tr:has(:checkbox:checked)').length;
+            var count = 0;
 
-            $.getJSON('http://' + host + ':8732/api/analytics/' + obj + '/' + prop + '?callback=?', null, function (data) {
-                $('#loading').hide();
+            $('#PropertyGrid tr:has(:checkbox:checked)').each(function () {
+                var obj = $(this).find('td').eq(1).html();
+                var prop = $(this).find('td').eq(2).html();
 
-                var options = {
-                    xaxis: {
-                        mode: "time",
-                        timeformat: "%Y/%m/%d %H:%M%p",
-                        tickLength: 5
-                    },
-                    selection: {
-                        mode: "x"
-                    }
-                };
-
-                var plot = $.plot("#chart", data, options);
-
-                var overview = $.plot("#overview", data, {
-                    series: {
-                        lines: {
-                            show: true,
-                            lineWidth: 1
-                        },
-                        shadowSize: 0
-                    },
-                    xaxis: {
-                        ticks: [],
-                        mode: "time"
-                    },
-                    yaxis: {
-                        ticks: [],
-                        min: 0,
-                        autoscaleMargin: 0.1
-                    },
-                    selection: {
-                        mode: "x"
-                    }
+                $.getJSON('http://' + host + ':8732/api/analytics/' + obj + '/' + prop + '?callback=?', null, function (data) {
+                    datasets.push(data[0]);
+                    count++;
                 });
-
-                $("#chart").bind("plotselected", function (event, ranges) {
-
-                    // do the zooming
-
-                    plot = $.plot("#chart", data, $.extend(true, {}, options, {
-                        xaxis: {
-                            min: ranges.xaxis.from,
-                            max: ranges.xaxis.to
-                        }
-                    }));
-
-                    // don't fire event on the overview to prevent eternal loop
-
-                    overview.setSelection(ranges, true);
-                });
-
-                $("#overview").bind("plotselected", function (event, ranges) {
-                    plot.setSelection(ranges);
-                });
-
-
             });
+
+            var videoInterval = setInterval(function () {
+                if (count == size) {
+                    $('#loading').hide();
+
+                    var options = {
+                        xaxis: {
+                            mode: "time",
+                            tickLength: 5
+                        },
+                        selection: {
+                            mode: "x"
+                        }
+                    };
+
+                    var plot = $.plot("#chart", datasets, options);
+
+                    var overview = $.plot("#overview", datasets, {
+                        series: {
+                            lines: {
+                                show: true,
+                                lineWidth: 1
+                            },
+                            shadowSize: 0
+                        },
+                        xaxis: {
+                            ticks: [],
+                            mode: "time"
+                        },
+                        yaxis: {
+                            ticks: [],
+                            autoscaleMargin: 0.1
+                        },
+                        selection: {
+                            mode: "x"
+                        }
+                    });
+
+                    $("#chart").bind("plotselected", function (event, ranges) {
+
+                        // do the zooming
+
+                        plot = $.plot("#chart", datasets, $.extend(true, {}, options, {
+                            xaxis: {
+                                min: ranges.xaxis.from,
+                                max: ranges.xaxis.to
+                            }
+                        }));
+
+                        // don't fire event on the overview to prevent eternal loop
+
+                        overview.setSelection(ranges, true);
+                    });
+
+                    $("#overview").bind("plotselected", function (event, ranges) {
+                        plot.setSelection(ranges);
+                    });
+
+
+                    clearInterval(videoInterval);
+                }
+
+            }, 500);
+
+            
+
         }
 
     </script>
@@ -111,12 +130,17 @@
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid" ShowHeader="true" 
-                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="prop_name, property_name, object_name" ShowHeaderWhenEmpty="true">  
+                        AlternatingRowStyle-CssClass="alt" DataKeyNames="property_name, object_name" ShowHeaderWhenEmpty="true">  
                         <Columns>  
-                            <asp:BoundField DataField="prop_name" HeaderText="Property" /> 
-                            <asp:BoundField DataField="object_name" Visible="false" />   
-                            <asp:BoundField DataField="property_name" Visible="false" />  
-                        </Columns>  
+                            <asp:TemplateField HeaderText="View" Visible="True">
+                                <ItemTemplate>
+                                    <asp:CheckBox ID="chkEnabled" runat="server" onclick="load();"/>
+                                </ItemTemplate>
+                                <ItemStyle HorizontalAlign="Center" />
+                            </asp:TemplateField>
+                            <asp:BoundField DataField="object_name" Visible="True" HeaderText="Object" />   
+                            <asp:BoundField DataField="property_name" Visible="True" HeaderText="Property" /> 
+                        </Columns>
                     </asp:GridView>
                 </div>
             </div>
