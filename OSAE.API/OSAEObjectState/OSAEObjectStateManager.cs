@@ -74,6 +74,24 @@
             {
                 dataset.Dispose();
             }
-        }       
+        }
+
+        public static DataSet ObjectStateHistoryGet(string objectName, string from, string to)
+        {
+            DataSet ds = new DataSet();
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "SELECT history_timestamp, object_name, state_label FROM osae_v_object_state_change_history WHERE object_name = '" + objectName + "' AND history_timestamp BETWEEN '" + from + "' AND '" + to + "' ORDER BY history_timestamp asc";
+                try
+                {
+                    ds = OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectStateHistoryGet error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+            return ds;
+        }
     }
 }

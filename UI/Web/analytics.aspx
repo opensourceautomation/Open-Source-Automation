@@ -4,6 +4,28 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server">
     
     <script>
+        function pageLoad() {
+            $("#<%=datepickerFrom.ClientID%>").datepicker();
+            $("#<%=datepickerFrom.ClientID%>").datepicker("option", "dateFormat", "yy-mm-dd");
+
+            $("#<%=datepickerTo.ClientID%>").datepicker();
+            $("#<%=datepickerTo.ClientID%>").datepicker("option", "dateFormat", "yy-mm-dd");
+        }
+
+        $(function () {
+            $("#<%=datepickerFrom.ClientID%>").change(function () {
+                if($('#PropertyGrid tr:has(:checkbox:checked)').length + $('#StateGrid tr:has(:checkbox:checked)').length > 0)
+                    load();
+            });
+        });
+
+        $(function () {
+            $("#<%=datepickerTo.ClientID%>").change(function () {
+                if ($('#PropertyGrid tr:has(:checkbox:checked)').length + $('#StateGrid tr:has(:checkbox:checked)').length > 0)
+                    load();
+            });
+        });
+
         $(document).ready(function () {
             $('#loading').hide();
             host = window.location.hostname;
@@ -31,18 +53,50 @@
             $('#chart').html('');
             $('#loading').show();
             var datasets = [];
-            var size = $('#PropertyGrid tr:has(:checkbox:checked)').length;
+            var markings = [];
+            var labels = [];
+            var points = [];
+            var size = $('#PropertyGrid tr:has(:checkbox:checked)').length + $('#StateGrid tr:has(:checkbox:checked)').length;
             var count = 0;
 
             $('#PropertyGrid tr:has(:checkbox:checked)').each(function () {
                 var obj = $(this).find('td').eq(1).html();
                 var prop = $(this).find('td').eq(2).html();
+                var from = '1900-01-01';
+                var to = '2039-01-01';
 
-                $.getJSON('http://' + host + ':8732/api/analytics/' + obj + '/' + prop + '?callback=?', null, function (data) {
+                if ($("#<%=datepickerFrom.ClientID%>").val() != '')
+                    from = $("#<%=datepickerFrom.ClientID%>").val()
+                if ($("#<%=datepickerTo.ClientID%>").val() != '')
+                    to = $("#<%=datepickerTo.ClientID%>").val()
+
+                $.getJSON('http://' + host + ':8732/api/analytics/' + obj + '/' + prop + '?f=' + from + '&t=' + to + '&callback=?', null, function (data) {
                     datasets.push(data[0]);
                     count++;
                 });
             });
+
+            $('#StateGrid tr:has(:checkbox:checked)').each(function () {
+                var obj = $(this).find('td').eq(1).html();
+                var from = '1900-01-01';
+                var to = '2039-01-01';
+
+                if ($("#<%=datepickerFrom.ClientID%>").val() != '')
+                    from = $("#<%=datepickerFrom.ClientID%>").val()
+                if ($("#<%=datepickerTo.ClientID%>").val() != '')
+                    to = $("#<%=datepickerTo.ClientID%>").val()
+
+                $.getJSON('http://' + host + ':8732/api/analytics/state/' + obj + '?f=' + from + '&t=' + to + '&callback=?', null, function (data) {
+                    $.each(data, function (i, obj) {
+                        markings.push({ color: "#000", lineWidth: 1, xaxis: { from: + obj.datetime , to:  + obj.datetime } });
+                        labels.push(obj.obj + ' - ' + obj.state);
+                        points.push(obj.datetime);
+                    });
+
+                    count++;
+                });
+            });
+
 
             var videoInterval = setInterval(function () {
                 if (count == size) {
@@ -55,7 +109,8 @@
                         },
                         selection: {
                             mode: "x"
-                        }
+                        },
+                        grid: { markings: markings }
                     };
 
                     var plot = $.plot("#chart", datasets, options);
@@ -80,6 +135,11 @@
                             mode: "x"
                         }
                     });
+
+                    for (var i = 0; i < points.length; i++) {
+                        var o = plot.pointOffset({ x: points[i]});
+                        $("#chart").append("<div style='position:absolute;left:" + (o.left + 4) + "px;top:" + o.top + "px;color:#666;font-size:smaller'>" + labels[i] + "</div>");
+                    }
 
                     $("#chart").bind("plotselected", function (event, ranges) {
 
@@ -126,6 +186,7 @@
         <div class="span3">
             <div ID="ScriptPanel">
                 <div class="row-fluid" ID="PropertyGrid" style="overflow: auto; max-height:350px;" onscroll="SetDivPosition()">
+                    <h2>Properties</h2>
                     <asp:GridView runat="server" ID="gvProperties"
                         AutoGenerateColumns="False"  
                         GridLines="None"  
@@ -143,10 +204,29 @@
                         </Columns>
                     </asp:GridView>
                 </div>
+                <div class="row-fluid" ID="StateGrid" style="overflow: auto; max-height:350px;">
+                    <h2>States</h2>
+                    <asp:GridView runat="server" ID="gvStates"
+                        AutoGenerateColumns="False"  
+                        GridLines="None"  
+                        CssClass="mGrid" ShowHeader="true" 
+                        AlternatingRowStyle-CssClass="alt" DataKeyNames="object_name" ShowHeaderWhenEmpty="true">  
+                        <Columns>  
+                            <asp:TemplateField HeaderText="View" Visible="True">
+                                <ItemTemplate>
+                                    <asp:CheckBox ID="chkEnabled" runat="server" onclick="load();"/>
+                                </ItemTemplate>
+                                <ItemStyle HorizontalAlign="Center" />
+                            </asp:TemplateField>
+                            <asp:BoundField DataField="object_name" Visible="True" HeaderText="Object" />
+                        </Columns>
+                    </asp:GridView>
+                </div>
             </div>
         </div>
         <div class="span9">
             <div class="row-fluid">
+                From: <asp:TextBox runat="server" ID="datepickerFrom"></asp:TextBox> To: <asp:TextBox runat="server" ID="datepickerTo"></asp:TextBox>
                 <img ID="loading" src="Images/loading.GIF" style="display:block; max-height:100px; margin-left:auto; margin-right:auto;"/>
                 <div ID="chart" class="span12" style="height: 300px;width:95%;margin-left:auto; margin-right:auto;">
                     

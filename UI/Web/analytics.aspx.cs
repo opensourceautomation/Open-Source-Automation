@@ -24,7 +24,7 @@ public partial class analytics : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         loadProperties();
-
+        loadStates();
         
     }
 
@@ -42,6 +42,14 @@ public partial class analytics : System.Web.UI.Page
     {
         gvProperties.DataSource = OSAESql.RunSQL("SELECT DISTINCT CONCAT(object_name,' - ',property_name)as prop_name, object_name, property_name FROM osae_v_object_property_history WHERE property_datatype IN ('Integer', 'Float', 'Boolean') ORDER BY prop_name");
         gvProperties.DataBind();
+
+
+    }
+
+    private void loadStates()
+    {
+        gvStates.DataSource = OSAESql.RunSQL("SELECT DISTINCT object_name FROM osae_v_object_state_change_history ORDER BY object_name");
+        gvStates.DataBind();
 
 
     }
