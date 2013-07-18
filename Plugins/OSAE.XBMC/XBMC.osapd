@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>XBMC</plugin-name>
 <plugin-id>501c5519-d072-4953-9cc7-005007f3490c</plugin-id>
-<plugin-version>0.2.1</plugin-version>
+<plugin-version>0.2.2</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Control XBMC and receive event notifications</short-description>
 <author>Brian Woodworth</author>

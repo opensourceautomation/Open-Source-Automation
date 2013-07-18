@@ -102,6 +102,9 @@
                         enablePolling(nid);
                     else if(method.MethodName == "ON")
                     {
+                        int val = 255;
+                        if (method.Parameter1 != "")
+                            val = Int32.Parse(method.Parameter1);
                         Value v = new Value();
                         foreach (Value value in node.Values)
                         {
@@ -116,7 +119,7 @@
                         if(OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).BaseType == "BINARY SWITCH")
                             m_manager.SetValue(v.ValueID, true);
                         else if(OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).BaseType == "MULTILEVEL SWITCH")
-                            m_manager.SetValue(v.ValueID, method.Parameter1);
+                            m_manager.SetValue(v.ValueID, (byte)val);
 
                         OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
                         logging.AddToLog("Turned on: " + method.ObjectName, false);
@@ -135,7 +138,7 @@
                         if (OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).BaseType == "BINARY SWITCH")
                             m_manager.SetValue(v.ValueID, false);
                         else if (OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).BaseType == "MULTILEVEL SWITCH")
-                            m_manager.SetValue(v.ValueID, 0);
+                            m_manager.SetValue(v.ValueID, (byte)0);
 
                         //m_manager.SetNodeOff(m_homeId, nid);
                         OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
@@ -348,6 +351,7 @@
                                         OSAEObjectTypeManager.ObjectTypeStateAdd("OFF", "Off", objType);
                                         OSAEObjectTypeManager.ObjectTypeEventAdd("ON", "On", objType);
                                         OSAEObjectTypeManager.ObjectTypeEventAdd("OFF", "Off", objType);
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd("ALARM", "Alarm", objType);
                                     }
                                     else
                                     {
