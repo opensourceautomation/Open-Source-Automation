@@ -15,11 +15,12 @@ namespace OSAE.UI.Controls
         public OSAEObject screenObject { get; set; }
         public Point Location;
         public DateTime LastUpdated;
-
+        public DateTime LastStateChange;
+        
         public string StateMatch;
         public string CurState;
 
-        private string ObjectName;
+        public string ObjectName;
         private OSAEImageManager imgMgr = new OSAEImageManager();
 
         public StateImage(OSAEObject sObject)
@@ -29,6 +30,7 @@ namespace OSAE.UI.Controls
             screenObject = sObject;
             ObjectName = screenObject.Property("Object Name").Value;
             CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
+            LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
 
             Image.Tag = ObjectName;
             Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
@@ -65,6 +67,7 @@ namespace OSAE.UI.Controls
         public void Update()
         {
             CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
+            LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
 
             foreach (OSAEObjectProperty p in screenObject.Properties)
             {
