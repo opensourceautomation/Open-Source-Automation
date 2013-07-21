@@ -28,47 +28,62 @@ namespace OSAE.UI.Controls
             InitializeComponent();
 
             screenObject = sObject;
-            ObjectName = screenObject.Property("Object Name").Value;
-            CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
-            LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
-
-            Image.Tag = ObjectName;
-            Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
-
-            foreach (OSAEObjectProperty p in screenObject.Properties)
+            try
             {
-                if (p.Value.ToLower() == CurState.ToLower())
+
+                ObjectName = screenObject.Property("Object Name").Value;
+                CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
+                LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
+
+                Image.Tag = ObjectName;
+                Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
+
+                foreach (OSAEObjectProperty p in screenObject.Properties)
                 {
-                    StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
+                    if (p.Value.ToLower() == CurState.ToLower())
+                    {
+                        StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
+                    }
+                }
+
+                string imgName = screenObject.Property(StateMatch + " Image").Value;
+                OSAEImage img = imgMgr.GetImage(imgName);
+
+                if (img.Data != null)
+                {
+                    var imageStream = new MemoryStream(img.Data);
+                    var bitmapImage = new BitmapImage();
+
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = imageStream;
+                    bitmapImage.EndInit();
+                    Image.Source = bitmapImage;
+                    Image.Visibility = System.Windows.Visibility.Visible;
+                }
+                else
+                {
+                    Image.Source = null;
+                    Image.Visibility = System.Windows.Visibility.Hidden;
                 }
             }
-
-            string imgName = screenObject.Property(StateMatch + " Image").Value;
-            OSAEImage img = imgMgr.GetImage(imgName);
-
-            if (img.Data != null)
+            catch (Exception ex)
             {
-                var imageStream = new MemoryStream(img.Data);
-                var bitmapImage = new BitmapImage();
+               
+            }
 
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = imageStream;
-                bitmapImage.EndInit();
-                Image.Source = bitmapImage;
-                Image.Visibility = System.Windows.Visibility.Visible;
-            }
-            else
-            {
-                Image.Source = null;
-                Image.Visibility = System.Windows.Visibility.Hidden;
-            }
         }
 
         public void Update()
         {
-            CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
-            LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
+            try
+            {
+                CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
+                LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
+            }
+            catch (Exception ex)
+            {
 
+            }
             foreach (OSAEObjectProperty p in screenObject.Properties)
             {
                 if (p.Value.ToLower() == CurState.ToLower())

@@ -185,8 +185,14 @@
                                     {
                                         logging.AddToLog("Updating:  " + newCtrl.ControlName, false);
                                         sImage.LastUpdated = newCtrl.LastUpdated;
-                                        sImage.Update();
+                                        try
+                                        {
+                                            sImage.Update();
+                                        }
+                                        catch (Exception ex)
+                                        {
 
+                                        }
                                         this.Dispatcher.Invoke((Action)(() =>
                                         {
                                             Canvas.SetLeft(sImage, sImage.Location.X);
@@ -331,9 +337,16 @@
 
                     foreach (OSAE.OSAEObjectProperty p in obj.Properties)
                     {
-                        if (p.Value.ToLower() == stateImageControl.CurState.ToLower())
+                        try
                         {
-                            sStateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
+                            if (p.Value.ToLower() == stateImageControl.CurState.ToLower())
+                            {
+                                sStateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            return;
                         }
                     }
                     int dZ = Int32.Parse(obj.Property("ZOrder").Value);
