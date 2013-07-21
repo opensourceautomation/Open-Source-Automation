@@ -346,19 +346,28 @@
                         }
                         catch (Exception ex)
                         {
+                            logging.AddToLog("Error finding object: " + ex.Message, true);
                             return;
                         }
                     }
-                    int dZ = Int32.Parse(obj.Property("ZOrder").Value);
-                    stateImageControl.Location.X = Double.Parse(obj.Property(sStateMatch + " X").Value);
-                    stateImageControl.Location.Y = Double.Parse(obj.Property(sStateMatch + " Y").Value);
-                    canGUI.Children.Add(stateImageControl);
-                    Canvas.SetLeft(stateImageControl, stateImageControl.Location.X);
-                    Canvas.SetTop(stateImageControl, stateImageControl.Location.Y);
-                    Canvas.SetZIndex(stateImageControl, dZ);
-                    stateImages.Add(stateImageControl);
-                    controlTypes.Add(typeof(StateImage));
-                    stateImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    try
+                    {
+                        int dZ = Int32.Parse(obj.Property("ZOrder").Value);
+                        stateImageControl.Location.X = Double.Parse(obj.Property(sStateMatch + " X").Value);
+                        stateImageControl.Location.Y = Double.Parse(obj.Property(sStateMatch + " Y").Value);
+                        canGUI.Children.Add(stateImageControl);
+                        Canvas.SetLeft(stateImageControl, stateImageControl.Location.X);
+                        Canvas.SetTop(stateImageControl, stateImageControl.Location.Y);
+                        Canvas.SetZIndex(stateImageControl, dZ);
+                        stateImages.Add(stateImageControl);
+                        controlTypes.Add(typeof(StateImage));
+                        stateImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    }
+                    catch (Exception ex)
+                    {
+                        logging.AddToLog("Error updating screenObject: " + ex.Message, true);
+                        return;
+                    }
                 }
                 #endregion
 
@@ -366,17 +375,25 @@
                 else if (obj.Type == "CONTROL PROPERTY LABEL")
                 {
                     logging.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
-                    PropertyLabel pl = new PropertyLabel(obj);
-                    canGUI.Children.Add(pl);
-                    int dZ = Int32.Parse(obj.Property("ZOrder").Value);
-                    pl.Location.X = Double.Parse(obj.Property("X").Value);
-                    pl.Location.Y = Double.Parse(obj.Property("Y").Value);
-                    Canvas.SetLeft(pl, pl.Location.X);
-                    Canvas.SetTop(pl, pl.Location.Y);
-                    Canvas.SetZIndex(pl, dZ);
-                    propLabels.Add(pl);
-                    controlTypes.Add(typeof(PropertyLabel));
-                    pl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    try
+                    {
+                        PropertyLabel pl = new PropertyLabel(obj);
+                        canGUI.Children.Add(pl);
+                        int dZ = Int32.Parse(obj.Property("ZOrder").Value);
+                        pl.Location.X = Double.Parse(obj.Property("X").Value);
+                        pl.Location.Y = Double.Parse(obj.Property("Y").Value);
+                        Canvas.SetLeft(pl, pl.Location.X);
+                        Canvas.SetTop(pl, pl.Location.Y);
+                        Canvas.SetZIndex(pl, dZ);
+                        propLabels.Add(pl);
+                        controlTypes.Add(typeof(PropertyLabel));
+                        pl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    }
+                    catch (Exception ex)
+                    {
+                        logging.AddToLog("Error updating PropertyLabelControl: " + ex.Message, true);
+                        return;
+                    }
                 }
                 #endregion
 
@@ -384,6 +401,8 @@
                 else if (obj.Type == "CONTROL STATIC LABEL")
                 {
                     logging.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
+                    try
+                    {
                     OSAE.UI.Controls.StaticLabel sl = new OSAE.UI.Controls.StaticLabel(obj);
                     canGUI.Children.Add(sl);
                     int dZ = Int32.Parse(obj.Property("ZOrder").Value);
@@ -395,25 +414,39 @@
                     staticLabels.Add(sl);
                     controlTypes.Add(typeof(OSAE.UI.Controls.StaticLabel));
                     sl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    }
+                    catch (Exception ex)
+                    {
+                            logging.AddToLog("Error updating PropertyLabelControl: " + ex.Message, true);
+                            return;
+                    }
                 }
                 #endregion
 
                 #region CONTROL TIMER LABEL
                 else if (obj.Type == "CONTROL TIMER LABEL")
                 {
-                    logging.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
-                    OSAE.UI.Controls.TimerLabel tl = new OSAE.UI.Controls.TimerLabel(obj);
-                    canGUI.Children.Add(tl);
-                    int dZ = Int32.Parse(obj.Property("ZOrder").Value);
-                    tl.Location.X = Double.Parse(obj.Property("X").Value);
-                    tl.Location.Y = Double.Parse(obj.Property("Y").Value);
-                    Canvas.SetLeft(tl, tl.Location.X);
-                    Canvas.SetTop(tl, tl.Location.Y);
-                    Canvas.SetZIndex(tl, dZ);
-                    timerLabels.Add(tl);
-                    controlTypes.Add(typeof(OSAE.UI.Controls.TimerLabel));
-                    tl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    logging.AddToLog("Loading PropertyTimerControl: " + obj.Name, false);
+                    try
+                    {
 
+                        OSAE.UI.Controls.TimerLabel tl = new OSAE.UI.Controls.TimerLabel(obj);
+                        canGUI.Children.Add(tl);
+                        int dZ = Int32.Parse(obj.Property("ZOrder").Value);
+                        tl.Location.X = Double.Parse(obj.Property("X").Value);
+                        tl.Location.Y = Double.Parse(obj.Property("Y").Value);
+                        Canvas.SetLeft(tl, tl.Location.X);
+                        Canvas.SetTop(tl, tl.Location.Y);
+                        Canvas.SetZIndex(tl, dZ);
+                        timerLabels.Add(tl);
+                        controlTypes.Add(typeof(OSAE.UI.Controls.TimerLabel));
+                        tl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    }
+                    catch (Exception ex)
+                    {
+                        logging.AddToLog("Error updating PropertyTimerControl: " + ex.Message, true);
+                        return;
+                    }
                 }
                 #endregion
 
