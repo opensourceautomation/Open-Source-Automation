@@ -180,7 +180,7 @@ public partial class home : System.Web.UI.Page
     }
     protected void ddlMethod_SelectedIndexChanged(object sender, EventArgs e)
     {
-        DataSet ds = OSAESql.RunSQL("SELECT param_1_label, param_2_label, param_1_default, param_2_default FROM osae_v_object_type_method otm INNER JOIN osae_object oo ON oo.object_type_id = otm.object_type_id WHERE object_name = '" + hdnSelectedObjectName.Text + "' AND method_name = '" + ddlMethod.SelectedItem.Value + "'");
+        DataSet ds = OSAESql.RunSQL("SELECT param_1_label, param_2_label, param_1_default, param_2_default FROM osae_v_object_type_method otm INNER JOIN osae_object oo ON oo.object_type_id = otm.object_type_id WHERE object_name = '" + hdnSelectedObjectName.Text.Replace("'","''") + "' AND method_name = '" + ddlMethod.SelectedItem.Value + "'");
         DataTable dt = ds.Tables[0];
         if (dt.Rows.Count > 0)
         {
@@ -226,15 +226,15 @@ public partial class home : System.Web.UI.Page
 
     private void loadDDLs()
     {
-        ddlState.DataSource = OSAESql.RunSQL("SELECT state_label as Text, state_name as Value FROM osae_object_type_state ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + hdnSelectedObjectName.Text + "'"); ;
+        ddlState.DataSource = OSAESql.RunSQL("SELECT state_label as Text, state_name as Value FROM osae_object_type_state ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + hdnSelectedObjectName.Text.Replace("'", "''") + "'"); ;
         ddlState.DataBind();
         if (ddlState.Items.Count == 0)
             divState.Visible = false;
         else
             divState.Visible = true;
-        
 
-        ddlMethod.DataSource = OSAESql.RunSQL("SELECT method_label as Text, method_name as Value FROM osae_object_type_method ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + hdnSelectedObjectName.Text + "'"); ;
+
+        ddlMethod.DataSource = OSAESql.RunSQL("SELECT method_label as Text, method_name as Value FROM osae_object_type_method ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + hdnSelectedObjectName.Text.Replace("'", "''") + "'"); ;
         ddlMethod.DataBind();
         if (ddlMethod.Items.Count == 0)
             divMethod.Visible = false;
@@ -242,7 +242,7 @@ public partial class home : System.Web.UI.Page
             divMethod.Visible = true;
         ddlMethod.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
-        ddlEvent.DataSource = OSAESql.RunSQL("SELECT event_label as Text, event_name as Value FROM osae_object_type_event ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + hdnSelectedObjectName.Text + "'"); ;
+        ddlEvent.DataSource = OSAESql.RunSQL("SELECT event_label as Text, event_name as Value FROM osae_object_type_event ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + hdnSelectedObjectName.Text.Replace("'", "''") + "'"); ;
         ddlEvent.DataBind();
         if (ddlEvent.Items.Count == 0)
             divEvent.Visible = false;
@@ -269,7 +269,7 @@ public partial class home : System.Web.UI.Page
 
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, last_updated FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text + "'");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, last_updated FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text.Replace("'", "''") + "'");
         gvProperties.DataBind();
     }
 
