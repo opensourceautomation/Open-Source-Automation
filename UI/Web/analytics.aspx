@@ -226,7 +226,9 @@
         </div>
         <div class="span9">
             <div class="row-fluid">
-                From: <asp:TextBox runat="server" ID="datepickerFrom"></asp:TextBox> To: <asp:TextBox runat="server" ID="datepickerTo"></asp:TextBox>
+                From: <asp:TextBox runat="server" ID="datepickerFrom" style="margin-top:10px;"></asp:TextBox> To: <asp:TextBox runat="server" ID="datepickerTo" style="margin-top:10px;"></asp:TextBox> &nbsp; &nbsp; <img src="Images/refresh.png" onclick="load();" style="margin-top:auto;">
+            </div>
+            <div class="row-fluid">
                 <img ID="loading" src="Images/loading.GIF" style="display:block; max-height:100px; margin-left:auto; margin-right:auto;"/>
                 <div ID="chart" class="span12" style="height: 300px;width:95%;margin-left:auto; margin-right:auto;">
                     
