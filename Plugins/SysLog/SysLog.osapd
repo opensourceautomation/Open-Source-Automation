@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
-<plugin-name>Rest</plugin-name>
-<plugin-id>094267E6-416B-4A75-BA16-188842265C17</plugin-id>
-<plugin-version>0.0.2</plugin-version>
+<plugin-name>SysLog</plugin-name>
+<plugin-id>027998b8-c8e8-43fe-a175-2dc0b08abf6a</plugin-id>
+<plugin-version>0.0.1</plugin-version>
 <plugin-state>alpha</plugin-state>
-<short-description>Provides Rest Access to OSA</short-description>
+<short-description>Allows OSA to process SysLog messages</short-description>
 <author>Matthew Stebbings</author>
-<destination-folder>Rest</destination-folder>
-<main-file>bin\Debug\OSAE.Rest.dll</main-file>
+<destination-folder>SysLog</destination-folder>
+<main-file>bin\Debug\OSAE.SysLog.dll</main-file>
 <wiki-url></wiki-url>
 <additional-assemblies>
 </additional-assemblies>

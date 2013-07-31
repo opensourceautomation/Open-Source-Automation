@@ -256,5 +256,23 @@
                 }
             }
         }
+
+        public static DataSet ObjectPropertyHistoryGet(string objectName, string propertyName, string from, string to)
+        {
+            DataSet ds = new DataSet();
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "SELECT history_timestamp, CASE property_datatype WHEN 'Boolean' THEN IF(property_value='TRUE', 1, 0) ELSE property_value END AS property_value FROM osae_v_object_property_history WHERE object_name = '" + objectName + "' and property_name = '" + propertyName + "' AND history_timestamp BETWEEN '" + from + "' AND '" + to + "' ORDER BY history_timestamp asc";
+                try
+                {
+                    ds = OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectPropertyHistoryGet error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+            return ds;
+        }
     }
 }

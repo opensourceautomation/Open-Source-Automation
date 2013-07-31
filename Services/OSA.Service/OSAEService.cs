@@ -111,6 +111,8 @@
             Common.CreateComputerObject(sourceName);
             CreateServiceObject();
 
+            OSAE.OSAESql.RunSQL("SET GLOBAL event_scheduler = ON;");
+
             // Start the WCF service so messages can be sent 
             // and received by the service
             StartWCFService();

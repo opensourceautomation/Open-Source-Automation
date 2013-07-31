@@ -110,7 +110,7 @@ public partial class schedules : System.Web.UI.Page
         ddlScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
         ddlScript.DataBind();
 
-        ddlObject.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_id as Value FROM osae_object ORDER BY object_name"); ;
+        ddlObject.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_name as Value FROM osae_object ORDER BY object_name"); ;
         ddlObject.DataBind();
         if (ddlObject.Items.Count == 0)
             ddlObject.Visible = false;
@@ -118,6 +118,13 @@ public partial class schedules : System.Web.UI.Page
             ddlObject.Visible = true;
         ddlObject.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
+    }
+
+    private void loadMethods()
+    {
+        ddlMethod.DataSource = OSAESql.RunSQL("SELECT method_label as Text, method_name as Value FROM osae_v_object_method WHERE object_name = '" + ddlObject.SelectedValue + "' ORDER BY method_label");
+        ddlMethod.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+        ddlMethod.DataBind();
     }
 
     private void loadDetails()
@@ -136,6 +143,14 @@ public partial class schedules : System.Web.UI.Page
         DateTime dt = Convert.ToDateTime(date); 
         txtPickedDate.Text = dt.Year + "-" + dt.Month + "-" + dt.Day;
 
+        chkSunday.Checked = false;
+        chkSaturday.Checked = false;
+        chkMonday.Checked = false;
+        chkTuesday.Checked = false;
+        chkWednesday.Checked = false;
+        chkThursday.Checked = false;
+        chkFriday.Checked = false;
+
         if (schedule.Sunday == "1")
             chkSunday.Checked = true;
         if (schedule.Saturday == "1")
@@ -151,6 +166,7 @@ public partial class schedules : System.Web.UI.Page
         if (schedule.Friday == "1")
             chkFriday.Checked = true;
 
+        chkActive.Checked = false;
         if (schedule.Active == "1")
             chkActive.Checked = true;
 
@@ -159,7 +175,10 @@ public partial class schedules : System.Web.UI.Page
             rblAction.SelectedValue = "2";
             rblAction_SelectedIndexChanged(null, null);
             ddlObject.SelectedValue = schedule.Object;
+
+            loadMethods();
             ddlMethod.SelectedValue = schedule.Method;
+
             txtParam1.Text = schedule.Param1;
             txtParam2.Text = schedule.Param2; 
         }
@@ -217,9 +236,7 @@ public partial class schedules : System.Web.UI.Page
     }
     protected void ddlObject_SelectedIndexChanged(object sender, EventArgs e)
     {
-        ddlMethod.DataSource = OSAESql.RunSQL("SELECT method_label as Text, method_name as Value FROM osae_v_object_method WHERE object_id = " + ddlObject.SelectedValue + " ORDER BY method_label");
-        ddlMethod.Items.Insert(0, new ListItem(String.Empty, String.Empty));
-        ddlMethod.DataBind();
+        loadMethods();
     }
     protected void btnAdd_Click(object sender, EventArgs e)
     {

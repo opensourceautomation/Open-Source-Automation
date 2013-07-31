@@ -78,9 +78,16 @@ namespace OSAE.XBMC
                     }
                 }
                 logging.AddToLog("Creating new XBMC System connection: " + obj.Name + " - " + ip, false);
-                XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
-                if(system.Connect())
-                    Systems.Add(system);
+                try
+                {
+                    XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
+                    if (system.Connect())
+                        Systems.Add(system);
+                }
+                catch (Exception ex)
+                {
+                    logging.AddToLog("Error connecting to XBMC system: " + ex.Message + " - " + ex.InnerException.Message, true);
+                }
             }
 
             Clock = new System.Timers.Timer();
@@ -107,10 +114,12 @@ namespace OSAE.XBMC
 
         public void Timer_Tick(object sender, EventArgs eArgs)
         {
+            
             try
             {
                 foreach (XBMCSystem r in Systems)
                 {
+                    logging.AddToLog("Checking " + r.Name + " - pinging: " + r.Pinging.ToString(), false);
                     if (!r.Pinging)
                     {
                         if (!r.Connected)
@@ -122,7 +131,7 @@ namespace OSAE.XBMC
                 }
 
                 OSAEObjectCollection XBMCInstances = OSAEObjectManager.GetObjectsByType("XBMC System");
-                foreach (OSAEObject obj in XBMCInstances)
+                foreach (OSAEObject obj in XBMCInstances.ToList())
                 {
                     foreach (XBMCSystem r in Systems)
                     {
@@ -162,7 +171,7 @@ namespace OSAE.XBMC
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error on timer tick: " + ex.Message + " - " + ex.InnerException.Message, true);
+                logging.AddToLog("Error on timer tick: " + ex.Message, true);
             }
 
         }
@@ -271,6 +280,7 @@ namespace OSAE.XBMC
 
         public bool Connect()
         {
+            logging.AddToLog("Attempting connection: " + Name, false);
             try
             {
                 _pinging = true;
@@ -293,7 +303,10 @@ namespace OSAE.XBMC
                     return true;
                 }
                 else
+                {
+                    _pinging = false;
                     return false;
+                }
             }
             catch(Exception ex)
             {

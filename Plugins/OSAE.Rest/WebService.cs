@@ -5,11 +5,13 @@
     using System.Data;
     using System.ServiceModel;
     using System.ServiceModel.Web;
+    using System.Drawing;
     using OSAE;
     
     [ServiceContract]
     public interface IRestService
     {
+        
         [OperationContract]
         [WebGet(UriTemplate = "object/{name}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         OSAEObject GetObject(string name);
@@ -70,11 +72,21 @@
 
         [OperationContract]        
         [WebInvoke(UriTemplate = "property/update?objName={objName}&propName={propName}&propVal={propVal}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean SetObjectProperty(string objName, string propName, string propVal);        
+        Boolean SetObjectProperty(string objName, string propName, string propVal);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "analytics/{objName}/{propName}?f={from}&t={to}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare )]
+        List<OSAEPropertyHistory> GetPropertyHistory(string objName, string propName, string from, string to);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "analytics/state/{objName}?f={from}&t={to}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
+        List<OSAEStateHistory> GetStateHistory(string objName, string from, string to);
     }
 
     public class api : IRestService
     {
+        private Logging logging = Logging.GetLogger("Rest");
+        
         public OSAEObject GetObject(string name)
         {
             // lookup object 
@@ -247,7 +259,55 @@
             return booleanvalue;
         }
 
+        public List<OSAEPropertyHistory> GetPropertyHistory(string objName, string propName, string from, string to)
+        {
+            List<OSAEPropertyHistory> list = new List<OSAEPropertyHistory>();
+            DataSet ds = OSAEObjectPropertyManager.ObjectPropertyHistoryGet(objName, propName, from, to);
+            OSAEPropertyHistory ph = new OSAEPropertyHistory();
+            ph.label = objName + " - " + propName;
+            List<List<double>> vals = new List<List<double>>();
+            ph.data = vals;
+
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                List<double> p = new List<double>();
+                p.Add((double)Common.GetJavascriptTimestamp(DateTime.Parse(dr["history_timestamp"].ToString())));
+                p.Add(double.Parse(dr["property_value"].ToString()));
+                vals.Add(p);
+            }
+            list.Add(ph);
+            return list;
+        }
+
+        public List<OSAEStateHistory> GetStateHistory(string objName, string from, string to)
+        {
+            List<OSAEStateHistory> list = new List<OSAEStateHistory>();
+            DataSet ds = OSAEObjectStateManager.ObjectStateHistoryGet(objName, from, to);
+            
+
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                OSAEStateHistory sh = new OSAEStateHistory();
+                sh.obj = dr["object_name"].ToString();
+                sh.state = dr["state_label"].ToString();
+                sh.datetime = (double)Common.GetJavascriptTimestamp(DateTime.Parse(dr["history_timestamp"].ToString()));
+                list.Add(sh);
+            }
+            return list;
+        }
+
     }
 
+    public class OSAEPropertyHistory
+    {
+        public string label;
+        public List<List<double>> data;
+    }
 
+    public class OSAEStateHistory
+    {
+        public string obj;
+        public string state;
+        public double datetime;
+    }
 }

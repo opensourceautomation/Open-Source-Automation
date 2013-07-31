@@ -81,6 +81,20 @@
                 return registry.Read("DBUSERNAME");
             }
         }
+
+        /// <summary>
+        /// The address of the WCF server
+        /// </summary>
+        public static string WcfServer
+        {
+            get
+            {
+                ModifyRegistry registry = new ModifyRegistry();
+                registry.SubKey = "SOFTWARE\\OSAE\\";
+
+                return registry.Read("WcfServer");
+            }
+        }
              
         /// <summary>
         /// Gets the connection string used to connect to the OSA DB
@@ -276,6 +290,11 @@
             StrongName strongName = item.Assembly.Evidence.GetHostEvidence<StrongName>();
 
             return AppDomain.CreateDomain(name, null, setup);
+        }
+
+        public static long GetJavascriptTimestamp(System.DateTime input)
+        {
+            return (long)input.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
         }
     }
 }

@@ -20,8 +20,15 @@ public partial class eventlogs : System.Web.UI.Page
 
     private void BindData()
     {
-        eventLogGridView.DataSource = OSAESql.RunSQL("SELECT log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY log_time DESC, object_name LIMIT 100");
-        eventLogGridView.DataBind();
+        try
+        {
+            eventLogGridView.DataSource = OSAESql.RunSQL("SELECT log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY log_time DESC LIMIT 500");
+            eventLogGridView.DataBind();
+        }
+        catch (Exception ex)
+        {
+            logging.AddToLog("Error retreiving event log: " + ex.Message, true);
+        }
     }
    
     protected void clearLogButton_Click(object sender, EventArgs e)

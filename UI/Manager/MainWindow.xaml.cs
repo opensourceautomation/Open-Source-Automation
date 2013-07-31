@@ -106,12 +106,18 @@
             tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
             tcpBinding.Security.Mode = SecurityMode.None;
 
-            EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.DBConnection + ":8731/WCFService/");
+            EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.WcfServer + ":8731/WCFService/");
             var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
 
-
-            wcfObj = myChannelFactory.CreateChannel(myEndpoint);
-            wcfObj.Subscribe();
+            try
+            {
+                wcfObj = myChannelFactory.CreateChannel(myEndpoint);
+                wcfObj.Subscribe();
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("Error subscribing to host: " + ex.Message, true);
+            }
 
             Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.CONNECT, "connected"));
             thread.Start();
@@ -593,6 +599,7 @@
             // Process open file dialog box results 
             if (result == true)
             {
+                logging.AddToLog("Plugin file selected: " + dlg.FileName + ".  Installing...", true);
                 // Open Plugin Package 
                 PluginInstallerHelper pInst = new PluginInstallerHelper();
                 pInst.InstallPlugin(dlg.FileName);
