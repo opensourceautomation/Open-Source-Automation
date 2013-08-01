@@ -165,6 +165,7 @@
 
                             MySqlDataAdapter adapter;
                             DataSet dataset = new DataSet();
+                            DataSet dataset2 = new DataSet();
                             MySqlCommand command = new MySqlCommand();
 
                             command.Connection = connection;
@@ -173,7 +174,12 @@
                             adapter = new MySqlDataAdapter(command);
                             adapter.Fill(dataset);
 
-                            if (dataset.Tables[0].Rows.Count > 0)
+                            command.CommandText = "SELECT * FROM osae_v_object WHERE object_type=@type";
+                            command.Parameters.AddWithValue("@type", plugin.PluginType);
+                            adapter = new MySqlDataAdapter(command);
+                            adapter.Fill(dataset2);
+
+                            if (dataset.Tables[0].Rows.Count > 0 && dataset2.Tables[0].Rows.Count > 0)
                             {
                                 plugin.PluginName = plugin.PluginType + "-" + Common.ComputerName;
                             }
