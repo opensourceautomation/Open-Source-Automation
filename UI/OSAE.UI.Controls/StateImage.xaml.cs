@@ -34,6 +34,7 @@ namespace OSAE.UI.Controls
                 ObjectName = screenObject.Property("Object Name").Value;
                 CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
                 LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
+                Image.ToolTip = ObjectName + "\n" + CurState + " since: " + LastStateChange;
 
                 Image.Tag = ObjectName;
                 Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
@@ -84,6 +85,7 @@ namespace OSAE.UI.Controls
             {
 
             }
+            Image.ToolTip = ObjectName + "\n" + CurState + " since: " + LastStateChange;
             foreach (OSAEObjectProperty p in screenObject.Properties)
             {
                 if (p.Value.ToLower() == CurState.ToLower())
