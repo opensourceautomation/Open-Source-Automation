@@ -48,7 +48,7 @@ Public Class ComputerPower
                     UpdateInterval = 30000
                 End If
 
-                logging.AddToLog("Update Interval set to: " & (UpdateInterval / 1000).ToString, False)
+                logging.AddToLog("Update Interval set to: " & (UpdateInterval / 1000).ToString, True)
 
                 UpdateTimer = New Timer(UpdateInterval)
                 AddHandler UpdateTimer.Elapsed, New ElapsedEventHandler(AddressOf TimerHandler)
