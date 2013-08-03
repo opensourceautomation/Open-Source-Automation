@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("")> 
 <Assembly: AssemblyCompany("Automate")> 
 <Assembly: AssemblyProduct("Meter Reader")> 
-<Assembly: AssemblyCopyright("Copyright © Automate 2011")> 
+<Assembly: AssemblyCopyright("Copyright © Automate 2013")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("0.1.0.0")> 
-<Assembly: AssemblyFileVersion("0.1.0.0")> 
+<Assembly: AssemblyVersion("0.4.0.0")> 
+<Assembly: AssemblyFileVersion("0.4.0.0")> 
