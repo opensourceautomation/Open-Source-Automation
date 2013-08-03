@@ -102,14 +102,17 @@ Public Class ScriptProcessor
                 '------------------------------------------------------------------------------------------------
                 ' This Section Executes Commands ------
                 If sType = "SET" And sNesting(iNestingLevel) <> "FAIL" Then
-                    'If outValue.EndsWith(".") Then
                     iObjectPos = scriptArray(iLoop).IndexOf(".")
+                    'Looking for Object Name.
                     If iObjectPos > 0 Then
                         sObject = scriptArray(iLoop).Substring(0, iObjectPos)
+                        Dim oCurrentObject As OSAEObject
+                        oCurrentObject = OSAEObjectManager.GetObjectByName(sObject)
                         sWorking = scriptArray(iLoop).Substring(iObjectPos + 1, scriptArray(iLoop).Length - (iObjectPos + 1))
                         If sObject.ToUpper = "SQL" Then
                             OSAESql.RunSQL(sWorking)
                         Else
+                            'Now we have our object, and the rest of the line is stored in sWorking
                             iOptionPos = sWorking.IndexOf(".")
                             If iOptionPos > 0 Then
                                 sOption = sWorking.Substring(0, iOptionPos).Trim
@@ -128,7 +131,7 @@ Public Class ScriptProcessor
                                     End If
                                 End If
 
-                                ' Find First parameter based on a piar of "" or a Comma
+                                ' Find First parameter based on a pair of "" or a Comma
                                 sParam1 = ""
                                 iParam1Pos = sWorking.IndexOf(Chr(34))
                                 iQuotePos = sWorking.IndexOf(Chr(34))
@@ -175,6 +178,9 @@ Public Class ScriptProcessor
                                 ElseIf sOption.ToUpper = "SET STATE" Then
                                     OSAEObjectStateManager.ObjectStateSet(sObject, sParam1, gAppName)
                                     Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Set State: " & sObject & "." & sParam1)
+                                ElseIf sOption.ToUpper = "SET CONTAINER" Then
+                                    OSAEObjectManager.ObjectUpdate(oCurrentObject.Name, oCurrentObject.Name, oCurrentObject.Description, oCurrentObject.Type, oCurrentObject.Address, sMethod, oCurrentObject.Enabled)
+                                    Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Set Container: " & sObject & "." & sMethod)
                                 ElseIf sOption.ToUpper = "SET PROPERTY" Then
                                     iOptionPos = sWorking.IndexOf("+=")
                                     If iOptionPos <= 0 Then iOptionPos = sWorking.IndexOf("=")
