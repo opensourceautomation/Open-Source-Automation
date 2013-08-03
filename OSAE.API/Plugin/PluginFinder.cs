@@ -75,10 +75,11 @@
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // This method is called in its own App Domain so will not have access to the calling logger
-                    Logging.GetLogger("Plugin Loader").AddToLog("Found a not .NET assembly:" + file, false);
+                    Logging.GetLogger("Plugin Loader").AddToLog("An assembly was not found for file:" + file, true);
+                    Logging.GetLogger("Plugin Loader").AddToLog( ex.Message, true);
                 }
             }
 
