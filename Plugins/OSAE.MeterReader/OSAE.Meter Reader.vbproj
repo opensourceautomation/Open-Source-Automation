@@ -47,24 +47,20 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data, Version=6.3.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+    <Reference Include="CommStudio.Express.3.5, Version=2.0.0.3208, Culture=neutral, PublicKeyToken=021192b1bcf0bdf0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\MySql.Data.dll</HintPath>
+      <HintPath>..\..\Assemblies\CommStudio.Express.3.5.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.AddIn" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
     <Import Include="System.Collections" />
     <Import Include="System.Collections.Generic" />
-    <Import Include="System.Data" />
     <Import Include="System.Diagnostics" />
     <Import Include="System.Linq" />
     <Import Include="System.Xml.Linq" />
@@ -113,6 +109,7 @@
     <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
       <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
       <Name>OSAE.API</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

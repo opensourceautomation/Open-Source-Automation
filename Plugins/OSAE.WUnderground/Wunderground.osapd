@@ -3,12 +3,12 @@
 <plugin-name>WUnderground</plugin-name>
 <plugin-id>d0e7ca84-823e-4455-bd7b-3d4220487cae</plugin-id>
 <plugin-version>0.4.0</plugin-version>
-<plugin-state>alpha</plugin-state>
-<short-description>Get current conditions from Weather Underground</short-description>
+<plugin-state>beta</plugin-state>
+<short-description>Get current and forcast from Weather Underground</short-description>
 <author>Brian, Automate</author>
 <destination-folder>Wunderground</destination-folder>
 <main-file>WUnderground.dll</main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=WUnderground</wiki-url>
 <additional-assemblies>
 </additional-assemblies>
 <x64-additional-assemblies>

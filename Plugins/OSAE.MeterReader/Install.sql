@@ -5,7 +5,6 @@ CALL osae_sp_object_type_event_add ('ON','Started','METER READER');
 CALL osae_sp_object_type_event_add ('OFF','Stopped','METER READER');
 CALL osae_sp_object_type_method_add ('ON','Start','METER READER','','','','');
 CALL osae_sp_object_type_method_add ('OFF','Stop','METER READER','','','','');
-CALL osae_sp_object_type_property_add ('Computer Name','String','','METER READER',0);
 CALL osae_sp_object_type_property_add ('Port','Integer','1','METER READER',0);
 CALL osae_sp_object_type_property_add ('ReceiveAll','Boolean','TRUE','METER READER',0);
 CALL osae_sp_object_type_add ('UTILITY METER','Utility Meter','','UTILITY METER',0,1,0,0);
