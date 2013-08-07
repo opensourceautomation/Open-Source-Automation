@@ -22,7 +22,6 @@
         /// </summary>
         private const string sourceName = "OSAE Service";
               
-        private ServiceHost sHost;
         private OSAEPluginCollection plugins = new OSAEPluginCollection();
         private OSAEPluginCollection masterPlugins = new OSAEPluginCollection();
 
