@@ -28,12 +28,15 @@ public partial class controls_ctrlTimerLabel : System.Web.UI.UserControl
         else
             OffTimer = 0;
         CurrentState = timerObj.State.Value;
-        TimeInState = (int)timerObj.State.TimeInState;
+
+        TimeSpan ts = DateTime.Now - DateTime.Parse(timerObj.LastUpd);
+        TimeInState = (int)ts.TotalSeconds;
+
         if (CurrentState == "OFF")
             time = "OFF";
         else
         {
-            span = TimeSpan.FromSeconds(OffTimer - TimeInState); //Or TimeSpan.FromSeconds(seconds); (see Jakob C´s answer)
+            span = TimeSpan.FromSeconds(OffTimer - TimeInState); 
             time = span.ToString(@"mm\:ss");
         }
 
