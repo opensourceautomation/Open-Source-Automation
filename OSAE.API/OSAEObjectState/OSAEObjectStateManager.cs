@@ -93,5 +93,24 @@
             }
             return ds;
         }
+
+        public static DataSet ObjectStateListGet(string objectName)
+        {
+            DataSet ds = new DataSet();
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "SELECT state_label FROM osae_v_object_state WHERE object_name = '" + objectName + "' ORDER BY state_label asc";
+                try
+                {
+                    ds = OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectStateHistoryGet error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+            return ds;
+        }
+
     }
 }

@@ -255,7 +255,8 @@ namespace VR2
                         try
                         {
                             string sText = OSAE.Common.MatchPattern(e.Result.Text);
-                            OSAEScriptManager.RunPatternScript(sText, "", "VR"); 
+
+                            //OSAEScriptManager.RunPatternScript(sText, "", "VR"); 
                             AddToLog("Heard: " + e.Result.Text + ", Ran: " + sText);
                         }
                         catch (Exception ex)
