@@ -9,6 +9,7 @@
     using System.Security;
     using System.Threading;
     using System.Xml.Linq;
+    using NetworkCommsDotNet;
     using MySql.Data.MySqlClient;
 
     partial class OSAEService
@@ -25,7 +26,6 @@
                     plugin.Enabled = true;
                     plugin.RunInterface();
                     OSAEObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", sourceName);
-                    sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Running | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
                     logging.AddToLog("Plugin enabled: " + plugin.PluginName, true);
                 }
             }
@@ -193,8 +193,7 @@
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
 
                             logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
-                            sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName);
-
+                            UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
                         }
                         plugins.Add(plugin);
                         masterPlugins.Add(plugin);

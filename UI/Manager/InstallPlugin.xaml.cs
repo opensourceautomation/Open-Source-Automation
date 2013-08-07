@@ -13,7 +13,7 @@
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
     using System.IO;
-    using ICSharpCode.SharpZipLib.Zip;
+    //using ICSharpCode.SharpZipLib.Zip;
     using OSAE;
 
     /// <summary>
@@ -76,7 +76,7 @@
             string zipFileName = System.IO.Path.GetFullPath(PluginPackagePath);
             string DescPath = null;
 
-            FastZip fastZip = new FastZip();
+            ICSharpCode.SharpZipLib.Zip.FastZip fastZip = new ICSharpCode.SharpZipLib.Zip.FastZip();
 
             fastZip.ExtractZip(zipFileName, tempfolder, null);
             // find all included plugin descriptions and install the plugins

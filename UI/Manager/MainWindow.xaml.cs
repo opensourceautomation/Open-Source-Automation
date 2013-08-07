@@ -15,17 +15,15 @@
     using System.Windows.Media.Imaging;
     using System.Windows.Navigation;
     using OSAE;
-    using WCF;
+    using NetworkCommsDotNet;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Single, UseSynchronizationContext = false)]
-    public partial class MainWindow : Window, IMessageCallback
+    public partial class MainWindow : Window
     {
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
         ServiceController myService = new ServiceController();
-        IWCFService wcfObj;
 
         /// <summary>
         /// Used to get access to the logging facility
@@ -34,7 +32,6 @@
 
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
-        System.Timers.Timer pingTimer = new System.Timers.Timer();
         private bool clicked = true;
         private bool starting = false;
         private const string Unique = "OSAE Manager";
@@ -85,44 +82,6 @@
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //imgUpdate.Source = (ImageSource)FindResource("upgrade.png");
-
-            // Test the connection to the DB is valid before we start else the UI will
-            // hang when it tries to connect
-            if (!Common.TestConnection())
-            {
-                MessageBox.Show("The OSA DB could not be contacted, Please ensure the correct address is specified and the DB is available");
-                return;
-            }
-
-            loadPlugins();
-
-            InstanceContext site = new InstanceContext(this);
-            NetTcpBinding tcpBinding = new NetTcpBinding();
-            tcpBinding.TransactionFlow = false;
-            tcpBinding.ReliableSession.Ordered = true;
-            tcpBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
-            tcpBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
-            tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-            tcpBinding.Security.Mode = SecurityMode.None;
-
-            EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.WcfServer + ":8731/WCFService/");
-            var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
-
-            try
-            {
-                wcfObj = myChannelFactory.CreateChannel(myEndpoint);
-                wcfObj.Subscribe();
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Error subscribing to host: " + ex.Message, true);
-            }
-
-            Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.CONNECT, "connected"));
-            thread.Start();
-            
-            
             try
             {
                 myService.ServiceName = "OSAE";
@@ -163,29 +122,28 @@
                 
             }
 
+            loadPlugins();
+            
             Clock.Interval = 1000;
             Clock.Elapsed += new System.Timers.ElapsedEventHandler(CheckService);
             Clock.Start();
 
-            pingTimer.Interval = 30000;
-            pingTimer.Elapsed += new System.Timers.ElapsedEventHandler(Ping);
-            pingTimer.Start();
-
-            //dgLocalPlugins.SelectedIndex = 0;
-        }
-
-        private void messageHost(OSAEWCFMessageType msgType, string message)
-        {
             try
             {
-                wcfObj.messageHost(msgType, message, Common.ComputerName);
+                logging.AddToLog("Starting listener", false);
+                NetworkComms.AppendGlobalIncomingPacketHandler<string>("Plugin", PluginMessageReceived);
+                NetworkComms.AppendGlobalIncomingPacketHandler<string>("Commmand", CommandMessageReceived);
+                //Start listening for incoming UDP data
+                UDPConnection.StartListening(true);
+                logging.AddToLog("Listener started", false);
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error messaging host: " + ex.Message, true);
+                logging.AddToLog("Error starting listener:" + ex.Message, false);
             }
+            
         }
-
+        
         private void dgLocalPlugins_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -362,61 +320,7 @@
             Process.Start(e.Uri.ToString());
             e.Handled = true;
         }
-
-        public void OnMessageReceived(OSAEWCFMessage message)
-        {
-            logging.AddToLog("Message received: " + message.Type + " - " + message.Message, false);
-            //this.Invoke((MethodInvoker)delegate
-            //{
-                switch (message.Type)
-                {
-                    case OSAEWCFMessageType.PLUGIN:
-                        string[] split = message.Message.Split('|');
-                        bool enabled = false;
-                        if (split[1].Trim() == "True")
-                        {
-                            enabled = true;
-                        }
-
-                        foreach (PluginDescription plugin in pluginList)
-                        {
-                            if ((plugin.Type == split[5].Trim() && Common.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
-                            {
-                                if (split[3].Trim() == "ON")
-                                    plugin.Status = "Running";
-                                else if (split[3].Trim() == "OFF")
-                                    plugin.Status = "Stopped";
-                                else
-                                    plugin.Status = split[3].Trim();
-                                plugin.Enabled = enabled;
-                                plugin.Name = split[0].Trim();
-                                if (split[4].Trim() != "")
-                                    plugin.Upgrade = split[4].Trim();
-                                else
-                                {
-                                    plugin.Upgrade = string.Empty;
-                                }
-                                logging.AddToLog("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString(), true);
-                                break;
-                            }
-                        }
-                        break;
-                    case OSAEWCFMessageType.CMDLINE:
-                        string[] param = message.Message.Split('|');
-                        if (param[2].Trim() == Common.ComputerName)
-                        {
-                            logging.AddToLog("CMDLINE received: " + param[0].Trim() + " - " + param[1].Trim(), true);
-                            Process pr = new Process();
-                            pr.StartInfo.FileName = param[0].Trim();
-                            pr.StartInfo.Arguments = param[1].Trim();
-                            pr.Start();
-                        }
-                        break;
-                    
-                }
-            //});
-        }
-        
+                
         private void btnService_Click(object sender, RoutedEventArgs e)
         {
             if (btnService.Content.ToString() == "Stop")
@@ -462,7 +366,6 @@
                 Clock.Stop();
                 Clock = null;
                 logging.AddToLog("Timer stopped", true);
-                wcfObj.Unsubscribe();
             }
             catch
             { }
@@ -524,8 +427,8 @@
 
                     logging.AddToLog("checked: " + pd.Name, true);
 
-                    Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|True"));
-                    thread.Start();
+                    NetworkComms.SendObject("Plugin", "127.0.0.1", 10000, pd.Name + "|True");
+
                     logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
                     if (myService.Status == ServiceControllerStatus.Running)
                     {
@@ -555,8 +458,7 @@
                 PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
                 logging.AddToLog("unchecked: " + pd.Name, true);
 
-                Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pd.Name + "|False"));
-                thread.Start();
+                NetworkComms.SendObject("Plugin", "127.0.0.1", 10000, pd.Name + "|False");
                 logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
 
                 if (myService.Status == ServiceControllerStatus.Running)
@@ -578,13 +480,7 @@
                 logging.AddToLog("Error disabling plugin: " + ex.Message, true);
             }
         }
-
-        private void Ping(object sender, EventArgs e)
-        {
-            Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.CONNECT, "connected"));
-            thread.Start();
-        }
-
+        
         private void InstallPlugin_Click(object sender, RoutedEventArgs e)
         {
             // Configure open file dialog box 
@@ -611,6 +507,52 @@
         {
             LogWindow l = new LogWindow();
             l.ShowDialog();
+        }
+
+        private void PluginMessageReceived(PacketHeader header, Connection connection, string message)
+        {
+            string[] split = message.Split('|');
+            bool enabled = false;
+            if (split[1].Trim() == "True")
+            {
+                enabled = true;
+            }
+
+            foreach (PluginDescription plugin in pluginList)
+            {
+                if ((plugin.Type == split[5].Trim() && Common.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
+                {
+                    if (split[3].Trim() == "ON")
+                        plugin.Status = "Running";
+                    else if (split[3].Trim() == "OFF")
+                        plugin.Status = "Stopped";
+                    else
+                        plugin.Status = split[3].Trim();
+                    plugin.Enabled = enabled;
+                    plugin.Name = split[0].Trim();
+                    if (split[4].Trim() != "")
+                        plugin.Upgrade = split[4].Trim();
+                    else
+                    {
+                        plugin.Upgrade = string.Empty;
+                    }
+                    logging.AddToLog("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString(), true);
+                    break;
+                }
+            }
+        }
+
+        private void CommandMessageReceived(PacketHeader header, Connection connection, string message)
+        {
+            string[] param = message.Split('|');
+            if (param[2].Trim() == Common.ComputerName)
+            {
+                logging.AddToLog("CMDLINE received: " + param[0].Trim() + " - " + param[1].Trim(), true);
+                Process pr = new Process();
+                pr.StartInfo.FileName = param[0].Trim();
+                pr.StartInfo.Arguments = param[1].Trim();
+                pr.Start();
+            }
         }
     }
 }
