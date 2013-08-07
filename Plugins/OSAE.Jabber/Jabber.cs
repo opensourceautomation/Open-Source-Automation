@@ -90,10 +90,10 @@ namespace OSAE.Jabber
             logging.AddToLog(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()), false);
             logging.AddToLog("Message: " + msg.Body, false);
             string pattern = Common.MatchPattern(msg.Body);
-            if (pattern != string.Empty)
-            {
-                OSAEScriptManager.RunPatternScript(pattern, msg.From.Bare, "Jabber");
-            }             
+          //  if (pattern != string.Empty)
+           // {
+                //OSAEScriptManager.RunPatternScript(pattern, msg.From.Bare, "Jabber");
+           // }             
         }
 
         void xmppCon_OnClose(object sender)
