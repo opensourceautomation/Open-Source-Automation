@@ -14,6 +14,7 @@ namespace OSAE.UI.Controls
         MjpegDecoder _mjpeg;
         public Point Location;
         public OSAEObject screenObject = new OSAEObject();
+        Logging logging = Logging.GetLogger("GUI");
 
         public VideoStreamViewer(string url, OSAEObject obj)
         {
@@ -21,9 +22,14 @@ namespace OSAE.UI.Controls
             screenObject = obj;
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
+            _mjpeg.Error += _mjpeg_Error;
             
-            
-            _mjpeg.ParseStream(new Uri(url), "Admin", "123456");
+            _mjpeg.ParseStream(new Uri(url));
+        }
+
+        private void _mjpeg_Error(object sender, ErrorEventArgs e)
+        {
+            logging.AddToLog("Error parsing stream: " + e.Message, true);
         }
  
         private void mjpeg_FrameReady(object sender, FrameReadyEventArgs e)

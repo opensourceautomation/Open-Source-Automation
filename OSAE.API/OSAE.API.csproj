@@ -95,9 +95,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="General\ModifyRegistry.cs" />
     <Compile Include="OSAEScript\OSAEScriptManager.cs" />
-    <Compile Include="WCF\IMessageCallback.cs" />
-    <Compile Include="WCF\IWCFService.cs" />
-    <Compile Include="WCF\WCFService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile.snk" />

@@ -177,10 +177,6 @@
                             {
                                 if (newCtrl.ControlName == sImage.screenObject.Name)
                                 {
-                                    this.Dispatcher.Invoke((Action)(() =>
-                                    {
-                                        sImage.ToolTip = sImage.ObjectName + "\n" + sImage.CurState + " since: " + sImage.LastStateChange;
-                                    }));
                                     if (newCtrl.LastUpdated != sImage.LastUpdated)
                                     {
                                         logging.AddToLog("Updating:  " + newCtrl.ControlName, false);

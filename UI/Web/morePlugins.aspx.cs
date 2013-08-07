@@ -12,14 +12,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
-using WCF;
 
-public partial class morePlugins : System.Web.UI.Page, WCF.IMessageCallback
+public partial class morePlugins : System.Web.UI.Page
 {
-    /// <summary>
-    /// WCF Object used for communicating to other components.
-    /// </summary>
-    IWCFService wcfObj;
 
     protected void Page_Load(object sender, EventArgs e)
     {

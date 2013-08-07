@@ -11,34 +11,15 @@ using System.Threading;
 using System.Xml.Linq;
 using System.Net;
 using OSAE;
-using WCF;
+using NetworkCommsDotNet;
 using ICSharpCode.SharpZipLib.Zip;
 
-[CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Single, UseSynchronizationContext = false)]
-public partial class plugins : System.Web.UI.Page, WCF.IMessageCallback
+public partial class plugins : System.Web.UI.Page
 {
     private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
     
-    IWCFService wcfObj;
-
     protected void Page_Load(object sender, EventArgs e)
     {
-        InstanceContext site = new InstanceContext(this);
-        NetTcpBinding tcpBinding = new NetTcpBinding();
-        tcpBinding.TransactionFlow = false;
-        tcpBinding.ReliableSession.Ordered = true;
-        tcpBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
-        tcpBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
-        tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-        tcpBinding.Security.Mode = SecurityMode.None;
-
-        EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.WcfServer + ":8731/WCFService/");
-        var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
-
-
-        wcfObj = myChannelFactory.CreateChannel(myEndpoint);
-        wcfObj.Subscribe();
-
         if (!Page.IsPostBack)
         {
             loadPlugins();
@@ -133,23 +114,17 @@ public partial class plugins : System.Web.UI.Page, WCF.IMessageCallback
                     pluginName = ((Label)rw.FindControl("lblObject")).Text;
                 }
             }
-        
-            //logging.AddToLog("checked: " + pd.Name, true);
 
-            //connectToService();
-            //if (wcfObj.State == CommunicationState.Opened)
-            //{
-                Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + pluginName + "|" + enabled));
-                thread.Start();
-                //logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
-                foreach (PluginDescription plugin in pluginList)
+            NetworkComms.SendObject("Plugin", "127.0.0.1", 10000, pluginName + "|" + enabled);
+            //logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pluginName + "|" + enabled, true);
+
+            foreach (PluginDescription plugin in pluginList)
+            {
+                if (plugin.Name == pluginName && plugin.Name != null)
                 {
-                    if (plugin.Name == pluginName && plugin.Name != null)
-                    {
-                        plugin.Status = "Starting...";
-                    }
+                    plugin.Status = "Starting...";
                 }
-            //}
+            }
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(pluginName);
             OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
@@ -158,19 +133,6 @@ public partial class plugins : System.Web.UI.Page, WCF.IMessageCallback
         catch (Exception ex)
         {
             //logging.AddToLog("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException, true);
-        }
-    }
-
-    private void messageHost(OSAEWCFMessageType msgType, string message)
-    {
-        try
-        {
-             wcfObj.messageHost(msgType, message, Common.ComputerName);
-           
-        }
-        catch (Exception ex)
-        {
-            //logging.AddToLog("Error messaging host: " + ex.Message, true);
         }
     }
 
@@ -227,11 +189,6 @@ public partial class plugins : System.Web.UI.Page, WCF.IMessageCallback
         }
     }
 
-    public void OnMessageReceived(OSAEWCFMessage request)
-    {
-       
-    }
-    
     protected void btnGetMorePlugins_Click(object sender, EventArgs e)
     {
         Response.Redirect("~/morePlugins.aspx");
