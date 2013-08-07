@@ -1,14 +1,14 @@
 ﻿Imports System.Timers
-Imports System.IO.Ports
 Imports System.Threading.Thread
-Imports MySql.Data.MySqlClient
+
+Imports CommStudio.Connections
 
 Public Class MeterReader
     Inherits OSAEPluginBase
     Private Shared logging As Logging = logging.GetLogger("Meter Reader")
     Private pName As String
     Private COMPort As String
-    Private ControllerPort As SerialPort
+    Private ControllerPort As SerialConnection
     Private UpdateTimer As Timer
     Private Message As String
     Dim ReceivedMessage As String
@@ -35,19 +35,17 @@ Public Class MeterReader
 
             'ComputerName = OSAEApi.ComputerName
             COMPort = "COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "Port").Value
-            ControllerPort = New SerialPort(COMPort)
+            ControllerPort = New SerialConnection()
             logging.AddToLog("Port is set to: " & COMPort, True)
-            ControllerPort.BaudRate = 19200
-            ControllerPort.Parity = Parity.None
-            ControllerPort.DataBits = 8
-            ControllerPort.StopBits = 1
-            ControllerPort.NewLine = vbCr & vbLf
-            ControllerPort.ReadTimeout = 1
+
+            ControllerPort.Break = False
+            ControllerPort.DataAvailableThreshold = 1
+            'ControllerPort.Encoding = CType(Resources.GetObject("SerialConnection1.Encoding"), System.Text.Encoding)
+            ControllerPort.Options = New SerialOptions(COMPort, 19200, Parity.None, 8, CommStopBits.One, False, False, False, False, True, True)
 
             ControllerPort.Open()
 
-            AddHandler ControllerPort.DataReceived, New SerialDataReceivedEventHandler(AddressOf UpdateReceived)
-
+            AddHandler ControllerPort.DataAvailable, New SerialConnection.DataAvailableEventHandler(AddressOf UpdateReceived)
 
         Catch ex As Exception
             logging.AddToLog("Error setting up plugin: " & ex.Message, True)
@@ -66,11 +64,15 @@ Public Class MeterReader
 
     Public Overrides Sub Shutdown()
         logging.AddToLog("Shutting down plugin", True)
-        ControllerPort.Close()
+        If ControllerPort.IsOpen Then
+            ControllerPort.Close()
+        End If
+
         logging.AddToLog("Finished shutting down plugin", True)
     End Sub
 
-    Protected Sub UpdateReceived(ByVal sender As Object, ByVal e As SerialDataReceivedEventArgs)
+    Protected Sub UpdateReceived(ByVal sender As Object, ByVal e As EventArgs)
+
         logging.AddToLog("Running serial port event handler", False)
         ProcessReceived()
     End Sub
@@ -80,8 +82,8 @@ Public Class MeterReader
         Dim MyIndex As Integer
 
         Try
-            Message = ControllerPort.ReadExisting()
-            logging.AddToLog("Received: " & Message.TrimEnd, True)
+            Message = ControllerPort.Read(ControllerPort.Available)
+            logging.AddToLog("Received: " & Message.TrimEnd, False)
 
             If Message.Length > 0 Then
                 ReceivedMessage += Message
@@ -131,7 +133,7 @@ Public Class MeterReader
     End Sub
 
     Protected Sub UpdateReading(ByVal Address As Integer, ByVal Type As Integer, ByVal Reading As Integer)
-        Dim Rate As Double
+        Dim Rate, RateTest As Double
         Dim MeterToUpdate As New Meter
 
         Try
@@ -151,16 +153,26 @@ Public Class MeterReader
             End If
 
             If Reading <> MeterToUpdate.Reading Then
-                If MeterToUpdate.LastReceived <> MeterToUpdate.LastChange Then
-                    Dim SQLCommand As New MySqlCommand
-                End If
                 OSAEObjectPropertyManager.ObjectPropertySet(MeterToUpdate.Name, "Reading", Reading.ToString, pName)
                 If MeterToUpdate.LastChange < ReceiveTime Then
                     Rate = ((Reading - MeterToUpdate.Reading) / ((ReceiveTime - MeterToUpdate.LastChange).TotalSeconds / 3600.0))
+                    RateTest = ((Reading - MeterToUpdate.Reading - 1) / ((ReceiveTime - MeterToUpdate.LastReceived).TotalSeconds / 3600.0))
+                    If RateTest > Rate Then
+                        Rate = RateTest
+                    End If
+
                     If Rate <> MeterToUpdate.Rate Then
                         MeterToUpdate.Rate = Rate
                         OSAEObjectPropertyManager.ObjectPropertySet(MeterToUpdate.Name, "Rate", Rate.ToString, pName)
                     End If
+                Else
+                    RateTest = (1.0 / ((ReceiveTime - MeterToUpdate.LastChange).TotalSeconds / 3600.0))
+                    If MeterToUpdate.Rate > RateTest Then
+                        Rate = RateTest
+                        MeterToUpdate.Rate = Rate
+                        OSAEObjectPropertyManager.ObjectPropertySet(MeterToUpdate.Name, "Rate", Rate.ToString, pName)
+                    End If
+
                 End If
                 MeterToUpdate.Reading = Reading
                 MeterToUpdate.LastChange = ReceiveTime
@@ -180,51 +192,36 @@ Public Class MeterReader
     End Sub
 
     Public Sub GetMeterList()
-        Dim dsResults As DataSet
-        Dim dtResult As DataTable
-        Dim dsResults2 As DataSet
-        Dim dtResult2 As DataTable
-
+        Dim MeterObjects As OSAEObjectCollection
         Dim MeterInList As Meter
 
-        Dim SQLCommand As New MySqlCommand
-        Dim SQLCommand2 As New MySqlCommand
-        Dim QueryString As String
-
         Try
+            MeterObjects = OSAEObjectManager.GetObjectsByType("Utility Meter")
 
-            QueryString = "SELECT Address, object_name FROM osae_v_object WHERE object_type ='Utility Meter' order by convert(address, signed)"
-            logging.AddToLog("Running Query: " & QueryString, True)
-            SQLCommand.CommandText = QueryString
-
-            dsResults = OSAESql.RunQuery(SQLCommand)
-            dtResult = dsResults.Tables(0)
-            For Each Row As Data.DataRow In dtResult.Rows
+            For Each MeterPointer As OSAEObject In MeterObjects
                 MeterInList = New Meter
-                MeterInList.Name = Row.Item(1)
+                MeterInList.Name = MeterPointer.Name
 
                 Try
-                    MeterInList.Reading = OSAEObjectPropertyManager.GetObjectPropertyValue(MeterInList.Name, "Reading").Value
+                    MeterInList.Reading = MeterPointer.Properties("Reading").Value
                 Catch
                     MeterInList.Reading = 0
                 End Try
 
                 Try
-                    MeterInList.Rate = OSAEObjectPropertyManager.GetObjectPropertyValue(MeterInList.Name, "Rate").Value
+                    MeterInList.Reading = MeterPointer.Properties("Rate").Value
                 Catch
                     MeterInList.Rate = 0
                 End Try
 
-                QueryString = "SELECT last_updated FROM osae_v_object_property WHERE object_name ='" & MeterInList.Name & "' and property_name='Reading'"
-                logging.AddToLog("Running Query: " & QueryString, True)
-                SQLCommand2.CommandText = QueryString
-                dsResults2 = OSAESql.RunQuery(SQLCommand2)
-                dtResult2 = dsResults2.Tables(0)
+                Try
+                    MeterInList.LastChange = MeterPointer.Properties("Rate").LastUpdated
+                Catch
+                    MeterInList.LastChange = Now()
+                End Try
 
-                MeterInList.LastChange = dtResult2.Rows(0).Item(0)
-
-                MeterDict.Add(Integer.Parse(Row.Item(0)), MeterInList)
-                logging.AddToLog(Row.Item(0).ToString, True)
+                MeterDict.Add(MeterPointer.Address, MeterInList)
+                logging.AddToLog("Loading meter " & MeterPointer.Name & " address " & MeterPointer.Address, True)
             Next
 
         Catch ex As Exception
