@@ -130,12 +130,12 @@
 
             try
             {
-                logging.AddToLog("Starting listener", false);
+                logging.AddToLog("Starting UDP listener", false);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Plugin", PluginMessageReceived);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Commmand", CommandMessageReceived);
                 //Start listening for incoming UDP data
                 UDPConnection.StartListening(true);
-                logging.AddToLog("Listener started", false);
+                logging.AddToLog("UPD Listener started", false);
             }
             catch (Exception ex)
             {

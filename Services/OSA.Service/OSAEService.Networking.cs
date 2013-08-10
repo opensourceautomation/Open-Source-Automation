@@ -15,15 +15,15 @@ namespace OSAE.Service
         {
             try
             {
+                logging.AddToLog("Starting TCP listener", false);
                 string ip = Common.WcfServer;
                 if (ip == "localhost")
                     ip = "127.0.0.1";
-                logging.AddToLog("Starting listener", false);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Plugin", PluginMessageReceived);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Method", MethodMessageReceived);
                 //Start listening for incoming connections
                 TCPConnection.StartListening(new IPEndPoint(IPAddress.Parse(ip), 10000));
-                logging.AddToLog("Listener started", false);
+                logging.AddToLog("TCP Listener started", false);
             }
             catch (Exception ex)
             {

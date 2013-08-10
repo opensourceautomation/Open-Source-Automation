@@ -75,7 +75,7 @@
         }
 
         /// <summary>
-        /// Stops all the plugins & closes the WCF service
+        /// Stops all the plugins
         /// </summary>
         private void ShutDownSystems()
         {             
@@ -96,11 +96,6 @@
                     }
                 }
 
-                if (sHost.State == CommunicationState.Opened)
-                {
-                    logging.AddToLog("Service Host communication state currently open closing down", false);
-                    sHost.Close();
-                }
             }
             catch { }
         }
