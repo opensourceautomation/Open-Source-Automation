@@ -12,6 +12,7 @@
     {
         private string _value;
         private long _timeInState;
+        private DateTime _lastStateChange;
 
         /// <summary>
         /// The state the object was in
@@ -31,6 +32,12 @@
         {
             get { return _timeInState; }
             set { _timeInState = value; }
+        }
+
+        public DateTime LastStateChange
+        {
+            get { return _lastStateChange; }
+            set { _lastStateChange = value; }
         }
 
         public override string ToString()

@@ -7,6 +7,7 @@
     using System.ServiceModel;
     using System.ServiceProcess;
     using System.Diagnostics;
+    using NetworkCommsDotNet;
 
     #endregion
 
@@ -21,8 +22,6 @@
         /// </summary>
         private const string sourceName = "OSAE Service";
               
-        private ServiceHost sHost;
-        private WCF.WCFService wcfService;
         private OSAEPluginCollection plugins = new OSAEPluginCollection();
         private OSAEPluginCollection masterPlugins = new OSAEPluginCollection();
 
@@ -111,9 +110,12 @@
             Common.CreateComputerObject(sourceName);
             CreateServiceObject();
 
-            // Start the WCF service so messages can be sent 
-            // and received by the service
-            StartWCFService();
+            OSAE.OSAESql.RunSQL("SET GLOBAL event_scheduler = ON;");
+
+            // Start the network service so messages can be  
+            // received by the service
+            StartNetworkListener();
+
 
             // Start the threads that monitor the plugin 
             // updates check the method queue and so on
@@ -126,7 +128,7 @@
         protected override void OnStop()
         {
             logging.AddToLog("OnStop Invoked", false);
-
+            NetworkComms.Shutdown();
             ShutDownSystems();
         }        
 

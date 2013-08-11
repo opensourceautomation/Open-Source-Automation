@@ -40,7 +40,7 @@
                         <form method="post" runat="server">
                             <asp:TextBox ID="txtUserName" runat="server" placeholder="Username" class="input-medium span12"></asp:TextBox>                                                                                                                                              
                             <asp:TextBox ID="txtPassword" runat="server" placeholder="Password" type="password" class="input-medium span12"></asp:TextBox>                                                                                                                                              
-                            <asp:Button runat="server" ID="imgSubmit" tabindex="3" class="btn primary large" Text="SIgn In" OnClick="imgSubmit_Click" /> &nbsp;&nbsp;&nbsp; <asp:Label runat="server" ID="lblError" ForeColor="Red" Visible="false">Login Failed</asp:Label>                                                    
+                            <asp:Button runat="server" ID="imgSubmit" tabindex="3" class="btn primary large" Text="Sign In" OnClick="imgSubmit_Click" /> &nbsp;&nbsp;&nbsp; <asp:Label runat="server" ID="lblError" ForeColor="Red" Visible="false">Login Failed</asp:Label>                                                    
                         </form>          
                         
                     </div>          

@@ -40,6 +40,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Assemblies\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="NetworkCommsDotNetComplete">
+      <HintPath>..\..\Assemblies\NetworkCommsDotNetComplete.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -56,10 +59,13 @@
     <Compile Include="OSAEService.HelperCode.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="OSAEService.PluginsCode.cs">
+    <Compile Include="OSAEService.Networking.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="OSAEService.WCFCode.cs">
+    <Compile Include="OSAEService.Networking.Designer.cs">
+      <DependentUpon>OSAEService.Networking.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OSAEService.PluginsCode.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="OSAEService.cs">

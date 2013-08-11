@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
+using OSAE;
 
 public partial class MasterPage : System.Web.UI.MasterPage
 {
@@ -13,6 +15,19 @@ public partial class MasterPage : System.Web.UI.MasterPage
         {
 
             Response.Redirect("mobile/index.aspx");
+        }
+        OSAEObjectCollection screens = OSAEObjectManager.GetObjectsByType("SCREEN");
+
+        foreach (OSAEObject s in screens)
+        {
+            HtmlGenericControl li = new HtmlGenericControl("li");
+            ddlScreens.Controls.Add(li);
+
+            HtmlGenericControl anchor = new HtmlGenericControl("a");
+            anchor.Attributes.Add("href", "screens.aspx?id="+s.Name);
+            anchor.InnerText = s.Name;
+
+            li.Controls.Add(anchor);
         }
     }
     protected void cog_Click(object sender, ImageClickEventArgs e)

@@ -6,6 +6,8 @@
     using System.ServiceModel;
     using System.Threading;
     using System.Timers;
+    using System.Net;
+    using NetworkCommsDotNet;
 
     partial class OSAEService
     {
@@ -73,7 +75,7 @@
         }
 
         /// <summary>
-        /// Stops all the plugins & closes the WCF service
+        /// Stops all the plugins
         /// </summary>
         private void ShutDownSystems()
         {             
@@ -94,11 +96,6 @@
                     }
                 }
 
-                if (sHost.State == CommunicationState.Opened)
-                {
-                    logging.AddToLog("Service Host communication state currently open closing down", false);
-                    sHost.Close();
-                }
             }
             catch { }
         }
@@ -116,10 +113,6 @@
                     {
                         logging.AddToLog("Method in Queue, ObjectName: " + method.ObjectName + " MethodName: " + method.MethodName, false);
 
-                        sendMessageToClients(WCF.OSAEWCFMessageType.LOG, "found method in queue: " + method.ObjectName +
-                            "(" + method.MethodName + ")   p1: " + method.Parameter1 +
-                            "  p2: " + method.Parameter2);
-                        
                         LogMethodInformation(method);
 
                         if (method.ObjectName == "SERVICE-" + Common.ComputerName)
@@ -128,7 +121,7 @@
                             {
                                 case "EXECUTE" : 
                                     logging.AddToLog("Recieved Execute Method Name", true);
-                                    sendMessageToClients(WCF.OSAEWCFMessageType.CMDLINE, method.Parameter1 + " | " + method.Parameter2 + " | " + Common.ComputerName);
+                                    UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
                                     break;
                                 case "START PLUGIN":
                                     StartPlugin(method);
@@ -146,7 +139,8 @@
                         else if (method.ObjectName.Split('-')[0] == "SERVICE")
                         {
                             if(method.MethodName == "EXECUTE")
-                                sendMessageToClients(WCF.OSAEWCFMessageType.CMDLINE, method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8));
+                                UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8), new IPEndPoint(IPAddress.Broadcast, 10000));
+
                             OSAEMethodManager.MethodQueueDelete(method.Id);
                         }
                         else
@@ -166,9 +160,9 @@
 
                             if (!processed)
                             {
-                                sendMessageToClients(WCF.OSAEWCFMessageType.METHOD, method.ObjectName + " | " + method.Owner + " | "
+                                UDPConnection.SendObject("Method", method.ObjectName + " | " + method.Owner + " | "
                                     + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | "
-                                    + method.Address + " | " + method.Id);
+                                    + method.Address + " | " + method.Id, new IPEndPoint(IPAddress.Broadcast, 10000));
 
                                 logging.AddToLog("Removing method from queue with ID: " + method.Id, false);
                             }
@@ -213,7 +207,7 @@
                     if (obj != null)
                     {
                         disablePlugin(p);
-                        sendMessageToClients(WCF.OSAEWCFMessageType.PLUGIN, p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName);
+                        UDPConnection.SendObject("Plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
                     }
                 }
             }

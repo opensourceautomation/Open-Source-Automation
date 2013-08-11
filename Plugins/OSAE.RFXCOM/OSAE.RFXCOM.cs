@@ -196,6 +196,7 @@
                     #region Lighting 5
 
                     case "LIGHTWAVERF DIMMER SWITCH":
+                    case "LIGHTWAVERF BINARY SWITCH":
                     case "EMW100 BINARY SWITCH":
                         logging.AddToLog("Executing Lighting5 command", false);
 
@@ -217,7 +218,7 @@
                         else
                         {
                             byte subtype = (byte)0;
-                            if (obj.Type == "LIGHTWAVERF DIMMER SWITCH")
+                            if (obj.Type == "LIGHTWAVERF DIMMER SWITCH" || obj.Type == "LIGHTWAVERF BINARY SWITCH")
                             {
                                 subtype = (byte)0;
                             }
@@ -225,21 +226,21 @@
                             {
                                 subtype = (byte)1;
                             }
-                            kar[(byte)LIGHTING5.packetlength] = (byte)LIGHTING5.size;
+                            kar[(byte)LIGHTING5.packetlength] = GetByte(LIGHTING5.size.ToString("X"));
                             logging.AddToLog("kar[(byte)LIGHTING5.packetlength]: " + kar[(byte)LIGHTING5.packetlength].ToString(), false);
-                            kar[(byte)LIGHTING5.packettype] = (byte)LIGHTING5.pType;
+                            kar[(byte)LIGHTING5.packettype] = GetByte(LIGHTING5.pType.ToString("X"));
                             logging.AddToLog("kar[(byte)LIGHTING5.packettype]: " + kar[(byte)LIGHTING5.packettype].ToString(), false);
                             kar[(byte)LIGHTING5.subtype] = subtype;
-                            logging.AddToLog("kar[(byte)LIGHTING5.subtype]: " + subtype.ToString(), false);
+                            logging.AddToLog("kar[(byte)LIGHTING5.subtype]: " + subtype.ToString("X"), false);
                             kar[(byte)LIGHTING5.seqnbr] = bytSeqNbr;
-                            logging.AddToLog("kar[(byte)LIGHTING5.seqnbr]: " + bytSeqNbr.ToString(), false);
-                            kar[(byte)LIGHTING5.id1] = (byte)Int32.Parse(l5_addr[0]);
+                            logging.AddToLog("kar[(byte)LIGHTING5.seqnbr]: " + bytSeqNbr.ToString("X"), false);
+                            kar[(byte)LIGHTING5.id1] = GetByte(l5_addr[0]);
                             logging.AddToLog("kar[(byte)LIGHTING5.id1]: " + l5_addr[0], false);
-                            kar[(byte)LIGHTING5.id2] = (byte)Int32.Parse(l5_addr[1]);
+                            kar[(byte)LIGHTING5.id2] = GetByte(l5_addr[1]);
                             logging.AddToLog("kar[(byte)LIGHTING5.id2]: " + l5_addr[1], false);
-                            kar[(byte)LIGHTING5.id3] = (byte)Int32.Parse(l5_addr[2]);
+                            kar[(byte)LIGHTING5.id3] = GetByte(l5_addr[2]);
                             logging.AddToLog("kar[(byte)LIGHTING5.id3]: " + l5_addr[2], false);
-                            kar[(byte)LIGHTING5.unitcode] = (byte)Int32.Parse(l5_addr[3]);
+                            kar[(byte)LIGHTING5.unitcode] = GetByte(l5_addr[3]);
                             logging.AddToLog("kar[(byte)LIGHTING5.unitcode]: " + l5_addr[3], false);
 
                             switch (method.MethodName)
@@ -286,12 +287,13 @@
                             }
                             logging.AddToLog("Writing command to port", true);
                             WriteCom(kar);
-                            logging.AddToLog("Lighting5 command:", true);
-                            string command_l5 = "";
-                            foreach (byte bt in kar)
-                            {
-                                command_l5 += ("0" + bt.ToString()).Substring(("0" + bt.ToString()).Length - 2) + " ";
-                            }
+                            string command_l5 = BitConverter.ToString(kar).Replace('-', ' ');
+                            //foreach (byte bt in kar)
+                            //{
+                            //    command_l5 += ("0" + bt.ToString()).Substring(("0" + bt.ToString()).Length - 2) + " ";
+
+                            //    command_l5 += BitConverter.ToString(bt);
+                            //}
                             logging.AddToLog("Lighting5 command:" + command_l5, true);
 
                         }
@@ -5061,5 +5063,9 @@
         }
     # endregion
 
+        static byte GetByte(string str)
+        {
+            return byte.Parse(str, System.Globalization.NumberStyles.HexNumber);
+        }
     }
 }

@@ -17,6 +17,7 @@
     <script type="text/javascript" src="js/jquery-ui-sliderAccess.js"></script>
     <script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap-dropdown.js"></script>
     <script type="text/javascript" src="js/jquery.flot.js"></script>
     <script type="text/javascript" src="js/jquery.flot.time.js"></script>
     <script type="text/javascript" src="js/jquery.flot.selection.js"></script>
@@ -49,17 +50,31 @@
                     <div class="nav-collapse">
                         <ul class="nav">
 
-                            <%--<li><a href="screens.aspx">Screens</a></li>--%>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Screens <b class="caret"></b></a>
+                                <ul class="dropdown-menu" id="ddlScreens" runat="server">
+                                </ul>
+                            </li>
                             <li><a href="objects.aspx">Objects</a></li>
-                            <li><a href="objtypes.aspx">Object Types</a></li>
-                            <li><a href="scripts.aspx">Scripts</a></li>
-                            <li><a href="patterns.aspx">Patterns</a></li>
-                            <li><a href="schedules.aspx">Schedules</a></li>
                             <li><a href="plugins.aspx">Plugins</a></li>
                             <li><a href="analytics.aspx">Analytics</a></li>
-                            <li><a href="images.aspx">Images</a></li>
-                            <li><a href="eventlogs.aspx">Event Logs</a></li>
-                            <li><a href="logs.aspx">Server Logs</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Management <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="objtypes.aspx">Object Types</a></li>
+                                    <li><a href="scripts.aspx">Scripts</a></li>
+                                    <li><a href="patterns.aspx">Patterns</a></li>
+                                    <li><a href="schedules.aspx">Schedules</a></li>
+                                    <li><a href="images.aspx">Images</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Logs <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="eventlogs.aspx">Event Logs</a></li>
+                                    <li><a href="logs.aspx">Server Logs</a></li>
+                                </ul>
+                            </li>
                         </ul>
                         <asp:ImageButton runat="server" ID="cog" AlternateText="Configuration" style="float:right; display:inline; padding-top:4px" Width="26px" Height="26px" ImageAlign="Middle" ImageUrl="~/Images/cog.png" OnClick="cog_Click" />
                     </div>

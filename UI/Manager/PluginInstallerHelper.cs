@@ -6,17 +6,14 @@
     using System.Threading;
     using System.ServiceModel;
     using System.Windows.Forms;
-    using ICSharpCode.SharpZipLib.Zip;
+    using NetworkCommsDotNet;
     using OSAE;
-    using WCF;
 
     /// <summary>
     /// Helper class used to install new plugins
     /// </summary>
-    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Single, UseSynchronizationContext = false)]
-    public partial class PluginInstallerHelper : IMessageCallback
+    public partial class PluginInstallerHelper
     {
-        IWCFService wcfObj;
         private  Logging logging = Logging.GetLogger("Manager");
 
         public  void InstallPlugin(string filepath)
@@ -24,7 +21,6 @@
             try
             {
                 string ErrorText = string.Empty;
-                connectToService();
 
                 InstallPlugin pi = new InstallPlugin(filepath);
                 pi.ShowDialog();
@@ -70,7 +66,7 @@
 
             bool NoError = true;
 
-            FastZip fastZip = new FastZip();
+            ICSharpCode.SharpZipLib.Zip.FastZip fastZip = new ICSharpCode.SharpZipLib.Zip.FastZip();
             try
             {
                 fastZip.ExtractZip(zipFileName, tempfolder, null);
@@ -200,8 +196,11 @@
         public  bool UninstallPlugin(PluginDescription desc)
         {
             bool returnValue = false;
-            Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.PLUGIN, "ENABLEPLUGIN|" + desc.Type + "|False"));
-            thread.Start();
+
+            string ip = Common.WcfServer;
+            if (ip == "localhost")
+                ip = "127.0.0.1";
+            NetworkComms.SendObject("Plugin", ip, 10000, desc.Type + "|False");
 
             Thread.Sleep(2000);
 
@@ -251,53 +250,5 @@
             }
         }
 
-        private  void messageHost(OSAEWCFMessageType msgType, string message)
-        {
-            try
-            {
-                wcfObj.messageHost(msgType, message, Common.ComputerName);
-                
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Error messaging host: " + ex.Message, true);
-            }
-        }
-
-        private  bool connectToService()
-        {
-            try
-            {
-                InstanceContext site = new InstanceContext(this);
-                NetTcpBinding tcpBinding = new NetTcpBinding();
-                tcpBinding.TransactionFlow = false;
-                tcpBinding.ReliableSession.Ordered = true;
-                tcpBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
-                tcpBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
-                tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-                tcpBinding.Security.Mode = SecurityMode.None;
-
-                EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.WcfServer + ":8731/WCFService/");
-                var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
-
-
-                wcfObj = myChannelFactory.CreateChannel(myEndpoint);
-                wcfObj.Subscribe();
-                logging.AddToLog("Connected to Service", true);
-                //reloadPlugins();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
-                return false;
-            }
-        }
-
-
-        public void OnMessageReceived(OSAEWCFMessage message)
-        {
-            
-        }
     }
 }

@@ -53,7 +53,7 @@
 
             try
             {
-                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_name=@Name";
+                command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE object_name=@Name";
                 command.Parameters.AddWithValue("@Name", name);
                 dataset = OSAESql.RunQuery(command);
 
@@ -63,6 +63,7 @@
                     obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
+                    obj.LastUpd = dataset.Tables[0].Rows[0]["last_updated"].ToString();
 
                     obj.Properties = OSAEObjectPropertyManager.GetObjectProperties(obj.Name);
 
@@ -97,7 +98,7 @@
                 {
                     DataSet dataset = new DataSet();
 
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE address=@Address";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE address=@Address";
                     command.Parameters.AddWithValue("@Address", address);
                     dataset = OSAESql.RunQuery(command);
 
@@ -107,6 +108,7 @@
                         obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                         obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
+                        obj.LastUpd = dataset.Tables[0].Rows[0]["last_updated"].ToString();
 
                         obj.Properties = OSAEObjectPropertyManager.GetObjectProperties(obj.Name);
                         obj.Methods = GetObjectMethods(obj.Name);
@@ -186,7 +188,7 @@
                     DataSet dataset = new DataSet();
                     OSAEObject obj = new OSAEObject();
 
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE owned_by=@ObjectOwner";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE owned_by=@ObjectOwner";
                     command.Parameters.AddWithValue("@ObjectOwner", ObjectOwner);
                     dataset = OSAESql.RunQuery(command);
 
@@ -198,6 +200,7 @@
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
+                            obj.LastUpd = dr["last_updated"].ToString();
 
                             obj.Properties = OSAEObjectPropertyManager.GetObjectProperties(obj.Name);
                             obj.Methods = GetObjectMethods(obj.Name);
@@ -232,7 +235,7 @@
             {
                 try
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE base_type=@ObjectType";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE base_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectBaseType);
                     dataset = OSAESql.RunQuery(command);
 
@@ -244,6 +247,7 @@
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
+                            obj.LastUpd = dr["last_updated"].ToString();
 
                             obj.Properties = OSAEObjectPropertyManager.GetObjectProperties(obj.Name);
                             obj.Methods = GetObjectMethods(obj.Name);
@@ -278,7 +282,7 @@
             {
                 try
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state FROM osae_v_object WHERE object_type=@ObjectType";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE object_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectType);
                     dataset = OSAESql.RunQuery(command);
 
@@ -290,6 +294,7 @@
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
+                            obj.LastUpd = dr["last_updated"].ToString();
                             obj.Properties = OSAEObjectPropertyManager.GetObjectProperties(obj.Name);
                             obj.Methods = OSAEObjectManager.GetObjectMethods(obj.Name);
                             objects.Add(obj);

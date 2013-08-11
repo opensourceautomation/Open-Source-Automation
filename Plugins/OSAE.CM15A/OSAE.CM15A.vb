@@ -2,7 +2,7 @@
 Option Explicit On
 Imports MySql.Data.MySqlClient
 Imports ActiveHomeScriptLib
-Imports System.AddIn
+Imports X10
 
 Public Class CM15A
     Inherits OSAEPluginBase
@@ -244,6 +244,39 @@ Public Class CM15A
         Catch myerror As Exception
             logging.AddToLog("Error Load_App_Name: " & myerror.Message, True)
         End Try
+
+        Dim oType As OSAEObjectType
+        'Added the follow to automatically own X10 Base types that have no owner.
+        'This should become the standard in plugins to try and avoid ever having to manually set the owners
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 Relay")
+        logging.AddToLog("Checking on the X10 Relay Object Type.", False)
+        If oType.OwnedBy = "" Then
+            logging.AddToLog("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")", False)
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            logging.AddToLog("I took ownership of the X10 Relay Object Type.", True)
+        End If
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 DIMMER")
+        logging.AddToLog("Checking on the X10 DIMMER Object Type.", False)
+        If oType.OwnedBy = "" Then
+            logging.AddToLog("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")", False)
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            logging.AddToLog("I took ownership of the X10 DIMMER Object Type.", True)
+        End If
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 DS10A")
+        logging.AddToLog("Checking on the X10 DS10A Object Type.", False)
+        If oType.OwnedBy = "" Then
+            logging.AddToLog("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")", False)
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            logging.AddToLog("I took ownership of the X10 DS10A Object Type.", True)
+        End If
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 SENSOR")
+        logging.AddToLog("Checking on the X10 SENSOR Object Type.", False)
+        If oType.OwnedBy = "" Then
+            logging.AddToLog("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")", False)
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            logging.AddToLog("I took ownership of the X10 SENSOR Object Type.", True)
+        End If
+
     End Sub
 
     Public Sub dimMod(ByVal sAction As String, ByVal sAddr As String, ByVal iLevel As Integer, ByVal bSoftStart As String)
