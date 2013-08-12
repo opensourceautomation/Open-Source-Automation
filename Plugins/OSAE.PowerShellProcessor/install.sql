@@ -5,6 +5,6 @@ CALL osae_sp_object_type_event_add ('ON','Started','PowerShell');
 CALL osae_sp_object_type_event_add ('OFF','Stopped','PowerShell');
 CALL osae_sp_object_type_method_add ('ON','Start','PowerShell','','','','');
 CALL osae_sp_object_type_method_add ('OFF','Stop','PowerShell','','','','');
-CALL osae_sp_object_type_method_add ('RUN SCRIPT','PowerShell','','','','','');
+CALL osae_sp_object_type_method_add ('RUN SCRIPT','RUN SCRIPT','PowerShell','','','','');
 CALL osae_sp_script_processor_add ('PowerShell','PowerShell');
 CALL osae_sp_object_type_property_add ('System Plugin','Boolean','TRUE','PowerShell',0);
