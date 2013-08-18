@@ -13,6 +13,7 @@ Public Class ScriptProcessor
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
         Dim sScript As String = "", sScriptName As String = ""
+
         If method.MethodName = "RUN SCRIPT" Then
             Try
                 Dim dsResults As DataSet = OSAESql.RunSQL("SELECT script,script_name FROM osae_script WHERE script_id=" & method.Parameter1)
@@ -74,6 +75,13 @@ Public Class ScriptProcessor
         'This regex removes c# style like: //comments
         Static removeComments As New Regex("([\r\n ]*//[^\r\n]*)+")
         sScript = removeComments.Replace(sScript, "")
+        Dim sParams() As String = sScriptParameter.Split(",")
+        Dim iCounter As Integer = 0
+        For Each tempparam As String In sParams
+            iCounter += 1
+            sScript = sScript.Replace("PARAM" & iCounter.ToString(), tempparam)
+        Next
+
 
         Dim scriptArray() = sScript.Split(vbCrLf)
 
@@ -82,7 +90,7 @@ Public Class ScriptProcessor
                 scriptArray(iLoop) = scriptArray(iLoop).Trim
                 'txtEcho.Text += scriptArray(iLoop) & Environment.NewLine
                 If scriptArray(iLoop).Length > 2 Then
-                    scriptArray(iLoop) = scriptArray(iLoop).Replace("SCRIPT.PARAMETER", (sScriptParameter))
+                    'scriptArray(iLoop) = scriptArray(iLoop).Replace("SCRIPT.PARAMETER", (sScriptParameter))
                     If scriptArray(iLoop).ToUpper.Trim.StartsWith("IF") Then
                         sType = "IF"
                         iNestingLevel += 1
