@@ -20,6 +20,7 @@
             logging.AddToLog("Speech Client's Object Name: " + gAppName, true);
             Load_Settings();
             oSpeech.Speak("speech client started");
+
         }
 
         public override void ProcessCommand(OSAEMethod method)
@@ -33,15 +34,19 @@
             if (sMethod == "SPEAK")
             {
                 string sText = Common.PatternParse(sParam1);
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "TRUE", gAppName);
                 oSpeech.Speak(sText);
                 logging.AddToLog("Said " + sText, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "FALSE", gAppName);
             }
             else if (sMethod == "SPEAKFROM")
             {
                 logging.AddToLog("--Speak From Object: " + sParam1 + " and pick From list: " + sParam2, true);
                 string sText = OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
                 sText = Common.PatternParse(sText);
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "TRUE", gAppName);
                 oSpeech.Speak(sText);
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "FALSE", gAppName);
                 logging.AddToLog("Said " + sText, true);
             }
             else if (sMethod == "PLAY")
@@ -84,12 +89,16 @@
             }
             else if (sMethod == "SETTTSRATE")
             {
-                if (Convert.ToInt16(sParam1) > -11 && Convert.ToInt16(sParam1) < 11)
+                // Load the speech rate, which must be -10 to 10, and set it to 0 if it is not valid.
+                Int16 iTTSRate = Convert.ToInt16(sParam1);
+                if (iTTSRate < -10 || iTTSRate > 10)
                 {
-                    oSpeech.Rate = Convert.ToInt16(sParam1);
-                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", sParam1, "SPEECH");
-                    logging.AddToLog("TTS Rate Set to " + Convert.ToInt16(sParam1), true);
+                    iTTSRate = 0;
+                    logging.AddToLog("TTS Rate was invalid! I changed it to " + iTTSRate.ToString(), true);
                 }
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
+                logging.AddToLog("TTS Rate Set to " + iTTSRate.ToString(), true);
+                oSpeech.Rate = iTTSRate;
             }
         }
 
@@ -128,12 +137,17 @@
                     logging.AddToLog("Current Voice Set to " + gSelectedVoice, true);
                 }
 
+                // Load the speech rate, which must be -10 to 10, and set it to 0 if it is not valid.
                 Int16 iTTSRate = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
-                if (iTTSRate > 0 && iTTSRate <= 100)
+                if (iTTSRate < -10 || iTTSRate > 10)
                 {
-                    oSpeech.Rate = iTTSRate;
-                    logging.AddToLog("TTS Rate Set to " + iTTSRate.ToString(), true);
+                    iTTSRate = 0;
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
+                    logging.AddToLog("TTS Rate was invalid! I changed it to " + iTTSRate.ToString(), true);
                 }
+                logging.AddToLog("TTS Rate Set to " + iTTSRate.ToString(), true);
+                oSpeech.Rate = iTTSRate;
+                
 
                 Int16 iTTSVolume = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
                 if (iTTSVolume > -11 && iTTSVolume <= 11)
