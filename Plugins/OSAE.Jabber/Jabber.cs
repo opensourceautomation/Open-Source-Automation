@@ -184,13 +184,13 @@ namespace OSAE.Jabber
 
         private void connect()
         {
-            logging.AddToLog("Connecting to server", true);
             Jid jidUser = new Jid(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Username").Value);
 
             xmppCon.Username = jidUser.User;
             xmppCon.Server = jidUser.Server;
             xmppCon.Password = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Password").Value;
             xmppCon.AutoResolveConnectServer = true;
+            logging.AddToLog("Connecting to: " + xmppCon.Server + " as user: " + xmppCon.Username, true);
 
             try
             {
