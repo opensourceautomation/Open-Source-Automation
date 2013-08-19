@@ -70,12 +70,13 @@
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid"  
-                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="true">  
+                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="True">  
+<AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
                         <Columns>  
                             <asp:BoundField DataField="container_name" HeaderText="Container" />  
                             <asp:BoundField DataField="object_name" HeaderText="Object" />  
                             <asp:BoundField DataField="object_type" HeaderText="Type" />  
-                            <asp:BoundField DataField="state_name" HeaderText="State" />  
+                            <asp:BoundField DataField="state_label" HeaderText="State" />  
                             <asp:BoundField DataField="last_updated" HeaderText="Updated" />  
                             <asp:BoundField DataField="address" HeaderText="Address" />  
                         </Columns>  
