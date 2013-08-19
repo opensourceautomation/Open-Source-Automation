@@ -198,54 +198,56 @@
             string ScriptParameter = "";
             try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                DataSet dataset = new DataSet();
+                //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
+                //command.Parameters.AddWithValue("@Name", str);
+                dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern WHERE `match`='" + str + "'");
+
+                if (dataset.Tables[0].Rows.Count > 0)
                 {
-                    DataSet dataset = new DataSet();
-                    command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
-                    command.Parameters.AddWithValue("@Name", str);
-                    dataset = OSAESql.RunQuery(command);
 
-                    if (dataset.Tables[0].Rows.Count > 0)
+                    //Since we have a match, lets execute the scripts
+                    OSAEScriptManager.RunPatternScript(dataset.Tables[0].Rows[0]["pattern"].ToString(), "", "Jabber");
+                    return dataset.Tables[0].Rows[0]["pattern"].ToString();
+                }
+                else
+                {
+                    //Replace Words with place holders and retry the pattern match
+                    //example  "Please turn the main light on" becomes "Please turn the [OBJECT] [STATE]"
+
+                    //Step 1: Break the Input into an Array to Query the Words for DB matches
+                    str = str.ToUpper();
+                    string[] words = str.Split(' ');
+
+                    DataSet dsObjects = new DataSet();
+                    foreach (String word in words)
                     {
-                       
-                        //Since we have a match, lets execute the scripts
-                        OSAEScriptManager.RunPatternScript(dataset.Tables[0].Rows[0]["pattern"].ToString(), "", "Jabber");
-                        return dataset.Tables[0].Rows[0]["pattern"].ToString();
-                    }
-                    else
-                    {
-                        //Replace Words with place holders and retry the pattern match
-                        //example  "Please turn the main light on" becomes "Please turn the [OBJECT] [STATE]"
-
-                        //Step 1: Break the Input into an Array to Query the Words for DB matches
-                        string[] words = str.Split(' ');
-
-                        DataSet dsObjects = new DataSet();
-                        dsObjects = ObjectNamesStartingWith(words[1]);
+                        dsObjects = OSAE.Common.ObjectNamesStartingWith(word);
                         foreach (DataRow dr in dsObjects.Tables[0].Rows)
                         {
-                            if (str.IndexOf(dr["object_name"].ToString()) > 0)
+                            if (str.IndexOf(dr["object_name"].ToString()) > -1)
+                            //return "Found " + dr["object_name"].ToString();
                             {
-                                str.Replace(dr["object_name"].ToString(), "[OBJECT]");
+                                str = str.Replace(dr["object_name"].ToString(), "[OBJECT]");
                                 ScriptParameter += dr["object_name"].ToString();
                                 //Here We have found our Object, so we need to look for an appropriate state afterwards
                                 //So we are going to retrieve a state list and compare it to the remainder of the string
-                                
+
                                 DataSet dsStates = new DataSet();
                                 dsStates = OSAEObjectStateManager.ObjectStateListGet(dr["object_name"].ToString());
                                 foreach (DataRow drState in dsStates.Tables[0].Rows)
                                 {
-                                    if (str.IndexOf(drState["state_label"].ToString()) > 0)
+                                    if (str.IndexOf(drState["state_label"].ToString().ToUpper()) > 0)
                                     {
-                                        str.Replace(drState["state_label"].ToString(), "[STATE]");
+                                        str = str.Replace(drState["state_label"].ToString().ToUpper(), "[STATE]");
                                         ScriptParameter += ", " + drState["state_label"].ToString();
 
                                         //Now that we have replaced the Object and State, Lets check for a match again
                                         //DataSet dataset = new DataSet();
-                                        command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
-                                        command.Parameters.AddWithValue("@Name", str);
-                                        dataset = OSAESql.RunQuery(command);
-
+                                        //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
+                                        //command.Parameters.AddWithValue("@Name", str);
+                                        //dataset = OSAESql.RunQuery(command);
+                                        dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern WHERE `match`='" + str + "'");
                                         if (dataset.Tables[0].Rows.Count > 0)
                                         {
                                             //return dataset.Tables[0].Rows[0]["pattern"].ToString();
@@ -259,8 +261,9 @@
                                 break;
                             }
                         }
-                        return string.Empty;
                     }
+                    return string.Empty;
+                    //return string.Empty;
                 }
             }
             catch (Exception ex)
@@ -281,10 +284,15 @@
         {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                   // DataSet dataset = new DataSet();
+                   // command.CommandText = "SELECT object_name FROM osae_object WHERE UPPER(object_name) LIKE '@Pattern%' ORDER BY Length(object_name) DESC";
+                  //  command.Parameters.AddWithValue("@Pattern", pattern.ToUpper());
+                  //  dataset = OSAESql.RunQuery(command);
+                  //  return dataset;
                     DataSet dataset = new DataSet();
-                    command.CommandText = "SELECT object_name FROM osae_object WHERE object_name LIKE ''@Pattern%'' ORDER BY Length(object_name) DESC";
-                    command.Parameters.AddWithValue("@Pattern", pattern);
-                    dataset = OSAESql.RunQuery(command);
+                    //command.CommandText = "SELECT object_name FROM osae_object WHERE UPPER(object_name) LIKE '@Pattern%' ORDER BY Length(object_name) DESC";
+                    //command.Parameters.AddWithValue("@Pattern", pattern.ToUpper());
+                    dataset = OSAESql.RunSQL("SELECT UPPER(object_name) as object_name FROM osae_object WHERE UPPER(object_name) LIKE '" + pattern + "%' ORDER BY Length(object_name) DESC");
                     return dataset;
                 }
         }
