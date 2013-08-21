@@ -16,6 +16,7 @@ Public Class W800RF
     Private _msg As String = ""
     Private comPort As New SerialPort()
     Private gNewTime As DateTime
+    Dim gLearning As String
     Private previousBuffer As Byte()
     Dim ByteDetail(4) As ByteDetails
 
@@ -37,9 +38,12 @@ Public Class W800RF
     Private Sub Load_App_Name()
         'logging.AddToLog("W800RF Plugin Version: 1.1.0", True)
         _portName = "COM" & OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
-        logging.AddToLog("Port is set to: " & _portName, True)
+        logging.AddToLog("Port set to: " & _portName, True)
         _Debounce = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Debounce").Value
-        logging.AddToLog("Debounce is set to: " & _Debounce, True)
+        logging.AddToLog("Debounce set to: " & _Debounce, True)
+        gLearning = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value
+        If gLearning <> "TRUE" And gLearning <> "FALSE" Then gLearning = "FALSE"
+        logging.AddToLog("Learning Mode set to: " & gLearning, True)
     End Sub
 
     Public Function OpenPort() As Boolean
@@ -191,14 +195,14 @@ Public Class W800RF
     Private Sub ProcessInput()
         Dim strAddress As String = ""
         Dim oObject As OSAEObject
-        Dim gLearning As String
+
         Try
 
             logging.AddToLog("GetObjectByAddress: " & gDevice.House_Code & gDevice.Device_Code, False)
             Try
                 oObject = OSAEObjectManager.GetObjectByAddress(gDevice.House_Code & gDevice.Device_Code)
                 If IsNothing(oObject) Then
-                    gLearning = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value
+
                     If gLearning.ToUpper = "TRUE" Then
                         If gDevice.Device_Type = "X10_SECURITY_DS10" Then
                             logging.AddToLog("Adding new DS10A: " & gDevice.Device_Code, True)
@@ -253,7 +257,23 @@ DropOut:
     End Function
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
-
+        Try
+            If method.MethodName.ToUpper() = "SET COMPORT" Then
+                _portName = "COM" & method.Parameter1
+                logging.AddToLog("ComPort set to: " & _portName, True)
+                OpenPort()
+            ElseIf method.MethodName.ToUpper() = "SET DEBOUNCE" Then
+                _Debounce = method.Parameter1
+                logging.AddToLog("Debounce set to: " & _Debounce, True)
+            ElseIf method.MethodName.ToUpper() = "SET LEARNING MODE" Then
+                gLearning = method.Parameter1.ToUpper()
+                If gLearning <> "TRUE" And gLearning <> "FALSE" Then gLearning = "FALSE"
+                OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Learning Mode", gLearning, pName)
+                logging.AddToLog("Learning Mode set to: " & _Debounce, True)
+            End If
+        Catch ex As Exception
+            logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
+        End Try
     End Sub
 
     Function Version() As String

@@ -7,6 +7,7 @@ CALL osae_sp_object_type_method_add ('ON','Start','W800RF','','','','');
 CALL osae_sp_object_type_method_add ('OFF','Stop','W800RF','','','','');
 CALL osae_sp_object_type_method_add ('SET PORT','Set ComPort','W800RF','ComPort','','4','');
 CALL osae_sp_object_type_method_add ('SET DEBOUNCE','Set Debounce','W800RF','Inteval in ms','','90','');
+CALL osae_sp_object_type_method_add ('SET LEARNING MODE','Set Learning Mode','W800RF','TRUE/FALSE','','FALSE','');
 CALL osae_sp_object_type_property_add ('Port','Integer','','W800RF',0);
 CALL osae_sp_object_type_property_add ('Computer Name','String','','W800RF',0);
 CALL osae_sp_object_type_property_add ('Learning Mode','Boolean','TRUE','W800RF',0);
