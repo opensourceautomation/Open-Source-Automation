@@ -1,6 +1,5 @@
 ﻿Option Strict Off
 Option Explicit On
-Imports MySql.Data.MySqlClient
 Imports ActiveHomeScriptLib
 Imports X10
 
@@ -14,14 +13,12 @@ Public Class CM15A
     End Structure
 
     Private Shared logging As Logging = logging.GetLogger("CM15A")
-
     Private pName As String = ""
     Private gTransmitOnly As String
     Private gTransmiRF As String
     Private gTimeCounter As Decimal
     Private gTimeCap As Decimal = 100
     Private booBlockDups As Boolean
-    Private bDebugMode As Boolean
     Private gDevice As New Device
     Private gLastDevice As New Device
     Private Declare Sub GetSystemTimeAsFileTime Lib "kernel32.dll" (ByRef lpSystemTimeAsFileTime As Long)
@@ -29,9 +26,6 @@ Public Class CM15A
 
     Sub ActiveHome_RecvAction(ByVal bszRecv As Object, ByVal vParm1 As Object, ByVal vParm2 As Object, ByVal vParm3 As Object, ByVal vParm4 As Object, ByVal vParm5 As Object, ByVal vReserved As Object) Handles AHObject.RecvAction
         Dim curTime As Long
-        Dim dsResults As DataSet
-        Dim CMD As New MySqlCommand
-        Dim sObjectName As String = ""
         Dim sState As String = vParm2.ToString
         Try
             gLastDevice.Current_Command = gDevice.Current_Command
@@ -51,12 +45,16 @@ Public Class CM15A
             Exit Sub
         End Try
         Try
-            If gTransmitOnly = "TRUE" And bszRecv.ToString = "recvrf" Then Exit Sub
+            If gTransmitOnly = "TRUE" And bszRecv.ToString = "recvrf" Then
+                logging.AddToLog("Ignoring RF signal due to Transmitt Only setting...", False)
+                Exit Sub
+            End If
+
             If booBlockDups Then
                 If gLastDevice.Current_Command = gDevice.Current_Command And gLastDevice.Device_Code = gDevice.Device_Code And gLastDevice.House_Code = gDevice.House_Code Then
                     GetSystemTimeAsFileTime(curTime)
                     gTimeCounter = curTime + gTimeCap * 100000
-                    If bDebugMode = True Then logging.AddToLog("ReadCommPort SPAM (Exiting Sub, this is normal)", False)
+                    logging.AddToLog("ReadCommPort SPAM (Exiting Sub, this is normal)", False)
                     Exit Sub
                 End If
             End If
@@ -66,22 +64,17 @@ Public Class CM15A
             Exit Sub
         End Try
         Try
-            CMD.CommandType = CommandType.Text
-            CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE address=?paddress LIMIT 1"
-            CMD.Parameters.AddWithValue("?paddress", vParm1)
-            dsResults = OSAESql.RunQuery(CMD)
-            If dsResults.Tables(0).Rows.Count > 0 Then
-                sObjectName = dsResults.Tables(0).Rows(0).Item(0)
+            Dim oObject As OSAE.OSAEObject = OSAE.OSAEObjectManager.GetObjectByAddress(vParm1)
+            If oObject.Name <> "" Then
                 If sState = "DIM" Then sState = "ON"
-                If sObjectName <> "" Then
-                    OSAEObjectStateManager.ObjectStateSet(sObjectName, sState, pName)
-                    logging.AddToLog("Set Object" & sObjectName & "'s State to " & sState, True)
-                End If
+                OSAEObjectStateManager.ObjectStateSet(oObject.Name, sState, pName)
+                logging.AddToLog("Set Object" & oObject.Name & "'s State to " & sState, True)
             Else
+                ' Add Learning Code here
                 logging.AddToLog("No OSA Object found for X10 Address: " & vParm1, True)
             End If
-        Catch myerror As Exception
-            logging.AddToLog("Error ActiveHome_RecvAction OSAEApi.RunQuery(CMD): " & myerror.Message, True)
+        Catch ex As Exception
+            logging.AddToLog("Error ActiveHome_RecvAction OSAEApi.RunQuery(CMD): " & ex.Message, True)
         End Try
         booBlockDups = True
         GetSystemTimeAsFileTime(curTime)
@@ -234,10 +227,9 @@ Public Class CM15A
         pName = pluginName
         logging.AddToLog("Found my Object Name: " & pName, True)
         Try
-            'gAppName = OSAEApi.GetPluginName("CM15A", OSAEApi.ComputerName)
-            gTransmitOnly = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Transmit Only").Value()
+            gTransmitOnly = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Transmit Only").Value().ToUpper()
             logging.AddToLog("Transmit Only is set to: " & gTransmitOnly, True)
-            gTransmiRF = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Transmit RF").Value
+            gTransmiRF = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Transmit RF").Value.ToUpper()
             logging.AddToLog("Transmit RF is set to: " & gTransmiRF, True)
             gTimeCap = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Debounce").Value
             logging.AddToLog("Debounce is set to: " & gTimeCap & "ms", True)
@@ -276,12 +268,10 @@ Public Class CM15A
             OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
             logging.AddToLog("I took ownership of the X10 SENSOR Object Type.", True)
         End If
-
     End Sub
 
     Public Sub dimMod(ByVal sAction As String, ByVal sAddr As String, ByVal iLevel As Integer, ByVal bSoftStart As String)
         Dim hex As String
-
         If bSoftStart = "TRUE" Then
             hex = Conversion.Hex(iLevel * 0.64)
             logging.AddToLog("Send bright command: sendplc" & sAddr & " extcode 31 " & hex, True)
