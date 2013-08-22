@@ -36,7 +36,6 @@ Public Class W800RF
     End Sub
 
     Private Sub Load_App_Name()
-        'logging.AddToLog("W800RF Plugin Version: 1.1.0", True)
         _portName = "COM" & OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
         logging.AddToLog("Port set to: " & _portName, True)
         _Debounce = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Debounce").Value
@@ -269,7 +268,7 @@ DropOut:
                 gLearning = method.Parameter1.ToUpper()
                 If gLearning <> "TRUE" And gLearning <> "FALSE" Then gLearning = "FALSE"
                 OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Learning Mode", gLearning, pName)
-                logging.AddToLog("Learning Mode set to: " & _Debounce, True)
+                logging.AddToLog("Learning Mode set to: " & gLearning, True)
             End If
         Catch ex As Exception
             logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
