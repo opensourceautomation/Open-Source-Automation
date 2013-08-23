@@ -90,10 +90,10 @@ namespace OSAE.Jabber
             logging.AddToLog(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()), false);
             logging.AddToLog("Message: " + msg.Body, false);
             string pattern = Common.MatchPattern(msg.Body);
-            if (pattern != string.Empty)
-            {
-                OSAEScriptManager.RunPatternScript(pattern, msg.From.Bare, "Jabber");
-            }             
+          //  if (pattern != string.Empty)
+           // {
+                //OSAEScriptManager.RunPatternScript(pattern, msg.From.Bare, "Jabber");
+           // }             
         }
 
         void xmppCon_OnClose(object sender)
@@ -184,13 +184,13 @@ namespace OSAE.Jabber
 
         private void connect()
         {
-            logging.AddToLog("Connecting to server", true);
             Jid jidUser = new Jid(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Username").Value);
 
             xmppCon.Username = jidUser.User;
             xmppCon.Server = jidUser.Server;
             xmppCon.Password = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Password").Value;
             xmppCon.AutoResolveConnectServer = true;
+            logging.AddToLog("Connecting to: " + xmppCon.Server + " as user: " + xmppCon.Username, true);
 
             try
             {

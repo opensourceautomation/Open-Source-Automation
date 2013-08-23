@@ -93,7 +93,7 @@ public partial class home : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, state_label, last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
         if (!this.IsPostBack)
         {
@@ -269,7 +269,7 @@ public partial class home : System.Web.UI.Page
 
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, last_updated FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text.Replace("'", "''") + "'");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, last_updated FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text.Replace("'", "''") + "' ORDER BY property_name");
         gvProperties.DataBind();
     }
 

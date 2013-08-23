@@ -366,9 +366,12 @@
                 Clock.Stop();
                 Clock = null;
                 logging.AddToLog("Timer stopped", true);
+                NetworkComms.Shutdown();
             }
-            catch
-            { }
+            catch(Exception ex)
+            {
+                logging.AddToLog("Error closing Manager: " + ex.Message, true);
+            }
         }
 
         void MyNotifyIcon_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)

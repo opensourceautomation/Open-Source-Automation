@@ -2,12 +2,12 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>W800RF</plugin-name>
 <plugin-id>fdb9648e-6d74-4592-a0af-69016882ce26</plugin-id>
-<plugin-version>1.1.2</plugin-version>
+<plugin-version>1.1.3</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>W800RF Antenna Application</short-description>
 <author>Vaughn Rupp</author>
 <destination-folder>W800RF</destination-folder>
-<main-file></main-file>
+<main-file>obj\Debug\OSAE.W800RF.dll</main-file>
 <wiki-url></wiki-url>
 <additional-assemblies>
 </additional-assemblies>
