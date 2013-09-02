@@ -88,34 +88,39 @@ Public Class PhidgetServo
     End Sub
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
-        Dim iLevel As Integer, sAddress As String
+        Dim sAddress As String, iCurrentPosition As Integer, iNewPosition As Integer
         Try
             sAddress = method.Address.Replace(gSerial & "-", "")
+            iCurrentPosition = phidgetServo.servos(sAddress).Position
             If method.MethodName = "POSITION" Then
-                If Val(method.Parameter1) >= gMax(sAddress) Then
-                    iLevel = gMax(sAddress)
-                ElseIf Val(method.Parameter1) <= gMin(sAddress) Then
-                    iLevel = gMin(sAddress)
+                'Determine if it is Relitive Positioning and if so, calculate the new position
+                If method.Parameter1.StartsWith("-") Or method.Parameter1.StartsWith("+") Then
+                    iNewPosition = iCurrentPosition + Val(method.Parameter1)
                 Else
-                    iLevel = Val(method.Parameter1)
+                    iNewPosition = Val(method.Parameter1)
                 End If
+                'Now check to see if the New Position is within the Min/Max range
+                If iNewPosition >= gMax(sAddress) Then
+                    iNewPosition = gMax(sAddress)
+                ElseIf iNewPosition <= gMin(sAddress) Then
+                    iNewPosition = gMin(sAddress)
+                End If
+
                 'phidgetServo.servos(sAddress).Engaged = True
-                phidgetServo.servos(sAddress).Position = iLevel
-                OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Position", iLevel.ToString, pName)
-                logging.AddToLog("Servo " & sAddress & "(" & method.ObjectName & ") set to Position: " & iLevel.ToString & " (" & gMin(sAddress) & "-" & gMax(sAddress) & ")", True)
+                phidgetServo.servos(sAddress).Position = iNewPosition
+                OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Position", iNewPosition.ToString(), pName)
+                logging.AddToLog("Servo " & sAddress & " (" & method.ObjectName & ") set to Position: " & iNewPosition.ToString() & " (" & gMin(sAddress) & "-" & gMax(sAddress) & ")", True)
             ElseIf method.MethodName = "ENGAGE" Then
                 phidgetServo.servos(sAddress).Engaged = True
-                logging.AddToLog("Servo " & sAddress & "(" & method.ObjectName & ") Engaged", True)
+                logging.AddToLog("Servo " & sAddress & " (" & method.ObjectName & ") Engaged", True)
             ElseIf method.MethodName = "DISENGAGE" Then
                 phidgetServo.servos(sAddress).Engaged = False
-                logging.AddToLog("Servo " & sAddress & "(" & method.ObjectName & ") Disengaged", True)
+                logging.AddToLog("Servo " & sAddress & " (" & method.ObjectName & ") Disengaged", True)
             End If
         Catch ex As Exception
             logging.AddToLog("Error in ProcessCommand: " & ex.Message, True)
         End Try
     End Sub
-
-
 
     Public Overrides Sub Shutdown()
         If phidgetServo.Attached Then phidgetServo.close()

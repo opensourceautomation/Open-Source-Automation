@@ -14,6 +14,8 @@ CALL osae_sp_object_type_property_add ('Default Position','Integer','','PHIDGET-
 
 CALL osae_sp_object_type_add ('PHIDGET SERVO','Phidget Servo','Phidget-Servo-VanMain','PHIDGET SERVO',0,0,0,0);
 CALL osae_sp_object_type_method_add ('POSITION','Set Position','PHIDGET SERVO','Position','','','');
+CALL osae_sp_object_type_method_add ('ENGAGE','Engage Servo','PHIDGET SERVO','','','','');
+CALL osae_sp_object_type_method_add ('DISENGAGE','Disengage Servo','PHIDGET SERVO','','','','');
 CALL osae_sp_object_type_property_add ('Default Position','Integer','170','PHIDGET SERVO',0);
 CALL osae_sp_object_type_property_add ('Position','Integer','170','PHIDGET SERVO',0);
 CALL osae_sp_object_type_property_add ('Min Position','Integer','0','PHIDGET SERVO',0);
