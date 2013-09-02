@@ -8,17 +8,34 @@
     [Serializable]
     public class Logging
     {
+        /// <summary>
+        /// Private instance used as part of the Singleton pattern
+        /// </summary>
          private static Logging privateInstance = null;
 
+        /// <summary>
+        /// Whether the system is in debug mode
+        /// </summary>
          private static string debug;
+
+        /// <summary>
+        /// Whether the logs should be kept to a certain size
+        /// </summary>
+         private static string pruneLogs;
 
         /// <summary>
         /// Provides exlusive writes to the log file
         /// </summary>
         private static object logLocker = new object();
 
+        /// <summary>
+        /// The name of the log to write to
+        /// </summary>
         private string logName = string.Empty;
 
+        /// <summary>
+        /// Memory lock to prevent access violation
+        /// </summary>
         private static object memoryLock = new object();
 
         private Logging(string requestedLogName)
@@ -26,6 +43,11 @@
             logName = requestedLogName;
         }
 
+        /// <summary>
+        /// Get the current logger, if no logger has been specified in a previous call then the 
+        /// default logger will be returned
+        /// </summary>
+        /// <returns>provides access to the logging methods</returns>
         public static Logging GetLogger()
         {
             lock (memoryLock)
@@ -35,7 +57,9 @@
                     privateInstance = new Logging("Default");
                 }
             }
-            debug = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value;
+            
+            Logging.GetConfiguration();
+            
             return privateInstance;
         }
 
@@ -52,6 +76,8 @@
                     privateInstance.logName = requestedLogName;
                 }
             }
+
+            Logging.GetConfiguration();
 
             return privateInstance;
         }
@@ -72,7 +98,7 @@
                         sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - " + audit);
                         sw.Close();
 
-                        if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value == "TRUE")
+                        if (pruneLogs == "TRUE")
                         {
                             if (file.Length > 1000000)
                             {
@@ -177,6 +203,12 @@
                     AddToLog("API - EventLogClear error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
+        }
+
+        private static void GetConfiguration()
+        {
+            debug = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value;
+            pruneLogs = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value;
         }
     }
 }
