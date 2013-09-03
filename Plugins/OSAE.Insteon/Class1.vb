@@ -7,55 +7,16 @@ Public Class Insteon
     Private x_LastWrite As Short              ' Index of last byte in the array updated with new data
     Private x_Start As Short
     Dim PLM_Address As String
-    Private CN As MySqlConnection
+    'Private CN As MySqlConnection
     Private pName As String = ""
     Private gPort As Integer
-
     Private Shared logging As Logging = logging.GetLogger("Insteon")
-
-    Public Sub DB_Connection()
-        CN = New MySqlConnection
-        CN.ConnectionString = "server=" & Common.DBConnection & ";Port=" & Common.DBPort & ";Database=" & Common.DBName & ";Password=" & Common.DBPassword & ";use procedure bodies=false;Persist Security Info=True;User ID=" & Common.DBUsername
-        Try
-            CN.Open()
-            CN.Close()
-            logging.AddToLog("Connected to Database: " & Common.DBName & " @ " & Common.DBConnection & ":" & Common.DBPort, True)
-        Catch myerror As Exception
-            logging.AddToLog("Error Connecting to Database: " & myerror.Message, True)
-        End Try
-    End Sub
-
-    Private Sub Load_App_Name()
-        Dim CMD As New MySqlCommand
-        CMD.Connection = CN
-        CMD.CommandType = CommandType.Text
-        CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE object_type='INSTEON'"
-        Try
-            CN.Open()
-            pName = CMD.ExecuteScalar
-            CN.Close()
-        Catch myerror As MySqlException
-            logging.AddToLog("Error Load_App_Name: " & myerror.Message, True)
-            CN.Close()
-        End Try
-        If pName = "" Then
-            logging.AddToLog("Could not find my Object: " & pName & ".  Adding it to the DB", True)
-            OSAEObjectManager.ObjectAdd("INSTEON", "INSTEON", "INSTEON", "", "", 1)
-        Else
-            logging.AddToLog("Found my Object: " & pName, True)
-        End If
-        gPort = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
-        logging.AddToLog("COM Port is set to: " & gPort, True)
-        'gAppPath = OSAEApi.APIpath
-    End Sub
 
     Private Sub Start_PLM()
         Dim data(2) As Byte
         Try
             If SerialPLM.PortName <> ("COM" & gPort) Then
-                If SerialPLM.IsOpen Then
-                    SerialPLM.Close()
-                End If
+                If SerialPLM.IsOpen Then SerialPLM.Close()
                 SerialPLM.PortName = ("COM" & gPort)
             End If
             If SerialPLM.IsOpen = False Then
@@ -65,7 +26,7 @@ Public Class Insteon
             data(1) = 96
             SerialPLM.Write(data, 0, 2)
         Catch ex As Exception
-            MsgBox("Error accessing serial port: " & ex.ToString, MsgBoxStyle.Exclamation)
+            logging.AddToLog("Error accessing serial port: " & ex.ToString(), pName)
         End Try
     End Sub
 
@@ -95,21 +56,20 @@ Public Class Insteon
         Dim X10Address As String
         Dim FromAddress As String
         Dim ToAddress As String
-        'Dim oObject As OSAE.OSAEObject
         Dim sObject As String = ""
         Dim IAddress As Short ' Insteon index number
         Dim Flags As Byte
         Dim Command1 As Byte
         Dim Command2 As Byte
         Dim dsResults As DataSet
-        Dim ms As Short          ' Position of start of message ( = x_Start + 1)
-        Dim MessageEnd As Short  ' Position of expected end of message (start + length - 1000 if it's looping) 
+        Dim ms As Short            ' Position of start of message ( = x_Start + 1)
+        Dim MessageEnd As Short    ' Position of expected end of message (start + length - 1000 if it's looping) 
         Dim DataAvailable As Short ' how many bytes of data available between x_Start and X_LastWrite?
         Dim data(2) As Byte
         Dim DataString As String
         Dim CMD As New MySqlCommand
 
-        Debug.WriteLine("PLM starting: x_LastWrite: " & x_LastWrite & " x_Start: " & x_Start)
+        'Debug.WriteLine("PLM starting: x_LastWrite: " & x_LastWrite & " x_Start: " & x_Start)
         If x_Start = x_LastWrite Then Exit Sub ' reached end of data, get out of sub
         ' x_Start = the last byte that was read and processed here
         ' Each time this sub is executed, one command will be processed (if enough data has arrived)
@@ -185,7 +145,6 @@ Public Class Insteon
                     Command1 = x(ms + 9)
                     Command2 = x(ms + 10)
                     ' Check if FromAddress is in device database, if not add it (ToAddress will generally = PLM)
-                    'sObject = OSAEApi.GetListItem(row("parameter_1").ToString, row("parameter_2").ToString)
                     Try
                         CMD.CommandType = CommandType.Text
                         CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE UPPER(address)=?pname"
@@ -244,7 +203,6 @@ Public Class Insteon
                                     'Insteon(IAddress).Level = Command2 / 2.55  ' scale of 0-255, change to scale of 0-100
                                     OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
                                     logging.AddToLog("Set: " & sObject & "to ON", True)
-
                                 End If
                             Case 46 ' Light On At Ramp Rate (slow on)
                                 'Insteon(IAddress).Device_On = True
@@ -253,14 +211,12 @@ Public Class Insteon
                                     ' Insteon(IAddress).Level = 100  ' the real level is the preset for the link, but...
                                     OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
                                     logging.AddToLog("Set: " & sObject & "to ON", True)
-
                                 Else
                                     ' Direct message
                                     ' Insteon(IAddress).Level = (Command2 Or 15) / 2.55  ' high bits of cmd2 + binary 1111
                                     'MsgBox("Light On At Ramp Rate, Command2 = " & Command2 & " (Command2 or 15)/2.55 = " & Insteon(IAddress).Level)
                                     OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
                                     logging.AddToLog("Set: " & sObject & "to ON", True)
-
                                 End If
                             Case 19, 20, 47 ' Off, Fast Off, Light Off At Ramp Rate (slow off)
                                 'MsgBox("Off, Fast Off, Light Off At Ramp Rate")
@@ -293,7 +249,6 @@ Public Class Insteon
                             '    End If
                             'End If
                         End If
-                        ' Update grid
                         'If Insteon(IAddress).Device_On Then
                         '    'grdInsteon.set_TextMatrix(IAddress - 1, 2, "On")
                         'Else
@@ -506,7 +461,6 @@ Public Class Insteon
                                 logging.AddToLog(" DevCat: " & GetHex(x(ms + 15)), True)
                                 logging.AddToLog(" SubCat: " & GetHex(x(ms + 16)), True)
                                 logging.AddToLog(" Firmware: " & GetHex(x(ms + 17)), True)
-
                             Case 1 ' FX Username Response
                                 logging.AddToLog(" FX Username Response", True)
                                 logging.AddToLog(" D1-D8 FX Command Username: ", True)
@@ -582,7 +536,6 @@ Public Class Insteon
                     Select Case x(ms + 3)
                         Case 0 ' House + Device
                             X10Code = X10Device_from_PLM(x(ms + 2) And 15)
-                            'ListBox1.Items.Add(Chr(65 + X10House) & (X10Code + 1) & vbCrLf)
                             PLM_LastX10Device = X10Code ' Device Code 0-15
                         Case 63, 128 ' 0x80 House + Command    63 = 0x3F - should be 0x80 but for some reason I keep getting 0x3F instead
                             X10Code = (x(ms + 2) And 15) + 1
@@ -597,7 +550,6 @@ Public Class Insteon
                             End If
                             dsResults = OSAESql.RunQuery(CMD)
                             sObject = dsResults.Tables(0).Rows(0).Item(0)
-                            'ListBox1.Items.Add(Chr(65 + X10House) & " " & Commands(X10Code) & vbCrLf)
                             ' Now actually process the event
                             ' Does it have a name?
                             'oObject = OSAEApi.GetObjectByAddress(X10Address)
@@ -607,11 +559,8 @@ Public Class Insteon
                             'oObject = OSAEApi.GetObjectByAddress(X10Address)
 
                             'If DeviceName(X10Address) = X10Address Then HasName = False Else HasName = True
-                            ' Time stamp in blue
-                            'ListBox1.Items.Add(VB6.Format(TimeOfDay) & " ")
                             'If LoggedIn And HasName Then frmHack.WriteWebtrix(Blue, VB6.Format(TimeOfDay) & " ")
                             ' Write command to event log
-                            'ListBox1.Items.Add(DeviceName(X10Address) + " " + Commands(X10Code))
                             'If LoggedIn And HasName Then frmHack.WriteWebtrix(Green, DeviceName(X10Address) + " " + HackCommands(X10Code) + vbCrLf)
                             ' Play sounds (only if the device is turned on or off, not for bright/dim or other commands)
                             ' Handle incoming event
@@ -760,7 +709,7 @@ Public Class Insteon
                 If DataAvailable >= 9 Then
                     x_Start = MessageEnd
                     FromAddress = GetHex(x(ms + 4)) & "." & GetHex(x(ms + 5)) & "." & GetHex(x(ms + 6))
-                    '' Check if FromAddress is in device database, if not add it
+                    ' Check if FromAddress is in device database, if not add it
                     'If InsteonNum(FromAddress) = 0 Then
                     '    AddInsteonDevice(FromAddress)
                     '    SortInsteon()
@@ -1036,13 +985,12 @@ Public Class Insteon
                 ' in principle this shouldn't happen... unless there are undocumented messages (probably!)
                 x_Start = x_Start + 1  ' just skip over this and hope to hit a real command next time through the loop
                 If x_Start > 1000 Then x_Start = x_Start - 1000
-                logging.AddToLog("PLM: Unrecognized command received: ", True)
-                Debug.WriteLine("Unrecognized command received " & GetHex(x(ms)) & " " & GetHex(x(ms + 1)) & " " & GetHex(x(ms + 2)))
+                logging.AddToLog("PLM: Unrecognized command received: " & GetHex(x(ms)) & " " & GetHex(x(ms + 1)) & " " & GetHex(x(ms + 2)), True)
                 For i = 0 To DataAvailable
                     logging.AddToLog(GetHex(x(ms + DataAvailable)), True)
                 Next
         End Select
-        Debug.WriteLine("PLM finished: ms = " & ms & " MessageEnd = " & MessageEnd & " X_Start = " & x_Start)
+        logging.AddToLog("PLM finished: ms = " & ms & " MessageEnd = " & MessageEnd & " X_Start = " & x_Start, True)
         Exit Sub
 PLMerror:
         x_Start = x_LastWrite
@@ -1053,10 +1001,9 @@ PLMerror:
         X10(house, device).Device_On = True
         X10(house, device).Level = 100
         'grdDevices.set_TextMatrix(house * 16 + device, 2, "On")
-        ' grdDevices.set_TextMatrix(house * 16 + device, 3, 100)
         If house < 16 Then ' real device, otherwise variable so no signal should be sent
             ' SmartHome PLM
-            Debug.WriteLine("CommandOn for PLM")
+            logging.AddToLog("CommandOn for PLM", True)
             data(0) = 2   ' start first message: send X10 address only
             data(1) = 99  ' 0x063 = Send X10
             data(2) = PLM_X10_House(house + 1) + PLM_X10_Device(device + 1)  ' X10 address (house + device)
@@ -1079,7 +1026,7 @@ PLMerror:
         ' grdDevices.set_TextMatrix(house * 16 + device, 3, 0)
         If house < 16 Then ' real device, otherwise variable so no signal should be sent
             ' SmartHome PLM
-            Debug.WriteLine("CommandOff for PLM")
+            logging.AddToLog("CommandOff for PLM", True)
             data(0) = 2   ' start first message: send X10 address only
             data(1) = 99  ' 0x063 = Send X10
             data(2) = PLM_X10_House(house + 1) + PLM_X10_Device(device + 1)  ' X10 address (house + device)
@@ -1107,7 +1054,7 @@ PLMerror:
         'grdDevices.set_TextMatrix(house * 16 + device, 2, "On")
         ' grdDevices.set_TextMatrix(house * 16 + device, 3, X10(house, device).Level)
         If house < 16 Then ' real device, otherwise variable so no signal should be sent
-            Debug.WriteLine("CommandBright for PLM")
+            logging.AddToLog("CommandBright for PLM", True)
             data(0) = 2   ' start first message: send X10 address only
             data(1) = 99  ' 0x063 = Send X10
             data(2) = PLM_X10_House(house + 1) + PLM_X10_Device(device + 1)  ' X10 address (house + device)
@@ -1139,7 +1086,7 @@ PLMerror:
         'grdDevices.set_TextMatrix(house * 16 + device, 2, "On")
         'grdDevices.set_TextMatrix(house * 16 + device, 3, X10(house, device).Level)
         If house < 16 Then ' real device, otherwise variable so no signal should be sent
-            Debug.WriteLine("CommandDim for PLM")
+            logging.AddToLog("CommandDim for PLM", True)
             data(0) = 2   ' start first message: send X10 address only
             data(1) = 99  ' 0x063 = Send X10
             data(2) = PLM_X10_House(house + 1) + PLM_X10_Device(device + 1)  ' X10 address (house + device)
@@ -1173,39 +1120,44 @@ PLMerror:
         Dim sAddress1 As String = ""
         Dim sAddress2 As String = ""
         Dim sAddress3 As String = ""
-        'Try
-        '    If row("method_name").ToString() = "ON" Or row("method_name").ToString() = "OFF" Then
 
-        '        AHObject.SendAction("sendplc", row("address").ToString() & " " & row("method_name").ToString())
-        '        If gTransmiRF = "TRUE" Then
-        '            AHObject.SendAction("sendrf", row("address").ToString() & " " & row("method_name").ToString())
-        '        End If
-        '        logging.AddToLog("Executed " & row("address").ToString() & " " & row("method_name").ToString())
-        '    End If
-        'Catch ex As Exception
-        '    logging.AddToLog("Error ProcessCommand - " & ex.Message)
-        'End Try
-        Try
-            sAddress1 = Left(method.Address, 2).ToLower
-            sAddress2 = method.Address.Substring(3, 2).ToLower
-            sAddress3 = method.Address.Substring(6, 2).ToLower
-            logging.AddToLog("SEND: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName, True)
-        Catch ex As Exception
-            logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
-        End Try
-        ' User has pressed the Send Command button
-        ' Insteon - note that all the levels etc will be updated when the ACK is received, not here
-        i = 1
-        Do Until CommandsInsteon(i).ToLower = method.MethodName.ToLower Or i = 80
-            i = i + 1
-        Loop
+        If method.Address.Length > 2 Then
+            Try
+                sAddress1 = Left(method.Address, 2).ToLower
+                sAddress2 = method.Address.Substring(3, 2).ToLower
+                sAddress3 = method.Address.Substring(6, 2).ToLower
+                logging.AddToLog("SEND: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName, True)
+            Catch ex As Exception
+                logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
+            End Try
+            ' User has pressed the Send Command button
+            ' Insteon - note that all the levels etc will be updated when the ACK is received, not here
+            i = 1
+            Do Until CommandsInsteon(i).ToLower = method.MethodName.ToLower Or i = 80
+                i = i + 1
+            Loop
 
-        Select Case i
-            Case 17, 18, 19, 20 ' On/Off/FastOn/FastOff -- rescale dim level from % scale to 0-255 scale
-                'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " " + TxtDim.Text + vbCrLf)
-                'a = Replace(row("address").ToString(), ".", " ")
-                logging.AddToLog("SEND1: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName, True)
-                Try
+            Select Case i
+                Case 17, 18, 19, 20 ' On/Off/FastOn/FastOff -- rescale dim level from % scale to 0-255 scale
+                    'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " " + TxtDim.Text + vbCrLf)
+                    logging.AddToLog("SEND1: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName, True)
+                    Try
+                        data(0) = 2
+                        data(1) = 98 ' 0x062 = send Insteon standard or extended message
+                        data(2) = Convert.ToInt32(sAddress1, 16)  ' three byte address of device
+                        data(3) = Convert.ToInt32(sAddress2, 16)
+                        data(4) = Convert.ToInt32(sAddress3, 16)
+                        data(5) = 15 ' flags
+                        data(6) = i ' command1
+                        data(7) = 100 * 2.55
+                        SerialPLM.Write(data, 0, 8)
+                        logging.AddToLog("SENT: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName, True)
+                    Catch ex As Exception
+                        logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
+                    End Try
+                Case 21, 22 ' Bright/Dim by one step (on 32 step scale)
+                    'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " (one step)" + vbCrLf)
+                    a = Replace(method.Address, ".", " ")
                     data(0) = 2
                     data(1) = 98 ' 0x062 = send Insteon standard or extended message
                     data(2) = Convert.ToInt32(sAddress1, 16)  ' three byte address of device
@@ -1213,69 +1165,103 @@ PLMerror:
                     data(4) = Convert.ToInt32(sAddress3, 16)
                     data(5) = 15 ' flags
                     data(6) = i ' command1
-                    data(7) = 100 * 2.55
+                    data(7) = 255
                     SerialPLM.Write(data, 0, 8)
-                    logging.AddToLog("SENT: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName, True)
-                Catch ex As Exception
-                    logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
-                End Try
-            Case 21, 22 ' Bright/Dim by one step (on 32 step scale)
-                'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " (one step)" + vbCrLf)
-                a = Replace(method.Address, ".", " ")
-                data(0) = 2
-                data(1) = 98 ' 0x062 = send Insteon standard or extended message
-                data(2) = Convert.ToInt32(sAddress1, 16)  ' three byte address of device
-                data(3) = Convert.ToInt32(sAddress2, 16)
-                data(4) = Convert.ToInt32(sAddress3, 16)
-                data(5) = 15 ' flags
-                data(6) = i ' command1
-                data(7) = 255
-                SerialPLM.Write(data, 0, 8)
-            Case Else
-                logging.AddToLog("ELSE", True)
-                'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " " + TxtDim.Text + vbCrLf)
-                a = Replace(method.Address, ".", " ")
-                data(0) = 2
-                data(1) = 98 ' 0x062 = send Insteon standard or extended message
-                data(2) = Convert.ToInt32(sAddress1, 16)  ' three byte address of device
-                data(3) = Convert.ToInt32(sAddress2, 16)
-                data(4) = Convert.ToInt32(sAddress3, 16)
-                data(5) = 15 ' flags
-                data(6) = i ' command1
-                data(7) = 255
-                SerialPLM.Write(data, 0, 8)
-                'If i = 25 Then Insteon(InsteonNum(cmbInsteonID.Text)).Checking = True ' Status Request
-        End Select
-        'Else
-        ' X10
-        'If cmbHouse.SelectedIndex > 15 Then Exit Sub ' variable, not a real device
+                Case Else
+                    logging.AddToLog("ELSE", True)
+                    'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " " + TxtDim.Text + vbCrLf)
+                    a = Replace(method.Address, ".", " ")
+                    data(0) = 2
+                    data(1) = 98 ' 0x062 = send Insteon standard or extended message
+                    data(2) = Convert.ToInt32(sAddress1, 16)  ' three byte address of device
+                    data(3) = Convert.ToInt32(sAddress2, 16)
+                    data(4) = Convert.ToInt32(sAddress3, 16)
+                    data(5) = 15 ' flags
+                    data(6) = i ' command1
+                    data(7) = 255
+                    SerialPLM.Write(data, 0, 8)
+                    'If i = 25 Then Insteon(InsteonNum(cmbInsteonID.Text)).Checking = True ' Status Request
+            End Select
+        Else
+            'X10 Code
+            Dim houseCode As Char
+            Dim houseCodeInt As Integer
+            Dim device As Integer
+            Dim command As String
+            Dim x10data(3) As Byte
+            Dim CMD As New MySqlCommand
+            Dim sObject As String
+            Dim dsResults As DataSet
 
-        'i = cmbCommandToSend.SelectedIndex
-        'If i = 16 Then
-        'i = -1
-        'End If
+            houseCode = method.Address.ToLower.ToCharArray()(0)
+            houseCodeInt = 1 + Asc(houseCode.ToString) - 97
+            device = Int32.Parse(method.Address.Substring(1))
 
-        'Select Case i
-        '    Case 2 ' On
-        '        CommandOn((cmbHouse.SelectedIndex), (cmbDevice.SelectedIndex))
-        '        'WriteEvent(Yellow, "Sent " + DeviceName(VB6.GetItemString(cmbHouse, cmbHouse.SelectedIndex) & VB6.GetItemString(cmbDevice, cmbDevice.SelectedIndex)) + " " + Commands(i + 1) + vbCrLf)
-        '    Case 3 ' Off
-        '        CommandOff((cmbHouse.SelectedIndex), (cmbDevice.SelectedIndex))
-        '        'WriteEvent(Yellow, "Sent " + DeviceName(VB6.GetItemString(cmbHouse, cmbHouse.SelectedIndex) & VB6.GetItemString(cmbDevice, cmbDevice.SelectedIndex)) + " " + Commands(i + 1) + vbCrLf)
-        '    Case 4 ' Dim
-        '        CommandDim((cmbHouse.SelectedIndex), (cmbDevice.SelectedIndex), Val(TxtDim.Text))
-        '        'WriteEvent(Yellow, "Sent " + DeviceName(VB6.GetItemString(cmbHouse, cmbHouse.SelectedIndex) & VB6.GetItemString(cmbDevice, cmbDevice.SelectedIndex)) + " " + Commands(i + 1) + " " + TxtDim.Text + "%" + vbCrLf)
-        '    Case 5 ' Bright
-        '        CommandBright((cmbHouse.SelectedIndex), (cmbDevice.SelectedIndex), Val(TxtDim.Text))
-        '        'WriteEvent(Yellow, "Sent " + DeviceName(VB6.GetItemString(cmbHouse, cmbHouse.SelectedIndex) & VB6.GetItemString(cmbDevice, cmbDevice.SelectedIndex)) + " " + Commands(i + 1) + " " + TxtDim.Text + "%" + vbCrLf)
-        '    Case Else
-        '        'WriteEvent(Yellow, "Sent " + DeviceName(VB6.GetItemString(cmbHouse, cmbHouse.SelectedIndex) & VB6.GetItemString(cmbDevice, cmbDevice.SelectedIndex)) + " " + Commands(i + 1) + " " + TxtDim.Text + "%" + vbCrLf)
-        'End Select
+            i = 1
+            Do Until CommandsInsteon(i).ToLower = method.MethodName.ToLower Or i = 80
+                i = i + 1
+            Loop
+
+            Select Case i
+                Case 17 ' On/Off/FastOn/FastOff -- rescale dim level from % scale to 0-255 scale
+                    command = "ON"
+                    logging.AddToLog("X10 On " & houseCode & device, True)
+                    x10data(0) = 2   ' start first message: send X10 address only
+                    x10data(1) = 99  ' 0x063 = Send X10
+                    x10data(2) = PLM_X10_House(houseCodeInt) + PLM_X10_Device(device)  ' X10 address (house + device)
+                    x10data(3) = 0   ' flag = this is the address
+                    SerialPLM.Write(x10data, 0, 4)
+                    Wait(500)
+                    x10data(0) = 2   ' start second message: send X10 house + command
+                    x10data(1) = 99  ' 0x063 = Send X10
+                    x10data(2) = PLM_X10_House(houseCodeInt) + 2   ' X10 address (house + command)
+                    x10data(3) = 128 ' flag = this is house + address
+                    SerialPLM.Write(x10data, 0, 4)
+                Case 19
+                    command = "OFF"
+                    logging.AddToLog("X10 Off " & houseCode & device, True)
+                    x10data(0) = 2   ' start first message: send X10 address only
+                    x10data(1) = 99  ' 0x063 = Send X10
+                    x10data(2) = PLM_X10_House(houseCodeInt) + PLM_X10_Device(device)  ' X10 address (house + device)
+                    x10data(3) = 0   ' flag = this is the address
+                    SerialPLM.Write(x10data, 0, 4)
+                    Wait(500)
+                    x10data(0) = 2   ' start second message: send X10 house + command
+                    x10data(1) = 99  ' 0x063 = Send X10
+                    x10data(2) = PLM_X10_House(houseCodeInt) + 3   ' X10 address (house + command)
+                    x10data(3) = 128 ' flag = this is house + address
+                    SerialPLM.Write(data, 0, 4)
+                Case Else
+                    command = "Unknown"
+                    logging.AddToLog("Unknown X10 Command" & houseCode & device, True)
+            End Select
+            Try
+                CMD.CommandType = CommandType.Text
+                CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE UPPER(address)=?pname"
+                CMD.Parameters.AddWithValue("?pname", houseCode & device)
+                dsResults = OSAE.OSAESql.RunQuery(CMD)
+
+                If dsResults.Tables(0).Rows.Count > 0 Then
+                    sObject = dsResults.Tables(0).Rows(0).Item(0)
+                    OSAE.OSAEObjectStateManager.ObjectStateSet(sObject, command, pName)
+                Else
+                    logging.AddToLog("Could not retrieve X10 Device Status", True)
+                End If
+
+            Catch ex As Exception
+                logging.AddToLog("X10 Status Set Error (" & ex.Message & ")", True)
+                logging.AddToLog(houseCode & device, True)
+            End Try
+        End If
     End Sub
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
-        DB_Connection()
-        Load_App_Name()
+        pName = pluginName
+        logging.AddToLog("Found my Object Name: " & pName, True)
+
+        gPort = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
+        logging.AddToLog("COM Port is set to: " & gPort, True)
+
         SerialPLM = New System.IO.Ports.SerialPort
         SerialPLM.BaudRate = 19200
         Dim i, j, k As Short
