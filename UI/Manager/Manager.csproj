@@ -57,7 +57,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\output\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="NetworkCommsDotNetComplete">
+    <Reference Include="NetworkCommsDotNetComplete, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\NetworkCommsDotNetComplete.dll</HintPath>
     </Reference>
     <Reference Include="System" />
