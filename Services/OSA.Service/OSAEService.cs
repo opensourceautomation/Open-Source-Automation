@@ -8,6 +8,9 @@
     using System.ServiceProcess;
     using System.Diagnostics;
     using NetworkCommsDotNet;
+    using log4net.Config;
+using log4net;
+using System.Reflection;
 
     #endregion
 
@@ -27,11 +30,6 @@
 
         private bool goodConnection = false;
 
-        /// <summary>
-        /// Provides access to logging
-        /// </summary>
-        Logging logging = Logging.GetLogger(sourceName);
-
         private bool running = true;
         
         /// <summary>
@@ -41,11 +39,18 @@
 
         #endregion
 
+        // Log4Net
+        protected ILog Log
+        {
+            get { return LogManager.GetLogger(GetType()); }
+        }
+
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
         /// </summary>
         static void Main(string[] args) 
-        {          
+        {
+           
             if (args.Length > 0)
             {
                 string pattern = Common.MatchPattern(args[0]);
@@ -57,7 +62,14 @@
             }
             else
             {
+// Uncomment the below commented lines to allow for easy debugging, launched by Visual Studio!
+//#if(!DEBUG)
                 ServiceBase.Run(new OSAEService());
+//#else
+//               var debugService = new OSAEService();
+//                debugService.OnStart(args);
+//#endif
+
             }
             
         }
@@ -68,8 +80,8 @@
         /// </summary>
         public OSAEService()
         {
-            logging.AddToLog("Service Starting", true);
-
+            this.Log.Info("Service Starting");
+            
             InitialiseOSAInEventLog();
 
             // These Flags set whether or not to handle that specific
@@ -87,9 +99,6 @@
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
-//#if (DEBUG)
-//            Debugger.Launch(); //<-- Simple form to debug a web services 
-//#endif
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptions);
             try
@@ -99,12 +108,12 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error getting registry settings and/or deleting logs: " + ex.Message, true);
+                this.Log.Fatal("Error getting registry settings and/or deleting logs: " + ex.Message, ex);
             }
 
-            logging.AddToLog("OnStart", true);
-
-            logging.AddToLog("Removing Orphaned methods", true);
+            this.Log.Info("OnStart");
+            
+            this.Log.Info("Removing Orphaned Methods");
             OSAEMethodManager.ClearMethodQueue();
 
             Common.CreateComputerObject(sourceName);
@@ -127,7 +136,7 @@
         /// </summary>
         protected override void OnStop()
         {
-            logging.AddToLog("OnStop Invoked", false);
+            this.Log.Info("OnStop Invoked");
             NetworkComms.Shutdown();
             ShutDownSystems();
         }        
@@ -137,15 +146,14 @@
         /// </summary>
         protected override void OnShutdown() 
         {
-            logging.AddToLog("OnShutdown Invoked", false);
-
+            this.Log.Info("OnShutdown Invoked");
             ShutDownSystems();
         }
 
         void UnhandledExceptions(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
-            logging.AddToLog("UnhandledExceptions caught : " + e.Message + " - InnerException: " + e.InnerException.Message, true);
+            this.Log.Fatal("UnhandledExceptions caught : " + e.Message, e);
         }
         #endregion
     }
