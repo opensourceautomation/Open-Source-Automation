@@ -63,12 +63,12 @@ using System.Reflection;
             else
             {
 // Uncomment the below commented lines to allow for easy debugging, launched by Visual Studio!
-//#if(!DEBUG)
+#if(!DEBUG)
                 ServiceBase.Run(new OSAEService());
-//#else
-//               var debugService = new OSAEService();
-//                debugService.OnStart(args);
-//#endif
+#else
+                var debugService = new OSAEService();
+                debugService.OnStart(args);
+#endif
 
             }
             
@@ -80,7 +80,9 @@ using System.Reflection;
         /// </summary>
         public OSAEService()
         {
+            this.Log.Info("================");
             this.Log.Info("Service Starting");
+            this.Log.Info("================");
             
             InitialiseOSAInEventLog();
 
@@ -101,6 +103,18 @@ using System.Reflection;
         {
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptions);
+
+            var dbConnectionStatus = Common.TestConnection();
+            if (dbConnectionStatus.Success)
+            {
+                this.Log.Info("Verified successful connection to database.");
+            }
+            else
+            {
+                this.Log.Fatal("Unable to connect to database: " + dbConnectionStatus.CaughtException.Message);
+                return;
+            }
+
             try
             {
                 Common.InitialiseLogFolder();

@@ -66,6 +66,7 @@
     <Compile Include="Dapper\SqlMapper.cs" />
     <Compile Include="General\Common.cs" />
     <Compile Include="Enums\DaysOfWeek.cs" />
+    <Compile Include="General\DBConnectionStatus.cs" />
     <Compile Include="General\OSAESql.cs" />
     <Compile Include="OSAEImage\OSAEImageManager.cs" />
     <Compile Include="OSAEImage\OSAEImage.cs" />

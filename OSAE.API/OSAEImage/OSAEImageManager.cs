@@ -75,7 +75,7 @@
         /// <returns>OSAEImage or null</returns>
         public OSAEImage GetImage(int imageId, bool returnNullIfNotExist)
         {
-            if (Common.TestConnection())
+            try
             {
                 using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
@@ -93,11 +93,16 @@
                         return image;
                     }
                 }
+
+                if (returnNullIfNotExist)
+                    return null;
+                else
+                    return new OSAEImage();
             }
-            if (returnNullIfNotExist)
-                return null;
-            else
-                return new OSAEImage();
+            catch (Exception ex)
+            {
+                throw new Exception("API - GetImage - Failed to get image with id: " + imageId + ", exception encountered: " + ex.Message, ex);
+            }
         }
 
         /// <summary>
@@ -117,7 +122,7 @@
         /// <returns>the requested image</returns>
         public OSAEImage GetImage(string imageName)
         {
-            if (Common.TestConnection())
+            try
             {
                 using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
                 {
@@ -129,10 +134,14 @@
                     if (image != null)
                         return image;
                 }
+
+                // We shouldn't log inside the API, so let's throw an exception to inform the calling application that there's an issue.
+                throw new Exception("API - Failed to get requested image from DB: " + imageName);
             }
-            // Return an empty image object and log it.
-            logging.AddToLog("API - Failed to get requested image from DB: " + imageName, true);
-            return new OSAEImage();
+            catch (Exception ex)
+            {
+                throw new Exception("API - Failed to get requested image from DB: " + imageName + ", exception encountered: " + ex.Message, ex);
+            }
             
         }
 
@@ -144,30 +153,28 @@
         {
             List<OSAEImage> imageList = new List<OSAEImage>();
 
-            if (Common.TestConnection())
+            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+                try
                 {
-                    try
+                    connection.Open();
+
+                    MySqlCommand command = new MySqlCommand("SELECT image_id, image_name FROM osae_images", connection);
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
                     {
-                        connection.Open();
+                        OSAEImage osaeImage = new OSAEImage();
+                        osaeImage.ID = reader.GetUInt32("image_id");
+                        osaeImage.Name = reader.GetString("image_name");
 
-                        MySqlCommand command = new MySqlCommand("SELECT image_id, image_name FROM osae_images", connection);
-                        MySqlDataReader reader = command.ExecuteReader();
-
-                        while (reader.Read())
-                        {
-                            OSAEImage osaeImage = new OSAEImage();
-                            osaeImage.ID = reader.GetUInt32("image_id");
-                            osaeImage.Name = reader.GetString("image_name");
-
-                            imageList.Add(osaeImage);
-                        }
+                        imageList.Add(osaeImage);
                     }
-                    catch (Exception e)
-                    {
-                        logging.AddToLog("API - GetImageList - Failed \r\n\r\n" + e.Message, true);
-                    }
+                }
+                catch (Exception e)
+                {
+                    // Exceptions should be caught by calling application
+                    throw new Exception("API - GetImageList - Failed: " + e.Message, e);
                 }
             }
             return imageList;
@@ -182,34 +189,33 @@
         {
             List<OSAEImage> imageList = new List<OSAEImage>();
 
-            if (Common.TestConnection())
+            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+                try
                 {
-                    try
+                    connection.Open();
+
+                    MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images", connection);
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
                     {
-                        connection.Open();
+                        OSAEImage osaeImage = new OSAEImage();
+                        osaeImage.ID = reader.GetUInt32("image_id");
+                        osaeImage.Name = reader.GetString("image_name");
+                        osaeImage.Type = reader.GetString("image_type");
+                        osaeImage.Data = (byte[])reader.GetValue(1);
 
-                        MySqlCommand command = new MySqlCommand("SELECT * FROM osae_images", connection);
-                        MySqlDataReader reader = command.ExecuteReader();
-
-                        while (reader.Read())
-                        {
-                            OSAEImage osaeImage = new OSAEImage();
-                            osaeImage.ID = reader.GetUInt32("image_id");
-                            osaeImage.Name = reader.GetString("image_name");
-                            osaeImage.Type = reader.GetString("image_type");
-                            osaeImage.Data = (byte[])reader.GetValue(1);
-
-                            imageList.Add(osaeImage);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        logging.AddToLog("API - GetImages - Failed \r\n\r\n" + e.Message, true);
+                        imageList.Add(osaeImage);
                     }
                 }
+                catch (Exception e)
+                {
+                    // Exceptions should be caught by calling application
+                    throw new Exception("API - GetImages - Failed: " + e.Message, e);
+                }
             }
+            
             return imageList;
         }
 
