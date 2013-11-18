@@ -73,6 +73,7 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="eventlogs.aspx">Event Logs</a></li>
                                     <li><a href="logs.aspx">Server Logs</a></li>
+                                    <li><a href="debuglog.aspx">Debug Log</a></li>
                                 </ul>
                             </li>
                         </ul>
