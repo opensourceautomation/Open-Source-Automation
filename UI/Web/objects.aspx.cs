@@ -36,6 +36,7 @@ public partial class home : System.Web.UI.Page
             lblPropName.Text = hdnSelectedPropName.Text;
             lblPropLastUpd.Text = "Last Updated: " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["last_updated"].ToString();
             hdnSelectedPropType.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString();
+            lblPropType.Text = "Data type: " + hdnSelectedPropType.Text;
 
             if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "List")
             {
@@ -93,7 +94,7 @@ public partial class home : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, state_label, last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
         if (!this.IsPostBack)
         {
@@ -277,6 +278,8 @@ public partial class home : System.Web.UI.Page
     {
         gvPropList.DataSource = OSAESql.RunSQL("SELECT item_name, item_label FROM osae_object_property_array WHERE object_property_id = " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["object_property_id"].ToString());
         gvPropList.DataBind();
+        btnListItemUpdate.Enabled = false;
+
     }
 
     private void loadDetails()
@@ -293,6 +296,9 @@ public partial class home : System.Web.UI.Page
             chkEnabled.Checked = true;
         else
             chkEnabled.Checked = false;
+            
+        OSAEObjectType objtype = OSAEObjectTypeManager.ObjectTypeLoad(obj.Type);
+        txtOwned.Text = objtype.OwnedBy;
     }
 
     protected void btnPropSave_Click(object sender, EventArgs e)
@@ -314,7 +320,7 @@ public partial class home : System.Web.UI.Page
     protected void btnAdd_Click(object sender, EventArgs e)
     {
         OSAEObjectManager.ObjectAdd(txtName.Text, txtDescr.Text, ddlType.SelectedItem.Value, txtAddress.Text, ddlContainer.SelectedValue, chkEnabled.Checked);
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
         txtName.Text = "";
         txtDescr.Text = "";
@@ -327,7 +333,7 @@ public partial class home : System.Web.UI.Page
     protected void btnDelete_Click(object sender, EventArgs e)
     {
         OSAEObjectManager.ObjectDelete(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString());
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
         txtName.Text = "";
         txtDescr.Text = "";
@@ -348,13 +354,20 @@ public partial class home : System.Web.UI.Page
         if(chkEnabled.Checked)
             enabled = 1;
         OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_name"].ToString(), txtName.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, enabled);
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
     }
 
     protected void btnListItemSave_Click(object sender, EventArgs e)
     {
         OSAEObjectPropertyManager.ObjectPropertyArrayAdd(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtListItem.Text, txtListItemLabel.Text);
+        hdnEditingPropList.Value = "1";
+        loadPropertyList();
+    }
+
+    protected void btnListItemUpdate_Click(object sender, EventArgs e)
+    {
+        //OSAEObjectPropertyManager.ObjectPropertyArrayUpdate(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, hdnPropListItemName.Value);
         hdnEditingPropList.Value = "1";
         loadPropertyList();
     }
