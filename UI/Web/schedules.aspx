@@ -58,8 +58,9 @@
                             AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvQueue_RowDataBound" DataKeyNames="schedule_id" ShowHeaderWhenEmpty="true">  
                             <Columns>  
                                 <asp:BoundField DataField="schedule_name" HeaderText="Name" />
-                                <asp:BoundField DataField="queue_datetime" HeaderText="DateTime" />
+                                <asp:BoundField DataField="queue_datetime" HeaderText="Date Time" />
                                 <asp:BoundField DataField="schedule_id" Visible="false" /> 
+                                <asp:BoundField DataField="command_name" HeaderText="Command" /> 
                             </Columns>  
                         </asp:GridView>
                     </div>
@@ -83,7 +84,9 @@
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <asp:BoundField DataField="interval_unit" HeaderText="Interval" />
-                                <asp:BoundField DataField="recurring_id" Visible="false" /> 
+                                <asp:BoundField DataField="recurring_time" HeaderText="Time" />
+                                <asp:BoundField DataField="recurring_id" Visible="false" />
+                                <asp:BoundField DataField="command_name" HeaderText="Command" /> 
                                 <asp:TemplateField HeaderText="Active" Visible="True">
                                     <ItemTemplate>
                                         <asp:CheckBox ID="chkActive" runat="server" AutoPostback="true" Enabled="false" />
@@ -155,7 +158,6 @@
                             <asp:Panel runat="server" ID="pnlMonthly" Visible="false">
                                 Day of the month: 
                                 <asp:DropDownList runat="server" ID="ddlMonthDay">
-                                    <asp:ListItem Text="" Value="0"></asp:ListItem>
                                     <asp:ListItem Text="1" Value="1"></asp:ListItem>
                                     <asp:ListItem Text="2" Value="2"></asp:ListItem>
                                     <asp:ListItem Text="3" Value="3"></asp:ListItem>

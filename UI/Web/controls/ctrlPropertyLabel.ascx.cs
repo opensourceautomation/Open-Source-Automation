@@ -20,7 +20,15 @@ public partial class controls_ctrlPropertyLabel : System.Web.UI.UserControl
         ObjectName = screenObject.Property("Object Name").Value;
         PropertyName = screenObject.Property("Property Name").Value;
 
-        string sPropertyValue = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, PropertyName).Value;
+        string sPropertyValue;
+        if (string.Equals(PropertyName, "STATE", StringComparison.CurrentCultureIgnoreCase))
+        {
+            sPropertyValue = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
+        }
+        else
+        {
+            sPropertyValue = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, PropertyName).Value;
+        }
         string sBackColor = screenObject.Property("Back Color").Value;
         string sForeColor = screenObject.Property("Fore Color").Value;
         string sPrefix = screenObject.Property("Prefix").Value;

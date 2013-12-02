@@ -62,7 +62,7 @@ public partial class objtypes : System.Web.UI.Page
     {
         loadObjectTypes();
 
-        gvObjectTypes.DataSource = OSAESql.RunSQL("SELECT base_type, object_type, object_type_description FROM osae_v_object_type ORDER BY base_type");
+        gvObjectTypes.DataSource = OSAESql.RunSQL("SELECT base_type, object_type, object_type_description FROM osae_v_object_type ORDER BY base_type, object_type");
         gvObjectTypes.DataBind();
 
         if (hdnSelectedPropRow.Text != "")
@@ -236,7 +236,7 @@ public partial class objtypes : System.Web.UI.Page
 
     private void loadDDLs()
     {
-        ddlBaseType.DataSource = OSAESql.RunSQL("SELECT object_type as Text, object_type as Value FROM osae_object_type"); ;
+        ddlBaseType.DataSource = OSAESql.RunSQL("SELECT object_type as Text, object_type as Value FROM osae_object_type ORDER BY object_type"); ;
         ddlBaseType.DataBind();
         if (ddlBaseType.Items.Count == 0)
             ddlBaseType.Visible = false;
@@ -244,7 +244,7 @@ public partial class objtypes : System.Web.UI.Page
             ddlBaseType.Visible = true;
         ddlBaseType.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
-        ddlOwnedBy.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_name as Value FROM osae_v_object where object_type_owner = 1"); ;
+        ddlOwnedBy.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_name as Value FROM osae_v_object where object_type_owner = 1 ORDER BY object_name"); ;
         ddlOwnedBy.DataBind();
         if (ddlOwnedBy.Items.Count == 0)
             ddlOwnedBy.Visible = false;
@@ -256,30 +256,30 @@ public partial class objtypes : System.Web.UI.Page
 
     private void loadObjectTypes()
     {
-        gvObjectTypes.DataSource = OSAESql.RunSQL("SELECT base_type, object_type, object_type_description FROM osae_v_object_type ORDER BY base_type");
+        gvObjectTypes.DataSource = OSAESql.RunSQL("SELECT base_type, object_type, object_type_description FROM osae_v_object_type ORDER BY base_type, object_type");
         gvObjectTypes.DataBind();
     }
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_datatype, property_default, track_history, property_id FROM osae_v_object_type_property where object_type='" + hdnSelectedObjectName.Text + "'");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_datatype, property_default, track_history, property_id FROM osae_v_object_type_property where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY property_name");
         gvProperties.DataBind();
     }
 
     private void loadStates()
     {
-        gvStates.DataSource = OSAESql.RunSQL("SELECT state_name, state_label FROM osae_v_object_type_state where object_type='" + hdnSelectedObjectName.Text + "'");
+        gvStates.DataSource = OSAESql.RunSQL("SELECT state_name, state_label FROM osae_v_object_type_state where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY state_name");
         gvStates.DataBind();
     }
 
     private void loadMethods()
     {
-        gvMethods.DataSource = OSAESql.RunSQL("SELECT method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default FROM osae_v_object_type_method where object_type='" + hdnSelectedObjectName.Text + "'");
+        gvMethods.DataSource = OSAESql.RunSQL("SELECT method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default FROM osae_v_object_type_method where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY method_name");
         gvMethods.DataBind();
     }
 
     private void loadEvents()
     {
-        gvEvents.DataSource = OSAESql.RunSQL("SELECT event_name, event_label FROM osae_v_object_type_event where object_type='" + hdnSelectedObjectName.Text + "'");
+        gvEvents.DataSource = OSAESql.RunSQL("SELECT event_name, event_label FROM osae_v_object_type_event where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY event_name");
         gvEvents.DataBind();
     }
 
@@ -467,7 +467,7 @@ public partial class objtypes : System.Web.UI.Page
 
     private void loadPropertyOptions()
     {
-        gvPropOptions.DataSource = OSAESql.RunSQL("SELECT option_name FROM osae_object_type_property_option WHERE property_id = " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_id"].ToString());
+        gvPropOptions.DataSource = OSAESql.RunSQL("SELECT option_name FROM osae_object_type_property_option WHERE property_id = " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_id"].ToString() + " ORDER BY option_name");
         gvPropOptions.DataBind();
     }
 
