@@ -61,7 +61,7 @@ namespace OSAE.UI.Controls
 
         private void objectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DataSet dataSet = OSAESql.RunSQL("select property_name from osae_v_object_property where object_name='" + (sender as ComboBox).SelectedValue.ToString() + "'");
+            DataSet dataSet = OSAESql.RunSQL("select property_name from osae_v_object_property where object_name='" + (sender as ComboBox).SelectedValue.ToString() + "' Union select 'State' order by property_name");
             propertyComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
