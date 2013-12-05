@@ -40,7 +40,7 @@ public partial class analytics : System.Web.UI.Page
     
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT DISTINCT CONCAT(object_name,' - ',property_name)as prop_name, object_name, property_name FROM osae_v_object_property_history WHERE property_datatype IN ('Integer', 'Float', 'Boolean') ORDER BY prop_name");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT DISTINCT CONCAT(object_name,' - ',property_name)as prop_name, object_name, property_name, property_datatype FROM osae_v_object_property_history WHERE property_datatype IN ('Integer', 'Float', 'Boolean') ORDER BY prop_name");
         gvProperties.DataBind();
 
 

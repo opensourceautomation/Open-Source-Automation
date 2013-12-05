@@ -70,8 +70,8 @@
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid"  
-                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="True">  
-<AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
+                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="true">
+                        <AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>  
                         <Columns>  
                             <asp:BoundField DataField="container_name" HeaderText="Container" />  
                             <asp:BoundField DataField="object_name" HeaderText="Object" />  
@@ -122,10 +122,18 @@
                             <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
-                    <div class="span2" style="text-align:left;">
+                    <div class="span1" style="text-align:right;">
+                        <label>Owned By</label>
+                    </div>
+                    <div class="span5" style="text-align:left;">
+                        <asp:TextBox class="input-xlarge" runat="server" ID="txtOwned" disabled></asp:TextBox>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                     <div class="span4" style="text-align:right;">
                         <asp:CheckBox runat="server" ID="chkEnabled" /> Enabled
                     </div>
-                    <div class="span4" style="text-align:right;" >
+                    <div class="span5" style="text-align:right;" >
                         <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
                         <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp
                         <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object?');" />
@@ -207,8 +215,9 @@
                         <div class="span10">
                         <asp:Panel runat="server" ID="panelPropForm" Visible ="false">
                             <form class="form-inline">
-                                <strong><asp:Label  runat="server" ID="lblPropName"></asp:Label></strong><br />
+                                <asp:Label  runat="server" ID="lblPropType"></asp:Label><br />
                                 <asp:Label  runat="server" ID="lblPropLastUpd"></asp:Label><br />
+                                <strong><asp:Label  runat="server" ID="lblPropName"></asp:Label></strong><br />
                                 <asp:Textbox class="input-xlarge" runat="server" ID="txtPropValue"></asp:Textbox>
                                 <asp:DropDownList runat="server" ID="ddlPropValue">
                                 </asp:DropDownList>
@@ -254,6 +263,7 @@
           
         <br />
         <asp:Button class="btn btn-primary" runat="server" ID="btnAddListItem" Text="Add" OnClick="btnListItemSave_Click"/>
+        <asp:Button class="btn btn" runat="server" ID="btnListItemUpdate" Text="Update" OnClick="btnListItemUpdate_Click"/>
         <asp:Button class="btn btn" runat="server" ID="btnListItemDelete" Text="Delete" OnClick="btnListItemDelete_Click"/>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>

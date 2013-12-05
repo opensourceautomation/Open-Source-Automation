@@ -106,7 +106,7 @@ public partial class images : System.Web.UI.Page
     private void loadImages()
     {
 
-        gvImages.DataSource = OSAESql.RunSQL("SELECT image_name, image_type, image_id FROM osae_images");
+        gvImages.DataSource = OSAESql.RunSQL("SELECT image_name, image_type, image_id FROM osae_images ORDER BY image_name");
         gvImages.DataBind();
     }
 

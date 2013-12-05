@@ -66,6 +66,7 @@
                                     <li><a href="patterns.aspx">Patterns</a></li>
                                     <li><a href="schedules.aspx">Schedules</a></li>
                                     <li><a href="images.aspx">Images</a></li>
+                                    <li><a href="moreplugins.aspx">More Plugins</a><li>
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -73,8 +74,10 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="eventlogs.aspx">Event Logs</a></li>
                                     <li><a href="logs.aspx">Server Logs</a></li>
+                                    <li><a href="debuglog.aspx">Debug Log</a></li>
                                 </ul>
                             </li>
+                            <li><a href="valuedisplay.aspx">Values</a></li>
                         </ul>
                         <asp:ImageButton runat="server" ID="cog" AlternateText="Configuration" style="float:right; display:inline; padding-top:4px" Width="26px" Height="26px" ImageAlign="Middle" ImageUrl="~/Images/cog.png" OnClick="cog_Click" />
                     </div>

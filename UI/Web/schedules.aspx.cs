@@ -95,13 +95,13 @@ public partial class schedules : System.Web.UI.Page
 
     private void loadQueue()
     {
-        gvQueue.DataSource = OSAESql.RunSQL("SELECT schedule_id, queue_datetime, schedule_name FROM osae_v_schedule_queue ORDER BY queue_datetime DESC");
+        gvQueue.DataSource = OSAESql.RunSQL("SELECT schedule_id, queue_datetime, schedule_name, COALESCE(script_name, CONCAT(object_name,'.',method_name)) AS command_name FROM osae_v_schedule_queue ORDER BY queue_datetime");
         gvQueue.DataBind();
     }
 
     private void loadRecurring()
     {
-        gvRecurring.DataSource = OSAESql.RunSQL("SELECT recurring_id, interval_unit, schedule_name, COALESCE(active, 1) as active FROM osae_v_schedule_recurring ORDER BY schedule_name DESC");
+        gvRecurring.DataSource = OSAESql.RunSQL("SELECT recurring_id, interval_unit, schedule_name, COALESCE(active, 1) as active, recurring_time, COALESCE(script_name, CONCAT(object_name,'.',method_name)) AS command_name FROM osae_v_schedule_recurring ORDER BY schedule_name");
         gvRecurring.DataBind();
     }
 

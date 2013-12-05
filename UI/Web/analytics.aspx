@@ -58,10 +58,17 @@
             var points = [];
             var size = $('#PropertyGrid tr:has(:checkbox:checked)').length + $('#StateGrid tr:has(:checkbox:checked)').length;
             var count = 0;
+            var mytemp = {}
 
             $('#PropertyGrid tr:has(:checkbox:checked)').each(function () {
                 var obj = $(this).find('td').eq(1).html();
                 var prop = $(this).find('td').eq(2).html();
+                var check = $(this).find('td').eq(3).html();
+                var propboolean = false;
+                if (check == 'Boolean'){
+					propboolean = true;
+					//alert(obj + " " + prop + " " + check + " " + propboolean);
+					}
                 var from = '1900-01-01';
                 var to = '2039-01-01';
 
@@ -69,11 +76,15 @@
                     from = $("#<%=datepickerFrom.ClientID%>").val()
                 if ($("#<%=datepickerTo.ClientID%>").val() != '')
                     to = $("#<%=datepickerTo.ClientID%>").val()
-
+                    
                 $.getJSON('http://' + host + ':8732/api/analytics/' + obj + '/' + prop + '?f=' + from + '&t=' + to + '&callback=?', null, function (data) {
-                    datasets.push(data[0]);
-                    count++;
-                });
+                    $.each(data, function (i, mydata) {
+					mytemp = {"data": mydata.data, "label": mydata.label,"lines":{"steps": propboolean}};
+					});
+				    //alert(JSON.stringify(mytemp));
+				    datasets.push(mytemp);
+					count++;
+				});
             });
 
             $('#StateGrid tr:has(:checkbox:checked)').each(function () {
@@ -101,7 +112,6 @@
             var videoInterval = setInterval(function () {
                 if (count == size) {
                     $('#loading').hide();
-
                     var options = {
                         xaxis: {
                             mode: "time",
@@ -201,6 +211,7 @@
                             </asp:TemplateField>
                             <asp:BoundField DataField="object_name" Visible="True" HeaderText="Object" />   
                             <asp:BoundField DataField="property_name" Visible="True" HeaderText="Property" /> 
+                            <asp:BoundField DataField="property_datatype" Visible="True" HeaderText="DataType" /> 
                         </Columns>
                     </asp:GridView>
                 </div>
