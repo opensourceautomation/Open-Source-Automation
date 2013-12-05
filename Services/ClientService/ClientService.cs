@@ -11,10 +11,9 @@
     using System.ServiceProcess;
     using System.Threading;
     using OSAE;
-    using WCF;
+    using NetworkCommsDotNet;
 
-    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
-    public partial class ClientService : ServiceBase, IMessageCallback, IDisposable
+    public partial class ClientService : ServiceBase
     {
         private const string sourceName = "Client Service";
         /// <summary>
@@ -22,7 +21,6 @@
         /// </summary>
         Logging logging = Logging.GetLogger(sourceName);
 
-        IWCFService wcfObj;
         private OSAEPluginCollection plugins = new OSAEPluginCollection();
         System.Timers.Timer Clock = new System.Timers.Timer();
 
@@ -73,21 +71,19 @@
 
             logging.AddToLog("OnStart", true);
 
-            InstanceContext site = new InstanceContext(this);
-            NetTcpBinding tcpBinding = new NetTcpBinding();
-            tcpBinding.TransactionFlow = false;
-            tcpBinding.ReliableSession.Ordered = true;
-            tcpBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
-            tcpBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
-            tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-            tcpBinding.Security.Mode = SecurityMode.None;
-
-            EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.WcfServer + ":8731/WCFService/");
-            var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
-
-
-            wcfObj = myChannelFactory.CreateChannel(myEndpoint);
-            wcfObj.Subscribe();
+            try
+            {
+                logging.AddToLog("Starting UDP listener", false);
+                NetworkComms.AppendGlobalIncomingPacketHandler<string>("Plugin", PluginMessageReceived);
+                NetworkComms.AppendGlobalIncomingPacketHandler<string>("Commmand", MethodMessageReceived);
+                //Start listening for incoming UDP data
+                UDPConnection.StartListening(true);
+                logging.AddToLog("UPD Listener started", false);
+            }
+            catch (Exception ex)
+            {
+                logging.AddToLog("Error starting listener:" + ex.Message, false);
+            }
             
             Common.CreateComputerObject(sourceName);            
 
@@ -106,12 +102,9 @@
                 logging.AddToLog("Error creating service object - " + ex.Message, true);
             }
 
-            if (connectToService())
-            {                 
-                Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
-                loadPluginsThread.Start();
-            }
-
+            Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
+            loadPluginsThread.Start();
+            
             //Clock.Interval = 5000;
             //Clock.Start();
             //Clock.Elapsed += new System.Timers.ElapsedEventHandler(checkConnection);
@@ -128,7 +121,6 @@
                         p.Shutdown();
                     }
                 }
-                wcfObj.Unsubscribe();
             }
             catch (Exception ex)
             {
@@ -201,16 +193,16 @@
                             logging.AddToLog("status: " + plugin.Enabled.ToString(), true);
                             logging.AddToLog("PluginName: " + plugin.PluginName, true);
                             logging.AddToLog("PluginVersion: " + plugin.PluginVersion, true);
-                            Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.PLUGIN, plugin.PluginName + "|" + plugin.Status
-                                + "|" + plugin.PluginVersion + "|" + plugin.Enabled));
-                            thread.Start(); 
+                            
+                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10000, plugin.PluginName + "|" + plugin.Status
+                                + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
                         }                       
                     }
                     else
                     {
                         //add code to create the object.  We need the plugin to specify the type though
                         logging.AddToLog("Plugin object doesn't exist", true);
-                        DataSet dataset = wcfObj.ExecuteSQL("SELECT * FROM osae_object_type_property p inner join osae_object_type t on p.object_type_id = t.object_type_id WHERE object_type='" + plugin.PluginType + "' AND property_name='Computer Name'");
+                        DataSet dataset = OSAESql.RunSQL("SELECT * FROM osae_object_type_property p inner join osae_object_type t on p.object_type_id = t.object_type_id WHERE object_type='" + plugin.PluginType + "' AND property_name='Computer Name'");
                         logging.AddToLog("dataset count: " + dataset.Tables[0].Rows.Count.ToString(), true);
 
                         // if object type has a property called 'Computer Name' we know it is not a System Plugin
@@ -223,9 +215,8 @@
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, "Client Service");
 
                             logging.AddToLog("Plugin added to DB: " + plugin.PluginName, true);
-                            Thread thread = new Thread(() => messageHost(OSAEWCFMessageType.PLUGIN, plugin.PluginName + "|" + plugin.Status
-                                + "|" + plugin.PluginVersion + "|" + plugin.Enabled));
-                            thread.Start(); 
+                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10000, plugin.PluginName + "|" + plugin.Status
+                                + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
                         }
 
                     }                                        
@@ -238,154 +229,101 @@
             logging.AddToLog("Done loading plugins", true);
         }
 
-        private bool connectToService()
+        private void PluginMessageReceived(PacketHeader header, Connection connection, string message)
         {
-            try
+            string[] arguments = message.Split('|');
+
+            if (arguments[1] == "True")
+                OSAEObjectStateManager.ObjectStateSet(arguments[0], "ON", sourceName);
+            else if (arguments[1] == "False")
+                OSAEObjectStateManager.ObjectStateSet(arguments[0], "OFF", sourceName);
+
+            foreach (Plugin p in plugins)
             {
-                InstanceContext site = new InstanceContext(this);
-                NetTcpBinding tcpBinding = new NetTcpBinding();
-                tcpBinding.TransactionFlow = false;
-                tcpBinding.ReliableSession.Ordered = true;
-                tcpBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
-                tcpBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
-                tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-                tcpBinding.Security.Mode = SecurityMode.None;
+                if (p.PluginName == arguments[0])
+                {
+                    OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
 
-                EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.WcfServer + ":8731/WCFService/");
-                var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
-
-
-                wcfObj = myChannelFactory.CreateChannel(myEndpoint);
-                wcfObj.Subscribe();
-                logging.AddToLog("Connected to Service", true);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Unable to connect to service.  Is it running? - " + ex.Message, true);
-                return false;
+                    if (obj != null)
+                    {
+                        bool isSystemPlugin = false;
+                        foreach (OSAEObjectProperty p2 in obj.Properties)
+                        {
+                            if (p2.Name == "System Plugin")
+                            {
+                                if (p2.Value == "TRUE")
+                                    isSystemPlugin = true;
+                                break;
+                            }
+                        }
+                        if (arguments[1] == "True" && !p.Enabled && !isSystemPlugin)
+                        {
+                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+                            try
+                            {
+                                enablePlugin(p);
+                                logging.AddToLog("Activated plugin: " + p.PluginName, false);
+                            }
+                            catch (Exception ex)
+                            {
+                                logging.AddToLog("Error activating plugin (" + p.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
+                            }
+                        }
+                        else if (arguments[1] == "False" && p.Enabled && !isSystemPlugin)
+                        {
+                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
+                            try
+                            {
+                                disablePlugin(p);
+                                logging.AddToLog("Deactivated plugin: " + p.PluginName, false);
+                            }
+                            catch (Exception ex)
+                            {
+                                logging.AddToLog("Error stopping plugin (" + p.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        public void OnMessageReceived(OSAEWCFMessage message)
+        private void MethodMessageReceived(PacketHeader header, Connection connection, string message)
         {
-            logging.AddToLog("received message: " + message.Type + " | " + message, false);
+            string[] items = message.Split('|');
 
-            switch (message.Type)
+            OSAEMethod method = new OSAEMethod(items[2].Trim(), "", items[0].Trim(), items[3].Trim(), items[4].Trim(), items[5].Trim(), items[1].Trim());
+
+            if (method.ObjectName == "SERVICE-" + Common.ComputerName)
             {
-                case OSAEWCFMessageType.PLUGIN:
-                    string[] arguments = message.Message.Split('|');
-                
-                    if (arguments[1] == "True")
-                        OSAEObjectStateManager.ObjectStateSet(arguments[0], "ON", sourceName);
-                    else if (arguments[1] == "False")
-                        OSAEObjectStateManager.ObjectStateSet(arguments[0], "OFF", sourceName);
-
+                if (method.MethodName == "RESTART PLUGIN")
+                {
                     foreach (Plugin p in plugins)
-                    {                        
-                        if (p.PluginName == arguments[0])
-                        {                             
+                    {
+                        if (p.PluginName == method.Parameter1)
+                        {
                             OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
 
                             if (obj != null)
                             {
-                                bool isSystemPlugin = false;
-                                foreach (OSAEObjectProperty p2 in obj.Properties)
-                                {
-                                    if (p2.Name == "System Plugin")
-                                    {
-                                        if (p2.Value == "TRUE")
-                                            isSystemPlugin = true;
-                                        break;
-                                    }
-                                }
-                                if (arguments[1] == "True" && !p.Enabled && !isSystemPlugin)
-                                {
-                                    OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
-                                    try
-                                    {
-                                        enablePlugin(p);
-                                        logging.AddToLog("Activated plugin: " + p.PluginName, false);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        logging.AddToLog("Error activating plugin (" + p.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
-                                    }
-                                }
-                                else if (arguments[1] == "False" && p.Enabled && !isSystemPlugin)
-                                {
-                                    OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
-                                    try
-                                    {
-                                        disablePlugin(p);
-                                        logging.AddToLog("Deactivated plugin: " + p.PluginName, false);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        logging.AddToLog("Error stopping plugin (" + p.PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
-                                    }
-                                }
+                                disablePlugin(p);
+                                enablePlugin(p);
                             }
                         }
                     }
-                    break;
-                case OSAEWCFMessageType.METHOD:
-                    string[] items = message.Message.Split('|');
-
-                    OSAEMethod method = new OSAEMethod(items[2].Trim(), "", items[0].Trim(), items[3].Trim(), items[4].Trim(), items[5].Trim(), items[1].Trim());
-                    
-                    if (method.ObjectName == "SERVICE-" + Common.ComputerName)
-                    {
-                        if (method.MethodName == "RESTART PLUGIN")
-                        {
-                            foreach (Plugin p in plugins)
-                            {
-                                if (p.PluginName == method.Parameter1)
-                                {
-                                    OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
-
-                                    if (obj != null)
-                                    {
-                                        disablePlugin(p);
-                                        enablePlugin(p);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (Plugin plugin in plugins)
-                        {                              
-                            if (plugin.Enabled == true && (method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower()))
-                            {
-                                plugin.ExecuteCommand(method);
-                            }
-                        }
-                    }
-                    break;
+                }
             }
-        }
-
-        private void checkConnection(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            
-        }
-
-        private void messageHost(OSAEWCFMessageType msgType, string message)
-        {
-            try
+            else
             {
-                wcfObj.messageHost(msgType, message, Common.ComputerName);
-                
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Error messaging host: " + ex.Message, true);
+                foreach (Plugin plugin in plugins)
+                {
+                    if (plugin.Enabled == true && (method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower()))
+                    {
+                        plugin.ExecuteCommand(method);
+                    }
+                }
             }
         }
-
+        
         private void enablePlugin(Plugin plugin)
         {
             OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
