@@ -58,7 +58,9 @@ namespace OSAE.UI.Controls
 
         private void objectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            DataSet dataSet = OSAESql.RunSQL("SELECT state_name FROM osae_v_object_state where object_name = '" + objectComboBox.SelectedValue + "' order by state_name");
+            Image1StateComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
+            Image2StateComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
@@ -67,11 +69,11 @@ namespace OSAE.UI.Controls
             string sName = currentScreen + " - " + objectComboBox.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", "ON", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", Image1StateComboBox.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", onImg.Name, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", "100", "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", "OFF", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", Image2StateComboBox.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", offImg.Name, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", "100", "GUI");

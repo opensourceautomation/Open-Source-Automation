@@ -7,14 +7,17 @@
     <Grid>
         <Label Content="Object" Height="28" HorizontalAlignment="Left" Margin="11,13,0,0" x:Name="label3" VerticalAlignment="Top" Width="73" />
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="128,13,0,0" x:Name="objectComboBox" VerticalAlignment="Top" Width="357" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="objectComboBox_SelectionChanged" />
-        <Image HorizontalAlignment="Left" Height="75" Margin="223,42,0,0" VerticalAlignment="Top" Width="75" Name="imgState1"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="223,122,0,0" VerticalAlignment="Top" Width="75" Name="imgState2"/>
-        <Button Content="Select" HorizontalAlignment="Left" Margin="128,96,0,0" VerticalAlignment="Top" Width="79" Click="Button_Click_1"/>
-        <Button Content="Select" HorizontalAlignment="Left" Margin="128,176,0,0" VerticalAlignment="Top" Width="79" Click="Button_Click_2"/>
-        <Label Content="ON Image" HorizontalAlignment="Left" Margin="11,91,0,0" VerticalAlignment="Top"/>
-        <Label Content="OFF Image" HorizontalAlignment="Left" Margin="11,172,0,0" VerticalAlignment="Top"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="335,42,0,0" VerticalAlignment="Top" Width="75" Name="imgState1"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="335,122,0,0" VerticalAlignment="Top" Width="75" Name="imgState2"/>
+        <Button Content="Select" HorizontalAlignment="Left" Margin="240,96,0,0" VerticalAlignment="Top" Width="79" Click="Button_Click_1"/>
+        <Button Content="Select" HorizontalAlignment="Left" Margin="240,176,0,0" VerticalAlignment="Top" Width="79" Click="Button_Click_2"/>
+        <Label Content="Image 1" HorizontalAlignment="Left" Margin="11,91,0,0" VerticalAlignment="Top"/>
+        <Label Content="Image 2" HorizontalAlignment="Left" Margin="11,172,0,0" VerticalAlignment="Top"/>
         <Button Content="Add" HorizontalAlignment="Left" Margin="11,248,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
         <Button Content="Cancel" HorizontalAlignment="Left" Margin="410,248,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_4"/>
+        <Label Content="State" HorizontalAlignment="Left" Margin="120,65,0,0" VerticalAlignment="Top"/>
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="76,96,0,0" x:Name="Image1StateComboBox" VerticalAlignment="Top" Width="147" ItemsSource="{Binding state_name}"  DisplayMemberPath="state_name" SelectedValuePath="state_name" IsEditable="False" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="76,176,0,0" x:Name="Image2StateComboBox" VerticalAlignment="Top" Width="147" ItemsSource="{Binding state_name}"  DisplayMemberPath="state_name" SelectedValuePath="state_name" IsEditable="False" />
 
     </Grid>
 </UserControl>
