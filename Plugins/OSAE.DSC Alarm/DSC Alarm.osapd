@@ -2,13 +2,13 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>DSC Alarm</plugin-name>
 <plugin-id>f2b47eb9-4ed8-4b9f-a739-ee171e46dee5</plugin-id>
-<plugin-version>0.1.4</plugin-version>
+<plugin-version>0.4.0</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>DSC Alarm System</short-description>
 <author>Automate</author>
 <destination-folder>DSC Alarm</destination-folder>
 <main-file>OSAE.DSC Alarm.dll</main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=DSC_Alarm</wiki-url>
 <additional-assemblies>
 </additional-assemblies>
 <x64-additional-assemblies>
