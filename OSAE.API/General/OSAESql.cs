@@ -13,16 +13,15 @@
         public static DataSet RunQuery(MySqlCommand command)
         {
             DataSet dataset = new DataSet();
-
-            if (Common.TestConnection())
+            using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
-                {
-                    MySqlDataAdapter adapter = new MySqlDataAdapter(command);
-                    command.Connection = connection;
-                    adapter.Fill(dataset);
-                }
+                connection.Open();
+
+                MySqlDataAdapter adapter = new MySqlDataAdapter(command);
+                command.Connection = connection;
+                adapter.Fill(dataset);
             }
+            
 
             return dataset;
         }
@@ -38,15 +37,15 @@
 
             using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
             {
+                connection.Open();
+
                 MySqlCommand command = new MySqlCommand(sql);
                 MySqlDataAdapter adapter;
-
-                if (Common.TestConnection())
-                {
-                    command.Connection = connection;
-                    adapter = new MySqlDataAdapter(command);
-                    adapter.Fill(dataset);
-                }
+                
+                command.Connection = connection;
+                adapter = new MySqlDataAdapter(command);
+                adapter.Fill(dataset);
+                
             }
 
             return dataset;

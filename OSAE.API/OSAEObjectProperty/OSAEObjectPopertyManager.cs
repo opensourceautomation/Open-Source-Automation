@@ -55,8 +55,7 @@
             }
             catch (Exception ex)
             {
-                Logging.GetLogger().AddToLog("API - GetObjectPropertyValue error: " + ex.Message, true);
-                return null;
+                throw new Exception("API - GetObjectPropertyValue error: " + ex.Message, ex);
             }
         }
 

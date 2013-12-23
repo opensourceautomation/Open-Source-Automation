@@ -7,6 +7,7 @@
     using System.Security;
     using System.Security.Policy;
     using MySql.Data.MySqlClient;
+    using OSAE.General;
 
     /// <summary>
     /// Common helper class for common functionality
@@ -140,10 +141,8 @@
         /// Test to see if we can get a successful connection to the DB
         /// </summary>
         /// <returns>True if connect success false otherwise</returns>
-        public static bool TestConnection()
+        public static DBConnectionStatus TestConnection()
         {
-            bool connectionStatus = true;
-
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
@@ -151,13 +150,12 @@
                     connection.Open();                    
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                connectionStatus = false;
-                Logging.GetLogger().AddToLog("API - Cannot run query - bad connection: ", true);
-            }             
+                return new DBConnectionStatus(false, ex);
+            }
 
-            return connectionStatus;
+            return new DBConnectionStatus(true, null);
         }
 
         /// <summary>
@@ -314,7 +312,8 @@
             }
             catch (Exception ex)
             {
-                Logging.GetLogger().AddToLog("Error getting registry settings and/or deleting logs: " + ex.Message, true);
+                // Exception handling should be handled inside calling application
+                throw new Exception("Error getting registry settings and/or deleting logs: " + ex.Message, ex);
             }
         }
 

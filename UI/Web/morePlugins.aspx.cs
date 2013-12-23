@@ -37,6 +37,16 @@ public partial class morePlugins : System.Web.UI.Page
         tcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
         tcpBinding.Security.Mode = SecurityMode.None;
 
+        EndpointAddress myEndpoint = new EndpointAddress("net.tcp://" + Common.WcfServer + ":8731/WCFService/");
+
+        throw new NotImplementedException("Missing WCF Stuff");
+        
+        // TODO UnComment this whenever WCF stuff gets added to GIT repo
+        /*var myChannelFactory = new DuplexChannelFactory<IWCFService>(site, tcpBinding);
+
+        wcfObj = myChannelFactory.CreateChannel(myEndpoint);
+        wcfObj.Subscribe();
+         * */
     }
        
     private void GetPlugins()
@@ -105,4 +115,9 @@ public partial class morePlugins : System.Web.UI.Page
         
     }
 
+    // TODO : Uncomment this whenever WCF stuff gets added to GIT
+    /*public void OnMessageReceived(WCF.OSAEWCFMessage message)
+    {
+        throw new NotImplementedException();
+    }*/
 }

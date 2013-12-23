@@ -65,7 +65,7 @@ public partial class controls_ctrlStateImage : System.Web.UI.UserControl
 
             string imgName = screenObject.Property(StateMatch + " Image").Value;
             OSAEImage img = imgMgr.GetImage(imgName);
-            imgStateImage.ImageUrl = "~/imgHandler.aspx?ImageID=" + img.ID;
+            imgStateImage.ImageUrl = "~/ImageHandler.ashx?id=" + img.ID;
             imgStateImage.Attributes.Add("Style", "position:absolute;top:" + (Int32.Parse(screenObject.Property(StateMatch + " Y").Value) + 50).ToString() + "px;left:" + (Int32.Parse(screenObject.Property(StateMatch + " X").Value) + 10).ToString() + "px;z-index:" + (Int32.Parse(screenObject.Property("ZOrder").Value) + 10).ToString() + ";");
             imgStateImage.ToolTip = ObjectName + "\n" + CurState + " since: " + LastStateChange;
             if (CurState == "ON")

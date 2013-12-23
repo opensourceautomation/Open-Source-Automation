@@ -17,7 +17,7 @@ public partial class controls_ctrlNavigationImage : System.Web.UI.UserControl
         TargetScreenName = screenObject.Property("Screen").Value;
         string imgName = screenObject.Property("Image").Value;
         OSAEImage img = imgMgr.GetImage(imgName);
-        imgNavigationImage.ImageUrl = "~/imgHandler.aspx?ImageID=" + img.ID;
+        imgNavigationImage.ImageUrl = "~/ImageHandler.ashx?id=" + img.ID;
         imgNavigationImage.Attributes.Add("Style", "position:absolute;top:" + (Int32.Parse(screenObject.Property("Y").Value) + 50).ToString() + "px;left:" + (Int32.Parse(screenObject.Property("X").Value) + 10).ToString() + "px;z-index:" + (Int32.Parse(screenObject.Property("ZOrder").Value) + 10).ToString() + ";");
         imgNavigationImage.ToolTip = TargetScreenName;
         imgNavigationImage.PostBackUrl = "~/screens.aspx?id=" + TargetScreenName;

@@ -16,7 +16,7 @@
                     <Columns>
                         <asp:TemplateField HeaderText="Image" Visible="True">
                             <ItemTemplate>
-                                <asp:image ID="Image1" runat="server" style="max-width:100px;" ImageUrl ='<%# "imgHandler.aspx?ImageID=" + Eval("image_id") %>'/>
+                                <asp:image ID="Image1" runat="server" style="max-width:100px;" ImageUrl ='<%# "ImageHandler.ashx?id=" + Eval("image_id") %>'/>
                             </ItemTemplate>
                             <ItemStyle HorizontalAlign="Center" />
                         </asp:TemplateField>
