@@ -204,7 +204,7 @@
         {
             foreach (OSAEObjectProperty p in Properties)
             {
-                if (p.Name == prop)
+                if (String.Equals(p.Name, prop, StringComparison.OrdinalIgnoreCase))
                 {
                     return p;
                 }
