@@ -8,7 +8,7 @@
 <author>Brian Woodworth</author>
 <destination-folder>XBMC</destination-folder>
 <main-file>OSAE.XBMC.dll</main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=XBMC</wiki-url>
 <additional-assemblies>
 <name>Newtonsoft.Json.dll</name>
 <name>XBMCRPC.dll</name>

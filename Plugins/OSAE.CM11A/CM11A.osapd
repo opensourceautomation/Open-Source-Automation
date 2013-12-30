@@ -8,7 +8,7 @@
 <author>Vaughn Rupp</author>
 <destination-folder>CM11A</destination-folder>
 <main-file>OSAE.CM11A.dll</main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=CM11A</wiki-url>
 <additional-assemblies>
 <name>CM11A.ocx</name>
 <name>Interop.cm11a.dll</name>

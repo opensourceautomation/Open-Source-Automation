@@ -8,7 +8,7 @@
 <author>Vaughn Rupp</author>
 <destination-folder>USBUIRT</destination-folder>
 <main-file>OSAE.USBUIRT.dll</main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=USBUIRT</wiki-url>
 <additional-assemblies>
 <name>UsbUirtManagedWrapper.dll</name>
 </additional-assemblies>

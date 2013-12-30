@@ -9,7 +9,7 @@ Plugin for Phidget 8/8/8 and other controllers</short-description>
 <author>Vaughn Rupp</author>
 <destination-folder>Phidget-IK</destination-folder>
 <main-file></main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=Phidget-IK</wiki-url>
 <additional-assemblies>
 <name>Phidget21.NET.dll</name>
 </additional-assemblies>
