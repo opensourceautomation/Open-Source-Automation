@@ -9,7 +9,7 @@ Communicate with OSA with Jabber</short-description>
 <author>Brian Woodworth</author>
 <destination-folder>Jabber</destination-folder>
 <main-file>OSAE.Jabber.dll</main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=Jabber</wiki-url>
 <additional-assemblies>
 <name>agsXMPP.dll</name>
 </additional-assemblies>
