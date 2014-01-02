@@ -124,7 +124,7 @@
                 {
                     foreach (OSAEMethod method in OSAEMethodManager.GetMethodsInQueue())
                     {
-                        this.Log.Debug("Method in Queue, ObjectName: " + method.ObjectName + " MethodName: " + method.MethodName);
+                        this.Log.Debug("Method in Queue, ObjectName: " + method.ObjectName + " MethodLabel: " + method.MethodLabel + " MethodName: " + method.MethodName);
 
                         LogMethodInformation(method);
 

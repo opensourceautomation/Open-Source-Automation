@@ -86,7 +86,7 @@
 
                     if (image == null)
                     {
-                        logging.AddToLog("API - Failed to get requested image from DB: " + imageId.ToString(), true);
+                        throw new Exception("API - Failed to get requested image from DB:  " + imageId.ToString());
                     }
                     else
                     {
@@ -101,7 +101,7 @@
             }
             catch (Exception ex)
             {
-                throw new Exception("API - GetImage - Failed to get image with id: " + imageId + ", exception encountered: " + ex.Message, ex);
+                throw new Exception("API - GetImage - Failed to get image with id: " + imageId.ToString() + ", exception encountered: " + ex.Message, ex);
             }
         }
 

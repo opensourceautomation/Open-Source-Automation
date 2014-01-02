@@ -9,8 +9,8 @@
     using System.Diagnostics;
     using NetworkCommsDotNet;
     using log4net.Config;
-using log4net;
-using System.Reflection;
+    using log4net;
+    using System.Reflection;
 
     #endregion
 
@@ -37,13 +37,10 @@ using System.Reflection;
         /// </summary>
         private System.Timers.Timer checkPlugins = new System.Timers.Timer();
 
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Service");
         #endregion
 
-        // Log4Net
-        protected ILog Log
-        {
-            get { return LogManager.GetLogger(GetType()); }
-        }
 
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
@@ -54,7 +51,7 @@ using System.Reflection;
             if (args.Length > 0)
             {
                 string pattern = Common.MatchPattern(args[0]);
-                Logging.AddToLog("Processing command: " + args[0] + ", Named Script: " + pattern, true, "OSACL");
+                //this.Log.Info("Processing command: " + args[0] + ", Named Script: " + pattern);
                 if (pattern != string.Empty)
                 {
                     OSAEScriptManager.RunPatternScript(pattern, "", "OSACL");
@@ -62,13 +59,14 @@ using System.Reflection;
             }
             else
             {
-// Uncomment the below commented lines to allow for easy debugging, launched by Visual Studio!
-#if(!DEBUG)
+
+// Use for launching the VS debugger when the service starts
+///#if(!DEBUG)
+//                ServiceBase.Run(new OSAEService());
+//#else                
+                Debugger.Launch();
                 ServiceBase.Run(new OSAEService());
-#else
-                var debugService = new OSAEService();
-                debugService.OnStart(args);
-#endif
+//#endif
 
             }
             
@@ -153,6 +151,7 @@ using System.Reflection;
             this.Log.Info("OnStop Invoked");
             NetworkComms.Shutdown();
             ShutDownSystems();
+            OSAE.General.OSAELog.FlushBuffers();
         }        
 
         /// <summary>

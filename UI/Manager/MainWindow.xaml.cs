@@ -25,10 +25,8 @@
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
         ServiceController myService = new ServiceController();
 
-        /// <summary>
-        /// Used to get access to the logging facility
-        /// </summary>
-        private Logging logging = Logging.GetLogger("Manager");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Manager");
 
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
@@ -130,16 +128,16 @@
 
             try
             {
-                logging.AddToLog("Starting UDP listener", false);
+                this.Log.Debug("Starting UDP listener");
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Plugin", PluginMessageReceived);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Commmand", CommandMessageReceived);
                 //Start listening for incoming UDP data
                 UDPConnection.StartListening(true);
-                logging.AddToLog("UPD Listener started", false);
+                this.Log.Debug("UPD Listener started");
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error starting listener:" + ex.Message, false);
+                this.Log.Error("Error starting listener", ex);
             }
             
         }
@@ -170,8 +168,8 @@
                 string pluginPath = Common.ApiPath + "\\Plugins\\" + p.Path + "\\";
                 string[] paths = System.IO.Directory.GetFiles(pluginPath, "Screenshot*");
 
-                logging.AddToLog("Plugin path: " + pluginPath, true);
-                logging.AddToLog("paths length: " + paths.Length.ToString(), true);
+                this.Log.Info("Plugin path: " + pluginPath);
+                this.Log.Info("paths length: " + paths.Length.ToString());
                 if (paths.Length > 0)
                 {
                     // load the image, specify CacheOption so the file is not locked
@@ -191,7 +189,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error loading details: " + ex.Message, true);
+                this.Log.Error("Error loading details", ex);
             }
         }
 
@@ -216,7 +214,7 @@
                 setButton("Start", true);
                 if (!clicked)
                 {
-                    logging.AddToLog("Service died.  Attempting to restart.", true);
+                    this.Log.Info("Service died.  Attempting to restart.");
                     clicked = false;
                     System.Threading.Thread.Sleep(5000);
                     Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
@@ -259,7 +257,7 @@
                         }
                     }
                     pluginList.Add(desc);
-                    logging.AddToLog("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID, true);
+                    this.Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
                 }
             }            
             dgLocalPlugins.ItemsSource = pluginList;
@@ -276,7 +274,7 @@
             catch (Exception ex)
             {
                 MessageBox.Show("Error stopping service.  Make sure you are running Manager as Administrator");
-                logging.AddToLog("Error starting service: " + ex.Message, true);
+                this.Log.Error("Error starting service", ex);
                 starting = false;
             }
         }
@@ -293,7 +291,7 @@
             catch (Exception ex)
             {
                 MessageBox.Show("Error stopping service.  Make sure you are running Manager as Administrator");
-                logging.AddToLog("Error stopping service: " + ex.Message, true);
+                this.Log.Error("Error stopping service", ex);
             }
         }
 
@@ -362,15 +360,15 @@
         {
             try
             {
-                logging.AddToLog("Closing", true);
+                this.Log.Info("Closing");
                 Clock.Stop();
                 Clock = null;
-                logging.AddToLog("Timer stopped", true);
+                this.Log.Info("Timer stopped");
                 NetworkComms.Shutdown();
             }
             catch(Exception ex)
             {
-                logging.AddToLog("Error closing Manager: " + ex.Message, true);
+                this.Log.Error("Error closing Manager", ex);
             }
         }
 
@@ -428,11 +426,11 @@
                 {
                     PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
 
-                    logging.AddToLog("checked: " + pd.Name, true);
+                    this.Log.Info("checked: " + pd.Name);
 
                     NetworkComms.SendObject("Plugin", "127.0.0.1", 10000, pd.Name + "|True");
 
-                    logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True", true);
+                    this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True");
                     if (myService.Status == ServiceControllerStatus.Running)
                     {
                         foreach (PluginDescription plugin in pluginList)
@@ -450,7 +448,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException, true);
+                this.Log.Error("Error enabling plugin ", ex);
             }
         }
 
@@ -459,10 +457,10 @@
             try
             {
                 PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
-                logging.AddToLog("unchecked: " + pd.Name, true);
+                this.Log.Info("unchecked: " + pd.Name);
 
                 NetworkComms.SendObject("Plugin", "127.0.0.1", 10000, pd.Name + "|False");
-                logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False", true);
+                this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False");
 
                 if (myService.Status == ServiceControllerStatus.Running)
                 {
@@ -480,7 +478,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error disabling plugin: " + ex.Message, true);
+                this.Log.Error("Error disabling plugin", ex);
             }
         }
         
@@ -498,7 +496,7 @@
             // Process open file dialog box results 
             if (result == true)
             {
-                logging.AddToLog("Plugin file selected: " + dlg.FileName + ".  Installing...", true);
+                this.Log.Info("Plugin file selected: " + dlg.FileName + ".  Installing...");
                 // Open Plugin Package 
                 PluginInstallerHelper pInst = new PluginInstallerHelper();
                 pInst.InstallPlugin(dlg.FileName);
@@ -539,7 +537,7 @@
                     {
                         plugin.Upgrade = string.Empty;
                     }
-                    logging.AddToLog("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString(), true);
+                    this.Log.Info("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString());
                     break;
                 }
             }
@@ -550,7 +548,7 @@
             string[] param = message.Split('|');
             if (param[2].Trim() == Common.ComputerName)
             {
-                logging.AddToLog("CMDLINE received: " + param[0].Trim() + " - " + param[1].Trim(), true);
+                this.Log.Info("CMDLINE received: " + param[0].Trim() + " - " + param[1].Trim());
                 Process pr = new Process();
                 pr.StartInfo.FileName = param[0].Trim();
                 pr.StartInfo.Arguments = param[1].Trim();

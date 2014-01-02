@@ -19,7 +19,8 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        Logging logging = Logging.GetLogger("GUI");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("GUI");
         
         String gAppName = "";
         String gCurrentScreen = "";
@@ -68,7 +69,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error starting GUI: " + ex.Message,true);
+                this.Log.Error("Error starting GUI", ex);
             }
         }
 
@@ -112,7 +113,7 @@
                 canGUI.Children.Clear(); 
                 
                 loadingScreen = true;
-                logging.AddToLog("Loading screen: " + sScreen, false);
+                this.Log.Debug("Loading screen: " + sScreen);
                 gCurrentScreen = sScreen;
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
                 OSAE.OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
@@ -137,11 +138,11 @@
                 Thread thread = new Thread(() => Load_Objects(sScreen));
                 thread.Start();
 
-                logging.AddToLog("Loading screen complete: " + sScreen, false);
+                this.Log.Debug("Loading screen complete: " + sScreen);
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Failed to load screen: " + sScreen, true);
+                this.Log.Error("Failed to load screen: " + sScreen, ex);
             }
         }
 
@@ -163,7 +164,7 @@
                 if (!loadingScreen)
                 {
                     bool oldCtrl = false;
-                    logging.AddToLog("Entering Update_Objects", false);
+                    this.Log.Debug("Entering Update_Objects");
                     List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
 
                     foreach (OSAE.OSAEScreenControl newCtrl in controls)
@@ -179,7 +180,7 @@
                                 {
                                     if (newCtrl.LastUpdated != sImage.LastUpdated)
                                     {
-                                        logging.AddToLog("Updating:  " + newCtrl.ControlName, false);
+                                        this.Log.Debug("Updating:  " + newCtrl.ControlName);
                                         sImage.LastUpdated = newCtrl.LastUpdated;
                                         try
                                         {
@@ -194,7 +195,7 @@
                                             Canvas.SetLeft(sImage, sImage.Location.X);
                                             Canvas.SetTop(sImage, sImage.Location.Y);
                                         }));
-                                        logging.AddToLog("Complete:  " + newCtrl.ControlName, false);
+                                        this.Log.Debug("Complete:  " + newCtrl.ControlName);
                                     }
                                     oldCtrl = true;
                                 }
@@ -211,10 +212,10 @@
                                 {
                                     if (newCtrl.LastUpdated != pl.LastUpdated)
                                     {
-                                        logging.AddToLog("Updating:  " + newCtrl.ControlName, false);
+                                        this.Log.Debug("Updating:  " + newCtrl.ControlName);
                                         pl.LastUpdated = newCtrl.LastUpdated;
                                         pl.Update();
-                                        logging.AddToLog("Complete:  " + newCtrl.ControlName, false);
+                                        this.Log.Debug("Complete:  " + newCtrl.ControlName);
                                     }
                                     oldCtrl = true;
                                 }
@@ -231,10 +232,10 @@
                                 {
                                     if (newCtrl.LastUpdated != tl.LastUpdated)
                                     {
-                                        logging.AddToLog("Updating:  " + newCtrl.ControlName, false);
+                                        this.Log.Debug("Updating:  " + newCtrl.ControlName);
                                         tl.LastUpdated = newCtrl.LastUpdated;
                                         tl.Update();
-                                        logging.AddToLog("Complete:  " + newCtrl.ControlName, false);
+                                        this.Log.Debug("Complete:  " + newCtrl.ControlName);
                                     }
                                     oldCtrl = true;
                                 }
@@ -310,11 +311,11 @@
                         if (!oldCtrl)
                         {
                             OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(newCtrl.ControlName);
-                            logging.AddToLog("Load new control: " + newCtrl.ControlName, false);
+                            this.Log.Debug("Load new control: " + newCtrl.ControlName);
                             LoadControl(obj);
                         }
                     }
-                    logging.AddToLog("Leaving Update_Objects", false);
+                    this.Log.Debug("Leaving Update_Objects");
                 }
                 System.Threading.Thread.Sleep(1000);
             }
@@ -342,7 +343,7 @@
                         }
                         catch (Exception ex)
                         {
-                            logging.AddToLog("Error finding object: " + ex.Message, true);
+                            this.Log.Error("Error finding object ", ex);
                             return;
                         }
                     }
@@ -361,7 +362,7 @@
                     }
                     catch (Exception ex)
                     {
-                        logging.AddToLog("Error updating screenObject: " + ex.Message, true);
+                        this.Log.Error("Error updating screenObject", ex);
                         return;
                     }
                 }
@@ -370,7 +371,7 @@
                 #region CONTROL PROPERTY LABEL
                 else if (obj.Type == "CONTROL PROPERTY LABEL")
                 {
-                    logging.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
+                    this.Log.Debug("Loading PropertyLabelControl: " + obj.Name);
                     try
                     {
                         PropertyLabel pl = new PropertyLabel(obj);
@@ -387,7 +388,7 @@
                     }
                     catch (Exception ex)
                     {
-                        logging.AddToLog("Error updating PropertyLabelControl: " + ex.Message, true);
+                        this.Log.Error("Error updating PropertyLabelControl", ex);
                         return;
                     }
                 }
@@ -396,7 +397,7 @@
                 #region CONTROL STATIC LABEL
                 else if (obj.Type == "CONTROL STATIC LABEL")
                 {
-                    logging.AddToLog("Loading PropertyLabelControl: " + obj.Name, false);
+                    this.Log.Debug("Loading PropertyLabelControl: " + obj.Name);
                     try
                     {
                     OSAE.UI.Controls.StaticLabel sl = new OSAE.UI.Controls.StaticLabel(obj);
@@ -413,7 +414,7 @@
                     }
                     catch (Exception ex)
                     {
-                            logging.AddToLog("Error updating PropertyLabelControl: " + ex.Message, true);
+                            this.Log.Error("Error updating PropertyLabelControl", ex);
                             return;
                     }
                 }
@@ -422,7 +423,7 @@
                 #region CONTROL TIMER LABEL
                 else if (obj.Type == "CONTROL TIMER LABEL")
                 {
-                    logging.AddToLog("Loading PropertyTimerControl: " + obj.Name, false);
+                    this.Log.Debug("Loading PropertyTimerControl: " + obj.Name);
                     try
                     {
 
@@ -440,7 +441,7 @@
                     }
                     catch (Exception ex)
                     {
-                        logging.AddToLog("Error updating PropertyTimerControl: " + ex.Message, true);
+                        this.Log.Error("Error updating PropertyTimerControl", ex);
                         return;
                     }
                 }

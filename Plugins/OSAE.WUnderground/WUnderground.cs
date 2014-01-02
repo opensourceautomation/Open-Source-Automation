@@ -10,6 +10,8 @@
     public class WUnderground : OSAEPluginBase
     {
         string pName;
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("WUnderground");
         Logging logging = Logging.GetLogger("WUnderground");
 
         Thread updateConditionsThread, updateForecastThread, updateDayNightThread;
@@ -29,7 +31,7 @@
             try
             {
                 FirstRun = true;
-                logging.AddToLog("Running Interface", true);
+                this.Log.Info("Running Interface");
                 pName = pluginName;
 
                 OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("WEATHER");
@@ -47,7 +49,7 @@
                     if (Boolean.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Metric").Value))
                     {
                         Metric = true;
-                        logging.AddToLog("Using metric units", true);
+                        this.Log.Info("Using metric units");
                     }
                 }
                 catch
@@ -97,7 +99,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error initializing the plugin " + ex.Message, true);
+                this.Log.Error("Error initializing the plugin ", ex);
             }
 
         
@@ -113,7 +115,7 @@
 
         public override void Shutdown()
         {
-            logging.AddToLog("Shutting down", true);
+            this.Log.Info("Shutting down");
             if (Forecastupdatetime > 0)
                 ForecastUpdateTimer.Stop();
             if (Conditionsupdatetime > 0)
@@ -179,11 +181,11 @@
                 OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, fieldName, fieldValue, pName);
                 if (fieldName == "Temp")
                 {
-                    logging.AddToLog("Found " + fieldName + ": " + fieldValue, true);
+                    this.Log.Debug("Found " + fieldName + ": " + fieldValue);
                 }
                 else
                 {
-                    logging.AddToLog("Found " + fieldName + ": " + fieldValue, false);
+                    this.Log.Debug("Found " + fieldName + ": " + fieldValue);
                     //System.Diagnostics.Debug.WriteLine("Found " + fieldName + ": " + fieldValue);
                 }
             }
@@ -191,7 +193,7 @@
             {
                 if (fieldName != "Windchill" & fieldName != "Visibility" & fieldName != "Conditions")
                 {
-                    logging.AddToLog("NOT FOUND " + fieldName, true);
+                    this.Log.Debug("NOT FOUND " + fieldName);
                 }
 
             }
@@ -273,7 +275,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error updating current weather - " + ex.Message, true);
+                this.Log.Error("Error updating current weather - ", ex);
             }
         }
 
@@ -289,7 +291,7 @@
             {
                 if (latitude != "" && longitude != "")
                 {
-                    logging.AddToLog("Update Forecast", true);
+                    this.Log.Info("Update Forecast");
                    // Now get the forecast.
                     feedUrl = "http://api.wunderground.com/auto/wui/geo/ForecastXML/index.xml?query=" + latitude + "," + longitude;
                     sXml = webClient.DownloadString(feedUrl);
@@ -486,7 +488,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error updating forecasted weather - " + ex.Message, true);
+                this.Log.Error("Error updating forecasted weather - " + ex.Message);
             }
         }
         public void updateDayNight()
@@ -566,7 +568,7 @@
 
                 String John = " " + " " + Convert.ToString(DuskStart);
 
-                logging.AddToLog(Convert.ToString(DawnStart) + " " + Convert.ToString(DawnEnd) + " " + Convert.ToString(DuskStart) + " " + Convert.ToString(DuskEnd) + " ", false);
+                this.Log.Debug(Convert.ToString(DawnStart) + " " + Convert.ToString(DawnEnd) + " " + Convert.ToString(DuskStart) + " " + Convert.ToString(DuskEnd) + " ");
                
                 if (Now >= DawnEnd & Now < DuskStart)
                 {
@@ -578,7 +580,7 @@
                             logging.EventLogAdd(WeatherObjName, "Day");
                         }
                         DayNight = "Day";
-                        logging.AddToLog("Day", false);
+                        this.Log.Debug("Day");
                         
                     }
                 }
@@ -592,7 +594,7 @@
                             logging.EventLogAdd(WeatherObjName, "Night");
                         }
                         DayNight = "Night";
-                         logging.AddToLog("Night", true);
+                         this.Log.Info("Night");
                     }
                 }
                 else if (Now >= DawnStart & Now < DawnEnd)
@@ -605,7 +607,7 @@
                             logging.EventLogAdd(WeatherObjName, "Dawn");
                         }
                         DayNight = "Dawn";
-                        logging.AddToLog("Dawn", true);
+                        this.Log.Info("Dawn");
 
                     }
 
@@ -621,7 +623,7 @@
                             logging.EventLogAdd(WeatherObjName, "Dusk");
                         }
                         DayNight = "Dusk";
-                        logging.AddToLog("Dusk", true);
+                        this.Log.Info("Dusk");
                     }
 
                 }
@@ -629,7 +631,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error updating day/night " + ex.Message, true);
+                this.Log.Error("Error updating day/night ",ex);
             }
 
         }

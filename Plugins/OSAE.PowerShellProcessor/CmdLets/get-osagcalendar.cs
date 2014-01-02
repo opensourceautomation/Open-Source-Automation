@@ -10,10 +10,8 @@
     [Cmdlet(VerbsCommon.Get, "OSAGCalendar")]
     public class OSAGetGCalendar : Cmdlet
     {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
 
         [Parameter(
             Mandatory = true)]
@@ -77,7 +75,7 @@
 
         protected override void ProcessRecord()
         {
-            logging.AddToLog("Get-OSAGCalendar - ProcessRecord - Started", false);
+            this.Log.Debug("Get-OSAGCalendar - ProcessRecord - Started");
 
             CalendarService service = new CalendarService("OSA");
             service.setUserCredentials(Username, Password);
@@ -100,7 +98,7 @@
 
             if (FutureEvents)
             {
-                logging.AddToLog("Only looking for future events", false);
+                this.Log.Debug("Only looking for future events");
                 query.FutureEvents = true;
             }
             else
@@ -118,13 +116,13 @@
 
             foreach (var entry in calFeed.Entries)
             {
-               logging.AddToLog("Found Entry: " + entry.ToString(), false);
+               this.Log.Debug("Found Entry: " + entry.ToString());
                EventEntry eventEntry = entry as Google.GData.Calendar.EventEntry;
                if (eventEntry != null)
                {                   
                    if (!eventEntry.Status.Value.Contains("event.canceled"))
                    {
-                       logging.AddToLog("Entry is an EventEntry", false);
+                       this.Log.Debug("Entry is an EventEntry");
                        CalendarEvent c = new CalendarEvent();
                        c.Title = eventEntry.Title.Text;
                        c.Content = eventEntry.Content.Content;

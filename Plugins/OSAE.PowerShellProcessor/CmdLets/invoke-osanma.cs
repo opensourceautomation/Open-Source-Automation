@@ -7,10 +7,8 @@
     [Cmdlet(VerbsLifecycle.Invoke, "OSANMA")]
     public class OSANMA : Cmdlet
     {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
 
         [Parameter(Mandatory = true)]
         public string APIKey { get; set; }
@@ -28,7 +26,7 @@
         {
             try
             {
-                logging.AddToLog("Invoke-OSANMA - ProcessRecord - Started", false);
+                this.Log.Info("Invoke-OSANMA - ProcessRecord - Started");
 
                 var notification =
                     new NMANotification
@@ -51,7 +49,7 @@
             }
             catch (Exception exc)
             {
-                logging.AddToLog("An error occured while trying to run the command invoke-osanma, details: \r\n" + exc.Message, true);
+                this.Log.Error("An error occured while trying to run the command invoke-osanma, details", exc);
             }                
         }        
     }

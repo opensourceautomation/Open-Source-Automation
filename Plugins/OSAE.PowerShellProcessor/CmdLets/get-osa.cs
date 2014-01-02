@@ -5,10 +5,8 @@
     [Cmdlet(VerbsCommon.Get, "OSA")]
     public class OSAPS : Cmdlet
     {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
 
         [Parameter(
             Mandatory = true,
@@ -17,7 +15,7 @@
 
         protected override void ProcessRecord()
         {
-            logging.AddToLog("Get-OSA - ProcessRecord - Started", false);
+            this.Log.Debug("Get-OSA - ProcessRecord - Started");
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
             WriteObject(obj);
         }

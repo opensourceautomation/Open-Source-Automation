@@ -47,10 +47,8 @@
         /// </summary>
         private string _latestAvailableVersion;
 
-        /// <summary>
-        /// Provides access to logging
-        /// </summary>
-        private Logging logging = Logging.GetLogger();
+        //OSAELog
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Plugin Loader");
 
         private AppDomain _domain;
         private OSAEPluginBase _plugin;
@@ -136,13 +134,14 @@
         public Plugin()
         {
             _latestAvailableVersion = string.Empty;
+            
         }
 
         public bool ActivatePlugin()
         {
             try
             {
-                logging.AddToLog("Activating Plugin: " + PluginName, true);
+                this.Log.Info("Activating Plugin: " + PluginName);
                 _plugin = (OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
                 _plugin.InitializeLifetimeService();
 
@@ -151,7 +150,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error activating plugin (" + PluginName + "): " + ex.Message + " - " + ex.InnerException, true);
+                this.Log.Error("Error activating plugin (" + PluginName + ")", ex);
                 _enabled = false;
                 return false;
             }           
@@ -159,7 +158,7 @@
 
         private void Domain_UnhandledException(object source, System.UnhandledExceptionEventArgs e)
         {
-            logging.AddToLog(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString(), true);
+            this.Log.Fatal(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString());
             AppDomain.Unload(_domain);            
         }
 
@@ -167,31 +166,31 @@
         {
             try
             {
-                logging.AddToLog("Shutting down " + PluginName, true);
+                this.Log.Info("Shutting down " + PluginName);
                 _plugin.Shutdown();
                 AppDomain.Unload(_domain);
                 return true;
             }
             catch (Exception ex)
             {
-                logging.AddToLog(PluginName + " - Shutdown Error: " + ex.Message, true);
+                this.Log.Error(PluginName + " - Shutdown Error", ex);
                 return false;
             }
         }
 
         public void RunInterface()
         {
-            logging.AddToLog(PluginName + " - Running interface.", false);
+            this.Log.Debug(PluginName + " - Running interface.");
             try
             {
                 _plugin.RunInterface(PluginName);
             }
             catch (Exception ex)
             {
-                logging.AddToLog(PluginName + " - Run Interface Error: " + ex.Message, true);
+                this.Log.Error(PluginName + " - Run Interface Error", ex);
             }
 
-            logging.AddToLog(PluginName + " - Moving on...", false);
+            this.Log.Debug(PluginName + " - Moving on...");
         }
 
         public void ExecuteCommand(OSAEMethod method)
@@ -202,7 +201,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog(PluginName + " - Process Command Error: " + ex.Message, true);
+                this.Log.Error(PluginName + " - Process Command Error", ex);
             }
         }
     }

@@ -14,7 +14,8 @@
     /// </summary>
     public partial class PluginInstallerHelper
     {
-        private  Logging logging = Logging.GetLogger("Manager");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Manager");
 
         public  void InstallPlugin(string filepath)
         {
@@ -127,7 +128,7 @@
                                 }
                                 catch (Exception ex)
                                 {
-                                    logging.AddToLog("Error running sql script: " + s + " | " + ex.Message, true);
+                                    this.Log.Error("Error running sql script: " + s, ex);
                                 }
                             }
 
@@ -166,7 +167,7 @@
                             foreach (string str in delfiles)
                                 System.IO.File.Delete(str);
 
-                            logging.AddToLog("Sending message to service to load plugin.", true);
+                            this.Log.Info("Sending message to service to load plugin.");
                             
                         }
                     }

@@ -9,10 +9,8 @@
     [Cmdlet(VerbsCommon.Set, "OSA")]
     public class OSAPSSet : Cmdlet
     {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
 
         /// <summary>
         /// Used in logs to determine where an event occured from or where log messages should go to
@@ -37,7 +35,7 @@
                 
         protected override void ProcessRecord()
         {
-            logging.AddToLog("Set-OSA - ProcessRecord - Started", false);
+            this.Log.Debug("Set-OSA - ProcessRecord - Started");
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
             OSAEObjectPropertyManager.ObjectPropertySet(Name, Property, Value, source);
 
@@ -48,17 +46,15 @@
     [Cmdlet(VerbsCommon.Show, "OSA")]
     public class OSAPSShow : Cmdlet
     {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }
         
         protected override void ProcessRecord()
         {
-            logging.AddToLog("Show-OSA - ProcessRecord - Started", false);
+            this.Log.Debug("Show-OSA - ProcessRecord - Started");
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
 
             WriteObject("Name: " + obj.Name);
@@ -96,10 +92,8 @@
     [Cmdlet(VerbsLifecycle.Invoke, "OSAScript")]
     public class OSAPSInvokeScript : Cmdlet
     {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }
@@ -154,12 +148,12 @@
                     stringBuilder.AppendLine(obj.ToString());
                 }
 
-                logging.AddToLog("Script return: \r\n" + stringBuilder.ToString(), false);
+                this.Log.Debug("Script return: \r\n" + stringBuilder.ToString());
 
             }
             catch (Exception ex)
             {
-                logging.AddToLog("An error occured while trying to run the script, details: \r\n" + ex.Message, true);
+                this.Log.Error("An error occured while trying to run the script, details", ex);
             }
             finally
             {
@@ -196,11 +190,11 @@
                     stringBuilder.AppendLine(obj.ToString());
                 }
 
-                logging.AddToLog("Script return: \r\n" + stringBuilder.ToString(), false);
+                this.Log.Debug("Script return: \r\n" + stringBuilder.ToString());
             }
             catch (Exception ex)
             {
-                logging.AddToLog("An error occured while trying to run the script, details: \r\n" + ex.Message, true);
+                this.Log.Error("An error occured while trying to run the script, details", ex);
             }
             finally
             {
