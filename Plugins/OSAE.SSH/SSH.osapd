@@ -8,7 +8,7 @@
 <author>Brian</author>
 <destination-folder>SSH</destination-folder>
 <main-file>OSAE.SSH.dll</main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=SSH</wiki-url>
 <additional-assemblies>
 <name>DiffieHellman.dll</name>
 <name>Org.Mentalis.Security.dll</name>

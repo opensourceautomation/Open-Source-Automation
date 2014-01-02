@@ -8,7 +8,7 @@
 <author>Vaughn Rupp</author>
 <destination-folder>Script Processor</destination-folder>
 <main-file>OSAE.ScriptProcessor.dll</main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=Script_Processor</wiki-url>
 <additional-assemblies>
 </additional-assemblies>
 </plugin-description>
