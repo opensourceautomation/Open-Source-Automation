@@ -23,7 +23,7 @@ namespace VR2
     /// </summary>
     public partial class MainWindow : Window
     {
-        Logging OSAEApi = Logging.GetLogger("VR2");
+        
         SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
         String gAppName = "";
         Boolean gVRMuted = true;

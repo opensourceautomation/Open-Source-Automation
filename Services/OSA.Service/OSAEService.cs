@@ -8,6 +8,9 @@
     using System.ServiceProcess;
     using System.Diagnostics;
     using NetworkCommsDotNet;
+    using log4net.Config;
+    using log4net;
+    using System.Reflection;
 
     #endregion
 
@@ -27,11 +30,6 @@
 
         private bool goodConnection = false;
 
-        /// <summary>
-        /// Provides access to logging
-        /// </summary>
-        Logging logging = Logging.GetLogger(sourceName);
-
         private bool running = true;
         
         /// <summary>
@@ -39,17 +37,21 @@
         /// </summary>
         private System.Timers.Timer checkPlugins = new System.Timers.Timer();
 
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Service");
         #endregion
+
 
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
         /// </summary>
         static void Main(string[] args) 
-        {          
+        {
+           
             if (args.Length > 0)
             {
                 string pattern = Common.MatchPattern(args[0]);
-                Logging.AddToLog("Processing command: " + args[0] + ", Named Script: " + pattern, true, "OSACL");
+                //this.Log.Info("Processing command: " + args[0] + ", Named Script: " + pattern);
                 if (pattern != string.Empty)
                 {
                     OSAEScriptManager.RunPatternScript(pattern, "", "OSACL");
@@ -57,7 +59,15 @@
             }
             else
             {
+
+// Use for launching the VS debugger when the service starts
+///#if(!DEBUG)
+//                ServiceBase.Run(new OSAEService());
+//#else                
+                Debugger.Launch();
                 ServiceBase.Run(new OSAEService());
+//#endif
+
             }
             
         }
@@ -68,8 +78,10 @@
         /// </summary>
         public OSAEService()
         {
-            logging.AddToLog("Service Starting", true);
-
+            this.Log.Info("================");
+            this.Log.Info("Service Starting");
+            this.Log.Info("================");
+            
             InitialiseOSAInEventLog();
 
             // These Flags set whether or not to handle that specific
@@ -87,11 +99,20 @@
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
-//#if (DEBUG)
-//            Debugger.Launch(); //<-- Simple form to debug a web services 
-//#endif
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptions);
+
+            var dbConnectionStatus = Common.TestConnection();
+            if (dbConnectionStatus.Success)
+            {
+                this.Log.Info("Verified successful connection to database.");
+            }
+            else
+            {
+                this.Log.Fatal("Unable to connect to database: " + dbConnectionStatus.CaughtException.Message);
+                return;
+            }
+
             try
             {
                 Common.InitialiseLogFolder();
@@ -99,12 +120,12 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error getting registry settings and/or deleting logs: " + ex.Message, true);
+                this.Log.Fatal("Error getting registry settings and/or deleting logs: " + ex.Message, ex);
             }
 
-            logging.AddToLog("OnStart", true);
-
-            logging.AddToLog("Removing Orphaned methods", true);
+            this.Log.Info("OnStart");
+            
+            this.Log.Info("Removing Orphaned Methods");
             OSAEMethodManager.ClearMethodQueue();
 
             Common.CreateComputerObject(sourceName);
@@ -127,9 +148,10 @@
         /// </summary>
         protected override void OnStop()
         {
-            logging.AddToLog("OnStop Invoked", false);
+            this.Log.Info("OnStop Invoked");
             NetworkComms.Shutdown();
             ShutDownSystems();
+            OSAE.General.OSAELog.FlushBuffers();
         }        
 
         /// <summary>
@@ -137,15 +159,14 @@
         /// </summary>
         protected override void OnShutdown() 
         {
-            logging.AddToLog("OnShutdown Invoked", false);
-
+            this.Log.Info("OnShutdown Invoked");
             ShutDownSystems();
         }
 
         void UnhandledExceptions(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
-            logging.AddToLog("UnhandledExceptions caught : " + e.Message + " - InnerException: " + e.InnerException.Message, true);
+            this.Log.Fatal("UnhandledExceptions caught : " + e.Message, e);
         }
         #endregion
     }

@@ -5,7 +5,8 @@
 
     public class RFXCOM : OSAEPluginBase
     {
-        Logging logging = Logging.GetLogger("RFXCOM");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("RFXCOM");
 
         private System.Timers.Timer tmrRead = new System.Timers.Timer(100);
         private string rcvdStr = "";
@@ -26,13 +27,13 @@
 
         public override void ProcessCommand(OSAEMethod method)
         {
-            logging.AddToLog("--------------Processing Command---------------", false);
-            logging.AddToLog("Command: " + method.MethodName, false);
+            this.Log.Debug("--------------Processing Command---------------");
+            this.Log.Debug("Command: " + method.MethodName);
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(method.ObjectName);
-            logging.AddToLog("Object Name: " + obj.Name, false);
-            logging.AddToLog("Object Type: " + obj.Type, false);
-            logging.AddToLog("Object Adress: " + obj.Address, false);
+            this.Log.Debug("Object Name: " + obj.Name);
+            this.Log.Debug("Object Type: " + obj.Type);
+            this.Log.Debug("Object Adress: " + obj.Address);
 
             try
             {
@@ -49,7 +50,7 @@
                     case "EMW200 BINARY SWITCH":
                     case "RISING SUN BINARY SWITCH":
                     case "IMPULS BINARY SWITCH":
-                        logging.AddToLog("Executing Lighting1 command", false);
+                        this.Log.Debug("Executing Lighting1 command");
 
                         kar = new byte[(byte)LIGHTING1.size + 1];
                         byte type_l1 = 0;
@@ -116,7 +117,7 @@
                         {
                             command += ("0" + bt.ToString()).Substring(("0" + bt.ToString()).Length - 2) + " ";
                         }
-                        logging.AddToLog("Lighting1 command:" + command, false);
+                        this.Log.Debug("Lighting1 command:" + command);
 
                         break;
                     #endregion
@@ -126,7 +127,7 @@
                     case "AC DIMMER SWITCH":
                     case "HEU DIMMER SWITCH":
                     case "ANSLUT DIMMER SWITCH":
-                        logging.AddToLog("Executing Lighting2 command", false);
+                        this.Log.Debug("Executing Lighting2 command");
 
                         kar = new byte[(byte)LIGHTING2.size + 1];
                         string[] addr = obj.Address.Split('-');
@@ -181,14 +182,14 @@
 
                         kar[(byte)LIGHTING2.filler] = 0;
 
-                        logging.AddToLog("Writing command. len: " + kar.Length.ToString(), false);
+                        this.Log.Debug("Writing command. len: " + kar.Length.ToString());
                         WriteCom(kar);
                         string command_l2 = "";
                         foreach (byte bt in kar)
                         {
                             command_l2 += ("0" + bt.ToString("X")).Substring(("0" + bt.ToString("X")).Length - 2) + " ";
                         }
-                        logging.AddToLog("Lighting2 command:" + command_l2, false);
+                        this.Log.Debug("Lighting2 command:" + command_l2);
                         break;
 
                     #endregion
@@ -198,21 +199,21 @@
                     case "LIGHTWAVERF DIMMER SWITCH":
                     case "LIGHTWAVERF BINARY SWITCH":
                     case "EMW100 BINARY SWITCH":
-                        logging.AddToLog("Executing Lighting5 command", false);
+                        this.Log.Debug("Executing Lighting5 command");
 
                         kar = new byte[(byte)LIGHTING5.size + 1];
-                        logging.AddToLog("Lighting 5 device", false);
+                        this.Log.Debug("Lighting 5 device");
 
                         if (bytFWversion < 29)
                         {
-                            logging.AddToLog("RFXtrx433 firmware version must be > 28, flash your RFXtrx433 with the latest firmware", true);
+                            this.Log.Error("RFXtrx433 firmware version must be > 28, flash your RFXtrx433 with the latest firmware");
                             return;
                         }
 
                         string[] l5_addr = obj.Address.Split('-');
                         if (l5_addr.Length != 4)
                         {
-                            logging.AddToLog("invalid unit address", true);
+                            this.Log.Error("invalid unit address");
                             break;
                         }
                         else
@@ -227,43 +228,43 @@
                                 subtype = (byte)1;
                             }
                             kar[(byte)LIGHTING5.packetlength] = GetByte(LIGHTING5.size.ToString("X"));
-                            logging.AddToLog("kar[(byte)LIGHTING5.packetlength]: " + kar[(byte)LIGHTING5.packetlength].ToString(), false);
+                            this.Log.Debug("kar[(byte)LIGHTING5.packetlength]: " + kar[(byte)LIGHTING5.packetlength].ToString());
                             kar[(byte)LIGHTING5.packettype] = GetByte(LIGHTING5.pType.ToString("X"));
-                            logging.AddToLog("kar[(byte)LIGHTING5.packettype]: " + kar[(byte)LIGHTING5.packettype].ToString(), false);
+                            this.Log.Debug("kar[(byte)LIGHTING5.packettype]: " + kar[(byte)LIGHTING5.packettype].ToString());
                             kar[(byte)LIGHTING5.subtype] = subtype;
-                            logging.AddToLog("kar[(byte)LIGHTING5.subtype]: " + subtype.ToString("X"), false);
+                            this.Log.Debug("kar[(byte)LIGHTING5.subtype]: " + subtype.ToString("X"));
                             kar[(byte)LIGHTING5.seqnbr] = bytSeqNbr;
-                            logging.AddToLog("kar[(byte)LIGHTING5.seqnbr]: " + bytSeqNbr.ToString("X"), false);
+                            this.Log.Debug("kar[(byte)LIGHTING5.seqnbr]: " + bytSeqNbr.ToString("X"));
                             kar[(byte)LIGHTING5.id1] = GetByte(l5_addr[0]);
-                            logging.AddToLog("kar[(byte)LIGHTING5.id1]: " + l5_addr[0], false);
+                            this.Log.Debug("kar[(byte)LIGHTING5.id1]: " + l5_addr[0]);
                             kar[(byte)LIGHTING5.id2] = GetByte(l5_addr[1]);
-                            logging.AddToLog("kar[(byte)LIGHTING5.id2]: " + l5_addr[1], false);
+                            this.Log.Debug("kar[(byte)LIGHTING5.id2]: " + l5_addr[1]);
                             kar[(byte)LIGHTING5.id3] = GetByte(l5_addr[2]);
-                            logging.AddToLog("kar[(byte)LIGHTING5.id3]: " + l5_addr[2], false);
+                            this.Log.Debug("kar[(byte)LIGHTING5.id3]: " + l5_addr[2]);
                             kar[(byte)LIGHTING5.unitcode] = GetByte(l5_addr[3]);
-                            logging.AddToLog("kar[(byte)LIGHTING5.unitcode]: " + l5_addr[3], false);
+                            this.Log.Debug("kar[(byte)LIGHTING5.unitcode]: " + l5_addr[3]);
 
                             switch (method.MethodName)
                             {
                                 case "OFF":
                                     kar[(byte)LIGHTING5.cmnd] = (byte)LIGHTING5.sOff;
-                                    logging.AddToLog("kar[(byte)LIGHTING5.cmnd]: " + kar[(byte)LIGHTING5.cmnd].ToString(), false);
+                                    this.Log.Debug("kar[(byte)LIGHTING5.cmnd]: " + kar[(byte)LIGHTING5.cmnd].ToString());
                                     OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF",pName);
                                     break;
                                 case "ON":
                                     if (method.Parameter1 == "")
                                     {
                                         kar[(byte)LIGHTING5.cmnd] = (byte)LIGHTING5.sOn;
-                                        logging.AddToLog("kar[(byte)LIGHTING5.cmnd]: " + kar[(byte)LIGHTING5.cmnd].ToString(), false);
+                                        this.Log.Debug("kar[(byte)LIGHTING5.cmnd]: " + kar[(byte)LIGHTING5.cmnd].ToString());
                                         kar[(byte)LIGHTING5.level] = 0;
-                                        logging.AddToLog("kar[(byte)LIGHTING5.level]: " + kar[(byte)LIGHTING5.level].ToString(), false);
+                                        this.Log.Debug("kar[(byte)LIGHTING5.level]: " + kar[(byte)LIGHTING5.level].ToString());
                                     }
                                     else
                                     {
                                         kar[(byte)LIGHTING5.cmnd] = (byte)LIGHTING5.sSetLevel;
-                                        logging.AddToLog("kar[(byte)LIGHTING5.cmnd]: " + kar[(byte)LIGHTING5.cmnd].ToString(), false);
+                                        this.Log.Debug("kar[(byte)LIGHTING5.cmnd]: " + kar[(byte)LIGHTING5.cmnd].ToString());
                                         kar[(byte)LIGHTING5.level] = (byte)Math.Round((double)Int32.Parse(method.Parameter1) / 3, 0);
-                                        logging.AddToLog("kar[(byte)LIGHTING5.level]: " + kar[(byte)LIGHTING5.level].ToString(), false);
+                                        this.Log.Debug("kar[(byte)LIGHTING5.level]: " + kar[(byte)LIGHTING5.level].ToString());
                                     }
                                     OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON",pName);
 
@@ -271,21 +272,21 @@
                             }
 
                             kar[(byte)LIGHTING5.filler] = 0;
-                            logging.AddToLog("kar[(byte)LIGHTING5.filler]: " + kar[(byte)LIGHTING5.filler].ToString(), false);
+                            this.Log.Debug("kar[(byte)LIGHTING5.filler]: " + kar[(byte)LIGHTING5.filler].ToString());
 
                             //not used commands
                             if (kar[(byte)LIGHTING5.cmnd] == 8 | kar[(byte)LIGHTING5.cmnd] == 9)
                             {
-                                logging.AddToLog("not used command", true);
+                                this.Log.Error("not used command");
                                 return;
                             }
 
                             if (kar[(byte)LIGHTING5.id1] == 0 & kar[(byte)LIGHTING5.id2] == 0 & kar[(byte)LIGHTING5.id3] == 0)
                             {
-                                logging.AddToLog("invalid unit address", true);
+                                this.Log.Error("invalid unit address");
                                 return;
                             }
-                            logging.AddToLog("Writing command to port", true);
+                            this.Log.Info("Writing command to port");
                             WriteCom(kar);
                             string command_l5 = BitConverter.ToString(kar).Replace('-', ' ');
                             //foreach (byte bt in kar)
@@ -294,7 +295,7 @@
 
                             //    command_l5 += BitConverter.ToString(bt);
                             //}
-                            logging.AddToLog("Lighting5 command:" + command_l5, true);
+                            this.Log.Info("Lighting5 command:" + command_l5);
 
                         }
                         break;
@@ -305,14 +306,14 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error processing command: " + ex.Message, true);
+                this.Log.Error("Error processing command", ex);
             }
-            logging.AddToLog("-----------------------------------------------", false);
+            this.Log.Debug("-----------------------------------------------");
         }
 
         public override void RunInterface(string pluginName)
         {
-            logging.AddToLog("Plugin version: 0.2.8", true);
+            this.Log.Info("Plugin version: 0.2.8");
             pName = pluginName;
             RSInit("COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName,"Port").Value, 38400);
             if(RSOpen())
@@ -415,13 +416,13 @@
             kar[(byte)ICMD.msg8] = 0;
             kar[(byte)ICMD.msg9] = 0;
 
-            logging.AddToLog("================================================", false);
-            logging.AddToLog(message, false);
+            this.Log.Debug("================================================");
+            this.Log.Debug(message);
             foreach (byte bt in kar)
             {
                 msgStr += ("0" + bt.ToString()).Substring(("0" + bt.ToString()).Length - 2, 2) + " ";
             }
-            logging.AddToLog(msgStr, false);
+            this.Log.Debug(msgStr);
             WriteCom(kar);
         }
 
@@ -453,7 +454,7 @@
                 catch (Exception ex)
                 {
                     // Warn the user.
-                    logging.AddToLog("Unable to write to COM port", true);
+                    this.Log.Error("Unable to write to COM port");
                 }
             }
         }
@@ -491,7 +492,7 @@
                     {
                         maxticks = 0;
                         recbytes = 0;
-                        logging.AddToLog(" Buffer flushed due to timeout", true);
+                        this.Log.Info(" Buffer flushed due to timeout");
                     }
                 }
             }
@@ -587,7 +588,7 @@
             //1st char of a packet received
             if (recbytes == 0)
             {
-                logging.AddToLog("------------------------------------------------", false);
+                this.Log.Debug("------------------------------------------------");
                 if (sComChar == 0)
                 {
                     return;
@@ -604,7 +605,7 @@
             if (recbytes > recbuf[0])
             {
                 rcvdStr += " " + ("0" + sComChar.ToString()).Substring(("0" + sComChar.ToString()).Length - 2, 2);
-                logging.AddToLog(rcvdStr, false);
+                this.Log.Debug(rcvdStr);
                 rcvdStr = "";
                 // Write the output to the screen.
                 decode_messages();
@@ -622,169 +623,169 @@
         #region "Decode messages"
         public void decode_messages()
         {
-            logging.AddToLog("---------------Received Message----------------", false);
+            this.Log.Debug("---------------Received Message----------------");
             switch (recbuf[1])
             {
                 case (byte)IRESPONSE.pType:
-                    logging.AddToLog("Packettype        = Interface Message", false);
+                    this.Log.Debug("Packettype        = Interface Message");
                     decode_InterfaceMessage();
 
                     break;
                 case (byte)RXRESPONSE.pType:
-                    logging.AddToLog("Packettype        = Receiver/Transmitter Message", false);
+                    this.Log.Debug("Packettype        = Receiver/Transmitter Message");
                     decode_RecXmitMessage();
 
                     break;
                 case (byte)UNDECODED.pType:
-                    logging.AddToLog("Packettype        = UNDECODED RF Message", false);
+                    this.Log.Debug("Packettype        = UNDECODED RF Message");
                     decode_UNDECODED();
 
                     break;
                 //case (byte)LIGHTING1.pType:
-                //    logging.AddToLog("Packettype    = Lighting1", false);
+                //    this.Log.Debug("Packettype    = Lighting1");
                 //    decode_Lighting1();
 
                 //    break;
                 case (byte)LIGHTING2.pType:
-                    logging.AddToLog("Packettype    = Lighting2", false);
+                    this.Log.Debug("Packettype    = Lighting2");
                     decode_Lighting2();
 
                     break;
                 //case (byte)LIGHTING3.pType:
-                //    logging.AddToLog("Packettype    = Lighting3", false);
+                //    this.Log.Debug("Packettype    = Lighting3");
                 //    decode_Lighting3();
 
                 //    break;
                 //case (byte)LIGHTING4.pType:
-                //    logging.AddToLog("Packettype    = Lighting4", false);
+                //    this.Log.Debug("Packettype    = Lighting4");
                 //    decode_Lighting4();
 
                 //    break;
                 case (byte)LIGHTING5.pType:
-                    logging.AddToLog("Packettype    = Lighting5", false);
+                    this.Log.Debug("Packettype    = Lighting5");
                     decode_Lighting5();
 
                     break;
                 //case (byte)SECURITY1.pType:
-                //    logging.AddToLog("Packettype    = Security1", false);
+                //    this.Log.Debug("Packettype    = Security1");
                 //    decode_Security1();
 
                 //    break;
                 //case (byte)CAMERA1.pType:
-                //    logging.AddToLog("Packettype    = Camera1", false);
+                //    this.Log.Debug("Packettype    = Camera1");
                 //    decode_Camera1();
 
                 //    break;
                 //case (byte)REMOTE.pType:
-                //    logging.AddToLog("Packettype    = Remote control & IR", false);
+                //    this.Log.Debug("Packettype    = Remote control & IR");
                 //    decode_Remote();
 
                 //    break;
                 //case (byte)THERMOSTAT1.pType:
-                //    logging.AddToLog("Packettype    = Thermostat1", false);
+                //    this.Log.Debug("Packettype    = Thermostat1");
                 //    decode_Thermostat1();
 
                 //    break;
                 //case (byte)THERMOSTAT2.pType:
-                //    logging.AddToLog("Packettype    = Thermostat2", false);
+                //    this.Log.Debug("Packettype    = Thermostat2");
                 //    decode_Thermostat2();
 
                 //    break;
                 //case (byte)THERMOSTAT3.pType:
-                //    logging.AddToLog("Packettype    = Thermostat3", false);
+                //    this.Log.Debug("Packettype    = Thermostat3");
                 //    decode_Thermostat3();
 
                 //    break;
                 case (byte)TEMP.pType:
-                    logging.AddToLog("Packettype    = TEMP", false);
+                    this.Log.Debug("Packettype    = TEMP");
                     decode_Temp();
 
                     break;
                 case (byte)HUM.pType:
-                    logging.AddToLog("Packettype    = HUM", false);
+                    this.Log.Debug("Packettype    = HUM");
                     decode_Hum();
 
                     break;
                 case (byte)TEMP_HUM.pType:
-                    logging.AddToLog("Packettype    = TEMP_HUM", false);
+                    this.Log.Debug("Packettype    = TEMP_HUM");
                     decode_TempHum();
 
                     break;
                 case (byte)BARO.pType:
-                    logging.AddToLog("Packettype    = BARO", false);
+                    this.Log.Debug("Packettype    = BARO");
                     decode_Baro();
 
                     break;
                 case (byte)TEMP_HUM_BARO.pType:
-                    logging.AddToLog("Packettype    = TEMP_HUM_BARO", false);
+                    this.Log.Debug("Packettype    = TEMP_HUM_BARO");
                     decode_TempHumBaro();
 
                     break;
                 case (byte)RAIN.pType:
-                    logging.AddToLog("Packettype    = RAIN", false);
+                    this.Log.Debug("Packettype    = RAIN");
                     decode_Rain();
 
                     break;
                 case (byte)WIND.pType:
-                    logging.AddToLog("Packettype    = WIND", false);
+                    this.Log.Debug("Packettype    = WIND");
                     decode_Wind();
 
                     break;
                 case (byte)UV.pType:
-                    logging.AddToLog("Packettype    = UV", false);
+                    this.Log.Debug("Packettype    = UV");
                     decode_UV();
 
                     break;
                 case (byte)DT.pType:
-                    logging.AddToLog("Packettype    = DT", false);
+                    this.Log.Debug("Packettype    = DT");
                     decode_DateTime();
 
                     break;
                 case (byte)CURRENT.pType:
-                    logging.AddToLog("Packettype    = CURRENT", false);
+                    this.Log.Debug("Packettype    = CURRENT");
                     decode_Current();
 
                     break;
                 case (byte)ENERGY.pType:
-                    logging.AddToLog("Packettype    = ENERGY", false);
+                    this.Log.Debug("Packettype    = ENERGY");
                     decode_Energy();
 
                     break;
                 case (byte)GAS.pType:
-                    logging.AddToLog("Packettype    = GAS", false);
+                    this.Log.Debug("Packettype    = GAS");
                     decode_Gas();
 
                     break;
                 case (byte)WATER.pType:
-                    logging.AddToLog("Packettype    = WATER", false);
+                    this.Log.Debug("Packettype    = WATER");
                     decode_Water();
 
                     break;
                 case (byte)WEIGHT.pType:
-                    logging.AddToLog("Packettype    = WEIGHT", false);
+                    this.Log.Debug("Packettype    = WEIGHT");
                     decode_Weight();
 
                     break;
                 //case (byte)RFXSENSOR.pType:
-                //    logging.AddToLog("Packettype    = RFXSensor", false);
+                //    this.Log.Debug("Packettype    = RFXSensor");
                 //    decode_RFXSensor();
 
                 //    break;
                 //case (byte)RFXMETER.pType:
-                //    logging.AddToLog("Packettype    = RFXMeter", false);
+                //    this.Log.Debug("Packettype    = RFXMeter");
                 //    decode_RFXMeter();
 
                 //    break;
                 //case (byte)FS20.pType:
-                //    logging.AddToLog("Packettype    = FS20", false);
+                //    this.Log.Debug("Packettype    = FS20");
                 //    decode_FS20();
 
                 //    break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Packet type:" + recbuf[1].ToString(), true);
+                    this.Log.Error("ERROR: Unknown Packet type:" + recbuf[1].ToString());
                     break;
             }
-            logging.AddToLog("-----------------------------------------------", false);
+            this.Log.Debug("-----------------------------------------------");
         }
 
         public void decode_InterfaceMessage()
@@ -792,8 +793,8 @@
             switch (recbuf[(byte)IRESPONSE.subtype])
             {
                 case (byte)IRESPONSE.sType:
-                    logging.AddToLog("subtype           = Interface Response", false);
-                    logging.AddToLog("Sequence nbr      = " + recbuf[(byte)IRESPONSE.seqnbr].ToString(), false);
+                    this.Log.Debug("subtype           = Interface Response");
+                    this.Log.Debug("Sequence nbr      = " + recbuf[(byte)IRESPONSE.seqnbr].ToString());
                     switch (recbuf[(byte)IRESPONSE.cmnd])
                     {
                         case (byte)ICMD.STATUS:
@@ -807,297 +808,297 @@
                         case (byte)ICMD.sel835:
                         case (byte)ICMD.sel835F:
                         case (byte)ICMD.sel895:
-                            logging.AddToLog("response on cmnd  = ", false);
+                            this.Log.Debug("response on cmnd  = ");
                             switch (recbuf[(byte)IRESPONSE.cmnd])
                             {
                                 case (byte)ICMD.STATUS:
-                                    logging.AddToLog("Get Status", false);
+                                    this.Log.Debug("Get Status");
                                     break;
                                 case (byte)ICMD.SETMODE:
-                                    logging.AddToLog("Set Mode", false);
+                                    this.Log.Debug("Set Mode");
                                     break;
                                 case (byte)ICMD.sel310:
-                                    logging.AddToLog("Select 310MHz", false);
+                                    this.Log.Debug("Select 310MHz");
                                     break;
                                 case (byte)ICMD.sel315:
-                                    logging.AddToLog("Select 315MHz", false);
+                                    this.Log.Debug("Select 315MHz");
                                     break;
                                 case (byte)ICMD.sel800:
-                                    logging.AddToLog("Select 868.00MHz", false);
+                                    this.Log.Debug("Select 868.00MHz");
                                     break;
                                 case (byte)ICMD.sel800F:
-                                    logging.AddToLog("Select 868.00MHz FSK", false);
+                                    this.Log.Debug("Select 868.00MHz FSK");
                                     break;
                                 case (byte)ICMD.sel830:
-                                    logging.AddToLog("Select 868.30MHz", false);
+                                    this.Log.Debug("Select 868.30MHz");
                                     break;
                                 case (byte)ICMD.sel830F:
-                                    logging.AddToLog("Select 868.30MHz FSK", false);
+                                    this.Log.Debug("Select 868.30MHz FSK");
                                     break;
                                 case (byte)ICMD.sel835:
-                                    logging.AddToLog("Select 868.35MHz", false);
+                                    this.Log.Debug("Select 868.35MHz");
                                     break;
                                 case (byte)ICMD.sel835F:
-                                    logging.AddToLog("Select 868.35MHz FSK", false);
+                                    this.Log.Debug("Select 868.35MHz FSK");
                                     break;
                                 case (byte)ICMD.sel895:
-                                    logging.AddToLog("Select 868.95MHz", false);
+                                    this.Log.Debug("Select 868.95MHz");
                                     break;
                                 default:
-                                    logging.AddToLog("Error: unknown response", false);
+                                    this.Log.Debug("Error: unknown response");
                                     break;
                             }
                             switch (recbuf[(byte)IRESPONSE.msg1])
                             {
                                 case (byte)IRESPONSE.recType310:
-                                    logging.AddToLog("Transceiver type  = 310MHz", false);
+                                    this.Log.Debug("Transceiver type  = 310MHz");
                                     break;
                                 case (byte)IRESPONSE.recType315:
-                                    logging.AddToLog("Receiver type     = 315MHz", false);
+                                    this.Log.Debug("Receiver type     = 315MHz");
                                     break;
                                 case (byte)IRESPONSE.recType43392:
-                                    logging.AddToLog("Receiver type     = 433.92MHz (receive only)", false);
+                                    this.Log.Debug("Receiver type     = 433.92MHz (receive only)");
                                     break;
                                 case (byte)IRESPONSE.trxType43392:
-                                    logging.AddToLog("Transceiver type  = 433.92MHz", false);
+                                    this.Log.Debug("Transceiver type  = 433.92MHz");
                                     break;
                                 case (byte)IRESPONSE.recType86800:
-                                    logging.AddToLog("Receiver type     = 868.00MHz", false);
+                                    this.Log.Debug("Receiver type     = 868.00MHz");
                                     break;
                                 case (byte)IRESPONSE.recType86800FSK:
-                                    logging.AddToLog("Receiver type     = 868.00MHz FSK", false);
+                                    this.Log.Debug("Receiver type     = 868.00MHz FSK");
                                     break;
                                 case (byte)IRESPONSE.recType86830:
-                                    logging.AddToLog("Receiver type     = 868.30MHz", false);
+                                    this.Log.Debug("Receiver type     = 868.30MHz");
                                     break;
                                 case (byte)IRESPONSE.recType86830FSK:
-                                    logging.AddToLog("Receiver type     = 868.30MHz FSK", false);
+                                    this.Log.Debug("Receiver type     = 868.30MHz FSK");
                                     break;
                                 case (byte)IRESPONSE.recType86835:
-                                    logging.AddToLog("Receiver type     = 868.35MHz", false);
+                                    this.Log.Debug("Receiver type     = 868.35MHz");
                                     break;
                                 case (byte)IRESPONSE.recType86835FSK:
-                                    logging.AddToLog("Receiver type     = 868.35MHz FSK", false);
+                                    this.Log.Debug("Receiver type     = 868.35MHz FSK");
                                     break;
                                 case (byte)IRESPONSE.recType86895:
-                                    logging.AddToLog("Receiver type     = 868.95MHz", false);
+                                    this.Log.Debug("Receiver type     = 868.95MHz");
                                     break;
                                 default:
-                                    logging.AddToLog("Receiver type     = unknown", false);
+                                    this.Log.Debug("Receiver type     = unknown");
                                     break;
                             }
                             trxType = recbuf[(byte)IRESPONSE.msg1];
-                            logging.AddToLog("Firmware version  = " + recbuf[(byte)IRESPONSE.msg2].ToString(), false);
+                            this.Log.Debug("Firmware version  = " + recbuf[(byte)IRESPONSE.msg2].ToString());
                             bytFWversion = recbuf[(byte)IRESPONSE.msg2];
 
                             if ((recbuf[(byte)IRESPONSE.msg3] & (byte)IRESPONSE.msg3_undec) != 0)
                             {
-                                logging.AddToLog("Undec             on", false);
+                                this.Log.Debug("Undec             on");
                             }
                             else
                             {
-                                logging.AddToLog("Undec             off", false);
+                                this.Log.Debug("Undec             off");
                             }
 
                             if ((recbuf[(byte)IRESPONSE.msg5] & (byte)IRESPONSE.msg5_X10) != 0)
                             {
-                                logging.AddToLog("X10               enabled", false);
+                                this.Log.Debug("X10               enabled");
                             }
                             else
                             {
-                                logging.AddToLog("X10               disabled", false);
+                                this.Log.Debug("X10               disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg5] & (byte)IRESPONSE.msg5_ARC) != 0)
                             {
-                                logging.AddToLog("ARC               enabled", false);
+                                this.Log.Debug("ARC               enabled");
                             }
                             else
                             {
-                                logging.AddToLog("ARC               disabled", false);
+                                this.Log.Debug("ARC               disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg5] & (byte)IRESPONSE.msg5_AC) != 0)
                             {
-                                logging.AddToLog("AC                enabled", false);
+                                this.Log.Debug("AC                enabled");
                             }
                             else
                             {
-                                logging.AddToLog("AC                disabled", false);
+                                this.Log.Debug("AC                disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg5] & (byte)IRESPONSE.msg5_HEU) != 0)
                             {
-                                logging.AddToLog("HomeEasy EU       enabled", false);
+                                this.Log.Debug("HomeEasy EU       enabled");
                             }
                             else
                             {
-                                logging.AddToLog("HomeEasy EU       disabled", false);
+                                this.Log.Debug("HomeEasy EU       disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg5] & (byte)IRESPONSE.msg5_KOP) != 0)
                             {
-                                logging.AddToLog("Ikea Koppla       enabled", false);
+                                this.Log.Debug("Ikea Koppla       enabled");
                             }
                             else
                             {
-                                logging.AddToLog("Ikea Koppla       disabled", false);
+                                this.Log.Debug("Ikea Koppla       disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg5] & (byte)IRESPONSE.msg5_OREGON) != 0)
                             {
-                                logging.AddToLog("Oregon Scientific enabled", false);
+                                this.Log.Debug("Oregon Scientific enabled");
                             }
                             else
                             {
-                                logging.AddToLog("Oregon Scientific disabled", false);
+                                this.Log.Debug("Oregon Scientific disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg5] & (byte)IRESPONSE.msg5_ATI) != 0)
                             {
-                                logging.AddToLog("ATI               enabled", false);
+                                this.Log.Debug("ATI               enabled");
                             }
                             else
                             {
-                                logging.AddToLog("ATI               disabled", false);
+                                this.Log.Debug("ATI               disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg5] & (byte)IRESPONSE.msg5_VISONIC) != 0)
                             {
-                                logging.AddToLog("Visonic           enabled", false);
+                                this.Log.Debug("Visonic           enabled");
                             }
                             else
                             {
-                                logging.AddToLog("Visonic           disabled", false);
+                                this.Log.Debug("Visonic           disabled");
                             }
 
                             if ((recbuf[(byte)IRESPONSE.msg4] & (byte)IRESPONSE.msg4_MERTIK) != 0)
                             {
-                                logging.AddToLog("Mertik            enabled", false);
+                                this.Log.Debug("Mertik            enabled");
                             }
                             else
                             {
-                                logging.AddToLog("Mertik            disabled", false);
+                                this.Log.Debug("Mertik            disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg4] & (byte)IRESPONSE.msg4_AD) != 0)
                             {
-                                logging.AddToLog("AD                enabled", false);
+                                this.Log.Debug("AD                enabled");
                             }
                             else
                             {
-                                logging.AddToLog("AD                disabled", false);
+                                this.Log.Debug("AD                disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg4] & (byte)IRESPONSE.msg4_HID) != 0)
                             {
-                                logging.AddToLog("Hideki            enabled", false);
+                                this.Log.Debug("Hideki            enabled");
                             }
                             else
                             {
-                                logging.AddToLog("Hideki            disabled", false);
+                                this.Log.Debug("Hideki            disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg4] & (byte)IRESPONSE.msg4_LCROS) != 0)
                             {
-                                logging.AddToLog("La Crosse         enabled", false);
+                                this.Log.Debug("La Crosse         enabled");
                             }
                             else
                             {
-                                logging.AddToLog("La Crosse         disabled", false);
+                                this.Log.Debug("La Crosse         disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg4] & (byte)IRESPONSE.msg4_FS20) != 0)
                             {
-                                logging.AddToLog("FS20              enabled", false);
+                                this.Log.Debug("FS20              enabled");
                             }
                             else
                             {
-                                logging.AddToLog("FS20              disabled", false);
+                                this.Log.Debug("FS20              disabled");
                             }
                             if ((recbuf[(byte)IRESPONSE.msg4] & (byte)IRESPONSE.msg4_PROGUARD) != 0)
                             {
-                                logging.AddToLog("ProGuard          enabled", false);
+                                this.Log.Debug("ProGuard          enabled");
                             }
                             else
                             {
-                                logging.AddToLog("ProGuard          disabled", false);
+                                this.Log.Debug("ProGuard          disabled");
                             }
 
                             if ((recbuf[(byte)IRESPONSE.msg4] & 0x80) != 0)
                             {
-                                logging.AddToLog("RFU protocol 7    enabled", false);
+                                this.Log.Debug("RFU protocol 7    enabled");
                             }
                             else
                             {
-                                logging.AddToLog("RFU protocol 7    disabled", false);
+                                this.Log.Debug("RFU protocol 7    disabled");
                             }
 
                             break;
                         case (byte)ICMD.ENABLEALL:
-                            logging.AddToLog("response on cmnd  = Enable All RF", false);
+                            this.Log.Debug("response on cmnd  = Enable All RF");
                             break;
                         case (byte)ICMD.UNDECODED:
-                            logging.AddToLog("response on cmnd  = UNDECODED on", false);
+                            this.Log.Debug("response on cmnd  = UNDECODED on");
                             break;
                         case (byte)ICMD.SAVE:
-                            logging.AddToLog("response on cmnd  = Save", false);
+                            this.Log.Debug("response on cmnd  = Save");
                             break;
                         case (byte)ICMD.DISX10:
-                            logging.AddToLog("response on cmnd  = Disable X10 RF", false);
+                            this.Log.Debug("response on cmnd  = Disable X10 RF");
                             break;
                         case (byte)ICMD.DISARC:
-                            logging.AddToLog("response on cmnd  = Disable ARC RF", false);
+                            this.Log.Debug("response on cmnd  = Disable ARC RF");
                             break;
                         case (byte)ICMD.DISAC:
-                            logging.AddToLog("response on cmnd  = Disable AC RF", false);
+                            this.Log.Debug("response on cmnd  = Disable AC RF");
                             break;
                         case (byte)ICMD.DISHEU:
-                            logging.AddToLog("response on cmnd  = Disable HomeEasy EU RF", false);
+                            this.Log.Debug("response on cmnd  = Disable HomeEasy EU RF");
                             break;
                         case (byte)ICMD.DISKOP:
-                            logging.AddToLog("response on cmnd  = Disable Ikea Koppla RF", false);
+                            this.Log.Debug("response on cmnd  = Disable Ikea Koppla RF");
                             break;
                         case (byte)ICMD.DISOREGON:
-                            logging.AddToLog("response on cmnd  = Disable Oregon Scientific RF", false);
+                            this.Log.Debug("response on cmnd  = Disable Oregon Scientific RF");
                             break;
                         case (byte)ICMD.DISATI:
-                            logging.AddToLog("response on cmnd  = Disable ATI remote RF", false);
+                            this.Log.Debug("response on cmnd  = Disable ATI remote RF");
                             break;
                         case (byte)ICMD.DISVISONIC:
-                            logging.AddToLog("response on cmnd  = Disable Visonic RF", false);
+                            this.Log.Debug("response on cmnd  = Disable Visonic RF");
                             break;
                         case (byte)ICMD.DISMERTIK:
-                            logging.AddToLog("response on cmnd  = Disable Mertik RF", false);
+                            this.Log.Debug("response on cmnd  = Disable Mertik RF");
                             break;
                         case (byte)ICMD.DISAD:
-                            logging.AddToLog("response on cmnd  = Disable AD RF", false);
+                            this.Log.Debug("response on cmnd  = Disable AD RF");
                             break;
                         case (byte)ICMD.DISHID:
-                            logging.AddToLog("response on cmnd  = Disable Hideki RF", false);
+                            this.Log.Debug("response on cmnd  = Disable Hideki RF");
                             break;
                         case (byte)ICMD.DISLCROS:
-                            logging.AddToLog("response on cmnd  = Disable La Crosse RF", false);
+                            this.Log.Debug("response on cmnd  = Disable La Crosse RF");
 
                             break;
                         //For internal use by RFXCOM only, do not use this coding.
                         //=========================================================
                         case 0x8:
-                            logging.AddToLog("response on cmnd  = T1", false);
+                            this.Log.Debug("response on cmnd  = T1");
                             if (recbuf[(byte)IRESPONSE.msg9] == 0)
                             {
-                                logging.AddToLog("Not OK!", false);
+                                this.Log.Debug("Not OK!");
                             }
                             else
                             {
-                                logging.AddToLog("On", false);
+                                this.Log.Debug("On");
                             }
 
                             break;
                         case 0x9:
-                            logging.AddToLog("response on cmnd  = T2", false);
+                            this.Log.Debug("response on cmnd  = T2");
                             if (recbuf[(byte)IRESPONSE.msg9] == 0)
                             {
-                                logging.AddToLog("Not OK!", false);
+                                this.Log.Debug("Not OK!");
                             }
                             else
                             {
-                                logging.AddToLog("Blk On", false);
+                                this.Log.Debug("Blk On");
                             }
                             break;
                         //=========================================================
 
                         default:
-                            logging.AddToLog("ERROR: Unexpected response for Packet type=" + recbuf[(byte)IRESPONSE.packettype].ToString() + ", Sub type=" + recbuf[(byte)IRESPONSE.subtype].ToString() + " cmnd=" + recbuf[(byte)IRESPONSE.cmnd].ToString(), false);
+                            this.Log.Error("ERROR: Unexpected response for Packet type=" + recbuf[(byte)IRESPONSE.packettype].ToString() + ", Sub type=" + recbuf[(byte)IRESPONSE.subtype].ToString() + " cmnd=" + recbuf[(byte)IRESPONSE.cmnd].ToString());
                             break;
                     }
                     break;
@@ -1109,95 +1110,95 @@
             switch (recbuf[(byte)RXRESPONSE.subtype])
             {
                 case (byte)RXRESPONSE.sTypeReceiverLockError:
-                    logging.AddToLog("subtype           = Receiver lock error", false);
+                    this.Log.Debug("subtype           = Receiver lock error");
                     //SystemSounds.Asterisk.Play();
-                    logging.AddToLog("Sequence nbr      = " + recbuf[(byte)RXRESPONSE.seqnbr].ToString(), false);
+                    this.Log.Debug("Sequence nbr      = " + recbuf[(byte)RXRESPONSE.seqnbr].ToString());
 
                     break;
                 case (byte)RXRESPONSE.sTypeTransmitterResponse:
-                    logging.AddToLog("subtype           = Transmitter Response", false);
-                    logging.AddToLog("Sequence nbr      = " + recbuf[(byte)RXRESPONSE.seqnbr].ToString(), false);
+                    this.Log.Debug("subtype           = Transmitter Response");
+                    this.Log.Debug("Sequence nbr      = " + recbuf[(byte)RXRESPONSE.seqnbr].ToString());
                     switch (recbuf[(byte)RXRESPONSE.msg])
                     {
                         case 0x0:
-                            logging.AddToLog("response          = ACK, data correct transmitted", false);
+                            this.Log.Debug("response          = ACK, data correct transmitted");
                             break;
                         case 0x1:
-                            logging.AddToLog("response          = ACK, but transmit started after 6 seconds delay anyway with RF receive data detected", false);
+                            this.Log.Debug("response          = ACK, but transmit started after 6 seconds delay anyway with RF receive data detected");
                             break;
                         case 0x2:
-                            logging.AddToLog("response          = NAK, transmitter did not lock on the requested transmit frequency", false);
+                            this.Log.Debug("response          = NAK, transmitter did not lock on the requested transmit frequency");
                             //SystemSounds.Asterisk.Play();
                             break;
                         case 0x3:
-                            logging.AddToLog("response          = NAK, AC address zero in id1-id4 not allowed", false);
+                            this.Log.Debug("response          = NAK, AC address zero in id1-id4 not allowed");
                             //SystemSounds.Asterisk.Play();
                             break;
                         default:
-                            logging.AddToLog("ERROR: Unexpected message type=" + recbuf[(byte)RXRESPONSE.msg].ToString(), false);
+                            this.Log.Debug("ERROR: Unexpected message type=" + recbuf[(byte)RXRESPONSE.msg].ToString());
                             break;
                     }
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)RXRESPONSE.packettype].ToString() + ": " + recbuf[(byte)RXRESPONSE.subtype].ToString(), false);
+                    this.Log.Error("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)RXRESPONSE.packettype].ToString() + ": " + recbuf[(byte)RXRESPONSE.subtype].ToString());
                     break;
             }
         }
 
         public void decode_UNDECODED()
         {
-            logging.AddToLog("UNDECODED ", false);
+            this.Log.Debug("UNDECODED ");
             switch (recbuf[(byte)UNDECODED.subtype])
             {
                 case (byte)UNDECODED.sTypeUac:
-                    logging.AddToLog("AC:", false);
+                    this.Log.Debug("AC:");
                     break;
                 case (byte)UNDECODED.sTypeUarc:
-                    logging.AddToLog("ARC:", false);
+                    this.Log.Debug("ARC:");
                     break;
                 case (byte)UNDECODED.sTypeUati:
-                    logging.AddToLog("ATI:", false);
+                    this.Log.Debug("ATI:");
                     break;
                 case (byte)UNDECODED.sTypeUhideki:
-                    logging.AddToLog("HIDEKI:", false);
+                    this.Log.Debug("HIDEKI:");
                     break;
                 case (byte)UNDECODED.sTypeUlacrosse:
-                    logging.AddToLog("LACROSSE:", false);
+                    this.Log.Debug("LACROSSE:");
                     break;
                 case (byte)UNDECODED.sTypeUlwrf:
-                    logging.AddToLog("LWRF:", false);
+                    this.Log.Debug("LWRF:");
                     break;
                 case (byte)UNDECODED.sTypeUmertik:
-                    logging.AddToLog("MERTIK:", false);
+                    this.Log.Debug("MERTIK:");
                     break;
                 case (byte)UNDECODED.sTypeUoregon1:
-                    logging.AddToLog("OREGON1:", false);
+                    this.Log.Debug("OREGON1:");
                     break;
                 case (byte)UNDECODED.sTypeUoregon2:
-                    logging.AddToLog("OREGON2:", false);
+                    this.Log.Debug("OREGON2:");
                     break;
                 case (byte)UNDECODED.sTypeUoregon3:
-                    logging.AddToLog("OREGON3:", false);
+                    this.Log.Debug("OREGON3:");
                     break;
                 case (byte)UNDECODED.sTypeUproguard:
-                    logging.AddToLog("PROGUARD:", false);
+                    this.Log.Debug("PROGUARD:");
                     break;
                 case (byte)UNDECODED.sTypeUvisonic:
-                    logging.AddToLog("VISONIC:", false);
+                    this.Log.Debug("VISONIC:");
                     break;
                 case (byte)UNDECODED.sTypeUnec:
-                    logging.AddToLog("NEC:", false);
+                    this.Log.Debug("NEC:");
                     break;
                 case (byte)UNDECODED.sTypeUfs20:
-                    logging.AddToLog("FS20:", false);
+                    this.Log.Debug("FS20:");
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)UNDECODED.packettype] + ": " + recbuf[(byte)UNDECODED.subtype], false);
+                    this.Log.Error("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)UNDECODED.packettype] + ": " + recbuf[(byte)UNDECODED.subtype]);
                     break;
             }
             for (int i = 0; i <= recbuf[(byte)UNDECODED.packetlength] - (byte)UNDECODED.msg1; i++)
             {
-                logging.AddToLog("0" + recbuf[(byte)UNDECODED.msg1 + i], false);
+                this.Log.Debug("0" + recbuf[(byte)UNDECODED.msg1 + i]);
             }
 
         }
@@ -1207,96 +1208,96 @@
         //    switch (recbuf(LIGHTING1.subtype))
         //    {
         //        case LIGHTING1.sTypeX10:
-        //            logging.AddToLog("subtype       = X10");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(LIGHTING1.seqnbr).ToString);
-        //            logging.AddToLog("housecode     = " + Strings.Chr(recbuf(LIGHTING1.housecode)));
-        //            logging.AddToLog("unitcode      = " + recbuf(LIGHTING1.unitcode).ToString);
-        //            logging.AddToLog("Command       = ", false);
+        //            this.Log.Debug("subtype       = X10");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(LIGHTING1.seqnbr).ToString);
+        //            this.Log.Debug("housecode     = " + Strings.Chr(recbuf(LIGHTING1.housecode)));
+        //            this.Log.Debug("unitcode      = " + recbuf(LIGHTING1.unitcode).ToString);
+        //            this.Log.Debug("Command       = ");
         //            switch (recbuf(LIGHTING1.cmnd))
         //            {
         //                case LIGHTING1.sOff:
-        //                    logging.AddToLog("Off");
+        //                    this.Log.Debug("Off");
         //                    break;
         //                case LIGHTING1.sOn:
-        //                    logging.AddToLog("On");
+        //                    this.Log.Debug("On");
         //                    break;
         //                case LIGHTING1.sDim:
-        //                    logging.AddToLog("Dim");
+        //                    this.Log.Debug("Dim");
         //                    break;
         //                case LIGHTING1.sBright:
-        //                    logging.AddToLog("Bright");
+        //                    this.Log.Debug("Bright");
         //                    break;
         //                case LIGHTING1.sAllOn:
-        //                    logging.AddToLog("All On");
+        //                    this.Log.Debug("All On");
         //                    break;
         //                case LIGHTING1.sAllOff:
-        //                    logging.AddToLog("All Off");
+        //                    this.Log.Debug("All Off");
         //                    break;
         //                case LIGHTING1.sChime:
-        //                    logging.AddToLog("Chime");
+        //                    this.Log.Debug("Chime");
         //                    break;
         //                default:
-        //                    logging.AddToLog("UNKNOWN");
+        //                    this.Log.Debug("UNKNOWN");
         //                    break;
         //            }
 
         //            break;
         //        case LIGHTING1.sTypeARC:
-        //            logging.AddToLog("subtype       = ARC");
-        //            logging.AddToLog("housecode     = " + Strings.Chr(recbuf(LIGHTING1.housecode)));
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(LIGHTING1.seqnbr).ToString);
-        //            logging.AddToLog("unitcode      = " + recbuf(LIGHTING1.unitcode).ToString);
-        //            logging.AddToLog("Command       = ", false);
+        //            this.Log.Debug("subtype       = ARC");
+        //            this.Log.Debug("housecode     = " + Strings.Chr(recbuf(LIGHTING1.housecode)));
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(LIGHTING1.seqnbr).ToString);
+        //            this.Log.Debug("unitcode      = " + recbuf(LIGHTING1.unitcode).ToString);
+        //            this.Log.Debug("Command       = ");
         //            switch (recbuf(LIGHTING1.cmnd))
         //            {
         //                case LIGHTING1.sOff:
-        //                    logging.AddToLog("Off");
+        //                    this.Log.Debug("Off");
         //                    break;
         //                case LIGHTING1.sOn:
-        //                    logging.AddToLog("On");
+        //                    this.Log.Debug("On");
         //                    break;
         //                case LIGHTING1.sAllOn:
-        //                    logging.AddToLog("All On");
+        //                    this.Log.Debug("All On");
         //                    break;
         //                case LIGHTING1.sAllOff:
-        //                    logging.AddToLog("All Off");
+        //                    this.Log.Debug("All Off");
         //                    break;
         //                default:
-        //                    logging.AddToLog("UNKNOWN");
+        //                    this.Log.Debug("UNKNOWN");
         //                    break;
         //            }
 
         //            break;
         //        case LIGHTING1.sTypeAB400D:
-        //            logging.AddToLog("subtype       = ELRO AB400");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(LIGHTING1.seqnbr).ToString);
-        //            logging.AddToLog("housecode     = " + Strings.Chr(recbuf(LIGHTING1.housecode)));
-        //            logging.AddToLog("unitcode      = " + recbuf(LIGHTING1.unitcode).ToString);
-        //            logging.AddToLog("Command       = ", false);
+        //            this.Log.Debug("subtype       = ELRO AB400");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(LIGHTING1.seqnbr).ToString);
+        //            this.Log.Debug("housecode     = " + Strings.Chr(recbuf(LIGHTING1.housecode)));
+        //            this.Log.Debug("unitcode      = " + recbuf(LIGHTING1.unitcode).ToString);
+        //            this.Log.Debug("Command       = ");
         //            switch (recbuf(LIGHTING1.cmnd))
         //            {
         //                case LIGHTING1.sOff:
-        //                    logging.AddToLog("Off");
+        //                    this.Log.Debug("Off");
         //                    break;
         //                case LIGHTING1.sOn:
-        //                    logging.AddToLog("On");
+        //                    this.Log.Debug("On");
         //                    break;
         //                default:
-        //                    logging.AddToLog("UNKNOWN");
+        //                    this.Log.Debug("UNKNOWN");
         //                    break;
         //            }
 
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(LIGHTING1.packettype)) + ": " + Conversion.Hex(recbuf(LIGHTING1.subtype)));
+        //            this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(LIGHTING1.packettype)) + ": " + Conversion.Hex(recbuf(LIGHTING1.subtype)));
         //            break;
         //    }
-        //    logging.AddToLog("Signal level  = " + (recbuf(LIGHTING1.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(LIGHTING1.rssi) >> 4).ToString());
         //}
 
         public void decode_Lighting2()
         {
-            logging.AddToLog("Recieved Lighting2 Message.  Type: " + recbuf[(byte)LIGHTING2.subtype].ToString(), false);
+            this.Log.Debug("Recieved Lighting2 Message.  Type: " + recbuf[(byte)LIGHTING2.subtype].ToString());
             OSAEObject obj = new OSAEObject(); 
             
             switch (recbuf[(byte)LIGHTING2.subtype])
@@ -1304,11 +1305,11 @@
                 case (byte)LIGHTING2.sTypeAC:
                 case (byte)LIGHTING2.sTypeHEU:
                 case (byte)LIGHTING2.sTypeANSLUT:
-                    //logging.AddToLog("id1: " + recbuf[(byte)LIGHTING2.id1].ToString(), true);
-                    //logging.AddToLog("id2: " + recbuf[(byte)LIGHTING2.id2].ToString(), true);
-                    //logging.AddToLog("id3: " + recbuf[(byte)LIGHTING2.id3].ToString(), true);
-                    //logging.AddToLog("id4: " + recbuf[(byte)LIGHTING2.id4].ToString(), true);
-                    //logging.AddToLog("uc: " + recbuf[(byte)LIGHTING2.unitcode].ToString(), true);
+                    //this.Log.Debug("id1: " + recbuf[(byte)LIGHTING2.id1].ToString());
+                    //this.Log.Debug("id2: " + recbuf[(byte)LIGHTING2.id2].ToString());
+                    //this.Log.Debug("id3: " + recbuf[(byte)LIGHTING2.id3].ToString());
+                    //this.Log.Debug("id4: " + recbuf[(byte)LIGHTING2.id4].ToString());
+                    //this.Log.Debug("uc: " + recbuf[(byte)LIGHTING2.unitcode].ToString(), true);
 
 
 
@@ -1324,51 +1325,51 @@
                     switch (recbuf[(byte)LIGHTING2.subtype])
                     {
                         case (byte)LIGHTING2.sTypeAC:
-                            logging.AddToLog("subtype       = AC", false);
+                            this.Log.Debug("subtype       = AC");
                             break;
                         case (byte)LIGHTING2.sTypeHEU:
-                            logging.AddToLog("subtype       = HomeEasy EU", false);
+                            this.Log.Debug("subtype       = HomeEasy EU");
                             break;
                         case (byte)LIGHTING2.sTypeANSLUT:
-                            logging.AddToLog("subtype       = ANSLUT", false);
+                            this.Log.Debug("subtype       = ANSLUT");
                             break;
                     }
-                    logging.AddToLog("Sequence nbr  = " + recbuf[(byte)LIGHTING2.seqnbr].ToString(), false);
-                    //logging.AddToLog("ID - Unit            = " + address, false);
-                    logging.AddToLog("Unit          = " + recbuf[(byte)LIGHTING2.unitcode].ToString(), false);
+                    this.Log.Debug("Sequence nbr  = " + recbuf[(byte)LIGHTING2.seqnbr].ToString());
+                    //this.Log.Debug("ID - Unit            = " + address);
+                    this.Log.Debug("Unit          = " + recbuf[(byte)LIGHTING2.unitcode].ToString());
                     switch (recbuf[(byte)LIGHTING2.cmnd])
                     {
                         case (byte)LIGHTING2.sOff:
-                            logging.AddToLog("Command       = Off", false);
+                            this.Log.Debug("Command       = Off");
                             OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
                             break;
                         case (byte)LIGHTING2.sOn:
-                            logging.AddToLog("Command       = On", false);
+                            this.Log.Debug("Command       = On");
                             OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
                             break;
                         case (byte)LIGHTING2.sSetLevel:
-                            logging.AddToLog("Set Level:" + recbuf[(byte)LIGHTING2.level].ToString(), false);
+                            this.Log.Debug("Set Level:" + recbuf[(byte)LIGHTING2.level].ToString());
                             break;
                         case (byte)LIGHTING2.sGroupOff:
-                            logging.AddToLog("Group Off", false);
+                            this.Log.Debug("Group Off");
                             break;
                         case (byte)LIGHTING2.sGroupOn:
-                            logging.AddToLog("Group On", false);
+                            this.Log.Debug("Group On");
                             break;
                         case (byte)LIGHTING2.sSetGroupLevel:
-                            logging.AddToLog("Set Group Level:" + recbuf[(byte)LIGHTING2.level].ToString(), false);
+                            this.Log.Debug("Set Group Level:" + recbuf[(byte)LIGHTING2.level].ToString());
                             break;
                         default:
-                            logging.AddToLog("UNKNOWN", false);
+                            this.Log.Debug("UNKNOWN");
                             break;
                     }
 
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Convert.ToInt32(recbuf[(byte)LIGHTING2.packettype]) + ": " + Convert.ToInt32(recbuf[(byte)LIGHTING2.subtype]), false);
+                    this.Log.Error("ERROR: Unknown Sub type for Packet type=" + Convert.ToInt32(recbuf[(byte)LIGHTING2.packettype]) + ": " + Convert.ToInt32(recbuf[(byte)LIGHTING2.subtype]));
                     break;
             }
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)LIGHTING2.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)LIGHTING2.rssi] >> 4).ToString());
         }
 
         //public void decode_Lighting3()
@@ -1376,149 +1377,149 @@
         //    switch (recbuf(LIGHTING3.subtype))
         //    {
         //        case LIGHTING3.sTypeKoppla:
-        //            logging.AddToLog("subtype       = Ikea Koppla");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(LIGHTING3.seqnbr).ToString);
-        //            logging.AddToLog("Command       = ", false);
+        //            this.Log.Debug("subtype       = Ikea Koppla");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(LIGHTING3.seqnbr).ToString);
+        //            this.Log.Debug("Command       = ");
         //            switch (recbuf(LIGHTING3.cmnd))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("Off");
+        //                    this.Log.Debug("Off");
         //                    break;
         //                case 0x1:
-        //                    logging.AddToLog("On");
+        //                    this.Log.Debug("On");
         //                    break;
         //                case 0x20:
-        //                    logging.AddToLog("Set Level:" + recbuf(6).ToString);
+        //                    this.Log.Debug("Set Level:" + recbuf(6).ToString);
         //                    break;
         //                case 0x21:
-        //                    logging.AddToLog("Program");
+        //                    this.Log.Debug("Program");
         //                    break;
         //                default:
         //                    if (recbuf(LIGHTING3.cmnd) >= 0x10 & recbuf(LIGHTING3.cmnd) < 0x18)
         //                    {
-        //                        logging.AddToLog("Dim");
+        //                        this.Log.Debug("Dim");
         //                    }
         //                    else if (recbuf(LIGHTING3.cmnd) >= 0x18 & recbuf(LIGHTING3.cmnd) < 0x20)
         //                    {
-        //                        logging.AddToLog("Bright");
+        //                        this.Log.Debug("Bright");
         //                    }
         //                    else
         //                    {
-        //                        logging.AddToLog("UNKNOWN");
+        //                        this.Log.Debug("UNKNOWN");
         //                    }
         //                    break;
         //            }
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(LIGHTING3.packettype)) + ": " + Conversion.Hex(recbuf(LIGHTING3.subtype)));
+        //            this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(LIGHTING3.packettype)) + ": " + Conversion.Hex(recbuf(LIGHTING3.subtype)));
         //            break;
         //    }
-        //    logging.AddToLog("Signal level  = " + (recbuf(LIGHTING3.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(LIGHTING3.rssi) >> 4).ToString());
 
         //}
 
         //public void decode_Lighting4()
         //{
-        //    logging.AddToLog("Not implemented");
+        //    this.Log.Debug("Not implemented");
         //}
 
         public void decode_Lighting5()
         {
-            logging.AddToLog("Recieved Lighting5 Message", false);
+            this.Log.Debug("Recieved Lighting5 Message");
             OSAEObject obj = new OSAEObject();
             switch (recbuf[(byte)LIGHTING5.subtype])
             {
                 case (byte)LIGHTING5.sTypeLightwaveRF:
                     obj = OSAEObjectManager.GetObjectByAddress("0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2].ToString() + "-0" + recbuf[(byte)LIGHTING5.id3].ToString() + "-" + recbuf[(byte)LIGHTING5.unitcode].ToString()); 
-                    logging.AddToLog("subtype       = LightwaveRF", false);
-                    logging.AddToLog("Sequence nbr  = " + recbuf[(byte)LIGHTING5.seqnbr].ToString(), false);
-                    logging.AddToLog("ID            = " + "0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2] + "-0" + recbuf[(byte)LIGHTING5.id3].ToString(), false);
-                    logging.AddToLog("Unit          = " + recbuf[(byte)LIGHTING5.unitcode].ToString(), false);
+                    this.Log.Debug("subtype       = LightwaveRF");
+                    this.Log.Debug("Sequence nbr  = " + recbuf[(byte)LIGHTING5.seqnbr].ToString());
+                    this.Log.Debug("ID            = " + "0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2] + "-0" + recbuf[(byte)LIGHTING5.id3].ToString());
+                    this.Log.Debug("Unit          = " + recbuf[(byte)LIGHTING5.unitcode].ToString());
                     switch (recbuf[(byte)LIGHTING5.cmnd])
                     {
                         case (byte)LIGHTING5.sOff:
                             OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
-                            logging.AddToLog("Command       = Off", false);
+                            this.Log.Debug("Command       = Off");
                             break;
                         case (byte)LIGHTING5.sOn:
                             OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
-                            logging.AddToLog("Command       = On", false);
+                            this.Log.Debug("Command       = On");
                             break;
                         case (byte)LIGHTING5.sGroupOff:
-                            logging.AddToLog("Command       = Group Off", false);
+                            this.Log.Debug("Command       = Group Off");
                             break;
                         case (byte)LIGHTING5.sMood1:
-                            logging.AddToLog("Command       = Group Mood 1", false);
+                            this.Log.Debug("Command       = Group Mood 1");
                             break;
                         case (byte)LIGHTING5.sMood2:
-                            logging.AddToLog("Command       = Group Mood 2", false);
+                            this.Log.Debug("Command       = Group Mood 2");
                             break;
                         case (byte)LIGHTING5.sMood3:
-                            logging.AddToLog("Command       = Group Mood 3", false);
+                            this.Log.Debug("Command       = Group Mood 3");
                             break;
                         case (byte)LIGHTING5.sMood4:
-                            logging.AddToLog("Command       = Group Mood 4", false);
+                            this.Log.Debug("Command       = Group Mood 4");
                             break;
                         case (byte)LIGHTING5.sMood5:
-                            logging.AddToLog("Command       = Group Mood 5", false);
+                            this.Log.Debug("Command       = Group Mood 5");
                             break;
                         case (byte)LIGHTING5.sUnlock:
-                            logging.AddToLog("Command       = Unlock", false);
+                            this.Log.Debug("Command       = Unlock");
                             break;
                         case (byte)LIGHTING5.sLock:
-                            logging.AddToLog("Command       = Lock", false);
+                            this.Log.Debug("Command       = Lock");
                             break;
                         case (byte)LIGHTING5.sAllLock:
-                            logging.AddToLog("Command       = All lock", false);
+                            this.Log.Debug("Command       = All lock");
                             break;
                         case (byte)LIGHTING5.sClose:
-                            logging.AddToLog("Command       = Close inline relay", false);
+                            this.Log.Debug("Command       = Close inline relay");
                             break;
                         case (byte)LIGHTING5.sStop:
-                            logging.AddToLog("Command       = Stop inline relay", false);
+                            this.Log.Debug("Command       = Stop inline relay");
                             break;
                         case (byte)LIGHTING5.sOpen:
-                            logging.AddToLog("Command       = Open inline relay", false);
+                            this.Log.Debug("Command       = Open inline relay");
                             break;
                         case (byte)LIGHTING5.sSetLevel:
-                            logging.AddToLog("Command       = Set dim level to: " + Convert.ToInt32((recbuf[(byte)LIGHTING5.level] * 3.2)).ToString() + "%", false);
+                            this.Log.Debug("Command       = Set dim level to: " + Convert.ToInt32((recbuf[(byte)LIGHTING5.level] * 3.2)).ToString() + "%");
                             break;
                         default:
-                            logging.AddToLog("UNKNOWN", false);
+                            this.Log.Debug("UNKNOWN");
                             break;
                     }
 
                     break;
                 case (byte)LIGHTING5.sTypeEMW100:
                     obj = OSAEObjectManager.GetObjectByAddress("0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2].ToString() + "-" + recbuf[(byte)LIGHTING5.unitcode].ToString()); 
-                    logging.AddToLog("subtype       = EMW100", false);
-                    logging.AddToLog("Sequence nbr  = " + recbuf[(byte)LIGHTING5.seqnbr].ToString(), false);
-                    logging.AddToLog("ID            = " + "0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2].ToString(), false);
-                    logging.AddToLog("Unit          = " + recbuf[(byte)LIGHTING5.unitcode].ToString(),false);
+                    this.Log.Debug("subtype       = EMW100");
+                    this.Log.Debug("Sequence nbr  = " + recbuf[(byte)LIGHTING5.seqnbr].ToString());
+                    this.Log.Debug("ID            = " + "0" + recbuf[(byte)LIGHTING5.id1].ToString() + "-0" + recbuf[(byte)LIGHTING5.id2].ToString());
+                    this.Log.Debug("Unit          = " + recbuf[(byte)LIGHTING5.unitcode].ToString());
                     switch (recbuf[(byte)LIGHTING5.cmnd])
                     {
                         case (byte)LIGHTING5.sOff:
                             OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
-                            logging.AddToLog("Command       = Off", false);
+                            this.Log.Debug("Command       = Off");
                             break;
                         case (byte)LIGHTING5.sOn:
                             OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
-                            logging.AddToLog("Command       = On", false);
+                            this.Log.Debug("Command       = On");
                             break;
                         case (byte)LIGHTING5.sLearn:
-                            logging.AddToLog("Command       = Learn", false);
+                            this.Log.Debug("Command       = Learn");
                             break;
                         default:
-                            logging.AddToLog("Command       = UNKNOWN", false);
+                            this.Log.Debug("Command       = UNKNOWN");
                             break;
                     }
 
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)LIGHTING5.packettype].ToString() + ": " + recbuf[(byte)LIGHTING5.subtype].ToString(), false);
+                    this.Log.Error("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)LIGHTING5.packettype].ToString() + ": " + recbuf[(byte)LIGHTING5.subtype].ToString());
                     break;
             }
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)LIGHTING5.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)LIGHTING5.rssi] >> 4).ToString());
 
         }
 
@@ -1527,114 +1528,114 @@
         //    switch (recbuf(SECURITY1.subtype))
         //    {
         //        case SECURITY1.SecX10:
-        //            logging.AddToLog("subtype       = X10 security");
+        //            this.Log.Debug("subtype       = X10 security");
         //            break;
         //        case SECURITY1.SecX10M:
-        //            logging.AddToLog("subtype       = X10 security motion");
+        //            this.Log.Debug("subtype       = X10 security motion");
         //            break;
         //        case SECURITY1.SecX10R:
-        //            logging.AddToLog("subtype       = X10 security remote");
+        //            this.Log.Debug("subtype       = X10 security remote");
         //            break;
         //        case SECURITY1.KD101:
-        //            logging.AddToLog("subtype       = KD101 smoke detector");
+        //            this.Log.Debug("subtype       = KD101 smoke detector");
         //            break;
         //        case SECURITY1.PowercodeSensor:
-        //            logging.AddToLog("subtype       = Visonic PowerCode sensor - primary contact");
+        //            this.Log.Debug("subtype       = Visonic PowerCode sensor - primary contact");
         //            break;
         //        case SECURITY1.PowercodeMotion:
-        //            logging.AddToLog("subtype       = Visonic PowerCode motion");
+        //            this.Log.Debug("subtype       = Visonic PowerCode motion");
         //            break;
         //        case SECURITY1.Codesecure:
-        //            logging.AddToLog("subtype       = Visonic CodeSecure");
+        //            this.Log.Debug("subtype       = Visonic CodeSecure");
         //            break;
         //        case SECURITY1.PowercodeAux:
-        //            logging.AddToLog("subtype       = Visonic PowerCode sensor - auxiliary contact");
+        //            this.Log.Debug("subtype       = Visonic PowerCode sensor - auxiliary contact");
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(SECURITY1.packettype)) + ": " + Conversion.Hex(recbuf(SECURITY1.subtype)));
+        //            this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(SECURITY1.packettype)) + ": " + Conversion.Hex(recbuf(SECURITY1.subtype)));
         //            break;
         //    }
-        //    logging.AddToLog("Sequence nbr  = " + recbuf(SECURITY1.seqnbr).ToString);
-        //    logging.AddToLog("id1-3         = " + VB.Right("0" + Conversion.Hex(recbuf(SECURITY1.id1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(SECURITY1.id2)), 2) + VB.Right("0" + Conversion.Hex(recbuf(SECURITY1.id3)), 2));
-        //    logging.AddToLog("status        = ", false);
+        //    this.Log.Debug("Sequence nbr  = " + recbuf(SECURITY1.seqnbr).ToString);
+        //    this.Log.Debug("id1-3         = " + VB.Right("0" + Conversion.Hex(recbuf(SECURITY1.id1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(SECURITY1.id2)), 2) + VB.Right("0" + Conversion.Hex(recbuf(SECURITY1.id3)), 2));
+        //    this.Log.Debug("status        = ");
         //    switch (recbuf(SECURITY1.status))
         //    {
         //        case SECURITY1.sStatusNormal:
-        //            logging.AddToLog("Normal");
+        //            this.Log.Debug("Normal");
         //            break;
         //        case SECURITY1.sStatusNormalDelayed:
-        //            logging.AddToLog("Normal Delayed");
+        //            this.Log.Debug("Normal Delayed");
         //            break;
         //        case SECURITY1.sStatusAlarm:
-        //            logging.AddToLog("Alarm");
+        //            this.Log.Debug("Alarm");
         //            break;
         //        case SECURITY1.sStatusAlarmDelayed:
-        //            logging.AddToLog("Alarm Delayed");
+        //            this.Log.Debug("Alarm Delayed");
         //            break;
         //        case SECURITY1.sStatusMotion:
-        //            logging.AddToLog("Motion");
+        //            this.Log.Debug("Motion");
         //            break;
         //        case SECURITY1.sStatusNoMotion:
-        //            logging.AddToLog("No Motion");
+        //            this.Log.Debug("No Motion");
         //            break;
         //        case SECURITY1.sStatusPanic:
-        //            logging.AddToLog("Panic");
+        //            this.Log.Debug("Panic");
         //            break;
         //        case SECURITY1.sStatusPanicOff:
-        //            logging.AddToLog("Panic End");
+        //            this.Log.Debug("Panic End");
         //            break;
         //        case SECURITY1.sStatusTamper:
-        //            logging.AddToLog("Tamper");
+        //            this.Log.Debug("Tamper");
         //            break;
         //        case SECURITY1.sStatusArmAway:
-        //            logging.AddToLog("Arm Away");
+        //            this.Log.Debug("Arm Away");
         //            break;
         //        case SECURITY1.sStatusArmAwayDelayed:
-        //            logging.AddToLog("Arm Away Delayed");
+        //            this.Log.Debug("Arm Away Delayed");
         //            break;
         //        case SECURITY1.sStatusArmHome:
-        //            logging.AddToLog("Arm Home");
+        //            this.Log.Debug("Arm Home");
         //            break;
         //        case SECURITY1.sStatusArmHomeDelayed:
-        //            logging.AddToLog("Arm Home Delayed");
+        //            this.Log.Debug("Arm Home Delayed");
         //            break;
         //        case SECURITY1.sStatusDisarm:
-        //            logging.AddToLog("Disarm");
+        //            this.Log.Debug("Disarm");
         //            break;
         //        case SECURITY1.sStatusLightOff:
-        //            logging.AddToLog("Light Off");
+        //            this.Log.Debug("Light Off");
         //            break;
         //        case SECURITY1.sStatusLightOn:
-        //            logging.AddToLog("Light On");
+        //            this.Log.Debug("Light On");
         //            break;
         //        case SECURITY1.sStatusLIGHTING2Off:
-        //            logging.AddToLog("Light 2 Off");
+        //            this.Log.Debug("Light 2 Off");
         //            break;
         //        case SECURITY1.sStatusLIGHTING2On:
-        //            logging.AddToLog("Light 2 On");
+        //            this.Log.Debug("Light 2 On");
         //            break;
         //        case SECURITY1.sStatusDark:
-        //            logging.AddToLog("Dark detected");
+        //            this.Log.Debug("Dark detected");
         //            break;
         //        case SECURITY1.sStatusLight:
-        //            logging.AddToLog("Light Detected");
+        //            this.Log.Debug("Light Detected");
         //            break;
         //        case SECURITY1.sStatusBatLow:
-        //            logging.AddToLog("Battery low MS10 or XX18 sensor");
+        //            this.Log.Debug("Battery low MS10 or XX18 sensor");
         //            break;
         //        case SECURITY1.sStatusPairKD101:
-        //            logging.AddToLog("Pair KD101");
+        //            this.Log.Debug("Pair KD101");
         //            break;
         //    }
         //    if ((recbuf(SECURITY1.battery_level) & 0xf) == 0)
         //    {
-        //        logging.AddToLog("battery level = Low");
+        //        this.Log.Debug("battery level = Low");
         //    }
         //    else
         //    {
-        //        logging.AddToLog("battery level = OK");
+        //        this.Log.Debug("battery level = OK");
         //    }
-        //    logging.AddToLog("Signal level  = " + (recbuf(SECURITY1.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(SECURITY1.rssi) >> 4).ToString());
         //}
 
         //public void decode_Camera1()
@@ -1642,70 +1643,70 @@
         //    switch (recbuf(CAMERA1.subtype))
         //    {
         //        case CAMERA1.Ninja:
-        //            logging.AddToLog("subtype       = X10 Ninja/Robocam");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(CAMERA1.seqnbr).ToString);
-        //            logging.AddToLog("Command       = ", false);
+        //            this.Log.Debug("subtype       = X10 Ninja/Robocam");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(CAMERA1.seqnbr).ToString);
+        //            this.Log.Debug("Command       = ");
         //            switch (recbuf(CAMERA1.cmnd))
         //            {
         //                case CAMERA1.sLeft:
-        //                    logging.AddToLog("Left");
+        //                    this.Log.Debug("Left");
         //                    break;
         //                case CAMERA1.sRight:
-        //                    logging.AddToLog("Right");
+        //                    this.Log.Debug("Right");
         //                    break;
         //                case CAMERA1.sUp:
-        //                    logging.AddToLog("Up");
+        //                    this.Log.Debug("Up");
         //                    break;
         //                case CAMERA1.sDown:
-        //                    logging.AddToLog("Down");
+        //                    this.Log.Debug("Down");
         //                    break;
         //                case CAMERA1.sPosition1:
-        //                    logging.AddToLog("Position 1");
+        //                    this.Log.Debug("Position 1");
         //                    break;
         //                case CAMERA1.sProgramPosition1:
-        //                    logging.AddToLog("Position 1 program");
+        //                    this.Log.Debug("Position 1 program");
         //                    break;
         //                case CAMERA1.sPosition2:
-        //                    logging.AddToLog("Position 2");
+        //                    this.Log.Debug("Position 2");
         //                    break;
         //                case CAMERA1.sProgramPosition2:
-        //                    logging.AddToLog("Position 2 program");
+        //                    this.Log.Debug("Position 2 program");
         //                    break;
         //                case CAMERA1.sPosition3:
-        //                    logging.AddToLog("Position 3");
+        //                    this.Log.Debug("Position 3");
         //                    break;
         //                case CAMERA1.sProgramPosition3:
-        //                    logging.AddToLog("Position 3 program");
+        //                    this.Log.Debug("Position 3 program");
         //                    break;
         //                case CAMERA1.sPosition4:
-        //                    logging.AddToLog("Position 4");
+        //                    this.Log.Debug("Position 4");
         //                    break;
         //                case CAMERA1.sProgramPosition4:
-        //                    logging.AddToLog("Position 4 program");
+        //                    this.Log.Debug("Position 4 program");
         //                    break;
         //                case CAMERA1.sCenter:
-        //                    logging.AddToLog("Center");
+        //                    this.Log.Debug("Center");
         //                    break;
         //                case CAMERA1.sProgramCenterPosition:
-        //                    logging.AddToLog("Center program");
+        //                    this.Log.Debug("Center program");
         //                    break;
         //                case CAMERA1.sSweep:
-        //                    logging.AddToLog("Sweep");
+        //                    this.Log.Debug("Sweep");
         //                    break;
         //                case CAMERA1.sProgramSweep:
-        //                    logging.AddToLog("Sweep program");
+        //                    this.Log.Debug("Sweep program");
         //                    break;
         //                default:
-        //                    logging.AddToLog("UNKNOWN");
+        //                    this.Log.Debug("UNKNOWN");
         //                    break;
         //            }
-        //            logging.AddToLog("Housecode     = " + Strings.Chr(recbuf(CAMERA1.housecode)));
+        //            this.Log.Debug("Housecode     = " + Strings.Chr(recbuf(CAMERA1.housecode)));
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(CAMERA1.packettype)) + ": " + Conversion.Hex(recbuf(CAMERA1.subtype)));
+        //            this.Log.Error("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(CAMERA1.packettype)) + ": " + Conversion.Hex(recbuf(CAMERA1.subtype)));
         //            break;
         //    }
-        //    logging.AddToLog("Signal level  = " + (recbuf(CAMERA1.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(CAMERA1.rssi) >> 4).ToString());
         //}
 
         //public void decode_Remote()
@@ -1713,845 +1714,845 @@
         //    switch (recbuf(REMOTE.subtype))
         //    {
         //        case REMOTE.ATI:
-        //            logging.AddToLog("subtype       = ATI Remote Wonder");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(REMOTE.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + recbuf(REMOTE.id).ToString);
+        //            this.Log.Debug("subtype       = ATI Remote Wonder");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(REMOTE.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + recbuf(REMOTE.id).ToString);
         //            switch (recbuf(REMOTE.cmnd))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("Command       = A", false);
+        //                    this.Log.Debug("Command       = A");
         //                    break;
         //                case 0x1:
-        //                    logging.AddToLog("Command       = B", false);
+        //                    this.Log.Debug("Command       = B");
         //                    break;
         //                case 0x2:
-        //                    logging.AddToLog("Command       = power", false);
+        //                    this.Log.Debug("Command       = power");
         //                    break;
         //                case 0x3:
-        //                    logging.AddToLog("Command       = TV", false);
+        //                    this.Log.Debug("Command       = TV");
         //                    break;
         //                case 0x4:
-        //                    logging.AddToLog("Command       = DVD", false);
+        //                    this.Log.Debug("Command       = DVD");
         //                    break;
         //                case 0x5:
-        //                    logging.AddToLog("Command       = ?", false);
+        //                    this.Log.Debug("Command       = ?");
         //                    break;
         //                case 0x6:
-        //                    logging.AddToLog("Command       = Guide", false);
+        //                    this.Log.Debug("Command       = Guide");
         //                    break;
         //                case 0x7:
-        //                    logging.AddToLog("Command       = Drag", false);
+        //                    this.Log.Debug("Command       = Drag");
         //                    break;
         //                case 0x8:
-        //                    logging.AddToLog("Command       = VOL+", false);
+        //                    this.Log.Debug("Command       = VOL+");
         //                    break;
         //                case 0x9:
-        //                    logging.AddToLog("Command       = VOL-", false);
+        //                    this.Log.Debug("Command       = VOL-");
         //                    break;
         //                case 0xa:
-        //                    logging.AddToLog("Command       = MUTE", false);
+        //                    this.Log.Debug("Command       = MUTE");
         //                    break;
         //                case 0xb:
-        //                    logging.AddToLog("Command       = CHAN+", false);
+        //                    this.Log.Debug("Command       = CHAN+");
         //                    break;
         //                case 0xc:
-        //                    logging.AddToLog("Command       = CHAN-", false);
+        //                    this.Log.Debug("Command       = CHAN-");
         //                    break;
         //                case 0xd:
-        //                    logging.AddToLog("Command       = 1", false);
+        //                    this.Log.Debug("Command       = 1");
         //                    break;
         //                case 0xe:
-        //                    logging.AddToLog("Command       = 2", false);
+        //                    this.Log.Debug("Command       = 2");
         //                    break;
         //                case 0xf:
-        //                    logging.AddToLog("Command       = 3", false);
+        //                    this.Log.Debug("Command       = 3");
         //                    break;
         //                case 0x10:
-        //                    logging.AddToLog("Command       = 4", false);
+        //                    this.Log.Debug("Command       = 4");
         //                    break;
         //                case 0x11:
-        //                    logging.AddToLog("Command       = 5", false);
+        //                    this.Log.Debug("Command       = 5");
         //                    break;
         //                case 0x12:
-        //                    logging.AddToLog("Command       = 6", false);
+        //                    this.Log.Debug("Command       = 6");
         //                    break;
         //                case 0x13:
-        //                    logging.AddToLog("Command       = 7", false);
+        //                    this.Log.Debug("Command       = 7");
         //                    break;
         //                case 0x14:
-        //                    logging.AddToLog("Command       = 8", false);
+        //                    this.Log.Debug("Command       = 8");
         //                    break;
         //                case 0x15:
-        //                    logging.AddToLog("Command       = 9", false);
+        //                    this.Log.Debug("Command       = 9");
         //                    break;
         //                case 0x16:
-        //                    logging.AddToLog("Command       = txt", false);
+        //                    this.Log.Debug("Command       = txt");
         //                    break;
         //                case 0x17:
-        //                    logging.AddToLog("Command       = 0", false);
+        //                    this.Log.Debug("Command       = 0");
         //                    break;
         //                case 0x18:
-        //                    logging.AddToLog("Command       = snapshot ESC", false);
+        //                    this.Log.Debug("Command       = snapshot ESC");
         //                    break;
         //                case 0x19:
-        //                    logging.AddToLog("Command       = C", false);
+        //                    this.Log.Debug("Command       = C");
         //                    break;
         //                case 0x1a:
-        //                    logging.AddToLog("Command       = ^", false);
+        //                    this.Log.Debug("Command       = ^");
         //                    break;
         //                case 0x1b:
-        //                    logging.AddToLog("Command       = D", false);
+        //                    this.Log.Debug("Command       = D");
         //                    break;
         //                case 0x1c:
-        //                    logging.AddToLog("Command       = TV/RADIO", false);
+        //                    this.Log.Debug("Command       = TV/RADIO");
         //                    break;
         //                case 0x1d:
-        //                    logging.AddToLog("Command       = <", false);
+        //                    this.Log.Debug("Command       = <");
         //                    break;
         //                case 0x1e:
-        //                    logging.AddToLog("Command       = OK", false);
+        //                    this.Log.Debug("Command       = OK");
         //                    break;
         //                case 0x1f:
-        //                    logging.AddToLog("Command       = >", false);
+        //                    this.Log.Debug("Command       = >");
         //                    break;
         //                case 0x20:
-        //                    logging.AddToLog("Command       = <-", false);
+        //                    this.Log.Debug("Command       = <-");
         //                    break;
         //                case 0x21:
-        //                    logging.AddToLog("Command       = E", false);
+        //                    this.Log.Debug("Command       = E");
         //                    break;
         //                case 0x22:
-        //                    logging.AddToLog("Command       = v", false);
+        //                    this.Log.Debug("Command       = v");
         //                    break;
         //                case 0x23:
-        //                    logging.AddToLog("Command       = F", false);
+        //                    this.Log.Debug("Command       = F");
         //                    break;
         //                case 0x24:
-        //                    logging.AddToLog("Command       = Rewind", false);
+        //                    this.Log.Debug("Command       = Rewind");
         //                    break;
         //                case 0x25:
-        //                    logging.AddToLog("Command       = Play", false);
+        //                    this.Log.Debug("Command       = Play");
         //                    break;
         //                case 0x26:
-        //                    logging.AddToLog("Command       = Fast forward", false);
+        //                    this.Log.Debug("Command       = Fast forward");
         //                    break;
         //                case 0x27:
-        //                    logging.AddToLog("Command       = Record", false);
+        //                    this.Log.Debug("Command       = Record");
         //                    break;
         //                case 0x28:
-        //                    logging.AddToLog("Command       = Stop", false);
+        //                    this.Log.Debug("Command       = Stop");
         //                    break;
         //                case 0x29:
-        //                    logging.AddToLog("Command       = Pause", false);
+        //                    this.Log.Debug("Command       = Pause");
 
         //                    break;
         //                case 0x2c:
-        //                    logging.AddToLog("Command       = TV", false);
+        //                    this.Log.Debug("Command       = TV");
         //                    break;
         //                case 0x2d:
-        //                    logging.AddToLog("Command       = VCR", false);
+        //                    this.Log.Debug("Command       = VCR");
         //                    break;
         //                case 0x2e:
-        //                    logging.AddToLog("Command       = RADIO", false);
+        //                    this.Log.Debug("Command       = RADIO");
         //                    break;
         //                case 0x2f:
-        //                    logging.AddToLog("Command       = TV Preview", false);
+        //                    this.Log.Debug("Command       = TV Preview");
         //                    break;
         //                case 0x30:
-        //                    logging.AddToLog("Command       = Channel list", false);
+        //                    this.Log.Debug("Command       = Channel list");
         //                    break;
         //                case 0x31:
-        //                    logging.AddToLog("Command       = Video Desktop", false);
+        //                    this.Log.Debug("Command       = Video Desktop");
         //                    break;
         //                case 0x32:
-        //                    logging.AddToLog("Command       = red", false);
+        //                    this.Log.Debug("Command       = red");
         //                    break;
         //                case 0x33:
-        //                    logging.AddToLog("Command       = green", false);
+        //                    this.Log.Debug("Command       = green");
         //                    break;
         //                case 0x34:
-        //                    logging.AddToLog("Command       = yellow", false);
+        //                    this.Log.Debug("Command       = yellow");
         //                    break;
         //                case 0x35:
-        //                    logging.AddToLog("Command       = blue", false);
+        //                    this.Log.Debug("Command       = blue");
         //                    break;
         //                case 0x36:
-        //                    logging.AddToLog("Command       = rename TAB", false);
+        //                    this.Log.Debug("Command       = rename TAB");
         //                    break;
         //                case 0x37:
-        //                    logging.AddToLog("Command       = Acquire image", false);
+        //                    this.Log.Debug("Command       = Acquire image");
         //                    break;
         //                case 0x38:
-        //                    logging.AddToLog("Command       = edit image", false);
+        //                    this.Log.Debug("Command       = edit image");
         //                    break;
         //                case 0x39:
-        //                    logging.AddToLog("Command       = Full screen", false);
+        //                    this.Log.Debug("Command       = Full screen");
         //                    break;
         //                case 0x3a:
-        //                    logging.AddToLog("Command       = DVD Audio", false);
+        //                    this.Log.Debug("Command       = DVD Audio");
         //                    break;
         //                case 0x70:
-        //                    logging.AddToLog("Command       = Cursor-left", false);
+        //                    this.Log.Debug("Command       = Cursor-left");
         //                    break;
         //                case 0x71:
-        //                    logging.AddToLog("Command       = Cursor-right", false);
+        //                    this.Log.Debug("Command       = Cursor-right");
         //                    break;
         //                case 0x72:
-        //                    logging.AddToLog("Command       = Cursor-up", false);
+        //                    this.Log.Debug("Command       = Cursor-up");
         //                    break;
         //                case 0x73:
-        //                    logging.AddToLog("Command       = Cursor-down", false);
+        //                    this.Log.Debug("Command       = Cursor-down");
         //                    break;
         //                case 0x74:
-        //                    logging.AddToLog("Command       = Cursor-up-left", false);
+        //                    this.Log.Debug("Command       = Cursor-up-left");
         //                    break;
         //                case 0x75:
-        //                    logging.AddToLog("Command       = Cursor-up-right", false);
+        //                    this.Log.Debug("Command       = Cursor-up-right");
         //                    break;
         //                case 0x76:
-        //                    logging.AddToLog("Command       = Cursor-down-right", false);
+        //                    this.Log.Debug("Command       = Cursor-down-right");
         //                    break;
         //                case 0x77:
-        //                    logging.AddToLog("Command       = Cursor-down-left", false);
+        //                    this.Log.Debug("Command       = Cursor-down-left");
         //                    break;
         //                case 0x78:
-        //                    logging.AddToLog("Command       = V", false);
+        //                    this.Log.Debug("Command       = V");
         //                    break;
         //                case 0x79:
-        //                    logging.AddToLog("Command       = V-End", false);
+        //                    this.Log.Debug("Command       = V-End");
         //                    break;
         //                case 0x7c:
-        //                    logging.AddToLog("Command       = X", false);
+        //                    this.Log.Debug("Command       = X");
         //                    break;
         //                case 0x7d:
-        //                    logging.AddToLog("Command       = X-End", false);
+        //                    this.Log.Debug("Command       = X-End");
         //                    break;
         //                default:
-        //                    logging.AddToLog("Command       = unknown", false);
+        //                    this.Log.Debug("Command       = unknown");
         //                    break;
         //            }
 
         //            break;
         //        case REMOTE.ATI2:
-        //            logging.AddToLog("subtype       = ATI Remote Wonder II");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(REMOTE.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + recbuf(REMOTE.id).ToString);
-        //            logging.AddToLog("Command       = ", false);
+        //            this.Log.Debug("subtype       = ATI Remote Wonder II");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(REMOTE.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + recbuf(REMOTE.id).ToString);
+        //            this.Log.Debug("Command       = ");
         //            switch (recbuf(REMOTE.cmnd))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("A", false);
+        //                    this.Log.Debug("A");
         //                    break;
         //                case 0x1:
-        //                    logging.AddToLog("B", false);
+        //                    this.Log.Debug("B");
         //                    break;
         //                case 0x2:
-        //                    logging.AddToLog("power", false);
+        //                    this.Log.Debug("power");
         //                    break;
         //                case 0x3:
-        //                    logging.AddToLog("TV", false);
+        //                    this.Log.Debug("TV");
         //                    break;
         //                case 0x4:
-        //                    logging.AddToLog("DVD", false);
+        //                    this.Log.Debug("DVD");
         //                    break;
         //                case 0x5:
-        //                    logging.AddToLog("?", false);
+        //                    this.Log.Debug("?");
         //                    break;
         //                case 0x6:
-        //                    logging.AddToLog("Guide", false);
+        //                    this.Log.Debug("Guide");
         //                    break;
         //                case 0x7:
-        //                    logging.AddToLog("Drag", false);
+        //                    this.Log.Debug("Drag");
         //                    break;
         //                case 0x8:
-        //                    logging.AddToLog("VOL+", false);
+        //                    this.Log.Debug("VOL+");
         //                    break;
         //                case 0x9:
-        //                    logging.AddToLog("VOL-", false);
+        //                    this.Log.Debug("VOL-");
         //                    break;
         //                case 0xa:
-        //                    logging.AddToLog("MUTE", false);
+        //                    this.Log.Debug("MUTE");
         //                    break;
         //                case 0xb:
-        //                    logging.AddToLog("CHAN+", false);
+        //                    this.Log.Debug("CHAN+");
         //                    break;
         //                case 0xc:
-        //                    logging.AddToLog("CHAN-", false);
+        //                    this.Log.Debug("CHAN-");
         //                    break;
         //                case 0xd:
-        //                    logging.AddToLog("1", false);
+        //                    this.Log.Debug("1");
         //                    break;
         //                case 0xe:
-        //                    logging.AddToLog("2", false);
+        //                    this.Log.Debug("2");
         //                    break;
         //                case 0xf:
-        //                    logging.AddToLog("3", false);
+        //                    this.Log.Debug("3");
         //                    break;
         //                case 0x10:
-        //                    logging.AddToLog("4", false);
+        //                    this.Log.Debug("4");
         //                    break;
         //                case 0x11:
-        //                    logging.AddToLog("5", false);
+        //                    this.Log.Debug("5");
         //                    break;
         //                case 0x12:
-        //                    logging.AddToLog("6", false);
+        //                    this.Log.Debug("6");
         //                    break;
         //                case 0x13:
-        //                    logging.AddToLog("7", false);
+        //                    this.Log.Debug("7");
         //                    break;
         //                case 0x14:
-        //                    logging.AddToLog("8", false);
+        //                    this.Log.Debug("8");
         //                    break;
         //                case 0x15:
-        //                    logging.AddToLog("9", false);
+        //                    this.Log.Debug("9");
         //                    break;
         //                case 0x16:
-        //                    logging.AddToLog("txt", false);
+        //                    this.Log.Debug("txt");
         //                    break;
         //                case 0x17:
-        //                    logging.AddToLog("0", false);
+        //                    this.Log.Debug("0");
         //                    break;
         //                case 0x18:
-        //                    logging.AddToLog("Open Setup Menu", false);
+        //                    this.Log.Debug("Open Setup Menu");
         //                    break;
         //                case 0x19:
-        //                    logging.AddToLog("C", false);
+        //                    this.Log.Debug("C");
         //                    break;
         //                case 0x1a:
-        //                    logging.AddToLog("^", false);
+        //                    this.Log.Debug("^");
         //                    break;
         //                case 0x1b:
-        //                    logging.AddToLog("D", false);
+        //                    this.Log.Debug("D");
         //                    break;
         //                case 0x1c:
-        //                    logging.AddToLog("FM", false);
+        //                    this.Log.Debug("FM");
         //                    break;
         //                case 0x1d:
-        //                    logging.AddToLog("<", false);
+        //                    this.Log.Debug("<");
         //                    break;
         //                case 0x1e:
-        //                    logging.AddToLog("OK", false);
+        //                    this.Log.Debug("OK");
         //                    break;
         //                case 0x1f:
-        //                    logging.AddToLog(">", false);
+        //                    this.Log.Debug(">");
         //                    break;
         //                case 0x20:
-        //                    logging.AddToLog("Max/Restore window", false);
+        //                    this.Log.Debug("Max/Restore window");
         //                    break;
         //                case 0x21:
-        //                    logging.AddToLog("E", false);
+        //                    this.Log.Debug("E");
         //                    break;
         //                case 0x22:
-        //                    logging.AddToLog("v", false);
+        //                    this.Log.Debug("v");
         //                    break;
         //                case 0x23:
-        //                    logging.AddToLog("F", false);
+        //                    this.Log.Debug("F");
         //                    break;
         //                case 0x24:
-        //                    logging.AddToLog("Rewind", false);
+        //                    this.Log.Debug("Rewind");
         //                    break;
         //                case 0x25:
-        //                    logging.AddToLog("Play", false);
+        //                    this.Log.Debug("Play");
         //                    break;
         //                case 0x26:
-        //                    logging.AddToLog("Fast forward", false);
+        //                    this.Log.Debug("Fast forward");
         //                    break;
         //                case 0x27:
-        //                    logging.AddToLog("Record", false);
+        //                    this.Log.Debug("Record");
         //                    break;
         //                case 0x28:
-        //                    logging.AddToLog("Stop", false);
+        //                    this.Log.Debug("Stop");
         //                    break;
         //                case 0x29:
-        //                    logging.AddToLog("Pause", false);
+        //                    this.Log.Debug("Pause");
         //                    break;
         //                case 0x2a:
-        //                    logging.AddToLog("TV2", false);
+        //                    this.Log.Debug("TV2");
         //                    break;
         //                case 0x2b:
-        //                    logging.AddToLog("Clock", false);
+        //                    this.Log.Debug("Clock");
         //                    break;
         //                case 0x2c:
-        //                    logging.AddToLog("i", false);
+        //                    this.Log.Debug("i");
         //                    break;
         //                case 0x2d:
-        //                    logging.AddToLog("ATI", false);
+        //                    this.Log.Debug("ATI");
         //                    break;
         //                case 0x2e:
-        //                    logging.AddToLog("RADIO", false);
+        //                    this.Log.Debug("RADIO");
         //                    break;
         //                case 0x2f:
-        //                    logging.AddToLog("TV Preview", false);
+        //                    this.Log.Debug("TV Preview");
         //                    break;
         //                case 0x30:
-        //                    logging.AddToLog("Channel list", false);
+        //                    this.Log.Debug("Channel list");
         //                    break;
         //                case 0x31:
-        //                    logging.AddToLog("Video Desktop", false);
+        //                    this.Log.Debug("Video Desktop");
         //                    break;
         //                case 0x32:
-        //                    logging.AddToLog("red", false);
+        //                    this.Log.Debug("red");
         //                    break;
         //                case 0x33:
-        //                    logging.AddToLog("green", false);
+        //                    this.Log.Debug("green");
         //                    break;
         //                case 0x34:
-        //                    logging.AddToLog("yellow", false);
+        //                    this.Log.Debug("yellow");
         //                    break;
         //                case 0x35:
-        //                    logging.AddToLog("blue", false);
+        //                    this.Log.Debug("blue");
         //                    break;
         //                case 0x36:
-        //                    logging.AddToLog("rename TAB", false);
+        //                    this.Log.Debug("rename TAB");
         //                    break;
         //                case 0x37:
-        //                    logging.AddToLog("Acquire image", false);
+        //                    this.Log.Debug("Acquire image");
         //                    break;
         //                case 0x38:
-        //                    logging.AddToLog("edit image", false);
+        //                    this.Log.Debug("edit image");
         //                    break;
         //                case 0x39:
-        //                    logging.AddToLog("Full screen", false);
+        //                    this.Log.Debug("Full screen");
         //                    break;
         //                case 0x3a:
-        //                    logging.AddToLog("DVD Audio", false);
+        //                    this.Log.Debug("DVD Audio");
         //                    break;
         //                case 0x70:
-        //                    logging.AddToLog("Cursor-left", false);
+        //                    this.Log.Debug("Cursor-left");
         //                    break;
         //                case 0x71:
-        //                    logging.AddToLog("Cursor-right", false);
+        //                    this.Log.Debug("Cursor-right");
         //                    break;
         //                case 0x72:
-        //                    logging.AddToLog("Cursor-up", false);
+        //                    this.Log.Debug("Cursor-up");
         //                    break;
         //                case 0x73:
-        //                    logging.AddToLog("Cursor-down", false);
+        //                    this.Log.Debug("Cursor-down");
         //                    break;
         //                case 0x74:
-        //                    logging.AddToLog("Cursor-up-left", false);
+        //                    this.Log.Debug("Cursor-up-left");
         //                    break;
         //                case 0x75:
-        //                    logging.AddToLog("Cursor-up-right", false);
+        //                    this.Log.Debug("Cursor-up-right");
         //                    break;
         //                case 0x76:
-        //                    logging.AddToLog("Cursor-down-right", false);
+        //                    this.Log.Debug("Cursor-down-right");
         //                    break;
         //                case 0x77:
-        //                    logging.AddToLog("Cursor-down-left", false);
+        //                    this.Log.Debug("Cursor-down-left");
         //                    break;
         //                case 0x78:
-        //                    logging.AddToLog("Left Mouse Button", false);
+        //                    this.Log.Debug("Left Mouse Button");
         //                    break;
         //                case 0x79:
-        //                    logging.AddToLog("V-End", false);
+        //                    this.Log.Debug("V-End");
         //                    break;
         //                case 0x7c:
-        //                    logging.AddToLog("Right Mouse Button", false);
+        //                    this.Log.Debug("Right Mouse Button");
         //                    break;
         //                case 0x7d:
-        //                    logging.AddToLog("X-End", false);
+        //                    this.Log.Debug("X-End");
         //                    break;
         //                default:
-        //                    logging.AddToLog("unknown", false);
+        //                    this.Log.Debug("unknown");
         //                    break;
         //            }
         //            if ((recbuf(REMOTE.toggle) & 0x1) == 0x1)
         //            {
-        //                logging.AddToLog("  (button press = odd)");
+        //                this.Log.Debug("  (button press = odd)");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("  (button press = even)");
+        //                this.Log.Debug("  (button press = even)");
         //            }
 
         //            break;
         //        case REMOTE.Medion:
-        //            logging.AddToLog("subtype       = Medion Remote");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(REMOTE.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + recbuf(REMOTE.id).ToString);
-        //            logging.AddToLog("Command       = ", false);
+        //            this.Log.Debug("subtype       = Medion Remote");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(REMOTE.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + recbuf(REMOTE.id).ToString);
+        //            this.Log.Debug("Command       = ");
         //            switch (recbuf(REMOTE.cmnd))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("Mute");
+        //                    this.Log.Debug("Mute");
         //                    break;
         //                case 0x1:
-        //                    logging.AddToLog("B");
+        //                    this.Log.Debug("B");
         //                    break;
         //                case 0x2:
-        //                    logging.AddToLog("power");
+        //                    this.Log.Debug("power");
         //                    break;
         //                case 0x3:
-        //                    logging.AddToLog("TV");
+        //                    this.Log.Debug("TV");
         //                    break;
         //                case 0x4:
-        //                    logging.AddToLog("DVD");
+        //                    this.Log.Debug("DVD");
         //                    break;
         //                case 0x5:
-        //                    logging.AddToLog("Photo");
+        //                    this.Log.Debug("Photo");
         //                    break;
         //                case 0x6:
-        //                    logging.AddToLog("Music");
+        //                    this.Log.Debug("Music");
         //                    break;
         //                case 0x7:
-        //                    logging.AddToLog("Drag");
+        //                    this.Log.Debug("Drag");
         //                    break;
         //                case 0x8:
-        //                    logging.AddToLog("VOL-");
+        //                    this.Log.Debug("VOL-");
         //                    break;
         //                case 0x9:
-        //                    logging.AddToLog("VOL+");
+        //                    this.Log.Debug("VOL+");
         //                    break;
         //                case 0xa:
-        //                    logging.AddToLog("MUTE");
+        //                    this.Log.Debug("MUTE");
         //                    break;
         //                case 0xb:
-        //                    logging.AddToLog("CHAN+");
+        //                    this.Log.Debug("CHAN+");
         //                    break;
         //                case 0xc:
-        //                    logging.AddToLog("CHAN-");
+        //                    this.Log.Debug("CHAN-");
         //                    break;
         //                case 0xd:
-        //                    logging.AddToLog("1");
+        //                    this.Log.Debug("1");
         //                    break;
         //                case 0xe:
-        //                    logging.AddToLog("2");
+        //                    this.Log.Debug("2");
         //                    break;
         //                case 0xf:
-        //                    logging.AddToLog("3");
+        //                    this.Log.Debug("3");
         //                    break;
         //                case 0x10:
-        //                    logging.AddToLog("4");
+        //                    this.Log.Debug("4");
         //                    break;
         //                case 0x11:
-        //                    logging.AddToLog("5");
+        //                    this.Log.Debug("5");
         //                    break;
         //                case 0x12:
-        //                    logging.AddToLog("6");
+        //                    this.Log.Debug("6");
         //                    break;
         //                case 0x13:
-        //                    logging.AddToLog("7");
+        //                    this.Log.Debug("7");
         //                    break;
         //                case 0x14:
-        //                    logging.AddToLog("8");
+        //                    this.Log.Debug("8");
         //                    break;
         //                case 0x15:
-        //                    logging.AddToLog("9");
+        //                    this.Log.Debug("9");
         //                    break;
         //                case 0x16:
-        //                    logging.AddToLog("txt");
+        //                    this.Log.Debug("txt");
         //                    break;
         //                case 0x17:
-        //                    logging.AddToLog("0");
+        //                    this.Log.Debug("0");
         //                    break;
         //                case 0x18:
-        //                    logging.AddToLog("snapshot ESC");
+        //                    this.Log.Debug("snapshot ESC");
         //                    break;
         //                case 0x19:
-        //                    logging.AddToLog("DVD MENU");
+        //                    this.Log.Debug("DVD MENU");
         //                    break;
         //                case 0x1a:
-        //                    logging.AddToLog("^");
+        //                    this.Log.Debug("^");
         //                    break;
         //                case 0x1b:
-        //                    logging.AddToLog("Setup");
+        //                    this.Log.Debug("Setup");
         //                    break;
         //                case 0x1c:
-        //                    logging.AddToLog("TV/RADIO");
+        //                    this.Log.Debug("TV/RADIO");
         //                    break;
         //                case 0x1d:
-        //                    logging.AddToLog("<");
+        //                    this.Log.Debug("<");
         //                    break;
         //                case 0x1e:
-        //                    logging.AddToLog("OK");
+        //                    this.Log.Debug("OK");
         //                    break;
         //                case 0x1f:
-        //                    logging.AddToLog(">");
+        //                    this.Log.Debug(">");
         //                    break;
         //                case 0x20:
-        //                    logging.AddToLog("<-");
+        //                    this.Log.Debug("<-");
         //                    break;
         //                case 0x21:
-        //                    logging.AddToLog("E");
+        //                    this.Log.Debug("E");
         //                    break;
         //                case 0x22:
-        //                    logging.AddToLog("v");
+        //                    this.Log.Debug("v");
         //                    break;
         //                case 0x23:
-        //                    logging.AddToLog("F");
+        //                    this.Log.Debug("F");
         //                    break;
         //                case 0x24:
-        //                    logging.AddToLog("Rewind");
+        //                    this.Log.Debug("Rewind");
         //                    break;
         //                case 0x25:
-        //                    logging.AddToLog("Play");
+        //                    this.Log.Debug("Play");
         //                    break;
         //                case 0x26:
-        //                    logging.AddToLog("Fast forward");
+        //                    this.Log.Debug("Fast forward");
         //                    break;
         //                case 0x27:
-        //                    logging.AddToLog("Record");
+        //                    this.Log.Debug("Record");
         //                    break;
         //                case 0x28:
-        //                    logging.AddToLog("Stop");
+        //                    this.Log.Debug("Stop");
         //                    break;
         //                case 0x29:
-        //                    logging.AddToLog("Pause");
+        //                    this.Log.Debug("Pause");
 
         //                    break;
         //                case 0x2c:
-        //                    logging.AddToLog("TV");
+        //                    this.Log.Debug("TV");
         //                    break;
         //                case 0x2d:
-        //                    logging.AddToLog("VCR");
+        //                    this.Log.Debug("VCR");
         //                    break;
         //                case 0x2e:
-        //                    logging.AddToLog("RADIO");
+        //                    this.Log.Debug("RADIO");
         //                    break;
         //                case 0x2f:
-        //                    logging.AddToLog("TV Preview");
+        //                    this.Log.Debug("TV Preview");
         //                    break;
         //                case 0x30:
-        //                    logging.AddToLog("Channel list");
+        //                    this.Log.Debug("Channel list");
         //                    break;
         //                case 0x31:
-        //                    logging.AddToLog("Video Desktop");
+        //                    this.Log.Debug("Video Desktop");
         //                    break;
         //                case 0x32:
-        //                    logging.AddToLog("red");
+        //                    this.Log.Debug("red");
         //                    break;
         //                case 0x33:
-        //                    logging.AddToLog("green");
+        //                    this.Log.Debug("green");
         //                    break;
         //                case 0x34:
-        //                    logging.AddToLog("yellow");
+        //                    this.Log.Debug("yellow");
         //                    break;
         //                case 0x35:
-        //                    logging.AddToLog("blue");
+        //                    this.Log.Debug("blue");
         //                    break;
         //                case 0x36:
-        //                    logging.AddToLog("rename TAB");
+        //                    this.Log.Debug("rename TAB");
         //                    break;
         //                case 0x37:
-        //                    logging.AddToLog("Acquire image");
+        //                    this.Log.Debug("Acquire image");
         //                    break;
         //                case 0x38:
-        //                    logging.AddToLog("edit image");
+        //                    this.Log.Debug("edit image");
         //                    break;
         //                case 0x39:
-        //                    logging.AddToLog("Full screen");
+        //                    this.Log.Debug("Full screen");
         //                    break;
         //                case 0x3a:
-        //                    logging.AddToLog("DVD Audio");
+        //                    this.Log.Debug("DVD Audio");
         //                    break;
         //                case 0x70:
-        //                    logging.AddToLog("Cursor-left");
+        //                    this.Log.Debug("Cursor-left");
         //                    break;
         //                case 0x71:
-        //                    logging.AddToLog("Cursor-right");
+        //                    this.Log.Debug("Cursor-right");
         //                    break;
         //                case 0x72:
-        //                    logging.AddToLog("Cursor-up");
+        //                    this.Log.Debug("Cursor-up");
         //                    break;
         //                case 0x73:
-        //                    logging.AddToLog("Cursor-down");
+        //                    this.Log.Debug("Cursor-down");
         //                    break;
         //                case 0x74:
-        //                    logging.AddToLog("Cursor-up-left");
+        //                    this.Log.Debug("Cursor-up-left");
         //                    break;
         //                case 0x75:
-        //                    logging.AddToLog("Cursor-up-right");
+        //                    this.Log.Debug("Cursor-up-right");
         //                    break;
         //                case 0x76:
-        //                    logging.AddToLog("Cursor-down-right");
+        //                    this.Log.Debug("Cursor-down-right");
         //                    break;
         //                case 0x77:
-        //                    logging.AddToLog("Cursor-down-left");
+        //                    this.Log.Debug("Cursor-down-left");
         //                    break;
         //                case 0x78:
-        //                    logging.AddToLog("V");
+        //                    this.Log.Debug("V");
         //                    break;
         //                case 0x79:
-        //                    logging.AddToLog("V-End");
+        //                    this.Log.Debug("V-End");
         //                    break;
         //                case 0x7c:
-        //                    logging.AddToLog("X");
+        //                    this.Log.Debug("X");
         //                    break;
         //                case 0x7d:
-        //                    logging.AddToLog("X-End");
+        //                    this.Log.Debug("X-End");
         //                    break;
         //                default:
-        //                    logging.AddToLog("unknown");
+        //                    this.Log.Debug("unknown");
         //                    break;
         //            }
 
         //            break;
         //        case REMOTE.PCremote:
-        //            logging.AddToLog("subtype       = PC Remote");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(REMOTE.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + recbuf(REMOTE.id).ToString);
-        //            logging.AddToLog("Command       = unknown", false);
+        //            this.Log.Debug("subtype       = PC Remote");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(REMOTE.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + recbuf(REMOTE.id).ToString);
+        //            this.Log.Debug("Command       = unknown");
         //            switch (recbuf(REMOTE.cmnd))
         //            {
         //                case 0x2:
-        //                    logging.AddToLog("0");
+        //                    this.Log.Debug("0");
         //                    break;
         //                case 0x82:
-        //                    logging.AddToLog("1");
+        //                    this.Log.Debug("1");
         //                    break;
         //                case 0xd1:
-        //                    logging.AddToLog("MP3");
+        //                    this.Log.Debug("MP3");
         //                    break;
         //                case 0x42:
-        //                    logging.AddToLog("2");
+        //                    this.Log.Debug("2");
         //                    break;
         //                case 0xd2:
-        //                    logging.AddToLog("DVD");
+        //                    this.Log.Debug("DVD");
         //                    break;
         //                case 0xc2:
-        //                    logging.AddToLog("3");
+        //                    this.Log.Debug("3");
         //                    break;
         //                case 0xd3:
-        //                    logging.AddToLog("CD");
+        //                    this.Log.Debug("CD");
         //                    break;
         //                case 0x22:
-        //                    logging.AddToLog("4");
+        //                    this.Log.Debug("4");
         //                    break;
         //                case 0xd4:
-        //                    logging.AddToLog("PC or SHIFT-4");
+        //                    this.Log.Debug("PC or SHIFT-4");
         //                    break;
         //                case 0xa2:
-        //                    logging.AddToLog("5");
+        //                    this.Log.Debug("5");
         //                    break;
         //                case 0xd5:
-        //                    logging.AddToLog("SHIFT-5");
+        //                    this.Log.Debug("SHIFT-5");
         //                    break;
         //                case 0x62:
-        //                    logging.AddToLog("6");
+        //                    this.Log.Debug("6");
         //                    break;
         //                case 0xe2:
-        //                    logging.AddToLog("7");
+        //                    this.Log.Debug("7");
         //                    break;
         //                case 0x12:
-        //                    logging.AddToLog("8");
+        //                    this.Log.Debug("8");
         //                    break;
         //                case 0x92:
-        //                    logging.AddToLog("9");
+        //                    this.Log.Debug("9");
         //                    break;
         //                case 0xc0:
-        //                    logging.AddToLog("CH-");
+        //                    this.Log.Debug("CH-");
         //                    break;
         //                case 0x40:
-        //                    logging.AddToLog("CH+");
+        //                    this.Log.Debug("CH+");
         //                    break;
         //                case 0xe0:
-        //                    logging.AddToLog("VOL-");
+        //                    this.Log.Debug("VOL-");
         //                    break;
         //                case 0x60:
-        //                    logging.AddToLog("VOL+");
+        //                    this.Log.Debug("VOL+");
         //                    break;
         //                case 0xa0:
-        //                    logging.AddToLog("MUTE");
+        //                    this.Log.Debug("MUTE");
         //                    break;
         //                case 0x3a:
-        //                    logging.AddToLog("INFO");
+        //                    this.Log.Debug("INFO");
         //                    break;
         //                case 0x38:
-        //                    logging.AddToLog("REW");
+        //                    this.Log.Debug("REW");
         //                    break;
         //                case 0xb8:
-        //                    logging.AddToLog("FF");
+        //                    this.Log.Debug("FF");
         //                    break;
         //                case 0xb0:
-        //                    logging.AddToLog("PLAY");
+        //                    this.Log.Debug("PLAY");
         //                    break;
         //                case 0x64:
-        //                    logging.AddToLog("PAUSE");
+        //                    this.Log.Debug("PAUSE");
         //                    break;
         //                case 0x63:
-        //                    logging.AddToLog("STOP");
+        //                    this.Log.Debug("STOP");
         //                    break;
         //                case 0xb6:
-        //                    logging.AddToLog("MENU");
+        //                    this.Log.Debug("MENU");
         //                    break;
         //                case 0xff:
-        //                    logging.AddToLog("REC");
+        //                    this.Log.Debug("REC");
         //                    break;
         //                case 0xc9:
-        //                    logging.AddToLog("EXIT");
+        //                    this.Log.Debug("EXIT");
         //                    break;
         //                case 0xd8:
-        //                    logging.AddToLog("TEXT");
+        //                    this.Log.Debug("TEXT");
         //                    break;
         //                case 0xd9:
-        //                    logging.AddToLog("SHIFT-TEXT");
+        //                    this.Log.Debug("SHIFT-TEXT");
         //                    break;
         //                case 0xf2:
-        //                    logging.AddToLog("TELETEXT");
+        //                    this.Log.Debug("TELETEXT");
         //                    break;
         //                case 0xd7:
-        //                    logging.AddToLog("SHIFT-TELETEXT");
+        //                    this.Log.Debug("SHIFT-TELETEXT");
         //                    break;
         //                case 0xba:
-        //                    logging.AddToLog("A+B");
+        //                    this.Log.Debug("A+B");
         //                    break;
         //                case 0x52:
-        //                    logging.AddToLog("ENT");
+        //                    this.Log.Debug("ENT");
         //                    break;
         //                case 0xd6:
-        //                    logging.AddToLog("SHIFT-ENT");
+        //                    this.Log.Debug("SHIFT-ENT");
         //                    break;
         //                case 0x70:
-        //                    logging.AddToLog("Cursor-left");
+        //                    this.Log.Debug("Cursor-left");
         //                    break;
         //                case 0x71:
-        //                    logging.AddToLog("Cursor-right");
+        //                    this.Log.Debug("Cursor-right");
         //                    break;
         //                case 0x72:
-        //                    logging.AddToLog("Cursor-up");
+        //                    this.Log.Debug("Cursor-up");
         //                    break;
         //                case 0x73:
-        //                    logging.AddToLog("Cursor-down");
+        //                    this.Log.Debug("Cursor-down");
         //                    break;
         //                case 0x74:
-        //                    logging.AddToLog("Cursor-up-left");
+        //                    this.Log.Debug("Cursor-up-left");
         //                    break;
         //                case 0x75:
-        //                    logging.AddToLog("Cursor-up-right");
+        //                    this.Log.Debug("Cursor-up-right");
         //                    break;
         //                case 0x76:
-        //                    logging.AddToLog("Cursor-down-right");
+        //                    this.Log.Debug("Cursor-down-right");
         //                    break;
         //                case 0x77:
-        //                    logging.AddToLog("Cursor-down-left");
+        //                    this.Log.Debug("Cursor-down-left");
         //                    break;
         //                case 0x78:
-        //                    logging.AddToLog("Left mouse");
+        //                    this.Log.Debug("Left mouse");
         //                    break;
         //                case 0x79:
-        //                    logging.AddToLog("Left mouse-End");
+        //                    this.Log.Debug("Left mouse-End");
         //                    break;
         //                case 0x7b:
-        //                    logging.AddToLog("Drag");
+        //                    this.Log.Debug("Drag");
         //                    break;
         //                case 0x7c:
-        //                    logging.AddToLog("Right mouse");
+        //                    this.Log.Debug("Right mouse");
         //                    break;
         //                case 0x7d:
-        //                    logging.AddToLog("Right mouse-End");
+        //                    this.Log.Debug("Right mouse-End");
         //                    break;
         //                default:
-        //                    logging.AddToLog("unknown");
+        //                    this.Log.Debug("unknown");
         //                    break;
         //            }
 
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(REMOTE.packettype)) + ":" + Conversion.Hex(recbuf(REMOTE.subtype)));
+        //            this.Log.Error("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(REMOTE.packettype)) + ":" + Conversion.Hex(recbuf(REMOTE.subtype)));
         //            break;
         //    }
-        //    logging.AddToLog("Signal level  = " + (recbuf(REMOTE.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(REMOTE.rssi) >> 4).ToString());
 
         //}
 
@@ -2560,52 +2561,52 @@
         //    switch (recbuf(THERMOSTAT1.subtype))
         //    {
         //        case THERMOSTAT1.Digimax:
-        //            logging.AddToLog("subtype       = Digimax");
+        //            this.Log.Debug("subtype       = Digimax");
         //            break;
         //        case THERMOSTAT1.DigimaxShort:
-        //            logging.AddToLog("subtype       = Digimax with short format");
+        //            this.Log.Debug("subtype       = Digimax with short format");
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(THERMOSTAT1.packettype)) + ":" + Conversion.Hex(recbuf(THERMOSTAT1.subtype)));
+        //            this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(THERMOSTAT1.packettype)) + ":" + Conversion.Hex(recbuf(THERMOSTAT1.subtype)));
         //            break;
         //    }
-        //    logging.AddToLog("Sequence nbr  = " + recbuf(THERMOSTAT1.seqnbr).ToString);
-        //    logging.AddToLog("ID            = " + ((recbuf(THERMOSTAT1.id1) * 256 + recbuf(THERMOSTAT1.id2))).ToString());
-        //    logging.AddToLog("Temperature   = " + recbuf(THERMOSTAT1.temperature).ToString + " °C");
+        //    this.Log.Debug("Sequence nbr  = " + recbuf(THERMOSTAT1.seqnbr).ToString);
+        //    this.Log.Debug("ID            = " + ((recbuf(THERMOSTAT1.id1) * 256 + recbuf(THERMOSTAT1.id2))).ToString());
+        //    this.Log.Debug("Temperature   = " + recbuf(THERMOSTAT1.temperature).ToString + " °C");
         //    if (recbuf(THERMOSTAT1.subtype) == THERMOSTAT1.Digimax)
         //    {
-        //        logging.AddToLog("Set           = " + recbuf(THERMOSTAT1.set_point).ToString + " °C");
+        //        this.Log.Debug("Set           = " + recbuf(THERMOSTAT1.set_point).ToString + " °C");
         //        if ((recbuf(THERMOSTAT1.mode) & 0x80) == 0)
         //        {
-        //            logging.AddToLog("Mode          = heating");
+        //            this.Log.Debug("Mode          = heating");
         //        }
         //        else
         //        {
-        //            logging.AddToLog("Mode          = Cooling");
+        //            this.Log.Debug("Mode          = Cooling");
         //        }
         //        switch ((recbuf(THERMOSTAT1.status) & 0x3))
         //        {
         //            case 0:
-        //                logging.AddToLog("Status        = no status available");
+        //                this.Log.Debug("Status        = no status available");
         //                break;
         //            case 1:
-        //                logging.AddToLog("Status        = demand");
+        //                this.Log.Debug("Status        = demand");
         //                break;
         //            case 2:
-        //                logging.AddToLog("Status        = no demand");
+        //                this.Log.Debug("Status        = no demand");
         //                break;
         //            case 3:
-        //                logging.AddToLog("Status        = initializing");
+        //                this.Log.Debug("Status        = initializing");
         //                break;
         //        }
         //    }
 
-        //    logging.AddToLog("Signal level  = " + (recbuf(THERMOSTAT1.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(THERMOSTAT1.rssi) >> 4).ToString());
         //}
 
         //public void decode_Thermostat2()
         //{
-        //    logging.AddToLog("Not implemented");
+        //    this.Log.Debug("Not implemented");
         //}
 
         //public void decode_Thermostat3()
@@ -2613,69 +2614,69 @@
         //    switch (recbuf(THERMOSTAT3.subtype))
         //    {
         //        case THERMOSTAT3.MertikG6RH4T1:
-        //            logging.AddToLog("subtype       = Mertik G6R-H4T1");
+        //            this.Log.Debug("subtype       = Mertik G6R-H4T1");
         //            break;
         //        case THERMOSTAT3.MertikG6RH4TB:
-        //            logging.AddToLog("subtype       = Mertik G6R-H4TB");
+        //            this.Log.Debug("subtype       = Mertik G6R-H4TB");
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(THERMOSTAT3.packettype)) + ":" + Conversion.Hex(recbuf(THERMOSTAT3.subtype)));
+        //            this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(THERMOSTAT3.packettype)) + ":" + Conversion.Hex(recbuf(THERMOSTAT3.subtype)));
         //            break;
         //    }
-        //    logging.AddToLog("Sequence nbr  = " + recbuf(THERMOSTAT3.seqnbr).ToString);
+        //    this.Log.Debug("Sequence nbr  = " + recbuf(THERMOSTAT3.seqnbr).ToString);
 
-        //    logging.AddToLog("ID            = 0x" + VB.Right("0" + Conversion.Hex(recbuf(THERMOSTAT3.unitcode1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(THERMOSTAT3.unitcode2)), 2) + VB.Right("0" + Conversion.Hex(recbuf(THERMOSTAT3.unitcode3)), 2));
+        //    this.Log.Debug("ID            = 0x" + VB.Right("0" + Conversion.Hex(recbuf(THERMOSTAT3.unitcode1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(THERMOSTAT3.unitcode2)), 2) + VB.Right("0" + Conversion.Hex(recbuf(THERMOSTAT3.unitcode3)), 2));
 
         //    switch (recbuf(THERMOSTAT3.cmnd))
         //    {
         //        case 0:
-        //            logging.AddToLog("Command       = Off");
+        //            this.Log.Debug("Command       = Off");
         //            break;
         //        case 1:
-        //            logging.AddToLog("Command       = On");
+        //            this.Log.Debug("Command       = On");
         //            break;
         //        case 2:
-        //            logging.AddToLog("Command       = Up");
+        //            this.Log.Debug("Command       = Up");
         //            break;
         //        case 3:
-        //            logging.AddToLog("Command       = Down");
+        //            this.Log.Debug("Command       = Down");
         //            break;
         //        case 4:
         //            if (recbuf(THERMOSTAT3.subtype) == THERMOSTAT3.MertikG6RH4T1)
         //            {
-        //                logging.AddToLog("Command       = Run Up");
+        //                this.Log.Debug("Command       = Run Up");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("Command       = 2nd Off");
+        //                this.Log.Debug("Command       = 2nd Off");
         //            }
         //            break;
         //        case 5:
         //            if (recbuf(THERMOSTAT3.subtype) == THERMOSTAT3.MertikG6RH4T1)
         //            {
-        //                logging.AddToLog("Command       = Run Down");
+        //                this.Log.Debug("Command       = Run Down");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("Command       = 2nd On");
+        //                this.Log.Debug("Command       = 2nd On");
         //            }
         //            break;
         //        case 6:
         //            if (recbuf(THERMOSTAT3.subtype) == THERMOSTAT3.MertikG6RH4T1)
         //            {
-        //                logging.AddToLog("Command       = Stop");
+        //                this.Log.Debug("Command       = Stop");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("Command       = unknown");
+        //                this.Log.Debug("Command       = unknown");
         //            }
         //            break;
         //        default:
-        //            logging.AddToLog("Command       = unknown");
+        //            this.Log.Debug("Command       = unknown");
         //            break;
         //    }
 
-        //    logging.AddToLog("Signal level  = " + (recbuf(THERMOSTAT3.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(THERMOSTAT3.rssi) >> 4).ToString());
         //}
 
         public void decode_Temp()
@@ -2683,73 +2684,76 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName,"Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New temperature sensor found.  Adding to OSA", true);
+                this.Log.Info("New temperature sensor found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("Temperature Sensor - " + (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "Temperature Sensor", "OS TEMP SENSOR", (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString());
             }
 
-            switch (recbuf[(byte)TEMP.subtype])
+            if (obj != null)
             {
-                case (byte)TEMP.TEMP1:
-                    logging.AddToLog("subtype       = TEMP1 - THR128/138, THC138", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP.id2].ToString(), false);
-                    break;
-                case (byte)TEMP.TEMP2:
-                    logging.AddToLog("subtype       = TEMP2 - THC238/268,THN132,THWR288,THRN122,THN122,AW129/131", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP.id2].ToString(), false);
-                    break;
-                case (byte)TEMP.TEMP3:
-                    logging.AddToLog("subtype       = TEMP3 - THWR800", false);
-                    break;
-                case (byte)TEMP.TEMP4:
-                    logging.AddToLog("subtype       = TEMP4 - RTHN318", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP.id2].ToString(), false);
-                    break;
-                case (byte)TEMP.TEMP5:
-                    logging.AddToLog("subtype       = TEMP5 - LaCrosse TX3, TX4, TX17", false);
-                    break;
-                case (byte)TEMP.TEMP6:
-                    logging.AddToLog("subtype       = TEMP6 - TS15C", false);
-                    break;
-                default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)TEMP.packettype].ToString() + ":" + recbuf[(byte)TEMP.subtype].ToString(), false);
-                    break;
-            }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)TEMP.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), false);
+                switch (recbuf[(byte)TEMP.subtype])
+                {
+                    case (byte)TEMP.TEMP1:
+                        this.Log.Debug("subtype       = TEMP1 - THR128/138, THC138");
+                        this.Log.Debug("                channel " + recbuf[(byte)TEMP.id2].ToString());
+                        break;
+                    case (byte)TEMP.TEMP2:
+                        this.Log.Debug("subtype       = TEMP2 - THC238/268,THN132,THWR288,THRN122,THN122,AW129/131");
+                        this.Log.Debug("                channel " + recbuf[(byte)TEMP.id2].ToString());
+                        break;
+                    case (byte)TEMP.TEMP3:
+                        this.Log.Debug("subtype       = TEMP3 - THWR800");
+                        break;
+                    case (byte)TEMP.TEMP4:
+                        this.Log.Debug("subtype       = TEMP4 - RTHN318");
+                        this.Log.Debug("                channel " + recbuf[(byte)TEMP.id2].ToString());
+                        break;
+                    case (byte)TEMP.TEMP5:
+                        this.Log.Debug("subtype       = TEMP5 - LaCrosse TX3, TX4, TX17");
+                        break;
+                    case (byte)TEMP.TEMP6:
+                        this.Log.Debug("subtype       = TEMP6 - TS15C");
+                        break;
+                    default:
+                        this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)TEMP.packettype].ToString() + ":" + recbuf[(byte)TEMP.subtype].ToString());
+                        break;
+                }
+                this.Log.Debug("Sequence nbr  = " + recbuf[(byte)TEMP.seqnbr].ToString());
+                this.Log.Debug("ID            = " + (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString());
 
-            
-            double temp = Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2);
-            string strTemp = "";
 
-            if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Temp Units").Value.Trim() == "Farenheit")
-            {
-                temp = (temp * 9 / 5) + 32;
-                strTemp = temp.ToString() + " °F";
-            }
-            else
-                strTemp = temp.ToString() + " °C";
+                double temp = Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2);
+                string strTemp = "";
 
-            if ((recbuf[(byte)TEMP.tempsign] & 0x80) == 0)
-            {
-                logging.AddToLog("Temperature   = " + strTemp, false);
-                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", temp.ToString(), pName);
-            }
-            else
-            {
-                logging.AddToLog("Temperature   = -" + strTemp, false);
-                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + temp.ToString(), pName);
-            }
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)TEMP.rssi] >> 4).ToString(), false);
-            if ((recbuf[(byte)TEMP.battery_level] & 0xf) == 0)
-            {
-                logging.AddToLog("Battery       = Low", false);
-                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
-            }
-            else
-            {
-                logging.AddToLog("Battery       = OK", false);
-                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
+                if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Temp Units").Value.Trim() == "Farenheit")
+                {
+                    temp = (temp * 9 / 5) + 32;
+                    strTemp = temp.ToString() + " °F";
+                }
+                else
+                    strTemp = temp.ToString() + " °C";
+
+                if ((recbuf[(byte)TEMP.tempsign] & 0x80) == 0)
+                {
+                    this.Log.Debug("Temperature   = " + strTemp);
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", temp.ToString(), pName);
+                }
+                else
+                {
+                    this.Log.Debug("Temperature   = -" + strTemp);
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + temp.ToString(), pName);
+                }
+                this.Log.Debug("Signal level  = " + (recbuf[(byte)TEMP.rssi] >> 4).ToString());
+                if ((recbuf[(byte)TEMP.battery_level] & 0xf) == 0)
+                {
+                    this.Log.Debug("Battery       = Low");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
+                }
+                else
+                {
+                    this.Log.Debug("Battery       = OK");
+                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
+                }
             }
         }
 
@@ -2758,7 +2762,7 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New humidity sensor found.  Adding to OSA", true);
+                this.Log.Info("New humidity sensor found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("Humidity Sensor - " + (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "Humidity Sensor", "HUMIDITY METER", (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString());
             }
@@ -2766,45 +2770,45 @@
             switch (recbuf[(byte)HUM.subtype])
             {
                 case (byte)HUM.HUM1:
-                    logging.AddToLog("subtype       = HUM1 - LaCrosse TX3", false);
+                    this.Log.Debug("subtype       = HUM1 - LaCrosse TX3");
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)HUM.packettype] + ":" + recbuf[(byte)HUM.subtype], true);
+                    this.Log.Error("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)HUM.packettype] + ":" + recbuf[(byte)HUM.subtype]);
                     break;
             }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)HUM.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), false);
-            logging.AddToLog("Humidity      = " + recbuf[(byte)HUM.humidity].ToString(), false);
+            this.Log.Debug("Sequence nbr  = " + recbuf[(byte)HUM.seqnbr].ToString());
+            this.Log.Debug("ID            = " + (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString());
+            this.Log.Debug("Humidity      = " + recbuf[(byte)HUM.humidity].ToString());
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Humidity", recbuf[(byte)HUM.humidity].ToString(), pName);
 
             switch (recbuf[(byte)HUM.humidity_status])
             {
                 case 0x0:
-                    logging.AddToLog("Status        = Dry", false);
+                    this.Log.Debug("Status        = Dry");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Dry", pName);
                     break;
                 case 0x1:
-                    logging.AddToLog("Status        = Comfortable", false);
+                    this.Log.Debug("Status        = Comfortable");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Comfortable", pName);
                     break;
                 case 0x2:
-                    logging.AddToLog("Status        = Normal", false);
+                    this.Log.Debug("Status        = Normal");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Normal", pName);
                     break;
                 case 0x3:
-                    logging.AddToLog("Status        = Wet", false);
+                    this.Log.Debug("Status        = Wet");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Wet", pName);
                     break;
             }
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)HUM.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)HUM.rssi] >> 4).ToString());
             if ((recbuf[(byte)HUM.battery_level] & 0xf) == 0)
             {
-                logging.AddToLog("Battery       = Low", false);
+                this.Log.Debug("Battery       = Low");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
-                logging.AddToLog("Battery       = OK", false);
+                this.Log.Debug("Battery       = OK");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
@@ -2814,7 +2818,7 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New temperature and humidity sensor found.  Adding to OSA", true);
+                this.Log.Info("New temperature and humidity sensor found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("Temp and Humidity Sensor - " + (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "Temp and Humidity Sensor", "TEMP HUM METER", (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString());
             }
@@ -2822,138 +2826,138 @@
             switch (recbuf[(byte)TEMP_HUM.subtype])
             {
                 case (byte)TEMP_HUM.TH1:
-                    logging.AddToLog("subtype       = TH1 - THGN122/123,/THGN132,THGR122/228/238/268", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString(), false);
+                    this.Log.Debug("subtype       = TH1 - THGN122/123,/THGN132,THGR122/228/238/268");
+                    this.Log.Debug("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString());
                     break;
                 case (byte)TEMP_HUM.TH2:
-                    logging.AddToLog("subtype       = TH2 - THGR810,THGN800", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString(), false);
+                    this.Log.Debug("subtype       = TH2 - THGR810,THGN800");
+                    this.Log.Debug("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString());
                     break;
                 case (byte)TEMP_HUM.TH3:
-                    logging.AddToLog("subtype       = TH3 - RTGR328", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString(), false);
+                    this.Log.Debug("subtype       = TH3 - RTGR328");
+                    this.Log.Debug("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString());
                     break;
                 case (byte)TEMP_HUM.TH4:
-                    logging.AddToLog("subtype       = TH4 - THGR328", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString(), false);
+                    this.Log.Debug("subtype       = TH4 - THGR328");
+                    this.Log.Debug("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString());
                     break;
                 case (byte)TEMP_HUM.TH5:
-                    logging.AddToLog("subtype       = TH5 - WTGR800", false);
+                    this.Log.Debug("subtype       = TH5 - WTGR800");
                     break;
                 case (byte)TEMP_HUM.TH6:
-                    logging.AddToLog("subtype       = TH6 - THGR918,THGRN228,THGN500", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString(), false);
+                    this.Log.Debug("subtype       = TH6 - THGR918,THGRN228,THGN500");
+                    this.Log.Debug("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString());
                     break;
                 case (byte)TEMP_HUM.TH7:
-                    logging.AddToLog("subtype       = TH7 - Cresta, TFA TS34C", false);
+                    this.Log.Debug("subtype       = TH7 - Cresta, TFA TS34C");
                     if (recbuf[(byte)TEMP_HUM.id1] < 0x40)
                     {
-                        logging.AddToLog("                channel 1", false);
+                        this.Log.Debug("                channel 1");
                     }
                     else if (recbuf[(byte)TEMP_HUM.id1] < 0x60)
                     {
-                        logging.AddToLog("                channel 2", false);
+                        this.Log.Debug("                channel 2");
                     }
                     else if (recbuf[(byte)TEMP_HUM.id1] < 0x80)
                     {
-                        logging.AddToLog("                channel 3", false);
+                        this.Log.Debug("                channel 3");
                     }
                     else if (recbuf[(byte)TEMP_HUM.id1] > 0x9f & (byte)TEMP_HUM.id1 < 0xc0)
                     {
-                        logging.AddToLog("                channel 4", false);
+                        this.Log.Debug("                channel 4");
                     }
                     else if (recbuf[(byte)TEMP_HUM.id1] < 0xe0)
                     {
-                        logging.AddToLog("                channel 5", false);
+                        this.Log.Debug("                channel 5");
                     }
                     else
                     {
-                        logging.AddToLog("                channel ??", false);
+                        this.Log.Debug("                channel ??");
                     }
                     break;
                 case (byte)TEMP_HUM.TH8:
-                    logging.AddToLog("subtype       = TH8 - WT440H,WT450H", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString(), false);
+                    this.Log.Debug("subtype       = TH8 - WT440H,WT450H");
+                    this.Log.Debug("                channel " + recbuf[(byte)TEMP_HUM.id2].ToString());
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)TEMP_HUM.packettype] + ":" + recbuf[(byte)TEMP_HUM.subtype], false);
+                    this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)TEMP_HUM.packettype] + ":" + recbuf[(byte)TEMP_HUM.subtype]);
                     break;
             }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)TEMP_HUM.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), false);
+            this.Log.Debug("Sequence nbr  = " + recbuf[(byte)TEMP_HUM.seqnbr].ToString());
+            this.Log.Debug("ID            = " + (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString());
             if ((recbuf[(byte)TEMP_HUM.tempsign] & 0x80) == 0)
             {
-                logging.AddToLog("Temperature   = " + (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                this.Log.Debug("Temperature   = " + (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
             }
             else
             {
-                logging.AddToLog("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                this.Log.Debug("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM.temperatureh] * 256 + recbuf[(byte)TEMP_HUM.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
             }
-            logging.AddToLog("Humidity      = " + recbuf[(byte)TEMP_HUM.humidity].ToString(), false);
+            this.Log.Debug("Humidity      = " + recbuf[(byte)TEMP_HUM.humidity].ToString());
             switch (recbuf[(byte)TEMP_HUM.humidity_status])
             {
                 case 0x0:
-                    logging.AddToLog("Status        = Dry", false);
+                    this.Log.Debug("Status        = Dry");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Dry", pName);
                     break;
                 case 0x1:
-                    logging.AddToLog("Status        = Comfortable", false);
+                    this.Log.Debug("Status        = Comfortable");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Comfortable", pName);
                     break;
                 case 0x2:
-                    logging.AddToLog("Status        = Normal", false);
+                    this.Log.Debug("Status        = Normal");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Normal", pName);
                     break;
                 case 0x3:
-                    logging.AddToLog("Status        = Wet", false);
+                    this.Log.Debug("Status        = Wet");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Wet", pName);
                     break;
             }
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)TEMP_HUM.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)TEMP_HUM.rssi] >> 4).ToString());
             if (recbuf[(byte)TEMP_HUM.subtype] == (byte)TEMP_HUM.TH6)
             {
                 switch (recbuf[(byte)TEMP_HUM.battery_level])
                 {
                     case 0:
-                        logging.AddToLog("Battery       = 10%", false);
+                        this.Log.Debug("Battery       = 10%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "10%", pName);
                         break;
                     case 1:
-                        logging.AddToLog("Battery       = 20%", false);
+                        this.Log.Debug("Battery       = 20%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "20%", pName);
                         break;
                     case 2:
-                        logging.AddToLog("Battery       = 30%", false);
+                        this.Log.Debug("Battery       = 30%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "30%", pName);
                         break;
                     case 3:
-                        logging.AddToLog("Battery       = 40%", false);
+                        this.Log.Debug("Battery       = 40%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "40%", pName);
                         break;
                     case 4:
-                        logging.AddToLog("Battery       = 50%", false);
+                        this.Log.Debug("Battery       = 50%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "50%", pName);
                         break;
                     case 5:
-                        logging.AddToLog("Battery       = 60%", false);
+                        this.Log.Debug("Battery       = 60%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "60%", pName);
                         break;
                     case 6:
-                        logging.AddToLog("Battery       = 70%", false);
+                        this.Log.Debug("Battery       = 70%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "70%", pName);
                         break;
                     case 7:
-                        logging.AddToLog("Battery       = 80%", false);
+                        this.Log.Debug("Battery       = 80%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "80%", pName);
                         break;
                     case 8:
-                        logging.AddToLog("Battery       = 90%", false);
+                        this.Log.Debug("Battery       = 90%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "90%", pName);
                         break;
                     case 9:
-                        logging.AddToLog("Battery       = 100%", false);
+                        this.Log.Debug("Battery       = 100%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "100%", pName);
                         break;
                 }
@@ -2962,12 +2966,12 @@
             {
                 if ((recbuf[(byte)TEMP_HUM.battery_level] & 0xf) == 0)
                 {
-                    logging.AddToLog("Battery       = Low", false);
+                    this.Log.Debug("Battery       = Low");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
                 }
                 else
                 {
-                    logging.AddToLog("Battery       = OK", false);
+                    this.Log.Debug("Battery       = OK");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
                 }
             }
@@ -2975,7 +2979,7 @@
 
         public void decode_Baro()
         {
-            logging.AddToLog("Baro Not implemented", true);
+            this.Log.Error("Baro Not implemented");
         }
 
         public void decode_TempHumBaro()
@@ -2983,7 +2987,7 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New temperature, humidity and barometric sensor found.  Adding to OSA", true);
+                this.Log.Info("New temperature, humidity and barometric sensor found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("Temp, Humidity and Baro Sensor - " + (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "Temp, Humidity and Baro Sensor", "TEMP HUM BARO METER", (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString());
             }
@@ -2991,87 +2995,87 @@
             switch (recbuf[(byte)TEMP_HUM_BARO.subtype])
             {
                 case (byte)TEMP_HUM_BARO.THB1:
-                    logging.AddToLog("subtype       = THB1 - BTHR918", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP_HUM_BARO.id2].ToString(), false);
+                    this.Log.Debug("subtype       = THB1 - BTHR918");
+                    this.Log.Debug("                channel " + recbuf[(byte)TEMP_HUM_BARO.id2].ToString());
                     break;
                 case (byte)TEMP_HUM_BARO.THB2:
-                    logging.AddToLog("subtype       = THB2 - BTHR918N, BTHR968", false);
-                    logging.AddToLog("                channel " + recbuf[(byte)TEMP_HUM_BARO.id2].ToString(), false);
+                    this.Log.Debug("subtype       = THB2 - BTHR918N, BTHR968");
+                    this.Log.Debug("                channel " + recbuf[(byte)TEMP_HUM_BARO.id2].ToString());
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)TEMP_HUM_BARO.packettype] + ":" + recbuf[(byte)TEMP_HUM_BARO.subtype], false);
+                    this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)TEMP_HUM_BARO.packettype] + ":" + recbuf[(byte)TEMP_HUM_BARO.subtype]);
                     break;
             }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)TEMP_HUM_BARO.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), false);
+            this.Log.Debug("Sequence nbr  = " + recbuf[(byte)TEMP_HUM_BARO.seqnbr].ToString());
+            this.Log.Debug("ID            = " + (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString());
             if ((recbuf[(byte)TEMP_HUM_BARO.tempsign] & 0x80) == 0)
             {
-                logging.AddToLog("Temperature   = " + (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                this.Log.Debug("Temperature   = " + (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
             }
             else
             {
-                logging.AddToLog("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                this.Log.Debug("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)TEMP_HUM_BARO.temperatureh] * 256 + recbuf[(byte)TEMP_HUM_BARO.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
             }
-            logging.AddToLog("Humidity      = " + recbuf[(byte)TEMP_HUM_BARO.humidity].ToString(), false);
+            this.Log.Debug("Humidity      = " + recbuf[(byte)TEMP_HUM_BARO.humidity].ToString());
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Humidity", recbuf[(byte)TEMP_HUM_BARO.humidity].ToString(), pName);
             
             switch (recbuf[(byte)TEMP_HUM_BARO.humidity_status])
             {
                 case 0x0:
-                    logging.AddToLog("Status        = Dry", false);
+                    this.Log.Debug("Status        = Dry");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Dry", pName);
                     break;
                 case 0x1:
-                    logging.AddToLog("Status        = Comfortable", false);
+                    this.Log.Debug("Status        = Comfortable");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Comfortable", pName);
                     break;
                 case 0x2:
-                    logging.AddToLog("Status        = Normal", false);
+                    this.Log.Debug("Status        = Normal");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Normal", pName);
                     break;
                 case 0x3:
-                    logging.AddToLog("Status        = Wet", false);
+                    this.Log.Debug("Status        = Wet");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Status", "Wet", pName);
                     break;
             }
-            logging.AddToLog("Barometer     = " + recbuf[(byte)TEMP_HUM_BARO.baroh] * 256 + recbuf[(byte)TEMP_HUM_BARO.barol].ToString(), false);
+            this.Log.Debug("Barometer     = " + recbuf[(byte)TEMP_HUM_BARO.baroh] * 256 + recbuf[(byte)TEMP_HUM_BARO.barol].ToString());
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Barometer", recbuf[(byte)TEMP_HUM_BARO.baroh] * 256 + recbuf[(byte)TEMP_HUM_BARO.barol].ToString(), pName);
 
             switch (recbuf[(byte)TEMP_HUM_BARO.forecast])
             {
                 case 0x0:
-                    logging.AddToLog("Forecast      = No information available", false);
+                    this.Log.Debug("Forecast      = No information available");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "No information available", pName);
                     break;
                 case 0x1:
-                    logging.AddToLog("Forecast      = Sunny", false);
+                    this.Log.Debug("Forecast      = Sunny");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "Sunny", pName);
                     break;
                 case 0x2:
-                    logging.AddToLog("Forecast      = Partly Cloudy", false);
+                    this.Log.Debug("Forecast      = Partly Cloudy");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "Partly Cloudy", pName);
                     break;
                 case 0x3:
-                    logging.AddToLog("Forecast      = Cloudy", false);
+                    this.Log.Debug("Forecast      = Cloudy");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "Cloudy", pName);
                     break;
                 case 0x4:
-                    logging.AddToLog("Forecast      = Rain", false);
+                    this.Log.Debug("Forecast      = Rain");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Forecast", "Rain", pName);
                     break;
             }
 
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)TEMP_HUM_BARO.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)TEMP_HUM_BARO.rssi] >> 4).ToString());
             if ((recbuf[(byte)TEMP_HUM_BARO.battery_level] & 0xf) == 0)
             {
-                logging.AddToLog("Battery       = Low", false);
+                this.Log.Debug("Battery       = Low");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
-                logging.AddToLog("Battery       = OK", false);
+                this.Log.Debug("Battery       = OK");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
@@ -3081,7 +3085,7 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New temperature sensor found.  Adding to OSA", true);
+                this.Log.Info("New temperature sensor found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("Rain Meter - " + (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "Rain Meter", "OS RAIN METER", (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString());
             }
@@ -3089,47 +3093,47 @@
             switch (recbuf[(byte)RAIN.subtype])
             {
                 case (byte)RAIN.RAIN1:
-                    logging.AddToLog("subtype       = RAIN1 - RGR126/682/918", false);
+                    this.Log.Debug("subtype       = RAIN1 - RGR126/682/918");
                     break;
                 case (byte)RAIN.RAIN2:
-                    logging.AddToLog("subtype       = RAIN2 - PCR800", false);
+                    this.Log.Debug("subtype       = RAIN2 - PCR800");
                     break;
                 case (byte)RAIN.RAIN3:
-                    logging.AddToLog("subtype       = RAIN3 - TFA", false);
+                    this.Log.Debug("subtype       = RAIN3 - TFA");
                     break;
                 case (byte)RAIN.RAIN4:
-                    logging.AddToLog("subtype       = RAIN4 - UPM RG700", false);
+                    this.Log.Debug("subtype       = RAIN4 - UPM RG700");
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)RAIN.packettype].ToString() + ":" + recbuf[(byte)RAIN.subtype].ToString(), true);
+                    this.Log.Error("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)RAIN.packettype].ToString() + ":" + recbuf[(byte)RAIN.subtype].ToString());
                     break;
             }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)RAIN.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), false);
+            this.Log.Error("Sequence nbr  = " + recbuf[(byte)RAIN.seqnbr].ToString());
+            this.Log.Error("ID            = " + (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString());
 
             if (recbuf[(byte)RAIN.subtype] == (byte)RAIN.RAIN1)
             {
-                logging.AddToLog("Rain rate     = " + ((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]).ToString() + " mm/h", false);
+                this.Log.Error("Rain rate     = " + ((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]).ToString() + " mm/h");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Rain Rate", ((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]).ToString(), pName);
             }
             else if (recbuf[(byte)RAIN.subtype] == (byte)RAIN.RAIN2)
             {
-                logging.AddToLog("Rain rate     = " + (((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]) / 100).ToString() + " mm/h", false);
+                this.Log.Error("Rain rate     = " + (((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]) / 100).ToString() + " mm/h");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Rain Rate", (((recbuf[(byte)RAIN.rainrateh] * 256) + recbuf[(byte)RAIN.rainratel]) / 100).ToString(), pName);
             }
 
-            logging.AddToLog("Total rain    = " + Math.Round((double)((recbuf[(byte)RAIN.raintotal1] * 65535) + recbuf[(byte)RAIN.raintotal2] * 256 + recbuf[(byte)RAIN.raintotal3]) / 10, 2).ToString() + " mm", false);
+            this.Log.Error("Total rain    = " + Math.Round((double)((recbuf[(byte)RAIN.raintotal1] * 65535) + recbuf[(byte)RAIN.raintotal2] * 256 + recbuf[(byte)RAIN.raintotal3]) / 10, 2).ToString() + " mm");
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Total Rain", Math.Round((double)((recbuf[(byte)RAIN.raintotal1] * 65535) + recbuf[(byte)RAIN.raintotal2] * 256 + recbuf[(byte)RAIN.raintotal3]) / 10, 2).ToString(), pName);
 
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)RAIN.rssi] >> 4).ToString(), false);
+            this.Log.Error("Signal level  = " + (recbuf[(byte)RAIN.rssi] >> 4).ToString());
             if ((recbuf[(byte)RAIN.battery_level] & 0xf) == 0)
             {
-                logging.AddToLog("Battery       = Low", false);
+                this.Log.Error("Battery       = Low");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
-                logging.AddToLog("Battery       = OK", false);
+                this.Log.Error("Battery       = OK");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
@@ -3139,7 +3143,7 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New wind sensor found.  Adding to OSA", true);
+                this.Log.Info("New wind sensor found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("Wind Sensor - " + (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "Wind Sensor", "WIND SENSOR", (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString());
             }
@@ -3151,26 +3155,26 @@
             switch (recbuf[(byte)WIND.subtype])
             {
                 case (byte)WIND.WIND1:
-                    logging.AddToLog("subtype       = WIND1 - WTGR800", false);
+                    this.Log.Debug("subtype       = WIND1 - WTGR800");
                     break;
                 case (byte)WIND.WIND2:
-                    logging.AddToLog("subtype       = WIND2 - WGR800", false);
+                    this.Log.Debug("subtype       = WIND2 - WGR800");
                     break;
                 case (byte)WIND.WIND3:
-                    logging.AddToLog("subtype       = WIND3 - STR918, WGR918", false);
+                    this.Log.Debug("subtype       = WIND3 - STR918, WGR918");
                     break;
                 case (byte)WIND.WIND4:
-                    logging.AddToLog("subtype       = WIND4 - TFA", false);
+                    this.Log.Debug("subtype       = WIND4 - TFA");
                     break;
                 case (byte)WIND.WIND5:
-                    logging.AddToLog("subtype       = WIND5 - UPM WDS500", false);
+                    this.Log.Debug("subtype       = WIND5 - UPM WDS500");
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)WIND.packettype] + ":" + recbuf[(byte)WIND.subtype], false);
+                    this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)WIND.packettype] + ":" + recbuf[(byte)WIND.subtype]);
                     break;
             }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)WIND.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), false);
+            this.Log.Debug("Sequence nbr  = " + recbuf[(byte)WIND.seqnbr].ToString());
+            this.Log.Debug("ID            = " + (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString());
             intDirection = (recbuf[(byte)WIND.directionh] * 256) + recbuf[(byte)WIND.directionl];
             if (intDirection > 348.75 | intDirection < 11.26)
             {
@@ -3240,88 +3244,88 @@
             {
                 strDirection = "---";
             }
-            logging.AddToLog("Direction     = " + intDirection.ToString() + " degrees  " + strDirection, false);
+            this.Log.Debug("Direction     = " + intDirection.ToString() + " degrees  " + strDirection);
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Direction", intDirection.ToString() + " degrees  " + strDirection, pName);
 
             intSpeed = (recbuf[(byte)WIND.av_speedh] * 256) + recbuf[(byte)WIND.av_speedl];
             if (recbuf[(byte)WIND.subtype] != (byte)WIND.WIND5)
             {
-                logging.AddToLog("Average speed = " + (intSpeed / 10).ToString() + " mtr/sec = " + Math.Round((intSpeed * 0.36), 2).ToString() + " km/hr = " + Math.Round((intSpeed * 0.223693629) / 10, 2).ToString() + " mph", false);
+                this.Log.Debug("Average speed = " + (intSpeed / 10).ToString() + " mtr/sec = " + Math.Round((intSpeed * 0.36), 2).ToString() + " km/hr = " + Math.Round((intSpeed * 0.223693629) / 10, 2).ToString() + " mph");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Average Speed", Math.Round((intSpeed * 0.223693629) / 10, 2).ToString(), pName);
             }
 
             intSpeed = (recbuf[(byte)WIND.gusth] * 256) + recbuf[(byte)WIND.gustl];
-            logging.AddToLog("Wind gust     = " + (intSpeed / 10).ToString() + " mtr/sec = " + Math.Round((intSpeed * 0.36), 2).ToString() + " km/hr = " + Math.Round((intSpeed * 0.223693629) / 10, 2).ToString() + " mph", false);
+            this.Log.Debug("Wind gust     = " + (intSpeed / 10).ToString() + " mtr/sec = " + Math.Round((intSpeed * 0.36), 2).ToString() + " km/hr = " + Math.Round((intSpeed * 0.223693629) / 10, 2).ToString() + " mph");
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Wind Gust", Math.Round((intSpeed * 0.223693629) / 10, 2).ToString(), pName); 
             
             if (recbuf[(byte)WIND.subtype] == (byte)WIND.WIND4)
             {
                 if (((byte)WIND.tempsign & 0x80) == 0)
                 {
-                    logging.AddToLog("Temperature   = " + (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                    this.Log.Debug("Temperature   = " + (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
                 else
                 {
-                    logging.AddToLog("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                    this.Log.Debug("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + (((Math.Round((double)(recbuf[(byte)WIND.temperatureh] * 256 + recbuf[(byte)WIND.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
 
                 if (((byte)WIND.chillsign & 0x80) == 0)
                 {
-                    logging.AddToLog("Chill         = " + (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                    this.Log.Debug("Chill         = " + (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Windchill", (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
                 else
                 {
-                    logging.AddToLog("Chill         = -" + (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                    this.Log.Debug("Chill         = -" + (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Windchill", "-" + (((Math.Round((double)(recbuf[(byte)WIND.chillh] * 256 + recbuf[(byte)WIND.chillh]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
             }
 
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)WIND.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)WIND.rssi] >> 4).ToString());
             if (recbuf[(byte)WIND.subtype] == (byte)WIND.WIND3)
             {
                 switch (recbuf[(byte)WIND.battery_level])
                 {
                     case 0:
-                        logging.AddToLog("Battery       = 10%", false);
+                        this.Log.Debug("Battery       = 10%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "10%", pName);
                         break;
                     case 1:
-                        logging.AddToLog("Battery       = 20%", false);
+                        this.Log.Debug("Battery       = 20%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "20%", pName);
                         break;
                     case 2:
-                        logging.AddToLog("Battery       = 30%", false);
+                        this.Log.Debug("Battery       = 30%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "30%", pName);
                         break;
                     case 3:
-                        logging.AddToLog("Battery       = 40%", false);
+                        this.Log.Debug("Battery       = 40%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "40%", pName);
                         break;
                     case 4:
-                        logging.AddToLog("Battery       = 50%", false);
+                        this.Log.Debug("Battery       = 50%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "50%", pName);
                         break;
                     case 5:
-                        logging.AddToLog("Battery       = 60%", false);
+                        this.Log.Debug("Battery       = 60%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "60%", pName);
                         break;
                     case 6:
-                        logging.AddToLog("Battery       = 70%", false);
+                        this.Log.Debug("Battery       = 70%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "70%", pName);
                         break;
                     case 7:
-                        logging.AddToLog("Battery       = 80%", false);
+                        this.Log.Debug("Battery       = 80%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "80%", pName);
                         break;
                     case 8:
-                        logging.AddToLog("Battery       = 90%", false);
+                        this.Log.Debug("Battery       = 90%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "90%", pName);
                         break;
                     case 9:
-                        logging.AddToLog("Battery       = 100%", false);
+                        this.Log.Debug("Battery       = 100%");
                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "100%", pName);
                         break;
                 }
@@ -3330,12 +3334,12 @@
             {
                 if ((recbuf[(byte)WIND.battery_level] & 0xf) == 0)
                 {
-                    logging.AddToLog("Battery       = Low", false);
+                    this.Log.Debug("Battery       = Low");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
                 }
                 else
                 {
-                    logging.AddToLog("Battery       = OK", false);
+                    this.Log.Debug("Battery       = OK");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
                 }
             }
@@ -3346,7 +3350,7 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New UV sensor found.  Adding to OSA", true);
+                this.Log.Info("New UV sensor found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("UV Sensor - " + (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "UV Sensor", "UV SENSOR", (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString());
             }
@@ -3354,70 +3358,70 @@
             switch (recbuf[(byte)UV.subtype])
             {
                 case (byte)UV.UV1:
-                    logging.AddToLog("Subtype       = UV1 - UVN128, UV138", false);
+                    this.Log.Debug("Subtype       = UV1 - UVN128, UV138");
                     break;
                 case (byte)UV.UV2:
-                    logging.AddToLog("Subtype       = UV2 - UVN800", false);
+                    this.Log.Debug("Subtype       = UV2 - UVN800");
                     break;
                 case (byte)UV.UV3:
-                    logging.AddToLog("Subtype       = UV3 - TFA", false);
+                    this.Log.Debug("Subtype       = UV3 - TFA");
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + (byte)UV.packettype + ":" + recbuf[(byte)UV.subtype], false);
+                    this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + (byte)UV.packettype + ":" + recbuf[(byte)UV.subtype]);
                     break;
             }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)UV.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), false);
-            logging.AddToLog("Level         = " + (recbuf[(byte)UV.uv] / 10).ToString(), false);
+            this.Log.Debug("Sequence nbr  = " + recbuf[(byte)UV.seqnbr].ToString());
+            this.Log.Debug("ID            = " + (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString());
+            this.Log.Debug("Level         = " + (recbuf[(byte)UV.uv] / 10).ToString());
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Level", (recbuf[(byte)UV.uv] / 10).ToString(), pName);
 
             if (recbuf[(byte)UV.subtype] == (byte)UV.UV3)
             {
                 if (((byte)UV.tempsign & 0x80) == 0)
                 {
-                    logging.AddToLog("Temperature   = " + (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                    this.Log.Debug("Temperature   = " + (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Level", (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
                 else
                 {
-                    logging.AddToLog("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F", false);
+                    this.Log.Debug("Temperature   = -" + (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString() + " °F");
                     OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Level", (((Math.Round((double)(recbuf[(byte)UV.temperatureh] * 256 + recbuf[(byte)UV.temperaturel]) / 10, 2)) * 9 / 5) + 32).ToString(), pName);
                 }
             }
             if (recbuf[(byte)UV.uv] < 3)
             {
-                logging.AddToLog("Description = Low", false);
+                this.Log.Debug("Description = Low");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "Low", pName);
             }
             else if (recbuf[(byte)UV.uv] < 6)
             {
-                logging.AddToLog("Description = Medium", false);
+                this.Log.Debug("Description = Medium");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "Medium", pName);
             }
             else if (recbuf[(byte)UV.uv] < 8)
             {
-                logging.AddToLog("Description = High", false);
+                this.Log.Debug("Description = High");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "High", pName);
             }
             else if (recbuf[(byte)UV.uv] < 11)
             {
-                logging.AddToLog("Description = Very high", false);
+                this.Log.Debug("Description = Very high");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "Very high", pName);
             }
             else
             {
-                logging.AddToLog("Description = Dangerous", false);
+                this.Log.Debug("Description = Dangerous");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Description", "Dangerous", pName);
             }
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)UV.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)UV.rssi] >> 4).ToString());
             if ((recbuf[(byte)UV.battery_level] & 0xf) == 0)
             {
-                logging.AddToLog("Battery       = Low", false);
+                this.Log.Debug("Battery       = Low");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
-                logging.AddToLog("Battery       = OK", false);
+                this.Log.Debug("Battery       = OK");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
@@ -3425,7 +3429,7 @@
 
         public void decode_DateTime()
         {
-            logging.AddToLog("DateTime Not implemented", true);
+            this.Log.Error("DateTime Not implemented");
         }
 
         public void decode_Current()
@@ -3433,7 +3437,7 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New Current meter found.  Adding to OSA", true);
+                this.Log.Info("New Current meter found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("Current Meter - " + (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "Current Meter", "CURRENT METER", (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString());
             }
@@ -3441,32 +3445,32 @@
             switch (recbuf[(byte)CURRENT.subtype])
             {
                 case (byte)CURRENT.ELEC1:
-                    logging.AddToLog("subtype       = ELEC1 - OWL CM113, Electrisave, cent-a-meter", false);
+                    this.Log.Debug("subtype       = ELEC1 - OWL CM113, Electrisave, cent-a-meter");
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)CURRENT.packettype] + ":" + recbuf[(byte)CURRENT.subtype], false);
+                    this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)CURRENT.packettype] + ":" + recbuf[(byte)CURRENT.subtype]);
                     break;
             }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)CURRENT.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), false);
-            logging.AddToLog("Count         = " + recbuf[5].ToString(), false);
-            logging.AddToLog("Channel 1     = " + ((recbuf[(byte)CURRENT.ch1h] * 256 + recbuf[(byte)CURRENT.ch1l]) / 10).ToString() + " ampere", false);
-            logging.AddToLog("Channel 2     = " + ((recbuf[(byte)CURRENT.ch2h] * 256 + recbuf[(byte)CURRENT.ch2l]) / 10).ToString() + " ampere", false);
-            logging.AddToLog("Channel 3     = " + ((recbuf[(byte)CURRENT.ch3h] * 256 + recbuf[(byte)CURRENT.ch3l]) / 10).ToString() + " ampere", false);
+            this.Log.Debug("Sequence nbr  = " + recbuf[(byte)CURRENT.seqnbr].ToString());
+            this.Log.Debug("ID            = " + (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString());
+            this.Log.Debug("Count         = " + recbuf[5].ToString());
+            this.Log.Debug("Channel 1     = " + ((recbuf[(byte)CURRENT.ch1h] * 256 + recbuf[(byte)CURRENT.ch1l]) / 10).ToString() + " ampere");
+            this.Log.Debug("Channel 2     = " + ((recbuf[(byte)CURRENT.ch2h] * 256 + recbuf[(byte)CURRENT.ch2l]) / 10).ToString() + " ampere");
+            this.Log.Debug("Channel 3     = " + ((recbuf[(byte)CURRENT.ch3h] * 256 + recbuf[(byte)CURRENT.ch3l]) / 10).ToString() + " ampere");
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Count", recbuf[5].ToString(), pName);
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Channel 1", ((recbuf[(byte)CURRENT.ch1h] * 256 + recbuf[(byte)CURRENT.ch1l]) / 10).ToString(), pName);
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Channel 2", ((recbuf[(byte)CURRENT.ch2h] * 256 + recbuf[(byte)CURRENT.ch2l]) / 10).ToString(), pName);
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Channel 3", ((recbuf[(byte)CURRENT.ch3h] * 256 + recbuf[(byte)CURRENT.ch3l]) / 10).ToString(), pName);
 
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)CURRENT.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)CURRENT.rssi] >> 4).ToString());
             if ((recbuf[(byte)CURRENT.battery_level] & 0xf) == 0)
             {
-                logging.AddToLog("Battery       = Low", false);
+                this.Log.Debug("Battery       = Low");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
-                logging.AddToLog("Battery       = OK", false);
+                this.Log.Debug("Battery       = OK");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
@@ -3476,7 +3480,7 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New Energy meter found.  Adding to OSA", true);
+                this.Log.Info("New Energy meter found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("Energy Meter - " + (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "Energy Meter", "ENERGY METER", (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString());
             }
@@ -3490,42 +3494,42 @@
             switch (recbuf[(byte)ENERGY.subtype])
             {
                 case (byte)ENERGY.ELEC2:
-                    logging.AddToLog("subtype       = ELEC2 - OWL CM119, CM160", false);
+                    this.Log.Debug("subtype       = ELEC2 - OWL CM119, CM160");
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)ENERGY.packettype] + ":" + recbuf[(byte)ENERGY.subtype], false);
+                    this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)ENERGY.packettype] + ":" + recbuf[(byte)ENERGY.subtype]);
                     break;
             }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)ENERGY.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), false);
-            logging.AddToLog("Count         = " + recbuf[(byte)ENERGY.count].ToString(), false);
-            logging.AddToLog("Instant usage = " + instant.ToString() + " Watt", false);
-            logging.AddToLog("total usage   = " + usage.ToString() + " Wh", false);
+            this.Log.Debug("Sequence nbr  = " + recbuf[(byte)ENERGY.seqnbr].ToString());
+            this.Log.Debug("ID            = " + (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString());
+            this.Log.Debug("Count         = " + recbuf[(byte)ENERGY.count].ToString());
+            this.Log.Debug("Instant usage = " + instant.ToString() + " Watt");
+            this.Log.Debug("total usage   = " + usage.ToString() + " Wh");
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Count", recbuf[5].ToString(), pName);
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Instant usage", instant.ToString(), pName);
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Total usage", usage.ToString(), pName);
 
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)ENERGY.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)ENERGY.rssi] >> 4).ToString());
             if ((recbuf[(byte)ENERGY.battery_level] & 0xf) == 0)
             {
-                logging.AddToLog("Battery       = Low", false);
+                this.Log.Debug("Battery       = Low");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
             }
             else
             {
-                logging.AddToLog("Battery       = OK", false);
+                this.Log.Debug("Battery       = OK");
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
             }
         }
 
         public void decode_Gas()
         {
-            logging.AddToLog("Gas Not implemented", false);
+            this.Log.Debug("Gas Not implemented");
         }
 
         public void decode_Water()
         {
-            logging.AddToLog("Water Not implemented", false);
+            this.Log.Debug("Water Not implemented");
         }
 
         public void decode_Weight()
@@ -3533,7 +3537,7 @@
             OSAEObject obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString());
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
-                logging.AddToLog("New Scale found.  Adding to OSA", true);
+                this.Log.Info("New Scale found.  Adding to OSA");
                 OSAEObjectManager.ObjectAdd("Scale Meter - " + (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "Scale Meter", "SCALE", (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString());
             }
@@ -3541,19 +3545,19 @@
             switch (recbuf[(byte)WEIGHT.subtype])
             {
                 case (byte)WEIGHT.WEIGHT1:
-                    logging.AddToLog("subtype       = BWR102", false);
+                    this.Log.Debug("subtype       = BWR102");
                     break;
                 case (byte)WEIGHT.WEIGHT2:
-                    logging.AddToLog("subtype       = GR101", false);
+                    this.Log.Debug("subtype       = GR101");
                     break;
                 default:
-                    logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)WEIGHT.packettype] + ":" + recbuf[(byte)WEIGHT.subtype], false);
+                    this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + recbuf[(byte)WEIGHT.packettype] + ":" + recbuf[(byte)WEIGHT.subtype]);
                     break;
             }
-            logging.AddToLog("Sequence nbr  = " + recbuf[(byte)WEIGHT.seqnbr].ToString(), false);
-            logging.AddToLog("ID            = " + (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), false);
-            logging.AddToLog("Weight        = " + (((recbuf[(byte)WEIGHT.weighthigh] * 25.6) + recbuf[(byte)WEIGHT.weightlow] / 10).ToString() + 2.2).ToString() + " lb", false);
-            logging.AddToLog("Signal level  = " + (recbuf[(byte)WEIGHT.rssi] >> 4).ToString(), false);
+            this.Log.Debug("Sequence nbr  = " + recbuf[(byte)WEIGHT.seqnbr].ToString());
+            this.Log.Debug("ID            = " + (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString());
+            this.Log.Debug("Weight        = " + (((recbuf[(byte)WEIGHT.weighthigh] * 25.6) + recbuf[(byte)WEIGHT.weightlow] / 10).ToString() + 2.2).ToString() + " lb");
+            this.Log.Debug("Signal level  = " + (recbuf[(byte)WEIGHT.rssi] >> 4).ToString());
 
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Weight", (((recbuf[(byte)WEIGHT.weighthigh] * 25.6) + recbuf[(byte)WEIGHT.weightlow] / 10).ToString() + 2.2).ToString(), pName);
         }
@@ -3563,70 +3567,70 @@
         //    switch (recbuf(RFXSENSOR.subtype))
         //    {
         //        case RFXSENSOR.Temp:
-        //            logging.AddToLog("subtype       = Temperature");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXSENSOR.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + recbuf(RFXSENSOR.id).ToString);
+        //            this.Log.Debug("subtype       = Temperature");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXSENSOR.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + recbuf(RFXSENSOR.id).ToString);
         //            //positive temperature?
         //            if ((recbuf(RFXSENSOR.msg1) & 0x80) == 0)
         //            {
-        //                logging.AddToLog("msg           = " + Math.Round(((recbuf(RFXSENSOR.msg1) * 256 + recbuf(RFXSENSOR.msg2)) / 100), 2).ToString() + " °C");
+        //                this.Log.Debug("msg           = " + Math.Round(((recbuf(RFXSENSOR.msg1) * 256 + recbuf(RFXSENSOR.msg2)) / 100), 2).ToString() + " °C");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("msg           = " + Math.Round((0 - ((recbuf(RFXSENSOR.msg1) & 0x7f) * 256 + recbuf(RFXSENSOR.msg2)) / 100), 2).ToString() + " °C");
+        //                this.Log.Debug("msg           = " + Math.Round((0 - ((recbuf(RFXSENSOR.msg1) & 0x7f) * 256 + recbuf(RFXSENSOR.msg2)) / 100), 2).ToString() + " °C");
         //            }
         //            break;
         //        case RFXSENSOR.AD:
-        //            logging.AddToLog("subtype       = A/D");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXSENSOR.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + recbuf(RFXSENSOR.id).ToString);
-        //            logging.AddToLog("msg           = " + (recbuf(RFXSENSOR.msg1) * 256 + recbuf(RFXSENSOR.msg2)).ToString() + " mV");
+        //            this.Log.Debug("subtype       = A/D");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXSENSOR.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + recbuf(RFXSENSOR.id).ToString);
+        //            this.Log.Debug("msg           = " + (recbuf(RFXSENSOR.msg1) * 256 + recbuf(RFXSENSOR.msg2)).ToString() + " mV");
         //            break;
         //        case RFXSENSOR.Volt:
-        //            logging.AddToLog("subtype       = Voltage");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXSENSOR.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + recbuf(RFXSENSOR.id).ToString);
-        //            logging.AddToLog("msg           = " + (recbuf(RFXSENSOR.msg1) * 256 + recbuf(RFXSENSOR.msg2)).ToString() + " mV");
+        //            this.Log.Debug("subtype       = Voltage");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXSENSOR.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + recbuf(RFXSENSOR.id).ToString);
+        //            this.Log.Debug("msg           = " + (recbuf(RFXSENSOR.msg1) * 256 + recbuf(RFXSENSOR.msg2)).ToString() + " mV");
         //            break;
         //        case RFXSENSOR.Message:
-        //            logging.AddToLog("subtype       = Message");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXSENSOR.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + recbuf(RFXSENSOR.id).ToString);
+        //            this.Log.Debug("subtype       = Message");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXSENSOR.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + recbuf(RFXSENSOR.id).ToString);
         //            switch (recbuf(RFXSENSOR.msg2))
         //            {
         //                case 0x1:
-        //                    logging.AddToLog("msg           = sensor addresses incremented");
+        //                    this.Log.Debug("msg           = sensor addresses incremented");
         //                    break;
         //                case 0x2:
-        //                    logging.AddToLog("msg           = battery low detected");
+        //                    this.Log.Debug("msg           = battery low detected");
         //                    break;
         //                case 0x81:
-        //                    logging.AddToLog("msg           = no 1-wire device connected");
+        //                    this.Log.Debug("msg           = no 1-wire device connected");
         //                    break;
         //                case 0x82:
-        //                    logging.AddToLog("msg           = 1-Wire ROM CRC error");
+        //                    this.Log.Debug("msg           = 1-Wire ROM CRC error");
         //                    break;
         //                case 0x83:
-        //                    logging.AddToLog("msg           = 1-Wire device connected is not a DS18B20 or DS2438");
+        //                    this.Log.Debug("msg           = 1-Wire device connected is not a DS18B20 or DS2438");
         //                    break;
         //                case 0x84:
-        //                    logging.AddToLog("msg           = no end of read signal received from 1-Wire device");
+        //                    this.Log.Debug("msg           = no end of read signal received from 1-Wire device");
         //                    break;
         //                case 0x85:
-        //                    logging.AddToLog("msg           = 1-Wire scratchpad CRC error");
+        //                    this.Log.Debug("msg           = 1-Wire scratchpad CRC error");
         //                    break;
         //                default:
-        //                    logging.AddToLog("ERROR: unknown message");
+        //                    this.Log.Debug("ERROR: unknown message");
         //                    break;
         //            }
 
-        //            logging.AddToLog("msg           = " + (recbuf(RFXSENSOR.msg1) * 256 + recbuf(RFXSENSOR.msg2)).ToString());
+        //            this.Log.Debug("msg           = " + (recbuf(RFXSENSOR.msg1) * 256 + recbuf(RFXSENSOR.msg2)).ToString());
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(RFXSENSOR.packettype)) + ":" + Conversion.Hex(recbuf(RFXSENSOR.subtype)));
+        //            this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(RFXSENSOR.packettype)) + ":" + Conversion.Hex(recbuf(RFXSENSOR.subtype)));
         //            break;
         //    }
-        //    logging.AddToLog("Signal level  = " + (recbuf(RFXSENSOR.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(RFXSENSOR.rssi) >> 4).ToString());
 
         //}
 
@@ -3637,43 +3641,43 @@
         //    switch (recbuf(RFXMETER.subtype))
         //    {
         //        case RFXMETER.Count:
-        //            logging.AddToLog("subtype       = RFXMeter counter");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("subtype       = RFXMeter counter");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
         //            counter = (Convert.ToInt64(recbuf(RFXMETER.count1)) << 24) + (Convert.ToInt64(recbuf(RFXMETER.count2)) << 16) + (Convert.ToInt64(recbuf(RFXMETER.count3)) << 8) + recbuf(RFXMETER.count4);
-        //            logging.AddToLog("Counter       = " + counter.ToString());
-        //            logging.AddToLog("if RFXPwr     = " + (counter / 1000).ToString() + " kWh");
+        //            this.Log.Debug("Counter       = " + counter.ToString());
+        //            this.Log.Debug("if RFXPwr     = " + (counter / 1000).ToString() + " kWh");
         //            break;
         //        case RFXMETER.Interval:
-        //            logging.AddToLog("subtype       = RFXMeter new interval time set");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
-        //            logging.AddToLog("Interval time = ", false);
+        //            this.Log.Debug("subtype       = RFXMeter new interval time set");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("Interval time = ");
         //            switch (recbuf(RFXMETER.count3))
         //            {
         //                case 0x1:
-        //                    logging.AddToLog("30 seconds");
+        //                    this.Log.Debug("30 seconds");
         //                    break;
         //                case 0x2:
-        //                    logging.AddToLog("1 minute");
+        //                    this.Log.Debug("1 minute");
         //                    break;
         //                case 0x4:
-        //                    logging.AddToLog("6 minutes");
+        //                    this.Log.Debug("6 minutes");
         //                    break;
         //                case 0x8:
-        //                    logging.AddToLog("12 minutes");
+        //                    this.Log.Debug("12 minutes");
         //                    break;
         //                case 0x10:
-        //                    logging.AddToLog("15 minutes");
+        //                    this.Log.Debug("15 minutes");
         //                    break;
         //                case 0x20:
-        //                    logging.AddToLog("30 minutes");
+        //                    this.Log.Debug("30 minutes");
         //                    break;
         //                case 0x40:
-        //                    logging.AddToLog("45 minutes");
+        //                    this.Log.Debug("45 minutes");
         //                    break;
         //                case 0x80:
-        //                    logging.AddToLog("1 hour");
+        //                    this.Log.Debug("1 hour");
         //                    break;
         //            }
 
@@ -3682,130 +3686,130 @@
         //            switch ((recbuf(RFXMETER.count2) & 0xc0))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("subtype       = Calibrate mode for channel 1");
+        //                    this.Log.Debug("subtype       = Calibrate mode for channel 1");
         //                    break;
         //                case 0x40:
-        //                    logging.AddToLog("subtype       = Calibrate mode for channel 2");
+        //                    this.Log.Debug("subtype       = Calibrate mode for channel 2");
         //                    break;
         //                case 0x80:
-        //                    logging.AddToLog("subtype       = Calibrate mode for channel 3");
+        //                    this.Log.Debug("subtype       = Calibrate mode for channel 3");
         //                    break;
         //            }
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
         //            counter = ((Convert.ToInt64(recbuf(RFXMETER.count2) & 0x3f) << 16) + (Convert.ToInt64(recbuf(RFXMETER.count3)) << 8) + recbuf(RFXMETER.count4)) / 1000;
-        //            logging.AddToLog("Calibrate cnt = " + counter.ToString() + " msec");
-        //            logging.AddToLog("RFXPwr        = " + Convert.ToString(Round(1 / ((16 * counter) / (3600000 / 62.5)), 3)) + " kW", false);
+        //            this.Log.Debug("Calibrate cnt = " + counter.ToString() + " msec");
+        //            this.Log.Debug("RFXPwr        = " + Convert.ToString(Round(1 / ((16 * counter) / (3600000 / 62.5)), 3)) + " kW");
         //            break;
         //        case RFXMETER.Addr:
-        //            logging.AddToLog("subtype       = New address set, push button for next address");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("subtype       = New address set, push button for next address");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
 
         //            break;
         //        case RFXMETER.CounterReset:
         //            switch ((recbuf(RFXMETER.count2) & 0xc0))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("subtype       = Push the button for next mode within 5 seconds or else RESET COUNTER channel 1 will be executed");
+        //                    this.Log.Debug("subtype       = Push the button for next mode within 5 seconds or else RESET COUNTER channel 1 will be executed");
         //                    break;
         //                case 0x40:
-        //                    logging.AddToLog("subtype       = Push the button for next mode within 5 seconds or else RESET COUNTER channel 2 will be executed");
+        //                    this.Log.Debug("subtype       = Push the button for next mode within 5 seconds or else RESET COUNTER channel 2 will be executed");
         //                    break;
         //                case 0x80:
-        //                    logging.AddToLog("subtype       = Push the button for next mode within 5 seconds or else RESET COUNTER channel 3 will be executed");
+        //                    this.Log.Debug("subtype       = Push the button for next mode within 5 seconds or else RESET COUNTER channel 3 will be executed");
         //                    break;
         //            }
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
 
         //            break;
         //        case RFXMETER.CounterSet:
         //            switch ((recbuf(RFXMETER.count2) & 0xc0))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("subtype       = Counter channel 1 is reset to zero");
+        //                    this.Log.Debug("subtype       = Counter channel 1 is reset to zero");
         //                    break;
         //                case 0x40:
-        //                    logging.AddToLog("subtype       = Counter channel 2 is reset to zero");
+        //                    this.Log.Debug("subtype       = Counter channel 2 is reset to zero");
         //                    break;
         //                case 0x80:
-        //                    logging.AddToLog("subtype       = Counter channel 3 is reset to zero");
+        //                    this.Log.Debug("subtype       = Counter channel 3 is reset to zero");
         //                    break;
         //            }
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
-        //            logging.AddToLog("Counter       = " + ((Convert.ToInt64(recbuf(RFXMETER.count1)) << 24) + (Convert.ToInt64(recbuf(RFXMETER.count2)) << 16) + (Convert.ToInt64(recbuf(RFXMETER.count3)) << 8) + recbuf(RFXMETER.count4)).ToString());
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("Counter       = " + ((Convert.ToInt64(recbuf(RFXMETER.count1)) << 24) + (Convert.ToInt64(recbuf(RFXMETER.count2)) << 16) + (Convert.ToInt64(recbuf(RFXMETER.count3)) << 8) + recbuf(RFXMETER.count4)).ToString());
 
         //            break;
         //        case RFXMETER.SetInterval:
-        //            logging.AddToLog("subtype       = Push the button for next mode within 5 seconds or else SET INTERVAL MODE will be entered");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("subtype       = Push the button for next mode within 5 seconds or else SET INTERVAL MODE will be entered");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
 
         //            break;
         //        case RFXMETER.SetCalib:
         //            switch ((recbuf(RFXMETER.count2) & 0xc0))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("subtype       = Push the button for next mode within 5 seconds or else CALIBRATION mode for channel 1 will be executed");
+        //                    this.Log.Debug("subtype       = Push the button for next mode within 5 seconds or else CALIBRATION mode for channel 1 will be executed");
         //                    break;
         //                case 0x40:
-        //                    logging.AddToLog("subtype       = Push the button for next mode within 5 seconds or else CALIBRATION mode for channel 2 will be executed");
+        //                    this.Log.Debug("subtype       = Push the button for next mode within 5 seconds or else CALIBRATION mode for channel 2 will be executed");
         //                    break;
         //                case 0x80:
-        //                    logging.AddToLog("subtype       = Push the button for next mode within 5 seconds or else CALIBRATION mode for channel 3 will be executed");
+        //                    this.Log.Debug("subtype       = Push the button for next mode within 5 seconds or else CALIBRATION mode for channel 3 will be executed");
         //                    break;
         //            }
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
 
         //            break;
         //        case RFXMETER.SetAddr:
-        //            logging.AddToLog("subtype       = Push the button for next mode within 5 seconds or else SET ADDRESS MODE will be entered");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("subtype       = Push the button for next mode within 5 seconds or else SET ADDRESS MODE will be entered");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
 
         //            break;
         //        case RFXMETER.Ident:
-        //            logging.AddToLog("subtype       = RFXMeter identification");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
-        //            logging.AddToLog("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
-        //            logging.AddToLog("FW version    = " + Conversion.Hex(recbuf(RFXMETER.count3)));
-        //            logging.AddToLog("Interval time = ", false);
+        //            this.Log.Debug("subtype       = RFXMeter identification");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(RFXMETER.seqnbr).ToString);
+        //            this.Log.Debug("ID            = " + (recbuf(RFXMETER.id1) * 256 + recbuf(RFXMETER.id2)).ToString());
+        //            this.Log.Debug("FW version    = " + Conversion.Hex(recbuf(RFXMETER.count3)));
+        //            this.Log.Debug("Interval time = ");
         //            switch (recbuf(RFXMETER.count4))
         //            {
         //                case 0x1:
-        //                    logging.AddToLog("30 seconds");
+        //                    this.Log.Debug("30 seconds");
         //                    break;
         //                case 0x2:
-        //                    logging.AddToLog("1 minute");
+        //                    this.Log.Debug("1 minute");
         //                    break;
         //                case 0x4:
-        //                    logging.AddToLog("6 minutes");
+        //                    this.Log.Debug("6 minutes");
         //                    break;
         //                case 0x8:
-        //                    logging.AddToLog("12 minutes");
+        //                    this.Log.Debug("12 minutes");
         //                    break;
         //                case 0x10:
-        //                    logging.AddToLog("15 minutes");
+        //                    this.Log.Debug("15 minutes");
         //                    break;
         //                case 0x20:
-        //                    logging.AddToLog("30 minutes");
+        //                    this.Log.Debug("30 minutes");
         //                    break;
         //                case 0x40:
-        //                    logging.AddToLog("45 minutes");
+        //                    this.Log.Debug("45 minutes");
         //                    break;
         //                case 0x80:
-        //                    logging.AddToLog("1 hour");
+        //                    this.Log.Debug("1 hour");
         //                    break;
         //            }
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(RFXMETER.packettype)) + ":" + Conversion.Hex(recbuf(RFXMETER.subtype)));
+        //            this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(RFXMETER.packettype)) + ":" + Conversion.Hex(recbuf(RFXMETER.subtype)));
         //            break;
         //    }
 
-        //    logging.AddToLog("Signal level  = " + (recbuf(RFXMETER.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(RFXMETER.rssi) >> 4).ToString());
         //}
 
         //public void decode_FS20()
@@ -3813,246 +3817,246 @@
         //    switch (recbuf(FS20.subtype))
         //    {
         //        case FS20.sTypeFS20:
-        //            logging.AddToLog("subtype       = FS20");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(FS20.seqnbr).ToString);
-        //            logging.AddToLog("House code    = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc2)), 2));
-        //            logging.AddToLog("Address       = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.addr)), 2));
-        //            logging.AddToLog("Cmd1          = ", false);
+        //            this.Log.Debug("subtype       = FS20");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(FS20.seqnbr).ToString);
+        //            this.Log.Debug("House code    = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc2)), 2));
+        //            this.Log.Debug("Address       = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.addr)), 2));
+        //            this.Log.Debug("Cmd1          = ");
         //            switch ((recbuf(FS20.cmd1) & 0x1f))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("Off");
+        //                    this.Log.Debug("Off");
         //                    break;
         //                case 0x1:
-        //                    logging.AddToLog("dim level 1 = 6.25%");
+        //                    this.Log.Debug("dim level 1 = 6.25%");
         //                    break;
         //                case 0x2:
-        //                    logging.AddToLog("dim level 2 = 12.5%");
+        //                    this.Log.Debug("dim level 2 = 12.5%");
         //                    break;
         //                case 0x3:
-        //                    logging.AddToLog("dim level 3 = 18.75%");
+        //                    this.Log.Debug("dim level 3 = 18.75%");
         //                    break;
         //                case 0x4:
-        //                    logging.AddToLog("dim level 4 = 25%");
+        //                    this.Log.Debug("dim level 4 = 25%");
         //                    break;
         //                case 0x5:
-        //                    logging.AddToLog("dim level 5 = 31.25%");
+        //                    this.Log.Debug("dim level 5 = 31.25%");
         //                    break;
         //                case 0x6:
-        //                    logging.AddToLog("dim level 6 = 37.5%");
+        //                    this.Log.Debug("dim level 6 = 37.5%");
         //                    break;
         //                case 0x7:
-        //                    logging.AddToLog("dim level 7 = 43.75%");
+        //                    this.Log.Debug("dim level 7 = 43.75%");
         //                    break;
         //                case 0x8:
-        //                    logging.AddToLog("dim level 8 = 50%");
+        //                    this.Log.Debug("dim level 8 = 50%");
         //                    break;
         //                case 0x9:
-        //                    logging.AddToLog("dim level 9 = 56.25%");
+        //                    this.Log.Debug("dim level 9 = 56.25%");
         //                    break;
         //                case 0xa:
-        //                    logging.AddToLog("dim level 10 = 62.5%");
+        //                    this.Log.Debug("dim level 10 = 62.5%");
         //                    break;
         //                case 0xb:
-        //                    logging.AddToLog("dim level 11 = 68.75%");
+        //                    this.Log.Debug("dim level 11 = 68.75%");
         //                    break;
         //                case 0xc:
-        //                    logging.AddToLog("dim level 12 = 75%");
+        //                    this.Log.Debug("dim level 12 = 75%");
         //                    break;
         //                case 0xd:
-        //                    logging.AddToLog("dim level 13 = 81.25%");
+        //                    this.Log.Debug("dim level 13 = 81.25%");
         //                    break;
         //                case 0xe:
-        //                    logging.AddToLog("dim level 14 = 87.5%");
+        //                    this.Log.Debug("dim level 14 = 87.5%");
         //                    break;
         //                case 0xf:
-        //                    logging.AddToLog("dim level 15 = 93.75%");
+        //                    this.Log.Debug("dim level 15 = 93.75%");
         //                    break;
         //                case 0x10:
-        //                    logging.AddToLog("On (100%)");
+        //                    this.Log.Debug("On (100%)");
         //                    break;
         //                case 0x11:
-        //                    logging.AddToLog("On ( at last dim level set)");
+        //                    this.Log.Debug("On ( at last dim level set)");
         //                    break;
         //                case 0x12:
-        //                    logging.AddToLog("Toggle between Off and On (last dim level set)");
+        //                    this.Log.Debug("Toggle between Off and On (last dim level set)");
         //                    break;
         //                case 0x13:
-        //                    logging.AddToLog("Bright one step");
+        //                    this.Log.Debug("Bright one step");
         //                    break;
         //                case 0x14:
-        //                    logging.AddToLog("Dim one step");
+        //                    this.Log.Debug("Dim one step");
         //                    break;
         //                case 0x15:
-        //                    logging.AddToLog("Start dim cycle");
+        //                    this.Log.Debug("Start dim cycle");
         //                    break;
         //                case 0x16:
-        //                    logging.AddToLog("Program(Timer)");
+        //                    this.Log.Debug("Program(Timer)");
         //                    break;
         //                case 0x17:
-        //                    logging.AddToLog("Request status from a bidirectional device");
+        //                    this.Log.Debug("Request status from a bidirectional device");
         //                    break;
         //                case 0x18:
-        //                    logging.AddToLog("Off for timer period");
+        //                    this.Log.Debug("Off for timer period");
         //                    break;
         //                case 0x19:
-        //                    logging.AddToLog("On (100%) for timer period");
+        //                    this.Log.Debug("On (100%) for timer period");
         //                    break;
         //                case 0x1a:
-        //                    logging.AddToLog("On ( at last dim level set) for timer period");
+        //                    this.Log.Debug("On ( at last dim level set) for timer period");
         //                    break;
         //                case 0x1b:
-        //                    logging.AddToLog("Reset");
+        //                    this.Log.Debug("Reset");
         //                    break;
         //                default:
-        //                    logging.AddToLog("ERROR: Unknown command = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd1)), 2));
+        //                    this.Log.Debug("ERROR: Unknown command = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd1)), 2));
         //                    break;
         //            }
         //            if ((recbuf(FS20.cmd1) & 0x80) == 0)
         //            {
-        //                logging.AddToLog("                command to receiver");
+        //                this.Log.Debug("                command to receiver");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("                response from receiver");
+        //                this.Log.Debug("                response from receiver");
         //            }
         //            if ((recbuf(FS20.cmd1) & 0x40) == 0)
         //            {
-        //                logging.AddToLog("                unidirectional command");
+        //                this.Log.Debug("                unidirectional command");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("                bidirectional command");
+        //                this.Log.Debug("                bidirectional command");
         //            }
         //            if ((recbuf(FS20.cmd1) & 0x20) == 0)
         //            {
-        //                logging.AddToLog("                additional cmd2 byte not present");
+        //                this.Log.Debug("                additional cmd2 byte not present");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("                additional cmd2 byte present");
+        //                this.Log.Debug("                additional cmd2 byte present");
         //            }
 
         //            if ((recbuf(FS20.cmd1) & 0x20) != 0)
         //            {
-        //                logging.AddToLog("Cmd2          = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd2)), 2));
+        //                this.Log.Debug("Cmd2          = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd2)), 2));
         //            }
 
         //            break;
         //        case FS20.sTypeFHT8V:
-        //            logging.AddToLog("subtype       = FHT 8V valve");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(FS20.seqnbr).ToString);
-        //            logging.AddToLog("House code    = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc2)), 2));
-        //            logging.AddToLog("Address       = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.addr)), 2));
-        //            logging.AddToLog("Cmd1          = ", false);
+        //            this.Log.Debug("subtype       = FHT 8V valve");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(FS20.seqnbr).ToString);
+        //            this.Log.Debug("House code    = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc2)), 2));
+        //            this.Log.Debug("Address       = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.addr)), 2));
+        //            this.Log.Debug("Cmd1          = ");
         //            if ((recbuf(FS20.cmd1) & 0x80) == 0)
         //            {
-        //                logging.AddToLog("new command");
+        //                this.Log.Debug("new command");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("repeated command");
+        //                this.Log.Debug("repeated command");
         //            }
         //            if ((recbuf(FS20.cmd1) & 0x40) == 0)
         //            {
-        //                logging.AddToLog("                unidirectional command");
+        //                this.Log.Debug("                unidirectional command");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("                bidirectional command");
+        //                this.Log.Debug("                bidirectional command");
         //            }
         //            if ((recbuf(FS20.cmd1) & 0x20) == 0)
         //            {
-        //                logging.AddToLog("                additional cmd2 byte not present");
+        //                this.Log.Debug("                additional cmd2 byte not present");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("                additional cmd2 byte present");
+        //                this.Log.Debug("                additional cmd2 byte present");
         //            }
         //            if ((recbuf(FS20.cmd1) & 0x10) == 0)
         //            {
-        //                logging.AddToLog("                battery empty beep not enabled");
+        //                this.Log.Debug("                battery empty beep not enabled");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("                enable battery empty beep");
+        //                this.Log.Debug("                enable battery empty beep");
         //            }
         //            switch ((recbuf(FS20.cmd1) & 0xf))
         //            {
         //                case 0x0:
-        //                    logging.AddToLog("                Synchronize now");
-        //                    logging.AddToLog("Cmd2          = valve position: " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd2)), 2) + " is " + (Convert.ToInt32(recbuf(FS20.cmd2) / 2.55)).ToString() + "%");
+        //                    this.Log.Debug("                Synchronize now");
+        //                    this.Log.Debug("Cmd2          = valve position: " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd2)), 2) + " is " + (Convert.ToInt32(recbuf(FS20.cmd2) / 2.55)).ToString() + "%");
         //                    break;
         //                case 0x1:
-        //                    logging.AddToLog("                open valve");
+        //                    this.Log.Debug("                open valve");
         //                    break;
         //                case 0x2:
-        //                    logging.AddToLog("                close valve");
+        //                    this.Log.Debug("                close valve");
         //                    break;
         //                case 0x6:
-        //                    logging.AddToLog("                open valve at percentage level");
-        //                    logging.AddToLog("Cmd2          = valve position: " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd2)), 2) + " is " + (Convert.ToInt32(recbuf(FS20.cmd2) / 2.55)).ToString() + "%");
+        //                    this.Log.Debug("                open valve at percentage level");
+        //                    this.Log.Debug("Cmd2          = valve position: " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd2)), 2) + " is " + (Convert.ToInt32(recbuf(FS20.cmd2) / 2.55)).ToString() + "%");
         //                    break;
         //                case 0x8:
-        //                    logging.AddToLog("                relative offset (cmd2 bit 7=direction, bit 5-0 offset value)");
+        //                    this.Log.Debug("                relative offset (cmd2 bit 7=direction, bit 5-0 offset value)");
         //                    break;
         //                case 0xa:
-        //                    logging.AddToLog("                decalcification cycle");
-        //                    logging.AddToLog("Cmd2          = valve position: " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd2)), 2) + " is " + (Convert.ToInt32(recbuf(FS20.cmd2) / 2.55)).ToString() + "%");
+        //                    this.Log.Debug("                decalcification cycle");
+        //                    this.Log.Debug("Cmd2          = valve position: " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd2)), 2) + " is " + (Convert.ToInt32(recbuf(FS20.cmd2) / 2.55)).ToString() + "%");
         //                    break;
         //                case 0xc:
-        //                    logging.AddToLog("                synchronization active");
-        //                    logging.AddToLog("Cmd2          = count down is " + (recbuf(FS20.cmd2) >> 1).ToString() + " seconds");
+        //                    this.Log.Debug("                synchronization active");
+        //                    this.Log.Debug("Cmd2          = count down is " + (recbuf(FS20.cmd2) >> 1).ToString() + " seconds");
         //                    break;
         //                case 0xe:
-        //                    logging.AddToLog("                test, drive valve and produce an audible signal");
+        //                    this.Log.Debug("                test, drive valve and produce an audible signal");
         //                    break;
         //                case 0xf:
-        //                    logging.AddToLog("                pair valve (cmd2 bit 7-1 is count down in seconds, bit 0=1)");
-        //                    logging.AddToLog("Cmd2          = count down is " + recbuf(FS20.cmd2) >> 1 + " seconds");
+        //                    this.Log.Debug("                pair valve (cmd2 bit 7-1 is count down in seconds, bit 0=1)");
+        //                    this.Log.Debug("Cmd2          = count down is " + recbuf(FS20.cmd2) >> 1 + " seconds");
         //                    break;
         //                default:
-        //                    logging.AddToLog("ERROR: Unknown command = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd1)), 2));
+        //                    this.Log.Debug("ERROR: Unknown command = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd1)), 2));
         //                    break;
         //            }
 
         //            break;
         //        case FS20.sTypeFHT80:
-        //            logging.AddToLog("subtype       = FHT80 door/window sensor");
-        //            logging.AddToLog("Sequence nbr  = " + recbuf(FS20.seqnbr).ToString);
-        //            logging.AddToLog("House code    = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc2)), 2));
-        //            logging.AddToLog("Address       = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.addr)), 2));
-        //            logging.AddToLog("Cmd1          = ", false);
+        //            this.Log.Debug("subtype       = FHT80 door/window sensor");
+        //            this.Log.Debug("Sequence nbr  = " + recbuf(FS20.seqnbr).ToString);
+        //            this.Log.Debug("House code    = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc1)), 2) + VB.Right("0" + Conversion.Hex(recbuf(FS20.hc2)), 2));
+        //            this.Log.Debug("Address       = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.addr)), 2));
+        //            this.Log.Debug("Cmd1          = ");
         //            switch ((recbuf(FS20.cmd1) & 0xf))
         //            {
         //                case 0x1:
-        //                    logging.AddToLog("sensor opened");
+        //                    this.Log.Debug("sensor opened");
         //                    break;
         //                case 0x2:
-        //                    logging.AddToLog("sensor closed");
+        //                    this.Log.Debug("sensor closed");
         //                    break;
         //                case 0xc:
-        //                    logging.AddToLog("synchronization active");
+        //                    this.Log.Debug("synchronization active");
         //                    break;
         //                default:
-        //                    logging.AddToLog("ERROR: Unknown command = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd1)), 2));
+        //                    this.Log.Debug("ERROR: Unknown command = " + VB.Right("0" + Conversion.Hex(recbuf(FS20.cmd1)), 2));
         //                    break;
         //            }
         //            if ((recbuf(FS20.cmd1) & 0x80) == 0)
         //            {
-        //                logging.AddToLog("                new command");
+        //                this.Log.Debug("                new command");
         //            }
         //            else
         //            {
-        //                logging.AddToLog("                repeated command");
+        //                this.Log.Debug("                repeated command");
         //            }
 
         //            break;
         //        default:
-        //            logging.AddToLog("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(FS20.packettype)) + ":" + Conversion.Hex(recbuf(FS20.subtype)));
+        //            this.Log.Debug("ERROR: Unknown Sub type for Packet type=" + Conversion.Hex(recbuf(FS20.packettype)) + ":" + Conversion.Hex(recbuf(FS20.subtype)));
         //            break;
         //    }
-        //    logging.AddToLog("Signal level  = " + (recbuf(FS20.rssi) >> 4).ToString());
+        //    this.Log.Debug("Signal level  = " + (recbuf(FS20.rssi) >> 4).ToString());
         //}
 
         #endregion

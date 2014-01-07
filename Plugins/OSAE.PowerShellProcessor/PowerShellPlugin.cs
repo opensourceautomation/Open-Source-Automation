@@ -13,10 +13,8 @@
     /// </summary>
     public class PowerShellPlugin : OSAEPluginBase
     {
-        /// <summary>
-        /// Provides access to the OSA logging functionality
-        /// </summary>
-        Logging logging = Logging.GetLogger("PowerShell Plugin");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
 
         /// <summary>
         /// The plugin name
@@ -43,7 +41,7 @@
                     script = OSAEScriptManager.GetScriptByName(method.Parameter1);                    
                 }                
 
-                logging.AddToLog("running script: " + script, false);
+                this.Log.Debug("running script: " + script);
 
                 if(!string.IsNullOrEmpty(script))
                 {                    
@@ -52,7 +50,7 @@
             }
             catch (Exception exc)
             {
-                logging.AddToLog("Error Processing Command: " + exc.Message, true);
+                this.Log.Error("Error Processing Command ", exc);
             }
         }
 
@@ -62,16 +60,16 @@
         /// <param name="pluginName"></param>
         public override void RunInterface(string pluginName)
         {
-            logging.AddToLog("Running Interface!", true);
+            this.Log.Info("Running Interface!");
             pName = pluginName;
 
             if (PluginRegistered())
             {
-                logging.AddToLog("Powershell Plugin already registered", false);
+                this.Log.Debug("Powershell Plugin already registered");
             }
             else
             {
-                logging.AddToLog("Powershell Plugin needs registering", false);
+                this.Log.Debug("Powershell Plugin needs registering");
                 Register(false);
             }
 
@@ -146,12 +144,12 @@
                     stringBuilder.AppendLine(obj.ToString());
                 }
 
-                logging.AddToLog("Script return: \r\n" + stringBuilder.ToString(), false);
+                this.Log.Debug("Script return: " + stringBuilder.ToString());
 
             }
             catch (Exception ex)
             {
-                logging.AddToLog("An error occured while trying to run the script, details: \r\n" + ex.Message, true);
+                this.Log.Error("An error occured while trying to run the script, details",  ex);
             }
             finally
             {
@@ -169,7 +167,7 @@
 
         private void Register(bool undo)
         {
-            logging.AddToLog("Registering Poweshell Plugin", false);
+            this.Log.Debug("Registering Poweshell Plugin");
             var core = Common.ApiPath + @"\Plugins\PowerShell\OSAE.PowerShellProcessor.dll";
             using (var install = new AssemblyInstaller(core, null))
             {
@@ -196,11 +194,11 @@
 
             if (PluginRegistered())
             {
-                logging.AddToLog("Powershell Plugin successfully registered", false);
+                this.Log.Debug("Powershell Plugin successfully registered");
             }
             else
             {
-                logging.AddToLog("Powershell Plugin failed to register", false);
+                this.Log.Debug("Powershell Plugin failed to register");
             }
         }        
     }

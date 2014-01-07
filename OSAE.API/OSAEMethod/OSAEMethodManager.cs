@@ -103,6 +103,7 @@
                     // These parameters should never be null so we won't check them
                     method.Id = int.Parse(methodId.ToString());
                     method.MethodName = methodName.ToString();
+                    method.MethodLabel = methodLabel.ToString();
                     method.ObjectName = objectName.ToString();
                     
                     // These parameters could be null

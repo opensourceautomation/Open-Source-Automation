@@ -13,9 +13,10 @@ namespace OSAE.Service
     {
         private void StartNetworkListener()
         {
+            this.Log.Info("Starting TCP Listener");
+
             try
             {
-                logging.AddToLog("Starting TCP listener", false);
                 string ip = Common.WcfServer;
                 if (ip == "localhost")
                     ip = "127.0.0.1";
@@ -23,17 +24,17 @@ namespace OSAE.Service
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Method", MethodMessageReceived);
                 //Start listening for incoming connections
                 TCPConnection.StartListening(new IPEndPoint(IPAddress.Parse(ip), 10000));
-                logging.AddToLog("TCP Listener started", false);
+                this.Log.Info("TCP Listener started");
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error starting listener:" + ex.Message, false);
+                this.Log.Error("Error starting TCP Listener: " + ex.Message, ex);
             }
         }
 
         private void PluginMessageReceived(PacketHeader header, Connection connection, string message)
         {
-            logging.AddToLog("\nA message was recieved from " + connection.ToString() + " which said '" + message + "'.", true);
+            this.Log.Info("\nA message was recieved from " + connection.ToString() + " which said '" + message + "'.");
 
             string[] arguments = message.Split('|');
             bool local = false;
@@ -76,7 +77,7 @@ namespace OSAE.Service
 
         private void MethodMessageReceived(PacketHeader header, Connection connection, string message)
         {
-            logging.AddToLog("\nA message was recieved from " + connection.ToString() + " which said '" + message + "'.", true);
+            this.Log.Info("\nA message was recieved from " + connection.ToString() + " which said '" + message + "'.");
         }
     }
 }

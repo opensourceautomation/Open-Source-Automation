@@ -8,10 +8,8 @@
     {
         string pName;
 
-        /// <summary>
-        /// Provides access to logging
-        /// </summary>
-        Logging logging = Logging.GetLogger("Email");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Email");
         
         public override void ProcessCommand(OSAEMethod method)
         {
@@ -92,21 +90,21 @@
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Username").Value, OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Password").Value);
                 
-                logging.AddToLog("to: " + mailMsg.To, true);
-                logging.AddToLog("from: " + mailMsg.From, true);
-                logging.AddToLog("subject: " + mailMsg.Subject, true);
-                logging.AddToLog("body: " + mailMsg.Body, true);
-                logging.AddToLog("smtpServer: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Server").Value, true);
-                logging.AddToLog("smtpPort: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Port").Value, true);
-                logging.AddToLog("username: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Username").Value, true);
-                logging.AddToLog("password: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Password").Value, true);
-                logging.AddToLog("ssl: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "ssl").Value, true);
+                this.Log.Info("to: " + mailMsg.To);
+                this.Log.Info("from: " + mailMsg.From);
+                this.Log.Info("subject: " + mailMsg.Subject);
+                this.Log.Info("body: " + mailMsg.Body);
+                this.Log.Info("smtpServer: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Server").Value);
+                this.Log.Info("smtpPort: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "SMTP Port").Value);
+                this.Log.Info("username: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Username").Value);
+                this.Log.Info("password: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Password").Value);
+                this.Log.Info("ssl: " + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "ssl").Value);
 
                 smtpClient.Send(mailMsg);
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error Sending email - " + ex.Message + " -" + ex.InnerException, true);
+                this.Log.Error("Error Sending email" , ex);
             }
         }
 
@@ -121,7 +119,7 @@
 
         public override void RunInterface(string pluginName)
         {
-            logging.AddToLog("Starting...", true);
+            this.Log.Info("Starting...");
             pName = pluginName;
             //No constant processing
         }

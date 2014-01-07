@@ -5,6 +5,7 @@
     using System.Text;
     using MySql.Data.MySqlClient;
     
+    [Obsolete("Please use OSAELog class")]
     [Serializable]
     public class Logging
     {

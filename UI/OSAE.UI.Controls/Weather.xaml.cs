@@ -13,10 +13,8 @@
     /// </summary>
     public partial class Weather : UserControl
     {
-        /// <summary>
-        /// Provides access to logging
-        /// </summary>
-        Logging logging = Logging.GetLogger("GUI");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("GUI");
 
         OSAEObject weatherObj;
         string sMode = "Max";
@@ -144,9 +142,9 @@
                 imageBox.Source = imageSource;
 
 			    } 
-                catch (Exception) 
+                catch (Exception ex) 
                 {
-				    logging.AddToLog("Unable to download weather image " + url.OriginalString, true);
+				    this.Log.Error("Unable to download weather image " + url.OriginalString, ex);
 			    }
 		    }
 	    }

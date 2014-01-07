@@ -14,6 +14,9 @@
 
         private readonly Type _pluginBaseType;
 
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Plugin Loader");
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PluginFinder"/> class.
         /// </summary>
@@ -58,7 +61,7 @@
 
             foreach (var file in Directory.GetFiles(Common.ApiPath + "\\" + PluginPath, "*.dll", SearchOption.AllDirectories))
             {
-                Logging.GetLogger("Plugin Loader").AddToLog("DLL Found while loading Plugins:" + file, false);
+                this.Log.Debug("DLL Found while loading Plugins:" + file);
 
                 try
                 {
@@ -66,7 +69,7 @@
 
                     foreach (var type in assembly.GetExportedTypes())
                     {
-                        Logging.GetLogger("Plugin Loader").AddToLog("Exposed Type: " + type, false);
+                        this.Log.Info("Exposed Type: " + type);
 
                         if (!type.Equals(_pluginBaseType) &&
                             _pluginBaseType.IsAssignableFrom(type))
@@ -78,8 +81,7 @@
                 catch (Exception ex)
                 {
                     // This method is called in its own App Domain so will not have access to the calling logger
-                    Logging.GetLogger("Plugin Loader").AddToLog("An assembly was not found for file:" + file, true);
-                    Logging.GetLogger("Plugin Loader").AddToLog( ex.Message, true);
+                    this.Log.Error("An assembly was not found for file:" + file, ex);
                 }
             }
 

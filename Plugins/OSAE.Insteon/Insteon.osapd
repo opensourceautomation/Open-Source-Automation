@@ -8,7 +8,7 @@
 <author>Vaughn Rupp</author>
 <destination-folder>Insteon</destination-folder>
 <main-file></main-file>
-<wiki-url></wiki-url>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=Insteon</wiki-url>
 <additional-assemblies>
 </additional-assemblies>
 </plugin-description>

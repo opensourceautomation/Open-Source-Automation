@@ -7,10 +7,8 @@
 
     public class WebServer : OSAEPluginBase
     {
-        /// <summary>
-        /// Provides access to logging
-        /// </summary>
-        Logging logging = Logging.GetLogger("Web Server");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Web Server");
 
         /// <summary>
         /// Holds the plugin name
@@ -32,7 +30,7 @@
         /// <param name="method">Standard Architecture parameter see Wiki Docs</param>
         public override void RunInterface(string pluginName)
         {
-            logging.AddToLog("Web server is running", true);
+            this.Log.Info("Web server is running");
         }
 
         /// <summary>

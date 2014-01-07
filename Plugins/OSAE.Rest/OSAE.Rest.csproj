@@ -58,6 +58,7 @@
   <ItemGroup>
     <None Include="Rest.osapd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

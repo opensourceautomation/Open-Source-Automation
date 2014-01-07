@@ -16,25 +16,34 @@
         /// </summary>
         private void InitialiseOSAInEventLog()
         {
+            this.Log.Debug("Initializing Event Log");
+            
             try
             {
                 if (!EventLog.SourceExists("OSAE"))
                     EventLog.CreateEventSource("OSAE", "Application");
+
+                this.Log.Debug("EventLog Source Ensured.");
             }
             catch (Exception ex)
             {
-                logging.AddToLog("CreateEventSource error: " + ex.Message, true);
+                this.Log.Error("CreateEventSource error: " + ex.Message, ex);
             }
             this.ServiceName = "OSAE";
             this.EventLog.Source = "OSAE";
             this.EventLog.Log = "Application";
         }        
 
-        private static void DeleteStoreFiles()
+        private void DeleteStoreFiles()
         {
+            this.Log.Debug("Deleting Store Files");
+
             string[] stores = Directory.GetFiles(Common.ApiPath, "*.store", SearchOption.AllDirectories);
+            this.Log.Debug(stores.Length + " stores to delete.");
+
             foreach (string f in stores)
                 File.Delete(f);
+
         }       
 
         /// <summary>
@@ -42,9 +51,10 @@
         /// </summary>
         private void CreateServiceObject()
         {
+            this.Log.Debug("Creating Service Object");
+
             try
             {
-                logging.AddToLog("Creating Service object", true);
                 OSAEObject svcobj = OSAEObjectManager.GetObjectByName("SERVICE-" + Common.ComputerName);
                 if (svcobj == null)
                 {
@@ -54,7 +64,7 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error creating service object - " + ex.Message, true);
+                this.Log.Error("Error creating service object: " + ex.Message, ex);
             }
         }                     
 
@@ -63,6 +73,7 @@
         /// </summary>
         private void StartThreads()
         {
+            this.Log.Debug("Starting Threads");
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
             QueryCommandQueueThread.Start();
 
@@ -79,19 +90,19 @@
         /// </summary>
         private void ShutDownSystems()
         {             
-            logging.AddToLog("Stopping...", true);
+            this.Log.Info("Stopping...");
 
             try
             {                          
                 checkPlugins.Enabled = false;
                 running = false;
                 
-                logging.AddToLog("Shutting down plugins", true);
+                this.Log.Debug("Shutting down plugins");
                 foreach (Plugin p in plugins)
                 {                           
                     if (p.Enabled)
                     {
-                        logging.AddToLog("Shutting Down Plugin: " + p.PluginName, false);
+                        this.Log.Debug("Shutting down plugin: " + p.PluginName);
                         p.Shutdown();
                     }
                 }
@@ -105,13 +116,15 @@
         /// </summary>        
         private void QueryCommandQueue()
         {
+            this.Log.Debug("QueryCommandQueue");
+
             while (running)
             {
                 try
                 {
                     foreach (OSAEMethod method in OSAEMethodManager.GetMethodsInQueue())
                     {
-                        logging.AddToLog("Method in Queue, ObjectName: " + method.ObjectName + " MethodName: " + method.MethodName, false);
+                        this.Log.Debug("Method in Queue, ObjectName: " + method.ObjectName + " MethodLabel: " + method.MethodLabel + " MethodName: " + method.MethodName);
 
                         LogMethodInformation(method);
 
@@ -120,7 +133,7 @@
                             switch (method.MethodName)
                             {
                                 case "EXECUTE" : 
-                                    logging.AddToLog("Recieved Execute Method Name", true);
+                                    this.Log.Info("Recieved Execute Method Name");
                                     UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
                                     break;
                                 case "START PLUGIN":
@@ -151,7 +164,7 @@
                             {
                                 if (plugin.Enabled == true && (method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower()))
                                 {
-                                    logging.AddToLog("Removing method from queue with ID: " + method.Id, false);
+                                    this.Log.Debug("Removing method from queue with ID: " + method.Id);
                                     plugin.ExecuteCommand(method);
                                     processed = true;
                                     break;
@@ -164,7 +177,7 @@
                                     + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | "
                                     + method.Address + " | " + method.Id, new IPEndPoint(IPAddress.Broadcast, 10000));
 
-                                logging.AddToLog("Removing method from queue with ID: " + method.Id, false);
+                                this.Log.Debug("Removing method from queue with ID: " + method.Id);
                             }
 
                             OSAEMethodManager.MethodQueueDelete(method.Id);
@@ -173,7 +186,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("Error in QueryCommandQueue: " + ex.Message + " InnerException: " + ex.InnerException, true);
+                    this.Log.Error("Error in QueryCommandQueue: " + ex.Message, ex);
                 }
 
                 System.Threading.Thread.Sleep(100);
@@ -186,11 +199,11 @@
         /// <param name="method">The method to log</param>
         private void LogMethodInformation(OSAEMethod method)
         {
-            logging.AddToLog("Found method in queue: " + method.MethodName, false);
-            logging.AddToLog("-- object name: " + method.ObjectName, false);
-            logging.AddToLog("-- param 1: " + method.Parameter1, false);
-            logging.AddToLog("-- param 2: " + method.Parameter2, false);
-            logging.AddToLog("-- object owner: " + method.Owner, false);
+            this.Log.Debug("Found method in queue: " + method.MethodName);
+            this.Log.Debug("-- object name: " + method.ObjectName);
+            this.Log.Debug("-- param 1: " + method.Parameter1);
+            this.Log.Debug("-- param 2: " + method.Parameter2);
+            this.Log.Debug("-- object owner: " + method.Owner);
         }
 
         /// <summary>

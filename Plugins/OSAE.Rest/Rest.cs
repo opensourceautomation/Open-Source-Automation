@@ -10,10 +10,8 @@
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class Rest : OSAEPluginBase
     {
-        /// <summary>
-        /// Provides access to logging
-        /// </summary>
-        Logging logging = Logging.GetLogger("Rest");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Rest");
 
         /// <summary>
         /// Hosts the web service
@@ -44,7 +42,7 @@
 
             try
             {
-                logging.AddToLog("Starting Rest Interface", true);
+                this.Log.Info("Starting Rest Interface");
 
                 bool showHelp = bool.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Show Help").Value);
                 
@@ -62,12 +60,12 @@
                     serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
                 }
 
-                logging.AddToLog("Starting Rest Interface", true);
+                this.Log.Info("Starting Rest Interface");
                 serviceHost.Open();                                
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error starting RESTful web service: " + ex.Message, true);
+                this.Log.Error("Error starting RESTful web service", ex);
             }
         }
 

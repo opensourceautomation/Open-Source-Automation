@@ -5,10 +5,8 @@
     [Cmdlet(VerbsLifecycle.Invoke, "OSA")]
     public class OSAPSInvoke : Cmdlet
     {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }
@@ -50,7 +48,7 @@
 
         protected override void ProcessRecord()
         {
-            logging.AddToLog("Invoke-OSA - ProcessRecord - Started", false);
+            this.Log.Debug("Invoke-OSA - ProcessRecord - Started");
             OSAEMethodManager.MethodQueueAdd(Name, Method, parameter1, parameter2, "PowerShell");
 
             WriteObject(true);

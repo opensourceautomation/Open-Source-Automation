@@ -6,10 +6,8 @@
     [Cmdlet(VerbsLifecycle.Invoke, "OSALog")]
     public class OSALOG : Cmdlet
     {
-        /// <summary>
-        /// Provides access to the OSA logging class
-        /// </summary>
-        private Logging logging = Logging.GetLogger("PowerShell");
+        //OSAELog
+        private OSAE.General.OSAELog Log2 = new General.OSAELog("Powershell");
 
         [Parameter(Mandatory = true)]
         public string Message { get; set; }
@@ -23,16 +21,16 @@
             {
                 if (string.IsNullOrEmpty(Log))
                 {
-                    logging.AddToLog(Message, true);
+                    this.Log2.Debug(Message);
                 }
                 else
                 {
-                    Logging.AddToLog(Message, true, Log);
+                    this.Log2.Debug(Message);
                 }
             }
             catch (Exception exc)
             {
-                logging.AddToLog("An error occured while trying to run the command invoke-osalog, details: \r\n" + exc.Message, true);
+                this.Log2.Error("An error occured while trying to run the command invoke-osalog, details", exc);
             }
         }      
     }     
