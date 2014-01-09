@@ -16,7 +16,8 @@
         string pName;
         string uom;
 
-        Logging logging = Logging.GetLogger("1Wire");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("OneWire");
         private DSPortAdapter adapter = null;
         System.Threading.Timer Clock;
         Object thisLock = new Object();
@@ -32,14 +33,14 @@
 
         public override void RunInterface(string pluginName)
         {
-            logging.AddToLog("Loading (0.2.4)...", true);
-            logging.AddToLog("Current Environment Version: " + Environment.Version.Major.ToString(), true);
+            this.Log.Info("Loading (0.2.4)...");
+            this.Log.Info("Current Environment Version: " + Environment.Version.Major.ToString());
             if (Environment.Version.Major >= 4)
             {
                 string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework64\v2.0.50727");
                 if (!Directory.Exists(folder))
                     folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework\v2.0.50727");
-                logging.AddToLog("vjsnativ.dll path: " + folder, false);
+                this.Log.Debug("vjsnativ.dll path: " + folder);
                 folder = Path.GetFullPath(folder);
                 LoadLibrary(Path.Combine(folder, "vjsnativ.dll"));
             }
@@ -47,22 +48,22 @@
             string adapterProp = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Adapter").Value;
             string port = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value;
             uom = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Unit of Measure").Value;
-            logging.AddToLog("adapterProp: " + adapterProp, false);
-            logging.AddToLog("port: " + port, false);
-            logging.AddToLog("uom: " + uom, false);
+            this.Log.Debug("adapterProp: " + adapterProp);
+            this.Log.Debug("port: " + port);
+            this.Log.Debug("uom: " + uom);
             try
             {
                 adapter = OneWireAccessProvider.getAdapter(adapterProp, "COM" + port);
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Failed to GetAdapter - " + ex.Message + " - " + ex.InnerException.Message, true);
+                this.Log.Error("Failed to GetAdapter ", ex);
             }
 
 
             if (adapter.adapterDetected())
             {
-                logging.AddToLog("Adapter Detected", true);
+                this.Log.Info("Adapter Detected");
                 adapter.setSearchAllDevices();
 
                 Clock = new System.Threading.Timer(poll, null, 0, 10000);
@@ -73,14 +74,14 @@
                 }
             }
             else
-                logging.AddToLog("Adapter(" + adapterProp + ") not found on port " + port, true);
+                this.Log.Info("Adapter(" + adapterProp + ") not found on port " + port);
 
         }
 
         private void poll(object nothing)
         {
             threadCount++;
-            logging.AddToLog("Thread Started.  Threads running: " + threadCount, false);
+            this.Log.Debug("Thread Started.  Threads running: " + threadCount);
             if (threadCount < 2)
             {
                 lock (thisLock)
@@ -88,7 +89,7 @@
                     try
                     {
                         adapter.beginExclusive(true);
-                        logging.AddToLog("polling...", false);
+                        this.Log.Debug("polling...");
                         double temp;
                         OneWireContainer owc = null;
 
@@ -107,10 +108,10 @@
                             addr = owc.getAddressAsString();
                             desc = owc.getDescription();
 
-                            logging.AddToLog("- Device Name: " + owc.getName(), false);
-                            logging.AddToLog(" - Type: " + owcType, false);
-                            logging.AddToLog(" - Address: " + addr, false);
-                            logging.AddToLog(" - Description: " + desc, false);
+                            this.Log.Debug("- Device Name: " + owc.getName());
+                            this.Log.Debug(" - Type: " + owcType);
+                            this.Log.Debug(" - Address: " + addr);
+                            this.Log.Debug(" - Description: " + desc);
 
                             switch (owcType)
                             {
@@ -141,12 +142,12 @@
 
 
 
-                                        logging.AddToLog(" - Temperature: " + temp, false);
+                                        this.Log.Debug(" - Temperature: " + temp);
                                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", temp.ToString(), pName);
                                     }
                                     catch (Exception ex)
                                     {
-                                        logging.AddToLog("Container type 10 poll error: " + ex.Message, true);
+                                        this.Log.Error("Container type 10 poll error", ex);
                                     }
                                     break;
 
@@ -158,7 +159,7 @@
                                     }
                                     catch (Exception ex)
                                     {
-                                        logging.AddToLog("Container type 22 poll error: " + ex.Message, true);
+                                        this.Log.Error("Container type 22 poll error", ex);
                                     }
                                     break;
 
@@ -187,12 +188,12 @@
 
 
 
-                                        logging.AddToLog(" - Temperature: " + temp, false);
+                                        this.Log.Debug(" - Temperature: " + temp);
                                         OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", temp.ToString(), pName);
                                     }
                                     catch (Exception ex)
                                     {
-                                        logging.AddToLog("Container type 28 poll error: " + ex.Message, true);
+                                        this.Log.Error("Container type 28 poll error", ex);
                                     }
                                     break;
 
@@ -203,23 +204,23 @@
                     }
                     catch (Exception ex)
                     {
-                        logging.AddToLog("Cannot get exclusive use of the 1-wire adapter: " + ex.Message, true);
+                        this.Log.Error("Cannot get exclusive use of the 1-wire adapter", ex);
                     }
                 }
 
                 threadCount--;
-                logging.AddToLog("Thread Ended.  Threads running: " + threadCount, false);
+                this.Log.Debug("Thread Ended.  Threads running: " + threadCount);
                 abortCount = 0;
 
             }
             else
             {
                 threadCount--;
-                logging.AddToLog("Thread aborted.  Threads running: " + threadCount, false);
+                this.Log.Debug("Thread aborted.  Threads running: " + threadCount);
                 abortCount++;
                 if (abortCount > 2 && !restarting)
                 {
-                    logging.AddToLog("Restarting plugin", false);
+                    this.Log.Debug("Restarting plugin");
                     restarting = true;
                     Shutdown();
                     RunInterface(pName);
@@ -237,7 +238,7 @@
 
         public override void Shutdown()
         {
-            logging.AddToLog("Running shutdown logic", true);
+            this.Log.Info("Running shutdown logic");
             adapter.freePort();
             adapter = null;
         }

@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"  MaintainScrollPositionOnPostback="true" EnableEventValidation="false" CodeFile="schedules.aspx.cs" Inherits="schedules" %>
+<%@ MasterType virtualpath="~/MasterPage.master" %>
 
 <%@ Implements Interface="System.Web.UI.IPostBackEventHandler" %>
 

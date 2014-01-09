@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="objtypes.aspx.cs" Inherits="objtypes" EnableEventValidation="false" MaintainScrollPositionOnPostback="true"%>
+<%@ MasterType virtualpath="~/MasterPage.master" %>
 <%@ Implements Interface="System.Web.UI.IPostBackEventHandler" %>
 
 

@@ -27,7 +27,7 @@ public partial class eventlogs : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            logging.AddToLog("Error retreiving event log: " + ex.Message, true);
+            Master.Log.Error("Error retreiving event log", ex);
         }
     }
    

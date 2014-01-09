@@ -8,8 +8,7 @@ using OSAE;
 
 public partial class patterns : System.Web.UI.Page
 {
-    Logging logging = Logging.GetLogger("Web UI");
-
+    
     public void RaisePostBackEvent(string eventArgument)
     {
         string[] args = eventArgument.Split('_');

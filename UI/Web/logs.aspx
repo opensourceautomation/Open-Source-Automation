@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="logs.aspx.cs" Inherits="logs" %>
+<%@ MasterType virtualpath="~/MasterPage.master" %>
 
 <%@ Implements Interface="System.Web.UI.IPostBackEventHandler" %>
 

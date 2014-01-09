@@ -1,27 +1,26 @@
-﻿namespace ClientService
+﻿namespace OSAE.ClientService
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Security;
-    using System.Security.Policy;
     using System.ServiceModel;
     using System.ServiceProcess;
+    using System.Diagnostics;
     using System.Threading;
-    using OSAE;
+    using System.Security;
+    using System.Data;
     using NetworkCommsDotNet;
+    using log4net.Config;
+    using log4net;
+    using System.Reflection;
 
     public partial class ClientService : ServiceBase
     {
         private const string sourceName = "Client Service";
+        private OSAEPluginCollection plugins = new OSAEPluginCollection();
+        //System.Timers.Timer Clock = new System.Timers.Timer();
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Client Service");
-
-        private OSAEPluginCollection plugins = new OSAEPluginCollection();
-        System.Timers.Timer Clock = new System.Timers.Timer();
+        private OSAE.General.OSAELog Log;
 
         static void Main(string[] args)
         {
@@ -36,13 +35,15 @@
             }
             else
             {
+                //Debugger.Launch();
                 ServiceBase.Run(new ClientService());
             }
         }
 
         public ClientService()
         {
-            
+            Log = new OSAE.General.OSAELog("Client Service");
+
             this.Log.Info("ClientService Starting");
 
             try
@@ -125,6 +126,9 @@
             {
                 this.Log.Error("Error occured during stop, details", ex);
             }
+
+            NetworkComms.Shutdown();
+            OSAE.General.OSAELog.FlushBuffers();
         }
 
         public void LoadPlugins()
@@ -192,9 +196,8 @@
                             this.Log.Info("status: " + plugin.Enabled.ToString());
                             this.Log.Info("PluginName: " + plugin.PluginName);
                             this.Log.Info("PluginVersion: " + plugin.PluginVersion);
-                            
-                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10000, plugin.PluginName + "|" + plugin.Status
-                                + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
+
+                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10000, plugin.PluginName + "|" + plugin.Status + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
                         }                       
                     }
                     else

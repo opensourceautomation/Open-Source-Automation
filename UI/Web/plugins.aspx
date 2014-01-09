@@ -1,8 +1,9 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="plugins.aspx.cs" Inherits="plugins" %>
+<%@ MasterType virtualpath="~/MasterPage.master" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server">
     <div class="row-fluid">        
-        <div class="span12" id="pluginGrid" style="overflow: auto; border:solid; max-height:500px;"  onscroll="SetPluginDivPosition()">
+        <div class="span12" id="pluginGrid" style="overflow: auto; border:solid; max-height:500px;"  >
             
             <asp:GridView runat="server" ID="gvPlugins"
                 AutoGenerateColumns="False"  

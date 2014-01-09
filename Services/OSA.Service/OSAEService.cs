@@ -35,19 +35,18 @@
         /// <summary>
         /// Timer used to periodically check if plugins are still running
         /// </summary>
-        private System.Timers.Timer checkPlugins = new System.Timers.Timer();
+        //private System.Timers.Timer checkPlugins = new System.Timers.Timer();
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Service");
+        private OSAE.General.OSAELog Log = new General.OSAELog("OSAE Service");
         #endregion
 
 
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
         /// </summary>
-        static void Main(string[] args) 
+        static void Main(string[] args)
         {
-           
             if (args.Length > 0)
             {
                 string pattern = Common.MatchPattern(args[0]);
@@ -59,17 +58,9 @@
             }
             else
             {
-
-// Use for launching the VS debugger when the service starts
-///#if(!DEBUG)
-//                ServiceBase.Run(new OSAEService());
-//#else                
-                Debugger.Launch();
+                //Debugger.Launch();
                 ServiceBase.Run(new OSAEService());
-//#endif
-
             }
-            
         }
         
         /// <summary>

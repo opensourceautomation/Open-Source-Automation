@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="screens.aspx.cs" Inherits="screens" %>
+<%@ MasterType virtualpath="~/MasterPage.master" %>
 
 <%@ Reference Control="~/controls/ctrlStateImage.ascx"  %>
 <%@ Reference Control="~/controls/ctrlPropertyLabel.ascx"  %>

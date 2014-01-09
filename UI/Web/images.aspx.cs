@@ -8,8 +8,7 @@ using OSAE;
 
 public partial class images : System.Web.UI.Page
 {
-    Logging logging = Logging.GetLogger("Web UI");
-
+    
     public void RaisePostBackEvent(string eventArgument)
     {
 
@@ -99,7 +98,7 @@ public partial class images : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            logging.AddToLog("Error deleting image: " + ex.Message + " Inner Exception: " + ex.InnerException, true);
+            Master.Log.Error("Error deleting image", ex);
         }
     }
 

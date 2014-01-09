@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="valuedisplay.aspx.cs" Inherits="valuedisplay" %>
+<%@ MasterType virtualpath="~/MasterPage.master" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" runat="Server">
     <div class="row-fluid">

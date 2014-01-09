@@ -27,7 +27,7 @@ public partial class debuglog : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            logging.AddToLog("Error retreiving debug log: " + ex.Message, true);
+            Master.Log.Error("Error retreiving debug log", ex);
         }
     }
    

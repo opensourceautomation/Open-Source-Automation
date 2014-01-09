@@ -9,8 +9,7 @@ using System.Data;
 
 public partial class valuedisplay : System.Web.UI.Page
 {
-    Logging logging = Logging.GetLogger("Web UI");
-
+    
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
@@ -61,7 +60,7 @@ public partial class valuedisplay : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            logging.AddToLog("Error retreiving values: " + ex.Message, true);
+            Master.Log.Error("Error retreiving values", ex);
         }
     }
 }
