@@ -228,6 +228,7 @@ public partial class scripts : System.Web.UI.Page
     {
         OSAEScriptManager.ScriptDelete(hdnSelectedScriptName.Text);
         loadScripts();
+        loadDDLs();
         deleteAlert.Visible = true;
         int selectedRow = Int32.Parse(hdnSelectedRow.Text) - 1;
         if (selectedRow < 0)
