@@ -41,7 +41,7 @@ namespace OSAE.General
                     {
                         if (adoAppender != null)
                         {
-                            adoAppender.ConnectionString = "Server=" + Common.DBConnection + ";Database=" + Common.DBName + ";Port=" + Common.DBPort + ";Uid=" + Common.DBUsername + ";Pwd=" + Common.DBPassword + ";";
+                            adoAppender.ConnectionString = Common.ConnectionString; 
                             adoAppender.ActivateOptions();
                         }
                         root.RemoveAppender(fileAppender);

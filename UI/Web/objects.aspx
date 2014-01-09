@@ -1,4 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="objects.aspx.cs" Inherits="home" MasterPageFile="~/MasterPage.master" EnableEventValidation="false" MaintainScrollPositionOnPostback="true"%>
+<%@ MasterType virtualpath="~/MasterPage.master" %>
 <%@ Implements Interface="System.Web.UI.IPostBackEventHandler" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="ContentPlaceHolder">

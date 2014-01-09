@@ -63,6 +63,9 @@ public partial class plugins : System.Web.UI.Page
                 //logging.AddToLog("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID, true);
             }
         }
+
+        // TODO: Load all other objects with base type of PLUGIN.  These objects represent plugins on client instances.  Maybe make a separate grid since it wont be able to load the osapd files on the clients
+
         checkForUpdates();
         gvPlugins.DataSource = pluginList;
         gvPlugins.DataBind();

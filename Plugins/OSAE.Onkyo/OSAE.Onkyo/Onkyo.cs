@@ -9,8 +9,9 @@
     public class Onkyo : OSAEPluginBase
     {
         public delegate void AddDeviceDelegate(Device ODevDele);
-       
-        Logging logging = Logging.GetLogger("Onkyo");
+
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Onkyo");
         string pName;
         List<Receiver> receivers = new List<Receiver>();
         int _ctr = 1;
@@ -19,7 +20,7 @@
 
         public override void ProcessCommand(OSAEMethod method)
         {
-            logging.AddToLog("Found Command: " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2, false);
+            this.Log.Debug("Found Command: " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2);
             
             if(method.ObjectName == pName)
             {
@@ -154,7 +155,7 @@
 
         public override void RunInterface(string pluginName)
         {
-            logging.AddToLog("Running interface", false);
+            this.Log.Debug("Running interface");
             pName = pluginName;
             OSAEObjectTypeManager.ObjectTypeUpdate("ONKYO RECEIVER", "ONKYO RECEIVER", "Onkyo Receiver", pluginName, "ONKYO RECEIVER", 0, 0, 0, 1);
 
@@ -204,13 +205,13 @@
                 }
 
                 receivers.Add(r);
-                logging.AddToLog("Added receiver to list: " + r.Name, false);
+                this.Log.Debug("Added receiver to list: " + r.Name);
 
                 try
                 {
                     if (r.Type == "Network" && r.IP != "" && r.NetworkPort != 0)
                     {
-                        logging.AddToLog("Creating TCP Client: ip-" + r.IP + " port-" + r.NetworkPort, false);
+                        this.Log.Debug("Creating TCP Client: ip-" + r.IP + " port-" + r.NetworkPort);
                         r.tcpClient = new TcpClient(r.IP, r.NetworkPort);
 
                         //get a network stream from server
@@ -229,15 +230,15 @@
                     }
                     else
                     {
-                        logging.AddToLog(r.Name + " - Properties not set", true);
+                        this.Log.Info(r.Name + " - Properties not set");
                     }
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("Error creating connection to receiver: " + ex.Message, true);
+                    this.Log.Error("Error creating connection to receiver", ex);
                 }
             }
-            logging.AddToLog("Run Interface Complete", false);
+            this.Log.Info("Run Interface Complete");
         }
 
         public override void Shutdown()
@@ -282,7 +283,7 @@
                     //
                     r.clientStreamWriter.WriteLine(line);
                     r.clientStreamWriter.Flush();
-                    logging.AddToLog("Sent command: " + line, true);
+                    this.Log.Info("Sent command: " + line);
                 }
                 else
                 {
@@ -290,7 +291,7 @@
                     {
                         if (r.Type == "Network" && r.IP != "" && r.NetworkPort != 0)
                         {
-                            logging.AddToLog("Creating TCP Client: ip-" + r.IP + " port-" + r.NetworkPort, false);
+                            this.Log.Debug("Creating TCP Client: ip-" + r.IP + " port-" + r.NetworkPort);
                             r.tcpClient = new TcpClient(r.IP, r.NetworkPort);
 
                             //get a network stream from server
@@ -307,22 +308,22 @@
                             //
                             r.clientStreamWriter.WriteLine(line);
                             r.clientStreamWriter.Flush();
-                            logging.AddToLog("Sent command: " + line, true);
+                            this.Log.Info("Sent command: " + line);
                         }
                         else
                         {
-                            logging.AddToLog(r.Name + " - Properties not set", true);
+                            this.Log.Info(r.Name + " - Properties not set");
                         }
                     }
                     catch (Exception ex)
                     {
-                        logging.AddToLog("Error creating connection to receiver.  Command can not be sent: " + ex.Message, true);
+                        this.Log.Error("Error creating connection to receiver.  Command can not be sent", ex);
                     }
                 }
             }
             catch (Exception e)
             {
-                logging.AddToLog("Error sending command: " + e.Message, true);
+                this.Log.Error("Error sending command", e);
             }
         }
 
@@ -338,17 +339,17 @@
                     OSAEObjectPropertyManager.ObjectPropertySet(oDevice.ModelName, "Communication Type", "Network", pName);
 
                 }
-                logging.AddToLog(_ctr.ToString() + " - " + oDevice.Region + Environment.NewLine +
+                this.Log.Info(_ctr.ToString() + " - " + oDevice.Region + Environment.NewLine +
                         _ctr.ToString() + " - " + oDevice.ModelName + Environment.NewLine +
                             _ctr.ToString() + " - " + oDevice.Mac + Environment.NewLine +
                                 _ctr.ToString() + " - " + oDevice.IP + Environment.NewLine +
-                                    _ctr.ToString() + " - " + oDevice.Port + Environment.NewLine, true);
+                                    _ctr.ToString() + " - " + oDevice.Port + Environment.NewLine);
                     _ctr++;
             }
             catch (Exception ex)
             {
 
-                logging.AddToLog("Error receiver device info: " + ex.Message, true);
+                this.Log.Error("Error receiver device info ", ex);
             }
 
         }
@@ -367,7 +368,8 @@
         public TcpClient tcpClient = null;
         public NetworkStream clientSockStream = null;
 
-        private Logging logging = Logging.GetLogger("Onkyo");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Onkyo");
         public string Type
         {
             get { return _type; }
@@ -412,7 +414,7 @@
                 try
                 {
                     string curLine = clientStreamReader.ReadLine();
-                    logging.AddToLog("Received data from receiver: " + curLine, false);
+                    this.Log.Debug("Received data from receiver: " + curLine);
                     if (curLine.IndexOf("!1PWR00") > -1)
                         OSAEObjectStateManager.ObjectStateSet(_name, "OFF", "Onkyo");
                     if (curLine.IndexOf("!1PWR01") > -1)
@@ -420,7 +422,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("Error reading from stream: " + ex.Message, true);
+                    this.Log.Error("Error reading from stream", ex);
                 }
             }
         }

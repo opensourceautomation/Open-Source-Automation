@@ -14,17 +14,18 @@ namespace OSAE.SqueezeboxServer
         private string ttsSave = "";
         private string ttsPlay = "";
         private SqueezeboxServerAPI sbs = new SqueezeboxServerAPI();
-        Logging logging = Logging.GetLogger("Squeezebox Server");
+        //OSAELog
+        private OSAE.General.OSAELog Log = new General.OSAELog("Squeezebox Server");
 
         private string pName = null;
                
         public override void ProcessCommand(OSAEMethod method)
         {
             //Process incomming command
-            logging.AddToLog("Process command: " + method.MethodName, false);
-            logging.AddToLog("Process parameter1: " + method.Parameter1, false);
-            logging.AddToLog("Process parameter2: " + method.Parameter2, false);
-            logging.AddToLog("Address: " + method.Address, false);
+            this.Log.Debug("Process command: " + method.MethodName);
+            this.Log.Debug("Process parameter1: " + method.Parameter1);
+            this.Log.Debug("Process parameter2: " + method.Parameter2);
+            this.Log.Debug("Address: " + method.Address);
 
             switch (method.MethodName)
             {
@@ -88,7 +89,7 @@ namespace OSAE.SqueezeboxServer
         {
             pName = pluginName;
 
-            logging.AddToLog("Initializing Plugin", true);
+            this.Log.Info("Initializing Plugin");
             OSAEObjectTypeManager.ObjectTypeUpdate("SQUEEZEBOX", "SQUEEZEBOX", "Squeezebox", pName, "SQUEEZEBOX", 0, 0, 0, 1);
 
             sbsAddress = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Server Address").Value;
@@ -96,30 +97,30 @@ namespace OSAE.SqueezeboxServer
             ttsSave = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "TTS Save Path").Value;
             ttsPlay = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "TTS Play Path").Value;
 
-            logging.AddToLog("address: " + sbsAddress, true);
-            logging.AddToLog("port: " + sbsPort, true);
+            this.Log.Info("address: " + sbsAddress);
+            this.Log.Info("port: " + sbsPort);
             sbs.mHost = sbsAddress;
             sbs.mPort = sbsPort;
             StringCollection players = sbs.GetPlayers();
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("SQUEEZEBOX");
-            logging.AddToLog("Found " + sbs.GetPlayerCount().ToString() + " players", true);
+            this.Log.Info("Found " + sbs.GetPlayerCount().ToString() + " players");
             foreach (string player in players)
             {
-                logging.AddToLog("Found player: " + player, true);
+                this.Log.Info("Found player: " + player);
                 string[] sb = player.Split(' ');
                 bool found = false;
                 foreach (OSAEObject obj in objects)
                 {
                     if (obj.Address == sb[0])
                     {
-                        logging.AddToLog("Found matching object: " + obj.Name, true);
+                        this.Log.Info("Found matching object: " + obj.Name);
                         found = true;
                     }
                 }
 
                 if (!found)
                 {
-                    logging.AddToLog("No object found.  Adding to OSA", true);
+                    this.Log.Info("No object found.  Adding to OSA");
                     OSAEObjectManager.ObjectAdd(sb[1], sb[1], "SQUEEZEBOX", sb[0], "", true);
                 }
 
@@ -133,13 +134,13 @@ namespace OSAE.SqueezeboxServer
         
         public void TextToSpeech(string text)
         {
-            logging.AddToLog("Creating wav file of: " + text, false);
+            this.Log.Debug("Creating wav file of: " + text);
             SpeechAudioFormatInfo synthFormat = new SpeechAudioFormatInfo(44100, AudioBitsPerSample.Sixteen, AudioChannel.Stereo);
             SpeechSynthesizer speechEngine = new SpeechSynthesizer();
 
-            logging.AddToLog("setting output: " + ttsSave, false);
+            this.Log.Debug("setting output: " + ttsSave);
             speechEngine.SetOutputToWaveFile(ttsSave, synthFormat);
-            logging.AddToLog("speaking", false);
+            this.Log.Debug("speaking");
             speechEngine.Speak(text);
             speechEngine.Dispose();
         }

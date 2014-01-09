@@ -1,13 +1,17 @@
-﻿namespace OSAE.Zwave
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using OpenZWaveDotNet;
+using OSAE;
+
+namespace OSAE.Zwave
 {
-    using System;
-    using System.Collections.Generic;
-    using OpenZWaveDotNet;
-    using OSAE;
+    
 
     public class Zwave : OSAEPluginBase
     {
-        static private Logging logging = Logging.GetLogger("ZWave");
+        //OSAELog
+        private static OSAE.General.OSAELog Log = new General.OSAELog("ZWave");
         static private ManagedControllerStateChangedHandler m_controllerStateChangedHandler = new ManagedControllerStateChangedHandler(Zwave.MyControllerStateChangedHandler);
         static private ZWManager m_manager = null;
         ZWOptions m_options = null;
@@ -15,58 +19,18 @@
         ZWNotification m_notification = null;
         List<Node> m_nodeList = new List<Node>();
         string pName;
+        private bool isShuttingDown = false;
 
-        public override void RunInterface(string pluginName)
+        public override async void RunInterface(string pluginName)
         {
             pName = pluginName;
-            int poll = 60;
-            if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value != string.Empty)
-                poll = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value);
+            await StartOpenzwaveAsync();
 
-            string port = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value;
-
-            logging.AddToLog("Port: " + port, true);
-            try
-            {
-                if (port != "")
-                {
-                    // Create the Options
-                    m_options = new ZWOptions();
-                    m_options.Create(Common.ApiPath + @"\Plugins\ZWave\config\", Common.ApiPath + @"\Plugins\ZWave\", @"");
-
-                    // Add any app specific options here...
-                    m_options.AddOptionBool("ConsoleOutput", false);
-                    m_options.AddOptionBool("IntervalBetweenPolls", true);
-                    m_options.AddOptionInt("PollInterval", poll);
-
-
-                    // Lock the options
-                    m_options.Lock();
-
-                    // Create the OpenZWave Manager
-                    m_manager = new ZWManager();
-                    m_manager.Create();
-                    m_manager.OnNotification += new ManagedNotificationsHandler(NotificationHandler);
-
-                    // Add a driver
-                    m_manager.AddDriver(@"\\.\COM" + port);
-
-                    //logging.AddToLog("Setting poll interval: " + poll.ToString(), true);
-                    //m_manager.SetPollInterval(poll);
-                    logging.AddToLog(Common.ApiPath + @"\Plugins\ZWave\Config", true);
-                    logging.AddToLog("Zwave plugin initialized", true);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                logging.AddToLog("Error initalizing plugin: " + ex.Message, true);
-            }
         }
 
         public override void ProcessCommand(OSAEMethod method)
         {
-            logging.AddToLog("Found Command: " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2 + " | obj: " + method.ObjectName + " | addr: " + method.Address , false);
+            Log.Debug("Found Command: name: " + method.MethodName + " | label: " + method.MethodLabel + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2 + " | obj: " + method.ObjectName + " | addr: " + method.Address );
             //process command
             try
             {
@@ -90,11 +54,11 @@
 
                     if (method.MethodName == "NODE NEIGHBOR UPDATE")
                     {
-                        logging.AddToLog("Requesting Node Neighbor Update: " + obj.Name, true);
+                        Log.Info("Requesting Node Neighbor Update: " + obj.Name);
                         m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
                         if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RequestNodeNeighborUpdate, false, nid))
                         {
-                            logging.AddToLog("Request Node Neighbor Update Failed: " + obj.Name, true);
+                            Log.Info("Request Node Neighbor Update Failed: " + obj.Name);
                             m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                         }
                     }
@@ -122,7 +86,7 @@
                             m_manager.SetValue(v.ValueID, (byte)val);
 
                         OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName);
-                        logging.AddToLog("Turned on: " + method.ObjectName, false);
+                        Log.Debug("Turned on: " + method.ObjectName);
                     }
                     else if(method.MethodName == "OFF")
                     {
@@ -142,20 +106,18 @@
 
                         //m_manager.SetNodeOff(m_homeId, nid);
                         OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName);
-                        logging.AddToLog("Turned off: " + method.ObjectName, false);
+                        Log.Debug("Turned off: " + method.ObjectName);
                     }
                     else
                     {
                         foreach (Value value in node.Values)
                         {
-                            if (value.Label == method.MethodName)
+                            if (value.Label.ToUpper() == method.MethodName.ToUpper())
                             {
                                 if (method.Parameter1 != "")
                                 {
                                     if (value.Type == ZWValueID.ValueType.String)
                                         m_manager.SetValue(value.ValueID, method.Parameter1);
-                                    else if (value.Type == ZWValueID.ValueType.List)
-                                        m_manager.SetValueListSelection(value.ValueID, method.Parameter1);
                                     else if (value.Type == ZWValueID.ValueType.Int)
                                         m_manager.SetValue(value.ValueID, Int32.Parse(method.Parameter1));
                                     else if (value.Type == ZWValueID.ValueType.Byte)
@@ -170,14 +132,27 @@
                                     else if (value.Type == ZWValueID.ValueType.Decimal)
                                         m_manager.SetValue(value.ValueID, Convert.ToSingle(method.Parameter1));
 
-                                    logging.AddToLog("Set " + method.MethodName + " to " + method.Parameter1 + ": " + method.ObjectName, false);
+                                    Log.Debug("Set " + method.MethodName + " to " + method.Parameter1 + ": " + method.ObjectName);
                                 }
-                                else if(value.Type == ZWValueID.ValueType.Button)
+                                else if (value.Type == ZWValueID.ValueType.Button)
                                 {
                                     if (value.Label == method.MethodName)
                                     {
                                         m_manager.PressButton(value.ValueID);
                                         m_manager.ReleaseButton(value.ValueID);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                String[] split;
+                                split = method.MethodName.Split('-');
+                                if (value.Label.ToUpper() == split[0].Trim().ToUpper())
+                                {
+                                    if (value.Type == ZWValueID.ValueType.List)
+                                    {
+                                        m_manager.SetValueListSelection(value.ValueID, split[1].Trim());
+                                        Log.Info("Set " + value.Label + " to " + split[1].Trim());
                                     }
                                 }
                             }
@@ -200,7 +175,7 @@
                             //    m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
                             //    if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.AddController, false, nid))
                             //    {
-                            //        logging.AddToLog("Add Controller Failed", true);
+                            //        this.Log.Info("Add Controller Failed", true);
                             //        m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                             //    }
                             //    //osae.MethodQueueAdd(osae.GetPluginName("GUI CLIENT", osae.ComputerName), "POPUP MESSAGE", "Put the target controller into receive configuration mode.\nThe PC Z-Wave Controller must be within 2m of the controller being added.", "");
@@ -209,7 +184,7 @@
                             //    m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
                             //    if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RemoveController, false, nid))
                             //    {
-                            //        logging.AddToLog("Remove Controller Failed", true);
+                            //        this.Log.Info("Remove Controller Failed", true);
                             //        m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                             //    }
                             //    //osae.MethodQueueAdd(osae.GetPluginName("GUI CLIENT", osae.ComputerName), "POPUP MESSAGE", "Put the target controller into receive configuration mode.\nThe PC Z-Wave Controller must be within 2m of the controller being removed.", "");
@@ -218,7 +193,7 @@
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
                                 if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.AddDevice, false, nid))
                                 {
-                                    logging.AddToLog("Add Device Failed", true);
+                                    Log.Info("Add Device Failed");
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                                 }
                                 break;
@@ -230,7 +205,7 @@
                                 }
                                 else
                                 {
-                                    logging.AddToLog("Remove Device Failed", true);
+                                    Log.Info("Remove Device Failed");
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                                 }
                                 break;
@@ -242,12 +217,12 @@
                                 }
                                 else
                                 {
-                                    logging.AddToLog("Remove Failed Node Failed: Z" + nid.ToString(), true);
+                                    Log.Info("Remove Failed Node Failed: Z" + nid.ToString());
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                                 }
                                 break;
                             case "RESET CONTROLLER":
-                                logging.AddToLog("Resetting Controller", true);
+                                Log.Info("Resetting Controller");
                                 m_manager.ResetController(m_homeId);
                                 //DataSet ds = osae.GetObjectsByType("ZWAVE DIMMER");
                                 //foreach (DataRow dr in ds.Tables[0].Rows)
@@ -260,20 +235,20 @@
                                 //    osae.ObjectDelete(dr["object_name"].ToString());
                                 break;
                             case "NODE NEIGHBOR UPDATE":
-                                logging.AddToLog("Requesting Node Neighbor Update: Z" + nid.ToString(), true);
+                                Log.Info("Requesting Node Neighbor Update: Z" + nid.ToString());
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
                                 if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RequestNodeNeighborUpdate, false, nid))
                                 {
-                                    logging.AddToLog("Request Node Neighbor Update Failed: Z" + nid.ToString(), true);
+                                    Log.Info("Request Node Neighbor Update Failed: Z" + nid.ToString());
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                                 }
                                 break;
                             case "NETWORK UPDATE":
-                                logging.AddToLog("Requesting Network Update", true);
+                                Log.Info("Requesting Network Update");
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
                                 if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RequestNetworkUpdate, false, nid))
                                 {
-                                    logging.AddToLog("Request Network Update Failed: Z" + nid.ToString(), true);
+                                    Log.Info("Request Network Update Failed: Z" + nid.ToString());
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
                                 }
                                 break;
@@ -285,8 +260,7 @@
                     }
                     catch (Exception ex)
                     {
-                        logging.AddToLog("Controller command failed (" + method.MethodName + "): " + ex.Message + " -- " + ex.StackTrace
-                            + " -- " + ex.InnerException, true);
+                        Log.Error("Controller command failed (" + method.MethodName + ")", ex);
                     }
                     #endregion
                 }
@@ -294,15 +268,14 @@
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error Processing Command - " + ex.Message + " -" + ex.InnerException, true);
+                Log.Error("Error Processing Command - " + ex.Message + " -" + ex.InnerException);
             }
 
         }
 
         public override void Shutdown()
         {
-            m_manager.RemoveDriver(@"\\.\COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value);
-            m_manager = null;
+            StopOpenzwave();
         }
 
         public void NotificationHandler(ZWNotification notification)
@@ -316,8 +289,8 @@
         {
             Node node2 = GetNode(m_notification.GetHomeId(), m_notification.GetNodeId());
 
-            logging.AddToLog(" --- ", true);
-            logging.AddToLog("Notification: " + m_notification.GetType().ToString() + " | Node: " + node2.ID.ToString(), true);
+            Log.Info(" --- ");
+            Log.Info("Notification: " + m_notification.GetType().ToString() + " | Node: " + node2.ID.ToString());
             switch (m_notification.GetType())
             {
                 #region ValueAdded
@@ -325,7 +298,7 @@
                     {
 
                         Node node = GetNode(m_homeId, m_notification.GetNodeId());
-                        logging.AddToLog("ValueAdded start: node:" + node.ID.ToString(), true);
+                        Log.Info("ValueAdded start: node:" + node.ID.ToString());
                         Value value = new Value();
                         ZWValueID vid = m_notification.GetValueID();
                         value.ValueID = vid;
@@ -387,11 +360,19 @@
                                     {
                                         if (value.Type == ZWValueID.ValueType.Byte || value.Type == ZWValueID.ValueType.Decimal || value.Type == ZWValueID.ValueType.Int)
                                         {
-                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, value.Label, objType, "Value", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, "Set " + value.Label, objType, "Value", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, "Integer", "", objType, false);
                                         }
                                         else if (value.Type == ZWValueID.ValueType.Button)
                                         {
                                             OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, value.Label, objType, "", "", "", "");
+                                        }
+                                        else if (value.Type == ZWValueID.ValueType.List)
+                                        {
+                                            String[] options;
+                                            if (m_manager.GetValueListItems(value.ValueID, out options))
+                                                foreach (string option in options)
+                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label + " - " + option, value.Label + " - " + option, objType, "", "", "", "");
                                         }
                                     }
                                 }
@@ -399,11 +380,11 @@
                         }
                         
 
-                        logging.AddToLog("ValueAdded: node:" + node.ID + " | type: " + value.Type
+                        Log.Info("ValueAdded: node:" + node.ID + " | type: " + value.Type
                             + " | genre: " + value.Genre + " | cmdClsID:" + value.CommandClassID
                             + " | index: " + value.Index + " | instance: " + vid.GetInstance().ToString()
                             + " | readOnly: " + m_manager.IsValueReadOnly(value.ValueID).ToString()
-                            + " | value: " + value.Val + " | label: " + m_manager.GetValueLabel(vid), true);
+                            + " | value: " + value.Val + " | label: " + m_manager.GetValueLabel(vid));
                         break;
                     }
                 #endregion
@@ -413,7 +394,7 @@
                     {
                         try
                         {
-                            logging.AddToLog("ValueRemoved: ", true);
+                            Log.Info("ValueRemoved: ");
                             Node node = GetNode(m_homeId, m_notification.GetNodeId());
                             ZWValueID vid = m_notification.GetValueID();
                             Value val = node.GetValue(vid);
@@ -421,7 +402,7 @@
                         }
                         catch (Exception ex)
                         {
-                            logging.AddToLog("ValueRemoved error: " + ex.Message, true);
+                            Log.Error("ValueRemoved error ", ex);
                         }
                         break;
                     }
@@ -433,10 +414,10 @@
                         try
                         {
                             Node node = GetNode(m_homeId, m_notification.GetNodeId());
-                            logging.AddToLog("ValueChanged start: node:" + node.ID.ToString(), false);
+                            Log.Debug("ValueChanged start: node:" + node.ID.ToString());
                             ZWValueID vid = m_notification.GetValueID();
                             Value value = node.GetValue(vid);
-                            logging.AddToLog("value:" + value.Val, false);
+                            Log.Debug("value:" + value.Val);
                             OSAEObject nodeObject = OSAEObjectManager.GetObjectByAddress("Z" + m_notification.GetNodeId());
                             string v;
                             m_manager.GetValueAsString(vid, out v);
@@ -461,7 +442,7 @@
                                     else
                                     {
                                         OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, value.Label, value.Val, "ZWave");
-                                        logging.AddToLog("Set property " + value.Label + " of " + nodeObject.Name + " to: " + value.Val.ToString(), false);
+                                        Log.Debug("Set property " + value.Label + " of " + nodeObject.Name + " to: " + value.Val.ToString());
                                     }
                                 }
                             }
@@ -483,25 +464,25 @@
                                         else
                                             OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "ON", "ZWave");
                                         OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, value.Label, value.Val, "ZWave");
-                                        logging.AddToLog("Set property " + value.Label + " of " + nodeObject.Name + " to: " + value.Val.ToString(), false);
+                                        Log.Debug("Set property " + value.Label + " of " + nodeObject.Name + " to: " + value.Val.ToString());
                                     }
                                     else
                                     {
                                         OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, value.Label, value.Val, "ZWave");
-                                        logging.AddToLog("Set property " + value.Label + " of " + nodeObject.Name + " to: " + value.Val.ToString(), false);
+                                        Log.Debug("Set property " + value.Label + " of " + nodeObject.Name + " to: " + value.Val.ToString());
                                     }
                                 }
                             }
 
-                            logging.AddToLog("ValueChanged: " + ((nodeObject != null) ? nodeObject.Name : "Object Not In OSA") + " | node:"
+                            Log.Debug("ValueChanged: " + ((nodeObject != null) ? nodeObject.Name : "Object Not In OSA") + " | node:"
                                 + node.ID + " | nodelabel: " + node.Label + " | type: " + value.Type
                                 + " | genre: " + value.Genre + " | cmdClsID:" + value.CommandClassID
-                                + " | readOnly: " + m_manager.IsValueReadOnly(value.ValueID) + " | value: " + value.Val + " | label: " + value.Label, false);
+                                + " | readOnly: " + m_manager.IsValueReadOnly(value.ValueID) + " | value: " + value.Val + " | label: " + value.Label);
 
                         }
                         catch (Exception ex)
                         {
-                            logging.AddToLog("ValueChanged error: " + ex.Message, true);
+                            Log.Error("ValueChanged error: " + ex.Message);
                         }
                         break;
                     }
@@ -511,7 +492,7 @@
                 case ZWNotification.Type.Group:
                     {
                         Node node = GetNode(m_homeId, m_notification.GetNodeId());
-                        logging.AddToLog("Group: " + node.ID, true);
+                        Log.Info("Group: " + node.ID);
                         break;
                     }
                 #endregion
@@ -526,7 +507,7 @@
                         node.Label = m_manager.GetNodeType(m_homeId, node.ID);
                         m_nodeList.Add(node);
 
-                        logging.AddToLog("NodeAdded: " + node.ID.ToString(), true);
+                        Log.Info("NodeAdded: " + node.ID.ToString());
                         break;
                     }
                 #endregion
@@ -542,7 +523,7 @@
                                 break;
                             }
                         }
-                        logging.AddToLog("NodeRemoved: " + m_notification.GetNodeId(), true);
+                        Log.Info("NodeRemoved: " + m_notification.GetNodeId());
                         break;
                     }
                 #endregion
@@ -557,7 +538,7 @@
                             node.Label = m_manager.GetNodeType(m_homeId, node.ID);
                         }
 
-                        logging.AddToLog("NodeProtocolInfo: node: " + node.ID + " | " + node.Label, true);
+                        Log.Info("NodeProtocolInfo: node: " + node.ID + " | " + node.Label);
 
                         break;
                     }
@@ -651,7 +632,7 @@
 
                         }
 
-                        logging.AddToLog("NodeNaming: Manufacturer: " + node.Manufacturer + " | Product: " + node.Product, true);
+                        Log.Info("NodeNaming: Manufacturer: " + node.Manufacturer + " | Product: " + node.Product);
                         break;
                     }
                 #endregion
@@ -666,7 +647,7 @@
                             node.Product = m_manager.GetNodeProductName(m_homeId, node.ID);
                         }
 
-                        logging.AddToLog("NodeNew: Manufacturer: " + node.Manufacturer + " | Product: " + node.Product, true);
+                        Log.Info("NodeNew: Manufacturer: " + node.Manufacturer + " | Product: " + node.Product);
                         break;
                     }
                 #endregion
@@ -681,8 +662,8 @@
                             {
                                 node.Label = m_manager.GetNodeType(m_homeId, node.ID);
                             }
-                            logging.AddToLog("GetEvent:" + m_notification.GetEvent().ToString(), false);
-                            logging.AddToLog("node.Label:" + node.Label, false);
+                            Log.Debug("GetEvent:" + m_notification.GetEvent().ToString());
+                            Log.Debug("node.Label:" + node.Label);
 
                             ZWValueID vid = m_notification.GetValueID();
                             Value value = node.GetValue(vid);
@@ -696,13 +677,13 @@
                             else
                                 OSAEObjectStateManager.ObjectStateSet(nodeObject.Name, "OFF", "ZWave");
 
-                            logging.AddToLog("NodeEvent: " + ((nodeObject != null) ? nodeObject.Name : "Object Not In OSA") + " | node:" + node.ID + " | type: " + value.Type
+                            Log.Debug("NodeEvent: " + ((nodeObject != null) ? nodeObject.Name : "Object Not In OSA") + " | node:" + node.ID + " | type: " + value.Type
                             + " | genre: " + value.Genre + " | cmdClsID:" + value.CommandClassID
-                            + " | value: " + value.Val + " | label: " + value.Label, false);
+                            + " | value: " + value.Val + " | label: " + value.Label);
                         }
                         catch (Exception ex)
                         {
-                            logging.AddToLog("Error in NodeEvent: " + ex.Message, true);
+                            Log.Error("Error in NodeEvent", ex);
                         }
 
                         break;
@@ -719,7 +700,7 @@
                 #region PollingEnabled
                 case ZWNotification.Type.PollingEnabled:
                     {
-                        logging.AddToLog("Polling Enabled: " + OSAEObjectManager.GetObjectByAddress("Z" + m_notification.GetNodeId().ToString()).Name, true);
+                        Log.Info("Polling Enabled: " + OSAEObjectManager.GetObjectByAddress("Z" + m_notification.GetNodeId().ToString()).Name);
                         break;
                     }
                 #endregion
@@ -729,7 +710,7 @@
                     {
                         m_homeId = m_notification.GetHomeId();
                         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Home ID", m_homeId.ToString(), pName);
-                        logging.AddToLog("Driver Ready.  Home ID: " + m_homeId.ToString(), true);
+                        Log.Info("Driver Ready.  Home ID: " + m_homeId.ToString());
                         break;
                     }
                 #endregion
@@ -738,7 +719,7 @@
                 case ZWNotification.Type.DriverReset:
                     {
                         m_homeId = m_notification.GetHomeId();
-                        logging.AddToLog("Driver Reset.  Home ID: " + m_homeId.ToString(), true);
+                        Log.Info("Driver Reset.  Home ID: " + m_homeId.ToString());
                         break;
                     }
                 #endregion
@@ -749,7 +730,7 @@
                         Node node = GetNode(m_notification.GetHomeId(), m_notification.GetNodeId());
 
 
-                        logging.AddToLog("Node Queries Complete | " + node.ID + " | " + m_manager.GetNodeProductName(m_homeId, node.ID), true);
+                        Log.Info("Node Queries Complete | " + node.ID + " | " + m_manager.GetNodeProductName(m_homeId, node.ID));
                         break;
                     }
                 #endregion
@@ -758,7 +739,7 @@
                 case ZWNotification.Type.EssentialNodeQueriesComplete:
                     {
                         Node node = GetNode(m_homeId, m_notification.GetNodeId());
-                        logging.AddToLog("Essential Node Queries Completee | " + node.ID + " | " + m_manager.GetNodeProductName(m_homeId, node.ID), true);
+                        Log.Info("Essential Node Queries Completee | " + node.ID + " | " + m_manager.GetNodeProductName(m_homeId, node.ID));
                         break;
                     }
                 #endregion
@@ -766,7 +747,7 @@
                 #region AllNodesQueried
                 case ZWNotification.Type.AllNodesQueried:
                     {
-                        logging.AddToLog("All nodes queried", true);
+                        Log.Info("All nodes queried");
                         foreach (Node n in m_nodeList)
                         {
                             OSAEObject obj = OSAEObjectManager.GetObjectByAddress("Z" + n.ID.ToString());
@@ -783,7 +764,7 @@
                 #region AwakeNodesQueried
                 case ZWNotification.Type.AwakeNodesQueried:
                     {
-                        logging.AddToLog("Awake nodes queried (but some sleeping nodes have not been queried)", true);
+                        Log.Info("Awake nodes queried (but some sleeping nodes have not been queried)");
                         foreach (Node n in m_nodeList)
                         {
                             OSAEObject obj = OSAEObjectManager.GetObjectByAddress("Z" + n.ID.ToString());
@@ -791,7 +772,7 @@
                             {
                                 if (OSAEObjectPropertyManager.GetObjectPropertyValue(OSAEObjectManager.GetObjectByAddress("Z" + n.ID.ToString()).Name, "Poll").Value == "TRUE")
                                 {
-                                    logging.AddToLog("Enabling polling for: " + obj.Name, true);
+                                    Log.Info("Enabling polling for: " + obj.Name);
                                     enablePolling(n.ID);
                                 }
                             }
@@ -800,7 +781,7 @@
                     }
                 #endregion
             }
-            logging.AddToLog(" --- ", true);
+            Log.Info(" --- ");
         }
 
         public static void MyControllerStateChangedHandler(ZWControllerState state)
@@ -811,20 +792,20 @@
             {
                 case ZWControllerState.Waiting:
                     {
-                        logging.AddToLog("Waiting...", true);
+                        Log.Info("Waiting...");
                         break;
                     }
                 case ZWControllerState.InProgress:
                     {
                         // Tell the user that the controller has been found and the adding process is in progress.
-                        logging.AddToLog("Please wait...", true);
+                        Log.Info("Please wait...");
                         break;
                     }
                 case ZWControllerState.Completed:
                     {
                         // Tell the user that the controller has been successfully added.
                         // The command is now complete
-                        logging.AddToLog("Command Completed OK.", true);
+                        Log.Info("Command Completed OK.");
                         complete = true;
                         break;
                     }
@@ -832,19 +813,19 @@
                     {
                         // Tell the user that the controller addition process has failed.
                         // The command is now complete
-                        logging.AddToLog("Command Failed.", true);
+                        Log.Info("Command Failed.");
                         complete = true;
                         break;
                     }
                 case ZWControllerState.NodeOK:
                     {
-                        logging.AddToLog("Node has not failed.", true);
+                        Log.Info("Node has not failed.");
                         complete = true;
                         break;
                     }
                 case ZWControllerState.NodeFailed:
                     {
-                        logging.AddToLog("Node has failed.", true);
+                        Log.Info("Node has failed.");
                         complete = true;
                         break;
                     }
@@ -853,7 +834,7 @@
 
             if (complete)
             {
-                logging.AddToLog("Removing event handler", true);
+                Log.Info("Removing event handler");
                 // Remove the event handler
                 m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
             }
@@ -875,7 +856,7 @@
 
         private void enablePolling(byte nid)
         {
-            logging.AddToLog("Attempting to Enable Polling: " + OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).Name, true);
+            Log.Info("Attempting to Enable Polling: " + OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).Name);
             try
             {
                 Node n = GetNode(m_homeId, nid);
@@ -903,6 +884,8 @@
                         {
                             if (v.Label == "Temperature")
                                 zv.Add(v.ValueID);
+                            if (v.Label == "Operating State")
+                                zv.Add(v.ValueID);
                         }
                         break;
                     case "Routing Multilevel Sensor":
@@ -919,14 +902,85 @@
                 foreach (ZWValueID zwv in zv)
                 {
                     if (m_manager.EnablePoll(zwv))
-                        logging.AddToLog("Enable Polling Succeeded", true);
+                        Log.Info("Enable Polling Succeeded");
                     else
-                        logging.AddToLog("Enable Polling Failed", true);
+                        Log.Info("Enable Polling Failed");
                 }
             }
             catch (Exception ex)
             {
-                logging.AddToLog("Error attempting to enable polling: " + ex.Message, true);
+                Log.Error("Error attempting to enable polling", ex);
+            }
+        }
+        
+        private Task StartOpenzwaveAsync()
+        {
+            if (isShuttingDown)
+            {
+                Log.Info("ZWave driver cannot start because it is still shutting down");
+                return Task.FromResult(0);
+            }
+
+            try
+            {
+                string port = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value;
+                if (port != "")
+                {
+                    // Create the Options
+                    m_options = new ZWOptions();
+                    m_options.Create(Common.ApiPath + @"\Plugins\ZWave\config\", Common.ApiPath + @"\Plugins\ZWave\", @"");
+                    // Lock the options
+                    m_options.Lock();
+
+                    // Create the OpenZWave Manager
+                    m_manager = new ZWManager();
+                    m_manager.Create();
+                    m_manager.OnNotification += new ManagedNotificationsHandler(NotificationHandler);
+
+                    // Add a driver
+                    m_manager.AddDriver(@"\\.\COM" + port);
+
+                    int poll = 60;
+                    if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value != string.Empty)
+                        poll = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value);
+                    {
+                        Log.Info("Setting poll interval: " + poll.ToString());
+                        m_manager.SetPollInterval(poll, true);
+                    }
+
+                    Log.Info(Common.ApiPath + @"\Plugins\ZWave\Config");
+                    Log.Info("Zwave plugin initialized");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error initalizing plugin", e);
+            }
+
+            return Task.FromResult(0);
+        }
+
+        private void StopOpenzwave()
+        {
+            if (!isShuttingDown)
+            {
+                isShuttingDown = true;
+                
+                if (m_manager != null)
+                {
+                    m_manager.OnNotification -= NotificationHandler;
+                    m_manager.RemoveDriver(@"\\.\COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value);
+                    m_manager.Destroy();
+                    m_manager = null;
+                }
+
+                if (m_options != null)
+                {
+                    m_options.Destroy();
+                    m_options = null;
+                }
+
+                isShuttingDown = false;
             }
         }
     }

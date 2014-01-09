@@ -12,8 +12,7 @@
         <meta name="author" content="">                             
         <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">                             
         <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet" type="text/css">         
-        <script type="text/javascript" src="bootstrap/js/jquery-1.7.2.min.js"></script>              
-        <script type="text/javascript" src="includes/osae.js"></script>                                  
+        <script type="text/javascript" src="bootstrap/js/jquery-1.7.2.min.js"></script>                  
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->                                  
         <!--[if lt IE 9]>
             <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>

@@ -80,9 +80,9 @@
             Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
             loadPluginsThread.Start();
 
-            checkPlugins.Interval = 60000;
-            checkPlugins.Enabled = true;
-            checkPlugins.Elapsed += new ElapsedEventHandler(checkPlugins_tick);
+            //checkPlugins.Interval = 60000;
+            //checkPlugins.Enabled = true;
+            //checkPlugins.Elapsed += new ElapsedEventHandler(checkPlugins_tick);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@
 
             try
             {                          
-                checkPlugins.Enabled = false;
+                //checkPlugins.Enabled = false;
                 running = false;
                 
                 this.Log.Debug("Shutting down plugins");
