@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
 using System.Configuration;
 using log4net.Config;
 using log4net;
+using MySql.Data.MySqlClient;
 
 namespace OSAE.General
 {
@@ -89,6 +91,22 @@ namespace OSAE.General
                 if (buffered != null)
                 {
                     buffered.Flush();
+                }
+            }
+        }
+
+        public static DataSet Load()
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_server_log_get";
+                try
+                {
+                    return OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
                 }
             }
         }
