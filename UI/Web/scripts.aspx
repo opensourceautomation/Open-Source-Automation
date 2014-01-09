@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="scripts.aspx.cs" Inherits="scripts" EnableEventValidation="false" MaintainScrollPositionOnPostback="true"%>
+<%@ MasterType virtualpath="~/MasterPage.master" %>
 <%@ Implements Interface="System.Web.UI.IPostBackEventHandler" %>
 
 
@@ -34,12 +35,12 @@
 
         function saveScriptAdd() {
             document.getElementById('<%=hdnScript.ClientID%>').value = editor.getValue();
-            $('#ctl00_ContentPlaceHolder_btnAdd2').click();
+            $('#<%= btnAdd2.ClientID %>').click();
         }
 
         function saveScriptUpdate() {
             document.getElementById('<%=hdnScript.ClientID%>').value = editor.getValue();
-            $('#ctl00_ContentPlaceHolder_btnUpdate2').click();
+            $('#<%= btnUpdate2.ClientID %>').click();
         }
         function SetDivPosition() {
             var intY = document.getElementById("ScriptGrid").scrollTop;
@@ -113,8 +114,8 @@
                 </div>
                 <div class="span3" style="text-align:right;">
                     <br />
-                    <asp:Button runat="server" ID="btnAdd" class="btn" OnClientClick="saveScriptAdd();" Text="Add" /> &nbsp;
-                    <asp:Button runat="server" ID="btnUpdate" class="btn" OnClientClick="saveScriptUpdate();" Text="Update" /> &nbsp;
+                    <asp:Button runat="server" ID="btnAdd" class="btn" OnClientClick="saveScriptAdd(); return false;" Text="Add" /> &nbsp;
+                    <asp:Button runat="server" ID="btnUpdate" class="btn" OnClientClick="saveScriptUpdate(); return false;" Text="Update" /> &nbsp;
                     <asp:Button runat="server" ID="btnDelete" class="btn" OnClick="btnDelete_Click" Text="Delete" OnClientClick="return confirm('Are you sure you want to delete the script?');"/>
                     <asp:Button runat="server" ID="btnAdd2" OnClick="btnAdd_Click" style="display:none;" /> &nbsp;
                     <asp:Button runat="server" ID="btnUpdate2" OnClick="btnUpdate_Click" style="display:none;" /> &nbsp;
