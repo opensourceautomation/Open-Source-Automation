@@ -325,10 +325,9 @@ public partial class home : System.Web.UI.Page
         txtName.Text = "";
         txtDescr.Text = "";
         txtAddress.Text = "";
-        ddlContainer.SelectedValue = "";
-        ddlType.SelectedValue = "";
         chkEnabled.Checked = false;
         panelEditForm.Visible = false;
+        loadDDLs();
     }
     protected void btnDelete_Click(object sender, EventArgs e)
     {
