@@ -16,14 +16,12 @@ public partial class images : System.Web.UI.Page
     
     protected void Page_Load(object sender, EventArgs e)
     {
-        loadImages();
+        if (!Page.IsPostBack)
+        {
+            loadImages();
+        }
     }
-
-    protected void gvImages_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
-    {
-
-    }
-
+    
     //private void CreateDynamicTable()
     //{
     //    OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
@@ -74,34 +72,6 @@ public partial class images : System.Web.UI.Page
     //}
 
 
-    protected void btnDelete_Click(object sender, EventArgs e)
-    {
-        
-        try
-        {
-            Button btn = (Button)sender;
-            int ID = 0;
-
-            foreach (GridViewRow rw in gvImages.Rows)
-            {
-                Button b = (Button)rw.FindControl("btnDelete");
-                if (btn.CssClass == b.CssClass)
-                {
-                    ID = Int32.Parse(((Label)rw.FindControl("lblID")).Text);
-                }
-            }
-
-            OSAEImageManager imgmrg = new OSAEImageManager();
-            imgmrg.DeleteImage(ID);
-
-            loadImages();
-        }
-        catch (Exception ex)
-        {
-            Master.Log.Error("Error deleting image", ex);
-        }
-    }
-
     private void loadImages()
     {
 
@@ -109,4 +79,57 @@ public partial class images : System.Web.UI.Page
         gvImages.DataBind();
     }
 
+    protected void btnAdd_Click(object sender, EventArgs e)
+    {
+        if (fileUpload.HasFile)
+        {
+            try
+            {
+                if (System.IO.Path.GetExtension(fileUpload.FileName).ToLower() != ".jpg" && System.IO.Path.GetExtension(fileUpload.FileName).ToLower() != ".png" && System.IO.Path.GetExtension(fileUpload.FileName).ToLower() != ".jpeg")
+                {
+                    // wrong file type
+                    return;
+                }
+                else
+                {
+                    if (fileUpload.PostedFile.ContentLength < 102400)
+                    {
+                        
+                        OSAEImage img = new OSAEImage();
+                        img.Data = fileUpload.FileBytes;
+                        img.Name = txtName.Text;
+                        img.Type = System.IO.Path.GetExtension(fileUpload.FileName).ToLower().Substring(1);
+
+
+                        var imageManager = new OSAE.OSAEImageManager();
+                        imageManager.AddImage(img);
+                        loadImages();
+                    }
+                    else
+                    {
+                        // file to big
+                        return;
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+    }
+
+    protected void gvImages_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName == "DeleteImage")
+        {
+            GridViewRow row = (GridViewRow)((ImageButton)e.CommandSource).NamingContainer;
+            OSAEImageManager imgmrg = new OSAEImageManager();
+            imgmrg.DeleteImage(Int32.Parse(gvImages.DataKeys[row.RowIndex].Value.ToString()));
+
+            loadImages();
+        }
+    }
 }
