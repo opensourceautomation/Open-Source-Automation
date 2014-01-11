@@ -11,7 +11,7 @@
     {
         string pName;
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("WUnderground");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
         Logging logging = Logging.GetLogger("WUnderground");
 
         Thread updateConditionsThread, updateForecastThread, updateDayNightThread;

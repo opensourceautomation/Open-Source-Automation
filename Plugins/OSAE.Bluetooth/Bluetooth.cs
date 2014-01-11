@@ -13,7 +13,7 @@
         #region OSAEPlugin Members
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Bluetooth");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
         BluetoothClient bc;
         BluetoothDeviceInfo[] nearosaeDevices;
         System.Timers.Timer Clock;

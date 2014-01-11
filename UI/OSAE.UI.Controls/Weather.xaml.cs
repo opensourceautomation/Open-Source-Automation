@@ -14,7 +14,7 @@
     public partial class Weather : UserControl
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("GUI");
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
 
         OSAEObject weatherObj;
         string sMode = "Max";

@@ -8,7 +8,7 @@
     public class WebServer : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Web Server");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         /// <summary>
         /// Holds the plugin name

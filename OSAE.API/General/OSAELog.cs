@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Configuration;
+using System.Diagnostics;
+using System.Reflection;
 using log4net.Config;
 using log4net;
 using MySql.Data.MySqlClient;
@@ -18,9 +20,12 @@ namespace OSAE.General
     {
         private static ILog Log;
 
-        public OSAELog(string name)
+        public OSAELog()
         {
-            Log = LogManager.GetLogger(name);
+            StackFrame frame = new StackFrame(1);
+            MethodBase method = frame.GetMethod();
+            Type type = method.DeclaringType;
+            Log = LogManager.GetLogger(type);
             
             
             var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;
@@ -95,11 +100,31 @@ namespace OSAE.General
             }
         }
 
-        public static DataSet Load()
+        public static DataSet Load(bool info, bool debug, bool error, string source)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_server_log_get";
+                command.CommandText = "CALL osae_sp_server_log_get (@pinfo, @pdebug, @perror, @psource)";
+                command.Parameters.AddWithValue("@pinfo", info);
+                command.Parameters.AddWithValue("@pdebug", debug);
+                command.Parameters.AddWithValue("@perror", error);
+                command.Parameters.AddWithValue("@psource", source);
+                try
+                {
+                    return OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
+
+        public static DataSet LoadSources()
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "SELECT DISTINCT Logger FROM osae_log";
                 try
                 {
                     return OSAESql.RunQuery(command);

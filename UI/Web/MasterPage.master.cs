@@ -5,12 +5,13 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
+using System.ServiceProcess;
 using OSAE;
 
 public partial class MasterPage : System.Web.UI.MasterPage
 {
     //OSAELog
-    public OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Web UI");
+    public OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
     
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -32,6 +33,14 @@ public partial class MasterPage : System.Web.UI.MasterPage
             anchor.InnerText = s.Name;
 
             li.Controls.Add(anchor);
+        }
+
+        ServiceController sc = new ServiceController("OSAE");
+
+        if (sc.Status != ServiceControllerStatus.Running)
+        {
+            cog.ImageUrl = "~/Images/cog_red.png";
+            cog.ToolTip = "OSA service is not running.";
         }
     }
 

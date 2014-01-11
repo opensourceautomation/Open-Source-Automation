@@ -9,7 +9,7 @@ namespace OSAE.NetworkMonitor
     public class NetworkMonitor : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Network Monitor");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         System.Timers.Timer Clock = new System.Timers.Timer();
         Thread updateThread;

@@ -14,7 +14,7 @@
     public class PowerShellPlugin : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         /// <summary>
         /// The plugin name

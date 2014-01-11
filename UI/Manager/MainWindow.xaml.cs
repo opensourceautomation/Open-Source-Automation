@@ -26,7 +26,7 @@
         ServiceController myService = new ServiceController();
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Manager");
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
 
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();

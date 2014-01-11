@@ -15,7 +15,7 @@ namespace OSAE.UI.Controls
         public Point Location;
         public OSAEObject screenObject = new OSAEObject();
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("GUI");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         public VideoStreamViewer(string url, OSAEObject obj)
         {

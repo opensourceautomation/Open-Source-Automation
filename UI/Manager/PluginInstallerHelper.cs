@@ -15,7 +15,7 @@
     public partial class PluginInstallerHelper
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Manager");
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
 
         public  void InstallPlugin(string filepath)
         {

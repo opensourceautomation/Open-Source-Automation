@@ -11,7 +11,7 @@
     public class Rest : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Rest");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         /// <summary>
         /// Hosts the web service

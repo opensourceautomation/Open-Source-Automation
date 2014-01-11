@@ -10,7 +10,7 @@
     public class OSAPSSet : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         /// <summary>
         /// Used in logs to determine where an event occured from or where log messages should go to
@@ -47,7 +47,7 @@
     public class OSAPSShow : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }
@@ -93,7 +93,7 @@
     public class OSAPSInvokeScript : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }

@@ -12,29 +12,34 @@ public partial class logs : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
-            GetLogs();           
+            GetLogs();
         }
     }
 
 
-
-
-    /// <summary>
-    /// See what logs are available and add them to the list box
-    /// </summary>
     private void GetLogs()
     {
+        string source = "ALL";
         try
         {
-            gvLog.DataSource = OSAE.General.OSAELog.Load();
-            gvLog.DataBind();
+            DropDownList ddlSource = (DropDownList)gvLog.HeaderRow.FindControl("ddlSource");
+            source = ddlSource.SelectedValue;
         }
         catch (Exception ex)
         {
-            throw ex;
+            
         }
-    }
 
+        gvLog.DataSource = OSAE.General.OSAELog.Load(chkInfo.Checked, chkDebug.Checked, chkError.Checked, source);
+        gvLog.DataBind();
+
+        DropDownList ddlSource2 = (DropDownList)gvLog.HeaderRow.FindControl("ddlSource");
+        ddlSource2.DataSource = OSAE.General.OSAELog.LoadSources();
+        ddlSource2.DataTextField = "Logger";
+        ddlSource2.DataValueField = "Logger";
+        ddlSource2.DataBind();
+        ddlSource2.SelectedValue = source;
+    }
 
     protected void btnRefresh_Click(object sender, EventArgs e)
     {
@@ -43,6 +48,9 @@ public partial class logs : System.Web.UI.Page
     protected void btnExport_Click(object sender, EventArgs e)
     {
         ///
-
+    }
+    protected void CheckedChanged(object sender, EventArgs e)
+    {
+        GetLogs();
     }
 }

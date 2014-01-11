@@ -20,7 +20,7 @@
     public partial class MainWindow : Window
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("GUI");
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
         
         String gAppName = "";
         String gCurrentScreen = "";

@@ -6,7 +6,7 @@
     public class SPEECH : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Speech");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         SpeechSynthesizer oSpeech = new SpeechSynthesizer();
         WMPLib.WindowsMediaPlayer wmPlayer = new WMPLib.WindowsMediaPlayer();
