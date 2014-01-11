@@ -8,7 +8,7 @@
     public class OSANMA : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         [Parameter(Mandatory = true)]
         public string APIKey { get; set; }

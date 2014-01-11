@@ -10,7 +10,7 @@ using OSAE;
 public partial class MasterPage : System.Web.UI.MasterPage
 {
     //OSAELog
-    public OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Web UI");
+    public OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
     
     protected void Page_Load(object sender, EventArgs e)
     {

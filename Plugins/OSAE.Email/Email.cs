@@ -9,7 +9,7 @@
         string pName;
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Email");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
         
         public override void ProcessCommand(OSAEMethod method)
         {

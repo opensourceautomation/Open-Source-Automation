@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
+    using System.Diagnostics;
 
     /// <summary>
     /// Safely identifies assemblies within a designated plugin directory that contain qualifying plugin types.
@@ -15,7 +16,7 @@
         private readonly Type _pluginBaseType;
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Plugin Loader");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PluginFinder"/> class.

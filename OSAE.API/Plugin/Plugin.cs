@@ -48,7 +48,7 @@
         private string _latestAvailableVersion;
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Plugin Loader");
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
 
         private AppDomain _domain;
         private OSAEPluginBase _plugin;

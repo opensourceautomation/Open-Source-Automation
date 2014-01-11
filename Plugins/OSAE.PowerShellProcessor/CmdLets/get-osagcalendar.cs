@@ -11,7 +11,7 @@
     public class OSAGetGCalendar : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Powershell");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         [Parameter(
             Mandatory = true)]

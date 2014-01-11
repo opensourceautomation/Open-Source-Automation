@@ -38,7 +38,7 @@
         //private System.Timers.Timer checkPlugins = new System.Timers.Timer();
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("OSAE Service");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
         #endregion
 
 

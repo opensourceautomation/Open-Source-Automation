@@ -7,7 +7,7 @@
     public class OSALOG : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log2 = new General.OSAELog("Powershell");
+        private OSAE.General.OSAELog Log2 = new General.OSAELog();
 
         [Parameter(Mandatory = true)]
         public string Message { get; set; }

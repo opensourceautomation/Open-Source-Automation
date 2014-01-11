@@ -11,7 +11,7 @@ namespace OSAE.Jabber
         bool shuttingDown = false;
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Jabber");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         #region OSAPlugin Methods
         public override void RunInterface(string pluginName)

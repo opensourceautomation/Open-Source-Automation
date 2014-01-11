@@ -42,7 +42,7 @@
 
         public ClientService()
         {
-            Log = new OSAE.General.OSAELog("Client Service");
+            Log = new OSAE.General.OSAELog();
 
             this.Log.Info("ClientService Starting");
 
