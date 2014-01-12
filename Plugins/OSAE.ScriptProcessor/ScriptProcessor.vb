@@ -184,8 +184,8 @@ Public Class ScriptProcessor
                                     OSAEMethodManager.MethodQueueAdd(sObject, sMethod, sParam1, sParam2, gAppName)
                                     Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Ran Method: " & sObject & "." & sMethod & " (" & sParam1 & "," & sParam2 & ")")
                                 ElseIf sOption.ToUpper = "SET STATE" Then
-                                    OSAEObjectStateManager.ObjectStateSet(sObject, sParam1, gAppName)
-                                    Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Set State: " & sObject & "." & sParam1)
+                                    OSAEObjectStateManager.ObjectStateSet(sObject, sMethod, gAppName)
+                                    Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Set State: " & sObject & "." & sMethod)
                                 ElseIf sOption.ToUpper = "SET CONTAINER" Then
                                     OSAEObjectManager.ObjectUpdate(oCurrentObject.Name, oCurrentObject.Name, oCurrentObject.Description, oCurrentObject.Type, oCurrentObject.Address, sMethod, oCurrentObject.Enabled)
                                     Display_Results(iLoop + 1 & ": (" & iNestingLevel & ") - Set Container: " & sObject & "." & sMethod)
