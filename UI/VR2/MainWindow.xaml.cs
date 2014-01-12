@@ -114,7 +114,7 @@ namespace VR2
             }
             catch (Exception ex)
             {
-                AddToLog("Error in AddToLog: " + ex.Message);
+                //AddToLog("Error in AddToLog: " + ex.Message);
             }
         }
 
