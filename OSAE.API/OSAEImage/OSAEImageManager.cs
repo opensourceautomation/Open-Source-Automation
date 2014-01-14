@@ -88,7 +88,7 @@
                     {
                         return null;
                     }
-                    else if (image == null && !returnNullIfNotExist)
+                    else if (image == null && returnNullIfNotExist == false)
                     {
                         throw new Exception("No Image Found");
                     }
