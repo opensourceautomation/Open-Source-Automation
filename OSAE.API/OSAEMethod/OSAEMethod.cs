@@ -75,7 +75,7 @@
 
         public void Run()
         {
-            if (this.Id == null | this.Id == 0)
+            if (this.Id == 0)
             {
                 throw new ArgumentException("Cannot invoke run when Id is not available");
             }

@@ -84,20 +84,19 @@
                     var image = connection.Query<OSAEImage>("SELECT image_id as 'ID', image_name as 'Name', image_type as 'Type', image_data as 'Data' FROM osae_images WHERE image_id = @id",
                         new { id = imageId }).FirstOrDefault();
 
-                    if (image == null)
+                    if (image == null && returnNullIfNotExist)
                     {
-                        throw new Exception("API - Failed to get requested image from DB:  " + imageId.ToString());
+                        return null;
+                    }
+                    else if (image == null && returnNullIfNotExist == false)
+                    {
+                        throw new Exception("No Image Found");
                     }
                     else
                     {
                         return image;
                     }
-                }
-
-                if (returnNullIfNotExist)
-                    return null;
-                else
-                    return new OSAEImage();
+                }               
             }
             catch (Exception ex)
             {
