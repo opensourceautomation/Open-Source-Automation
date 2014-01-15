@@ -19,15 +19,17 @@ namespace OSAE.General
     public class OSAELog
     {
         private static ILog Log;
+        private Type logSource;
 
         public OSAELog()
         {
             StackFrame frame = new StackFrame(1);
             MethodBase method = frame.GetMethod();
-            Type type = method.DeclaringType;
-            Log = LogManager.GetLogger(type);
-            
-            
+            logSource = method.DeclaringType;
+            Log = LogManager.GetLogger(logSource);
+
+
+
             var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;
             var attachable = root as log4net.Core.IAppenderAttachable;
 
@@ -48,7 +50,7 @@ namespace OSAE.General
                     {
                         if (adoAppender != null)
                         {
-                            adoAppender.ConnectionString = Common.ConnectionString; 
+                            adoAppender.ConnectionString = Common.ConnectionString;
                             adoAppender.ActivateOptions();
                         }
                         root.RemoveAppender(fileAppender);
@@ -120,6 +122,22 @@ namespace OSAE.General
             }
         }
 
+        public static void Clear()
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_server_log_clear";
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
+
         public static DataSet LoadSources()
         {
             using (MySqlCommand command = new MySqlCommand())
@@ -133,6 +151,24 @@ namespace OSAE.General
                 {
                     throw ex;
                 }
+            }
+        }
+
+        public void DebugLogAdd(string entry)
+        {
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.CommandText = "CALL osae_sp_debug_log_add (@Entry,@Process)";
+                    command.Parameters.AddWithValue("@Entry", entry);
+                    command.Parameters.AddWithValue("@Process", logSource.ToString());
+                    OSAESql.RunQuery(command);
+                }
+            }
+            catch
+            {
+                // Not a lot we can do if it fails here
             }
         }
     }

@@ -470,6 +470,33 @@
             }
 
             return methods;
-        }       
+        }
+
+        /// <summary>
+        /// Add an entry to the event log table
+        /// </summary>
+        /// <param name="objectName">Object Name</param>
+        /// <param name="eventName">Event Name</param>
+        public static void EventTrigger(string objectName, string eventName, string parameter1 = null, string parameter2 = null, string source = null)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_event_log_add (@ObjectName, @EventName, @FromObject, @DebugInfo, @Param1, @Param2)";
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@EventName", eventName);
+                command.Parameters.AddWithValue("@FromObject", source);
+                command.Parameters.AddWithValue("@DebugInfo", null);
+                command.Parameters.AddWithValue("@Param1", parameter1);
+                command.Parameters.AddWithValue("@Param2", parameter2);
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - EventTrigger error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
     }
 }

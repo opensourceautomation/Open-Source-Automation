@@ -15,6 +15,7 @@
             
             <br />
             <asp:Button runat="server" ID="btnRefresh" Text="Refresh" class="btn" OnClick="btnRefresh_Click"/>
+            <asp:Button runat="server" ID="btnClear" Text="Clear" class="btn" OnClick="btnClear_Click"/>
             INFO: <asp:CheckBox ID="chkInfo" runat="server" Checked="true" OnCheckedChanged="CheckedChanged" AutoPostBack="true" />
             DEBUG: <asp:CheckBox ID="chkDebug" runat="server" Checked="true" OnCheckedChanged="CheckedChanged" AutoPostBack="true" />
             ERROR: <asp:CheckBox ID="chkError" runat="server" Checked="true" OnCheckedChanged="CheckedChanged" AutoPostBack="true" />
