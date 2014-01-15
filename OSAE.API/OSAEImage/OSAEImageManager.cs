@@ -84,20 +84,19 @@
                     var image = connection.Query<OSAEImage>("SELECT image_id as 'ID', image_name as 'Name', image_type as 'Type', image_data as 'Data' FROM osae_images WHERE image_id = @id",
                         new { id = imageId }).FirstOrDefault();
 
-                    if (image == null)
+                    if (image == null && returnNullIfNotExist)
                     {
-                        throw new Exception("API - Failed to get requested image from DB:  " + imageId.ToString());
+                        return null;
+                    }
+                    else if (image == null && returnNullIfNotExist == false)
+                    {
+                        throw new Exception("No Image Found");
                     }
                     else
                     {
                         return image;
                     }
-                }
-
-                if (returnNullIfNotExist)
-                    return null;
-                else
-                    return new OSAEImage();
+                }               
             }
             catch (Exception ex)
             {
@@ -219,7 +218,7 @@
             return imageList;
         }
 
-        public byte[] getJPGFromImageControl(BitmapImage imageC)
+        public byte[] GetJPGFromImageControl(BitmapImage imageC)
         {
             MemoryStream memStream = new MemoryStream();
             JpegBitmapEncoder encoder = new JpegBitmapEncoder();
@@ -228,7 +227,7 @@
             return memStream.GetBuffer();
         }
 
-        public byte[] getPNGFromImageControl(BitmapImage imageC)
+        public byte[] GetPNGFromImageControl(BitmapImage imageC)
         {
             MemoryStream memStream = new MemoryStream();
             PngBitmapEncoder encoder = new PngBitmapEncoder();
@@ -237,7 +236,7 @@
             return memStream.GetBuffer();
         }
 
-        public byte[] getGIFFromImageControl(BitmapImage imageC)
+        public byte[] GetGIFFromImageControl(BitmapImage imageC)
         {
             MemoryStream memStream = new MemoryStream();
             GifBitmapEncoder encoder = new GifBitmapEncoder();
@@ -246,21 +245,21 @@
             return memStream.GetBuffer();
         }
 
-        public byte[] gifToByteArray(Image imageIn)
+        public byte[] GifToByteArray(Image imageIn)
         {
             MemoryStream ms = new MemoryStream();
             imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
             return ms.ToArray();
         }
 
-        public byte[] jpgToByteArray(Image imageIn)
+        public byte[] JpgToByteArray(Image imageIn)
         {
             MemoryStream ms = new MemoryStream();
             imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
             return ms.ToArray();
         }
 
-        public byte[] pngToByteArray(Image imageIn)
+        public byte[] PngToByteArray(Image imageIn)
         {
             MemoryStream ms = new MemoryStream();
             imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
