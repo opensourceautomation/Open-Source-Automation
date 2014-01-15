@@ -151,6 +151,7 @@
                         }
                         else if (method.ObjectName.Split('-')[0] == "SERVICE")
                         {
+                            this.Log.Debug("Method for client service.  Sending Broadcast.");
                             if(method.MethodName == "EXECUTE")
                                 UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8), new IPEndPoint(IPAddress.Broadcast, 10000));
 
@@ -173,6 +174,7 @@
 
                             if (!processed)
                             {
+                                this.Log.Debug("Method found for client service plugin.  Sending Broadcast.");
                                 UDPConnection.SendObject("Method", method.ObjectName + " | " + method.Owner + " | "
                                     + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | "
                                     + method.Address + " | " + method.Id, new IPEndPoint(IPAddress.Broadcast, 10000));

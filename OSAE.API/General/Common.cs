@@ -4,6 +4,7 @@
     using System.Data;
     using System.IO;
     using System.Net;
+    using System.Net.Sockets;
     using System.Security;
     using System.Security.Policy;
     using MySql.Data.MySqlClient;
@@ -372,6 +373,22 @@
         public static long GetJavascriptTimestamp(System.DateTime input)
         {
             return (long)input.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+        }
+
+        public static string LocalIPAddress()
+        {
+            IPHostEntry host;
+            string localIP = "";
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    localIP = ip.ToString();
+                    break;
+                }
+            }
+            return localIP;
         }
     }
 }

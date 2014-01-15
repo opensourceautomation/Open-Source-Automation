@@ -8,7 +8,8 @@ using OSAE;
 
 public partial class debuglog : System.Web.UI.Page
 {
-    Logging logging = Logging.GetLogger("Web UI");
+    //OSAELog
+    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -33,7 +34,7 @@ public partial class debuglog : System.Web.UI.Page
    
     protected void clearLogButton_Click(object sender, EventArgs e)
     {
-        logging.EventLogClear();
+        OSAE.General.OSAELog.EventLogClear();
         BindData();
     }
 }

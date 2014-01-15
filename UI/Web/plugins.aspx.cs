@@ -17,7 +17,10 @@ using ICSharpCode.SharpZipLib.Zip;
 public partial class plugins : System.Web.UI.Page
 {
     private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
-    
+
+    //OSAELog
+    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!Page.IsPostBack)
@@ -60,7 +63,7 @@ public partial class plugins : System.Web.UI.Page
                 }
                 pluginList.Add(desc);
                 
-                //logging.AddToLog("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID, true);
+                Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
             }
         }
 
@@ -118,8 +121,8 @@ public partial class plugins : System.Web.UI.Page
                 }
             }
 
-            NetworkComms.SendObject("Plugin", "127.0.0.1", 10000, pluginName + "|" + enabled);
-            //logging.AddToLog("Sending message: " + "ENABLEPLUGIN|" + pluginName + "|" + enabled, true);
+            NetworkComms.SendObject("Plugin", Common.LocalIPAddress(), 10000, pluginName + "|" + enabled);
+            Log.Info("Sending message: " + "ENABLEPLUGIN|" + pluginName + "|" + enabled);
 
             foreach (PluginDescription plugin in pluginList)
             {
@@ -135,7 +138,7 @@ public partial class plugins : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            //logging.AddToLog("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException, true);
+            Log.Info("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException);
         }
     }
 

@@ -92,17 +92,17 @@
 
                 if (ext.ToLower() == "jpg" || ext.ToLower() == "jpeg")
                 {
-                    byt = imgMgr.getJPGFromImageControl(img);
+                    byt = imgMgr.GetJPGFromImageControl(img);
                     imgID = imgMgr.AddImage(fileName, ext, byt);
                 }
                 else if (ext.ToLower() == "png")
                 {
-                    byt = imgMgr.getPNGFromImageControl(img);
+                    byt = imgMgr.GetPNGFromImageControl(img);
                     imgID = imgMgr.AddImage(fileName, ext, byt);
                 }
                 else if (ext.ToLower() == "gif")
                 {
-                    byt = imgMgr.getGIFFromImageControl(img);
+                    byt = imgMgr.GetGIFFromImageControl(img);
                     imgID = imgMgr.AddImage(fileName, ext, byt);
                 }
 
