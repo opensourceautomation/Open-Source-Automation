@@ -218,7 +218,7 @@
             return imageList;
         }
 
-        public byte[] getJPGFromImageControl(BitmapImage imageC)
+        public byte[] GetJPGFromImageControl(BitmapImage imageC)
         {
             MemoryStream memStream = new MemoryStream();
             JpegBitmapEncoder encoder = new JpegBitmapEncoder();
@@ -227,7 +227,7 @@
             return memStream.GetBuffer();
         }
 
-        public byte[] getPNGFromImageControl(BitmapImage imageC)
+        public byte[] GetPNGFromImageControl(BitmapImage imageC)
         {
             MemoryStream memStream = new MemoryStream();
             PngBitmapEncoder encoder = new PngBitmapEncoder();
@@ -236,7 +236,7 @@
             return memStream.GetBuffer();
         }
 
-        public byte[] getGIFFromImageControl(BitmapImage imageC)
+        public byte[] GetGIFFromImageControl(BitmapImage imageC)
         {
             MemoryStream memStream = new MemoryStream();
             GifBitmapEncoder encoder = new GifBitmapEncoder();
@@ -245,21 +245,21 @@
             return memStream.GetBuffer();
         }
 
-        public byte[] gifToByteArray(Image imageIn)
+        public byte[] GifToByteArray(Image imageIn)
         {
             MemoryStream ms = new MemoryStream();
             imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
             return ms.ToArray();
         }
 
-        public byte[] jpgToByteArray(Image imageIn)
+        public byte[] JpgToByteArray(Image imageIn)
         {
             MemoryStream ms = new MemoryStream();
             imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
             return ms.ToArray();
         }
 
-        public byte[] pngToByteArray(Image imageIn)
+        public byte[] PngToByteArray(Image imageIn)
         {
             MemoryStream ms = new MemoryStream();
             imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
