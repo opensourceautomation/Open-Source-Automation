@@ -171,5 +171,24 @@ namespace OSAE.General
                 // Not a lot we can do if it fails here
             }
         }
+
+        /// <summary>
+        /// Deletes everything from the event_log table
+        /// </summary>
+        public static void EventLogClear()
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_event_log_clear";
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
     }
 }

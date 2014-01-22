@@ -9,7 +9,8 @@ using OSAE;
 
 public partial class home : System.Web.UI.Page
 {
-    Logging logging = Logging.GetLogger("Web UI");
+    //OSAELog
+    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
 
     public void RaisePostBackEvent(string eventArgument)
     {
@@ -220,7 +221,7 @@ public partial class home : System.Web.UI.Page
 
     protected void ddlEvent_SelectedIndexChanged(object sender, EventArgs e)
     {
-        logging.EventLogAdd(hdnSelectedObjectName.Text, ddlEvent.SelectedItem.Value);
+        OSAEObjectManager.EventTrigger(hdnSelectedObjectName.Text, ddlEvent.SelectedItem.Value);
         lblAlert.Text = "Event set successfully to " + ddlEvent.SelectedItem.Text;
         alert.Visible = true;
     }

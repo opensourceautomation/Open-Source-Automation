@@ -18,7 +18,7 @@ namespace OSAE.Service
 
             try
             {
-                string ip = LocalIPAddress();
+                string ip = Common.LocalIPAddress();
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Plugin", PluginMessageReceived);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Method", MethodMessageReceived);
                 //Start listening for incoming connections
@@ -32,22 +32,6 @@ namespace OSAE.Service
             {
                 this.Log.Error("Error starting TCP Listener: " + ex.Message, ex);
             }
-        }
-
-        private string LocalIPAddress()
-        {
-            IPHostEntry host;
-            string localIP = "";
-            host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    localIP = ip.ToString();
-                    break;
-                }
-            }
-            return localIP;
         }
 
         private void PluginMessageReceived(PacketHeader header, Connection connection, string message)
