@@ -1,16 +1,13 @@
-﻿Imports MySql.Data.MySqlClient
-
-Public Class Insteon
+﻿Public Class Insteon
     Inherits OSAEPluginBase
     Private WithEvents SerialPLM As System.IO.Ports.SerialPort
     Private x(1030) As Byte                   ' Serial data as it gets brought in
     Private x_LastWrite As Short              ' Index of last byte in the array updated with new data
     Private x_Start As Short
     Dim PLM_Address As String
-    'Private CN As MySqlConnection
     Private pName As String = ""
     Private gPort As Integer
-    Private Shared logging As Logging = logging.GetLogger("Insteon")
+    Private Log As OSAE.General.OSAELog = New General.OSAELog()
 
     Private Sub Start_PLM()
         Dim data(2) As Byte
@@ -26,7 +23,7 @@ Public Class Insteon
             data(1) = 96
             SerialPLM.Write(data, 0, 2)
         Catch ex As Exception
-            logging.AddToLog("Error accessing serial port: " & ex.ToString(), pName)
+            Log.Error("Error accessing serial port: " & ex.ToString())
         End Try
     End Sub
 
@@ -56,19 +53,20 @@ Public Class Insteon
         Dim X10Address As String
         Dim FromAddress As String
         Dim ToAddress As String
-        Dim sObject As String = ""
+        'Dim sObject As String = ""
         Dim IAddress As Short ' Insteon index number
         Dim Flags As Byte
         Dim Command1 As Byte
         Dim Command2 As Byte
-        Dim dsResults As DataSet
+        'Dim dsResults As DataSet
         Dim ms As Short            ' Position of start of message ( = x_Start + 1)
         Dim MessageEnd As Short    ' Position of expected end of message (start + length - 1000 if it's looping) 
         Dim DataAvailable As Short ' how many bytes of data available between x_Start and X_LastWrite?
         Dim data(2) As Byte
         Dim DataString As String
-        Dim CMD As New MySqlCommand
-
+        ' Dim CMD As New MySqlCommand
+        Dim oObject As OSAEObject
+        Log.Debug("PLM Is Receiving a Message")
         'Debug.WriteLine("PLM starting: x_LastWrite: " & x_LastWrite & " x_Start: " & x_Start)
         If x_Start = x_LastWrite Then Exit Sub ' reached end of data, get out of sub
         ' x_Start = the last byte that was read and processed here
@@ -95,7 +93,7 @@ Public Class Insteon
         If DataAvailable < 1 Then Exit Sub ' not enough for a full message of any type
 
         ' Interpret the message and handle it
-        logging.AddToLog("PLM: 02 " & GetHex(x(ms + 1)) & " x_LastWrite: " & x_LastWrite & " x_Start: " & x_Start & " DataAvailable: " & DataAvailable, True)
+        Log.Debug("PLM Received: 02 " & GetHex(x(ms + 1)) & " x_LastWrite: " & x_LastWrite & " x_Start: " & x_Start & " DataAvailable: " & DataAvailable)
         Select Case x(ms + 1)
             Case 96 ' 0x060 response to Get IM Info
                 MessageEnd = ms + 8
@@ -104,28 +102,37 @@ Public Class Insteon
                     x_Start = MessageEnd
                     ' Display message
                     PLM_Address = GetHex(x(ms + 2)) & "." & GetHex(x(ms + 3)) & "." & GetHex(x(ms + 4))
-                    logging.AddToLog("PLM response to Get IM Info: PLM ID: " & PLM_Address, True)
+                    Log.Info("PLM response to Get IM Info: PLM ID: " & PLM_Address)
                     Try
-                        CMD.CommandType = CommandType.Text
-                        CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE UPPER(address)=?pname"
-                        CMD.Parameters.AddWithValue("?pname", PLM_Address)
-                        dsResults = OSAESql.RunQuery(CMD)
-                        If dsResults.Tables(0).Rows.Count = 0 Then
-                            OSAEObjectManager.ObjectAdd("Insteon PLM", "Insteon PLM", "X10 RELAY", PLM_Address, "", 1)
-                            logging.AddToLog("Added Insteon PLM to DB (" & PLM_Address & ")", True)
-                            dsResults = OSAESql.RunQuery(CMD)
+                        Log.Debug("Looking up Object for PLM Address: " & PLM_Address)
+                        oObject = OSAEObjectManager.GetObjectByAddress(PLM_Address)
+                        If oObject.Name <> "" Then
+                            Log.Debug("Found: " & oObject.Name & " for PLM Address: " & PLM_Address)
+                            ' Else
+                            ''     OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", True)
+                            '     Log.Debug("Added new Object for X10 Address: " & X10Address)
                         End If
-                        If dsResults.Tables(0).Rows.Count > 0 Then
-                            sObject = dsResults.Tables(0).Rows(0).Item(0)
-                        End If
+
+                        '    CMD.CommandType = CommandType.Text
+                        '   CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE UPPER(address)=?pname"
+                        '  CMD.Parameters.AddWithValue("?pname", PLM_Address)
+                        ' dsResults = OSAESql.RunQuery(CMD)
+                        'If dsResults.Tables(0).Rows.Count = 0 Then
+                        '            OSAEObjectManager.ObjectAdd("Insteon PLM", "Insteon PLM", "X10 RELAY", PLM_Address, "", 1)
+                        '           Log.Info("Added Insteon PLM to DB (" & PLM_Address & ")")
+                        '          dsResults = OSAESql.RunQuery(CMD)
+                        '         End If
+                        '  If dsResults.Tables(0).Rows.Count > 0 Then
+                        ' sObject = dsResults.Tables(0).Rows(0).Item(0)
+                        'End If
                     Catch ex As Exception
-                        logging.AddToLog("Added Insteon error (" & ex.Message & ")", True)
-                        logging.AddToLog("sObject= (" & sObject & ")", True)
+                        Log.Error("Added Insteon error (" & ex.Message & ")")
+                        ' Log.Error("sObject= (" & sObject & ")")
                     End Try
 
-                    logging.AddToLog("Device Category: " & GetHex(x(ms + 5)) & " Subcategory: " & GetHex(x(ms + 6)) & " Firmware: " & GetHex(x(ms + 7)) & " ACK/NAK: " & GetHex(x(ms + 8)), True)
+                    Debug.WriteLine("Device Category: " & GetHex(x(ms + 5)) & " Subcategory: " & GetHex(x(ms + 6)) & " Firmware: " & GetHex(x(ms + 7)) & " ACK/NAK: " & GetHex(x(ms + 8)))
                     ' Set the PLM as the controller
-                    logging.AddToLog("Insteon PLM connected at " & PLM_Address, True)
+                    Log.Info("Insteon PLM connected at " & PLM_Address)
                 End If
             Case 80 ' 0x050 Insteon Standard message received
                 ' next three bytes = address of device sending message
@@ -146,43 +153,55 @@ Public Class Insteon
                     Command2 = x(ms + 10)
                     ' Check if FromAddress is in device database, if not add it (ToAddress will generally = PLM)
                     Try
-                        CMD.CommandType = CommandType.Text
-                        CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE UPPER(address)=?pname"
-                        CMD.Parameters.AddWithValue("?pname", FromAddress)
-                        dsResults = OSAESql.RunQuery(CMD)
-                        If dsResults.Tables(0).Rows.Count = 0 Then
-                            OSAEObjectManager.ObjectAdd("NEW " & FromAddress, "NEW " & FromAddress, "X10 RELAY", FromAddress, "", 1)
-                            logging.AddToLog("Added New Device to DB (" & FromAddress & ")", True)
-                            dsResults = OSAESql.RunQuery(CMD)
+                        Log.Debug("Looking up Object for From Address: " & FromAddress)
+                        oObject = OSAEObjectManager.GetObjectByAddress(FromAddress)
+                        If oObject.Name <> "" Then
+                            Log.Debug("Found: " & oObject.Name & " for From Address: " & FromAddress)
+                            ' Else
+                            ''     OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", True)
+                            '     Log.Debug("Added new Object for X10 Address: " & X10Address)
                         End If
-                        If dsResults.Tables(0).Rows.Count > 0 Then
-                            sObject = dsResults.Tables(0).Rows(0).Item(0)
-                        End If
+
+
+
+
+                        '   CMD.CommandType = CommandType.Text
+                        '  CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE UPPER(address)=?pname"
+                        ' CMD.Parameters.AddWithValue("?pname", FromAddress)
+                        'dsResults = OSAESql.RunQuery(CMD)
+                        '         If dsResults.Tables(0).Rows.Count = 0 Then
+                        'OSAEObjectManager.ObjectAdd("NEW " & FromAddress, "NEW " & FromAddress, "X10 RELAY", FromAddress, "", 1)
+                        '  Log.Info("Added New Device to DB (" & FromAddress & ")")
+                        '  dsResults = OSAESql.RunQuery(CMD)
+                        ' End If
+                        'If dsResults.Tables(0).Rows.Count > 0 Then
+                        'sObject = dsResults.Tables(0).Rows(0).Item(0)
+                        'End If
                     Catch ex As Exception
-                        logging.AddToLog("Added Insteon error (" & ex.Message & ")", True)
-                        logging.AddToLog("sObject= (" & sObject & ")", True)
+                        Log.Error("Added Insteon error (" & ex.Message & ")")
+                        'Log.Error("sObject= (" & sObject & ")")
                     End Try
-                    logging.AddToLog("PLM: Received: From: " & sObject & " (" & FromAddress & ")  To: " & ToAddress, True)
+                    Log.Debug("PLM: Received: From: " & oObject.Name & " (" & FromAddress & ")  To: " & ToAddress)
                     Select Case Flags And 224
                         Case 0 ' 000 Direct message
-                            logging.AddToLog(" Flags: " & GetHex(Flags) & "  (direct) ", True)
+                            Log.Debug(" Flags: " & GetHex(Flags) & "  (direct) ")
                         Case 32 ' 001 ACK direct message
-                            logging.AddToLog(" Flags: " & GetHex(Flags) & "  (ACK direct) ", True)
+                            Log.Debug(" Flags: " & GetHex(Flags) & "  (ACK direct) ")
                         Case 64 ' 010 Group cleanup direct message
-                            logging.AddToLog(" Flags: " & GetHex(Flags) & "  (Group cleanup direct) ", True)
+                            Log.Debug(" Flags: " & GetHex(Flags) & "  (Group cleanup direct) ")
                         Case 96 ' 011 ACK group cleanup direct message
-                            logging.AddToLog(" Flags: " & GetHex(Flags) & "  (ACK Group cleanup direct) ", True)
+                            Log.Debug(" Flags: " & GetHex(Flags) & "  (ACK Group cleanup direct) ")
                         Case 128 ' 100 Broadcast message
-                            logging.AddToLog(" Flags: " & GetHex(Flags) & "  (Broadcast) ", True)
+                            Log.Debug(" Flags: " & GetHex(Flags) & "  (Broadcast) ")
                         Case 160 ' 101 NAK direct message
-                            logging.AddToLog(" Flags: " & GetHex(Flags) & "  (NAK direct) ", True)
+                            Log.Debug(" Flags: " & GetHex(Flags) & "  (NAK direct) ")
                         Case 192 ' 110 Group broadcast message
-                            logging.AddToLog(" Flags: " & GetHex(Flags) & "  (Group broadcast) ", True)
+                            Log.Debug(" Flags: " & GetHex(Flags) & "  (Group broadcast) ")
                         Case 224 ' 111 NAK group cleanup direct message
-                            logging.AddToLog(" Flags: " & GetHex(Flags) & "  (NAK Group cleanup direct) ", True)
+                            Log.Debug(" Flags: " & GetHex(Flags) & "  (NAK Group cleanup direct) ")
                     End Select
-                    logging.AddToLog(" Command1: " & GetHex(Command1) & " (" & CommandsInsteon(Command1) & ")", True)
-                    logging.AddToLog(" Command2: " & GetHex(Command2), True)
+                    Log.Debug(" Command1: " & GetHex(Command1) & " (" & CommandsInsteon(Command1) & ")")
+                    Log.Debug(" Command2: " & GetHex(Command2))
 
                     ' Update the status of the sending device
                     IAddress = InsteonNum(FromAddress)  ' already checked to make sure it was in list
@@ -196,43 +215,43 @@ Public Class Insteon
                                 'Insteon(IAddress).Device_On = True
                                 If (Flags And 64) = 64 Then ' Group message (broadcast or cleanup)
                                     'Insteon(IAddress).Level = 100  ' the real level is the preset for the link, but...
-                                    OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
-                                    logging.AddToLog("Set: " & sObject & "to ON", True)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                    Log.Info("Set: " & oObject.Name & "to ON")
                                 Else
                                     ' Direct message
                                     'Insteon(IAddress).Level = Command2 / 2.55  ' scale of 0-255, change to scale of 0-100
-                                    OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
-                                    logging.AddToLog("Set: " & sObject & "to ON", True)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                    Log.Info("Set: " & oObject.Name & "to ON")
                                 End If
                             Case 46 ' Light On At Ramp Rate (slow on)
                                 'Insteon(IAddress).Device_On = True
                                 If (Flags And 64) = 64 Then
                                     ' Group message (broadcast or cleanup)
                                     ' Insteon(IAddress).Level = 100  ' the real level is the preset for the link, but...
-                                    OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
-                                    logging.AddToLog("Set: " & sObject & "to ON", True)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                    Log.Info("Set: " & oObject.Name & "to ON")
                                 Else
                                     ' Direct message
                                     ' Insteon(IAddress).Level = (Command2 Or 15) / 2.55  ' high bits of cmd2 + binary 1111
                                     'MsgBox("Light On At Ramp Rate, Command2 = " & Command2 & " (Command2 or 15)/2.55 = " & Insteon(IAddress).Level)
-                                    OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
-                                    logging.AddToLog("Set: " & sObject & "to ON", True)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                    Log.Info("Set: " & oObject.Name & "to ON")
                                 End If
                             Case 19, 20, 47 ' Off, Fast Off, Light Off At Ramp Rate (slow off)
                                 'MsgBox("Off, Fast Off, Light Off At Ramp Rate")
                                 'Insteon(IAddress).Device_On = False
                                 'Insteon(IAddress).Level = 0
-                                OSAEObjectStateManager.ObjectStateSet(sObject, "OFF", pName)
-                                logging.AddToLog("Set: " & sObject & "to OFF", True)
+                                OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", pName)
+                                Log.Info("Set: " & oObject.Name & "to OFF")
                             Case 21 ' Bright
-                                OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
-                                logging.AddToLog("Set: " & sObject & "to ON", True)
+                                OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                Log.Info("Set: " & oObject.Name & "to ON")
                                 ' Insteon(IAddress).Device_On = True
                                 'If Insteon(IAddress).Level > 100 Then Insteon(IAddress).Level = 100
                                 'Insteon(IAddress).Level = Insteon(IAddress).Level + 3
                             Case 22 ' Dim
-                                OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
-                                logging.AddToLog("Set: " & sObject & "to ON", True)
+                                OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                Log.Info("Set: " & oObject.Name & "to ON")
                                 'Insteon(IAddress).Level = Insteon(IAddress).Level - 3
                                 'If Insteon(IAddress).Level < 0 Then Insteon(IAddress).Level = 0
                                 ' If Insteon(IAddress).Level = 0 Then Insteon(IAddress).Device_On = False
@@ -277,7 +296,7 @@ Public Class Insteon
                     '                DevCat = x(ms + 5)
                     '                SubCat = x(ms + 6)
                     '                Firmware = x(ms + 7)
-                    '                logging.AddToLog(FromName & " broadcast 'Set Button Pressed' DevCat: " & GetHex(DevCat) & " SubCat: " & GetHex(SubCat) & " Firmware: " & GetHex(Firmware))
+                    '                Log.Debug(FromName & " broadcast 'Set Button Pressed' DevCat: " & GetHex(DevCat) & " SubCat: " & GetHex(SubCat) & " Firmware: " & GetHex(Firmware))
                     '                Groups = Insteon(IAddress).Groups
                     '                If Insteon(IAddress).DevCat = 255 Then
                     '                    Insteon(IAddress).DevCat = DevCat
@@ -291,7 +310,7 @@ Public Class Insteon
                     '                'If Groups = 0 Then Insteon(IAddress).Groups = InsteonGroups(DevCat, SubCat)
                     '                If Insteon(IAddress).DeviceType = "" Or Insteon(IAddress).DeviceType = "Unknown" Then Insteon(IAddress).DeviceType = InsteonDeviceType(DevCat, SubCat)
                     '            Else
-                    '                logging.AddToLog(FromName & " broadcast command " & GetHex(Command1))
+                    '                Log.Debug(FromName & " broadcast command " & GetHex(Command1))
                     '            End If
                     '            'Insteon(IAddress).LastCommand = Command1
                     '            'Insteon(IAddress).LastFlags = Flags And 224
@@ -419,106 +438,106 @@ Public Class Insteon
                         'End If
                     End If
                     'If mnuShowPLC.Checked Then
-                    logging.AddToLog("PLM: Insteon Extended Received: From: " & FromAddress, True)
+                    Log.Debug("PLM: Insteon Extended Received: From: " & FromAddress)
                     'ListBox1.Items.Add(DeviceNameInsteon(FromAddress) & ")")
-                    logging.AddToLog(" To: " & ToAddress, True)
+                    Log.Debug(" To: " & ToAddress)
                     If ToAddress = PLM_Address Then
-                        logging.AddToLog(" (PLM)", True)
+                        Log.Debug(" (PLM)")
                     Else
                         ' ListBox1.Items.Add(DeviceNameInsteon(ToAddress) & ")")
                     End If
-                    logging.AddToLog(" Flags: " & GetHex(Flags), True)
+                    Log.Debug(" Flags: " & GetHex(Flags))
                     Select Case Flags And 224
                         Case 0 ' 000 Direct message
-                            logging.AddToLog(" (direct) ", True)
+                            Log.Debug(" (direct) ")
                         Case 32 ' 001 ACK direct message
-                            logging.AddToLog(" (ACK direct) ", True)
+                            Log.Debug(" (ACK direct) ")
                         Case 64 ' 010 Group cleanup direct message
-                            logging.AddToLog(" (Group cleanup direct) ", True)
+                            Log.Debug(" (Group cleanup direct) ")
                         Case 96 ' 011 ACK group cleanup direct message
-                            logging.AddToLog(" (ACK Group cleanup direct) ", True)
+                            Log.Debug(" (ACK Group cleanup direct) ")
                         Case 128 ' 100 Broadcast message
-                            logging.AddToLog(" (Broadcast) ", True)
+                            Log.Debug(" (Broadcast) ")
                         Case 160 ' 101 NAK direct message
-                            logging.AddToLog(" (NAK direct) ", True)
+                            Log.Debug(" (NAK direct) ")
                         Case 192 ' 110 Group broadcast message
-                            logging.AddToLog(" (Group broadcast) ", True)
+                            Log.Debug(" (Group broadcast) ")
                         Case 224 ' 111 NAK group cleanup direct message
-                            logging.AddToLog(" (NAK Group cleanup direct) ", True)
+                            Log.Debug(" (NAK Group cleanup direct) ")
                     End Select
-                    logging.AddToLog(" Command1: " & GetHex(Command1) & " (" & CommandsInsteon(Command1) & ")", True)
-                    logging.AddToLog(" Command2: " & GetHex(Command2), True)
+                    Log.Debug(" Command1: " & GetHex(Command1) & " (" & CommandsInsteon(Command1) & ")")
+                    Log.Debug(" Command2: " & GetHex(Command2))
                     If Command1 = 3 Then
                         ' Product Data Response
                         Select Case Command2
                             Case 0 ' Product Data Response
-                                logging.AddToLog(" Product Data Response", True)
-                                logging.AddToLog(" Data: ", True)
+                                Log.Debug(" Product Data Response")
+                                Log.Debug(" Data: ")
                                 For i = 11 To 24
-                                    logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                                    Log.Debug(GetHex(x(ms + i)) & " ")
                                 Next
-                                logging.AddToLog("--> Product Key " & GetHex(x(ms + 12)) & GetHex(x(ms + 13)) & GetHex(x(ms + 14)), True)
-                                logging.AddToLog(" DevCat: " & GetHex(x(ms + 15)), True)
-                                logging.AddToLog(" SubCat: " & GetHex(x(ms + 16)), True)
-                                logging.AddToLog(" Firmware: " & GetHex(x(ms + 17)), True)
+                                Log.Debug("--> Product Key " & GetHex(x(ms + 12)) & GetHex(x(ms + 13)) & GetHex(x(ms + 14)))
+                                Log.Debug(" DevCat: " & GetHex(x(ms + 15)))
+                                Log.Debug(" SubCat: " & GetHex(x(ms + 16)))
+                                Log.Debug(" Firmware: " & GetHex(x(ms + 17)))
                             Case 1 ' FX Username Response
-                                logging.AddToLog(" FX Username Response", True)
-                                logging.AddToLog(" D1-D8 FX Command Username: ", True)
+                                Log.Debug(" FX Username Response")
+                                Log.Debug(" D1-D8 FX Command Username: ")
                                 For i = 11 To 18
-                                    logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                                    Log.Debug(GetHex(x(ms + i)) & " ")
                                 Next
-                                logging.AddToLog(" D9-D14: ", True)
+                                Log.Debug(" D9-D14: ")
                                 For i = 19 To 24
-                                    logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                                    Log.Debug(GetHex(x(ms + i)) & " ")
                                 Next
                             Case 2 ' Device Text String
-                                logging.AddToLog(" Device Text String Response", True)
-                                logging.AddToLog(" D1-D8 FX Command Username: ", True)
+                                Log.Debug(" Device Text String Response")
+                                Log.Debug(" D1-D8 FX Command Username: ")
                                 DataString = ""
                                 For i = 11 To 24
-                                    logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                                    Log.Debug(GetHex(x(ms + i)) & " ")
                                 Next
                                 For i = 11 To 24
                                     If x(ms + i) = 0 Then Exit For
                                     DataString = DataString + Chr(x(ms + i))
                                 Next
-                                logging.AddToLog(DataString, True)
+                                Log.Debug(DataString)
                             Case 3 ' Set Device Text String
-                                logging.AddToLog(" Set Device Text String", True)
-                                logging.AddToLog(" D1-D8 FX Command Username: ", True)
+                                Log.Debug(" Set Device Text String")
+                                Log.Debug(" D1-D8 FX Command Username: ")
                                 DataString = ""
                                 For i = 11 To 24
-                                    logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                                    Log.Debug(GetHex(x(ms + i)) & " ")
                                 Next
                                 For i = 11 To 24
                                     If x(ms + i) = 0 Then Exit For
                                     DataString = DataString + Chr(x(ms + i))
                                 Next
-                                logging.AddToLog(DataString, True)
+                                Log.Debug(DataString)
                             Case 4 ' Set ALL-Link Command Alias
-                                logging.AddToLog(" Set ALL-Link Command Alias", True)
-                                logging.AddToLog(" Data: ", True)
+                                Log.Debug(" Set ALL-Link Command Alias")
+                                Log.Debug(" Data: ")
                                 For i = 11 To 24
-                                    logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                                    Log.Debug(GetHex(x(ms + i)) & " ")
                                 Next
                             Case 5 ' Set ALL-Link Command Alias Extended Data
-                                logging.AddToLog(" Set ALL-Link Command Alias Extended Data", True)
-                                logging.AddToLog(" Data: ", True)
+                                Log.Debug(" Set ALL-Link Command Alias Extended Data")
+                                Log.Debug(" Data: ")
                                 For i = 11 To 24
-                                    logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                                    Log.Debug(GetHex(x(ms + i)) & " ")
                                 Next
                             Case Else
-                                logging.AddToLog(" (unrecognized product data response)", True)
-                                logging.AddToLog(" Data: ", True)
+                                Log.Debug(" (unrecognized product data response)")
+                                Log.Debug(" Data: ")
                                 For i = 11 To 24
-                                    logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                                    Log.Debug(GetHex(x(ms + i)) & " ")
                                 Next
                         End Select
                     Else
                         ' Anything other than a product data response
-                        logging.AddToLog(" Data: ", True)
+                        Log.Debug(" Data: ")
                         For i = 11 To 24
-                            logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                            Log.Debug(GetHex(x(ms + i)) & " ")
                         Next
                     End If
                     'WriteEvent(White, vbCrLf)
@@ -527,6 +546,7 @@ Public Class Insteon
             Case 82 ' 0x052 X10 Received
                 ' next byte: raw X10   x(MsStart + 2)
                 ' next byte: x10 flag  x(MsStart + 3)
+                Log.Debug("X10 Data Incoming")
                 MessageEnd = ms + 3
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 3 Then
@@ -540,40 +560,45 @@ Public Class Insteon
                         Case 63, 128 ' 0x80 House + Command    63 = 0x3F - should be 0x80 but for some reason I keep getting 0x3F instead
                             X10Code = (x(ms + 2) And 15) + 1
                             X10Address = Chr(65 + X10House) & (PLM_LastX10Device + 1)
-                            CMD.CommandType = CommandType.Text
-                            CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE UPPER(address)=?pname"
-                            CMD.Parameters.AddWithValue("?pname", X10Address)
-                            dsResults = OSAESql.RunQuery(CMD)
-                            sObject = dsResults.Tables(0).Rows(0).Item(0)
-                            If sObject = "" Then
-                                OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", 1)
-                            End If
-                            dsResults = OSAESql.RunQuery(CMD)
-                            sObject = dsResults.Tables(0).Rows(0).Item(0)
+
+                            '' CMD.CommandType = CommandType.Text
+                            '' CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE UPPER(address)=?pname"
+                            ''  CMD.Parameters.AddWithValue("?pname", X10Address)
+                            ''  dsResults = OSAESql.RunQuery(CMD)
+                            ''  sObject = dsResults.Tables(0).Rows(0).Item(0)
+                            '  If sObject = "" Then
+                            'OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", 1)
+                            '  End If
+                            'dsResults = OSAESql.RunQuery(CMD)
+                            '  sObject = dsResults.Tables(0).Rows(0).Item(0)
                             ' Now actually process the event
                             ' Does it have a name?
-                            'oObject = OSAEApi.GetObjectByAddress(X10Address)
-                            'If oObject.Then Then
-                            '    OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "")
+                            Log.Debug("Looking up Object for X10 Address: " & X10Address)
+                            oObject = OSAEObjectManager.GetObjectByAddress(X10Address)
+                            If oObject.Name <> "" Then
+                                Log.Debug("Found: " & oObject.Name & " for X10 Address: " & X10Address)
+                            Else
+                                OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", True)
+                                Log.Debug("Added new Object for X10 Address: " & X10Address)
+                            End If
+                            '
                             'End If
                             'oObject = OSAEApi.GetObjectByAddress(X10Address)
 
                             'If DeviceName(X10Address) = X10Address Then HasName = False Else HasName = True
-                            'If LoggedIn And HasName Then frmHack.WriteWebtrix(Blue, VB6.Format(TimeOfDay) & " ")
-                            ' Write command to event log
-                            'If LoggedIn And HasName Then frmHack.WriteWebtrix(Green, DeviceName(X10Address) + " " + HackCommands(X10Code) + vbCrLf)
-                            ' Play sounds (only if the device is turned on or off, not for bright/dim or other commands)
+
                             ' Handle incoming event
+                            Log.Debug("X10 Data Received, processing X10 Code: " & X10Code)
                             Select Case X10Code
                                 Case 3 ' On
-                                    logging.AddToLog("PLM X10 received: " & sObject & " ON  (" & X10Address & " ON)", True)
-                                    OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
+                                    Log.Info("PLM X10 received: " & oObject.Name & " ON  (" & X10Address & " ON)")
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
                                 Case 4 ' Off
-                                    logging.AddToLog("PLM X10 received: " & sObject & " OFF  (" & X10Address & " OFF)", True)
-                                    OSAEObjectStateManager.ObjectStateSet(sObject, "OFF", pName)
+                                    Log.Info("PLM X10 received: " & oObject.Name & " OFF  (" & X10Address & " OFF)")
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", pName)
                                 Case 5 ' Dim
-                                    logging.AddToLog("PLM X10 received: " & sObject & " DIM  (" & X10Address & " DIM)", True)
-                                    OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
+                                    Log.Info("PLM X10 received: " & oObject.Name & " DIM  (" & X10Address & " DIM)")
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
                                     'If X10(X10House, PLM_LastX10Device).Device_On = False Then
                                     '    X10(X10House, PLM_LastX10Device).Level = 100
                                     '    X10(X10House, PLM_LastX10Device).Device_On = True
@@ -584,8 +609,8 @@ Public Class Insteon
                                     ' grdDevices.set_TextMatrix(X10House * 16 + PLM_LastX10Device, 3, X10(X10House, PLM_LastX10Device).Level)
                                     ' RunMacro(X10Address, 2)
                                 Case 6 ' Bright
-                                    logging.AddToLog("PLM X10 received: " & sObject & " BRIGHT  (" & X10Address & " BRIGHT)", True)
-                                    OSAEObjectStateManager.ObjectStateSet(sObject, "ON", pName)
+                                    Log.Info("PLM X10 received: " & oObject.Name & " BRIGHT  (" & X10Address & " BRIGHT)")
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
                                     'If X10(X10House, PLM_LastX10Device).Device_On = False Then
                                     '    X10(X10House, PLM_LastX10Device).Level = 100
                                     '    X10(X10House, PLM_LastX10Device).Device_On = True
@@ -597,7 +622,7 @@ Public Class Insteon
                                     'RunMacro(X10Address, 3)
                             End Select
                         Case Else ' invalid data
-                            logging.AddToLog("Unrecognized X10: " & GetHex(x(ms + 2)) & " " & GetHex(x(ms + 3)), True)
+                            Log.Info("Unrecognized X10: " & GetHex(x(ms + 2)) & " " & GetHex(x(ms + 3)))
                     End Select
                 End If
             Case 98 ' 0x062 Send Insteon standard OR extended message
@@ -638,30 +663,29 @@ Public Class Insteon
                 If DataAvailable >= 4 Then
                     x_Start = MessageEnd
                     Debug.WriteLine("PLM: 02 63 " & GetHex(x(ms + 2)) & " " & GetHex(x(ms + 3)) & " " & GetHex(x(ms + 4)))
-                    logging.AddToLog("PLM: X10 Sent: ", True)
                     X10House = X10House_from_PLM(x(ms + 2) And 240)
                     Select Case x(ms + 3)
                         Case 0 ' House + Device
                             X10Code = X10Device_from_PLM(x(ms + 2) And 15)
-                            logging.AddToLog(Chr(65 + X10House) & (X10Code + 1), True)
+                            Log.Debug(Chr(65 + X10House) & (X10Code + 1))
                         Case 63, 128 ' 0x80 House + Command    63 = 0x3F - should be 0x80 but for some reason I keep getting 0x3F instead
                             X10Code = (x(ms + 2) And 15) + 1
                             If X10Code > -1 And X10Code < 17 Then
-                                logging.AddToLog(Chr(65 + X10House) & " " & Commands(X10Code), True)
+                                Log.Debug("PLM: X10 Sent: " & Chr(65 + X10House) & " " & Commands(X10Code))
                             Else
-                                logging.AddToLog(Chr(65 + X10House) & " unrecognized command " & GetHex(x(ms + 2) And 15), True)
+                                Log.Debug("PLM: X10 Sent: " & Chr(65 + X10House) & " unrecognized command " & GetHex(x(ms + 2) And 15))
                             End If
                         Case Else ' invalid data
-                            logging.AddToLog("Unrecognized X10: " & GetHex(x(ms + 2)) & " " & GetHex(x(ms + 3)), True)
+                            Log.Debug("Unrecognized X10: " & GetHex(x(ms + 2)) & " " & GetHex(x(ms + 3)))
                     End Select
-                    logging.AddToLog(" ACK/NAK: ", True)
+                    Debug.WriteLine(" ACK/NAK: ")
                     Select Case x(ms + 4)
                         Case 6
-                            logging.AddToLog("06 (sent)", True)
+                            Log.Debug("06 (sent)")
                         Case 21
-                            logging.AddToLog("15 (failed)", True)
+                            Log.Debug("15 (failed)")
                         Case Else
-                            logging.AddToLog(GetHex(x(ms + 4)) & " (?)", True)
+                            Log.Debug(GetHex(x(ms + 4)) & " (?)")
                     End Select
                 End If
             Case 83 ' 0x053 ALL-Linking complete - 8 bytes of data
@@ -734,7 +758,7 @@ Public Class Insteon
                 MessageEnd = ms + 1
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 x_Start = MessageEnd
-                logging.AddToLog("PLM: User Reset 0x55", True)
+                Log.Debug("PLM: User Reset 0x55")
             Case 86 ' 0x056 ALL-Link cleanup failure report - 5 bytes of data
                 MessageEnd = ms + 6
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
@@ -802,42 +826,42 @@ Public Class Insteon
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 5 Then
                     x_Start = MessageEnd
-                    logging.AddToLog("PLM: Get IM Configuration: 0x73 Flags: ", True)
-                    logging.AddToLog(GetHex(x(ms + 2)), True)
-                    If x(ms + 2) And 128 Then logging.AddToLog(" (no button linking)", True)
-                    If x(ms + 2) And 64 Then logging.AddToLog(" (monitor mode)", True)
-                    If x(ms + 2) And 32 Then logging.AddToLog(" (manual LED control)", True)
-                    If x(ms + 2) And 16 Then logging.AddToLog(" (disable deadman comm feature)", True)
-                    If x(ms + 2) And (128 + 64 + 32 + 16) Then logging.AddToLog(" (default)", True)
-                    logging.AddToLog(" Data: " & GetHex(x(ms + 3)) & " " & GetHex(x(ms + 4)), True)
-                    logging.AddToLog(" ACK: " & GetHex(x(ms + 5)), True)
+                    Log.Debug("PLM: Get IM Configuration: 0x73 Flags: ")
+                    Log.Debug(GetHex(x(ms + 2)))
+                    If x(ms + 2) And 128 Then Log.Debug(" (no button linking)")
+                    If x(ms + 2) And 64 Then Log.Debug(" (monitor mode)")
+                    If x(ms + 2) And 32 Then Log.Debug(" (manual LED control)")
+                    If x(ms + 2) And 16 Then Log.Debug(" (disable deadman comm feature)")
+                    If x(ms + 2) And (128 + 64 + 32 + 16) Then Log.Debug(" (default)")
+                    Log.Debug(" Data: " & GetHex(x(ms + 3)) & " " & GetHex(x(ms + 4)))
+                    Log.Debug(" ACK: " & GetHex(x(ms + 5)))
                 End If
             Case 100 ' 0x064 Start ALL-Linking, echoed - 3 bytes
                 MessageEnd = ms + 4
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 4 Then
                     x_Start = MessageEnd
-                    logging.AddToLog("PLM: Start ALL-Linking 0x64 Code: ", True)
-                    logging.AddToLog(GetHex(x(ms + 2)), True)
+                    Log.Debug("PLM: Start ALL-Linking 0x64 Code: ")
+                    Log.Debug(GetHex(x(ms + 2)))
                     Select Case x(ms + 2)
                         Case 0
-                            logging.AddToLog(" (PLM is responder)", True)
+                            Log.Debug(" (PLM is responder)")
                         Case 1
-                            logging.AddToLog(" (PLM is controller)", True)
+                            Log.Debug(" (PLM is controller)")
                         Case 3
-                            logging.AddToLog(" (initiator is controller)", True)
+                            Log.Debug(" (initiator is controller)")
                         Case 244
-                            logging.AddToLog(" (deleted)", True)
+                            Log.Debug(" (deleted)")
                     End Select
-                    logging.AddToLog(" Group: " & GetHex(x(ms + 3)), True)
-                    logging.AddToLog(" ACK/NAK: ", True)
+                    Log.Debug(" Group: " & GetHex(x(ms + 3)))
+                    Log.Debug(" ACK/NAK: ")
                     Select Case x(ms + 4)
                         Case 6
-                            logging.AddToLog("06 (executed correctly)", True)
+                            Log.Debug("06 (executed correctly)")
                         Case 21
-                            logging.AddToLog("15 (failed)", True)
+                            Log.Debug("15 (failed)")
                         Case Else
-                            logging.AddToLog(GetHex(x(ms + 4)) & " (?)", True)
+                            Log.Debug(GetHex(x(ms + 4)) & " (?)")
                     End Select
                 End If
             Case 113 ' 0x071 Set Insteon ACK message two bytes - 3 bytes
@@ -845,9 +869,9 @@ Public Class Insteon
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 4 Then
                     x_Start = MessageEnd
-                    logging.AddToLog("PLM: Set Insteon ACK message 0x71 ", True)
+                    Log.Debug("PLM: Set Insteon ACK message 0x71 ")
                     For i = 2 To 4
-                        logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                        Log.Debug(GetHex(x(ms + i)) & " ")
                     Next
                 End If
             Case 104, 107, 112 ' 0x068 Set Insteon ACK message byte, 0x06B Set IM Configuration, 0x070 Set Insteon NAK message byte
@@ -856,9 +880,9 @@ Public Class Insteon
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 3 Then
                     x_Start = MessageEnd
-                    logging.AddToLog("PLM: ", True)
+                    Log.Debug("PLM: ")
                     For i = 0 To 3
-                        logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                        Log.Debug(GetHex(x(ms + i)) & " ")
                     Next
                 End If
             Case 88 ' 0x058 ALL-Link cleanup status report - 1 byte
@@ -866,14 +890,14 @@ Public Class Insteon
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 2 Then
                     x_Start = MessageEnd
-                    logging.AddToLog("PLM: ALL-Link (Group Broadcast) Cleanup Status Report 0x58 ACK/NAK: ", True)
+                    Log.Debug("PLM: ALL-Link (Group Broadcast) Cleanup Status Report 0x58 ACK/NAK: ")
                     Select Case x(ms + 2)
                         Case 6
-                            logging.AddToLog("06 (completed)", True)
+                            Log.Debug("06 (completed)")
                         Case 21
-                            logging.AddToLog("15 (interrupted)", True)
+                            Log.Debug("15 (interrupted)")
                         Case Else
-                            logging.AddToLog(GetHex(x(ms + 2)) & " (?)", True)
+                            Log.Debug(GetHex(x(ms + 2)) & " (?)")
                     End Select
                 End If
             Case 84, 103, 108, 109, 110, 114
@@ -883,9 +907,9 @@ Public Class Insteon
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 2 Then
                     x_Start = MessageEnd
-                    logging.AddToLog("PLM: ", True)
+                    Log.Debug("PLM: ")
                     For i = 0 To 2
-                        logging.AddToLog(GetHex(x(ms + i)) & " ", True)
+                        Log.Debug(GetHex(x(ms + i)) & " ")
                     Next
                 End If
             Case 101 ' 0x065 Cancel ALL-Linking - 1 byte
@@ -893,14 +917,14 @@ Public Class Insteon
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 2 Then
                     x_Start = MessageEnd
-                    logging.AddToLog("PLM: Cancel ALL-Linking 0x65 ACK/NAK: ", True)
+                    Log.Debug("PLM: Cancel ALL-Linking 0x65 ACK/NAK: ")
                     Select Case x(ms + 2)
                         Case 6
-                            logging.AddToLog("06 (success)", True)
+                            Log.Debug("06 (success)")
                         Case 21
-                            logging.AddToLog("15 (failed)", True)
+                            Log.Debug("15 (failed)")
                         Case Else
-                            logging.AddToLog(GetHex(x(ms + 2)) & " (?)", True)
+                            Log.Debug(GetHex(x(ms + 2)) & " (?)")
                     End Select
                 End If
             Case 105 ' 0x069 Get First ALL-Link record
@@ -985,12 +1009,12 @@ Public Class Insteon
                 ' in principle this shouldn't happen... unless there are undocumented messages (probably!)
                 x_Start = x_Start + 1  ' just skip over this and hope to hit a real command next time through the loop
                 If x_Start > 1000 Then x_Start = x_Start - 1000
-                logging.AddToLog("PLM: Unrecognized command received: " & GetHex(x(ms)) & " " & GetHex(x(ms + 1)) & " " & GetHex(x(ms + 2)), True)
+                Log.Debug("PLM: Unrecognized command received: " & GetHex(x(ms)) & " " & GetHex(x(ms + 1)) & " " & GetHex(x(ms + 2)))
                 For i = 0 To DataAvailable
-                    logging.AddToLog(GetHex(x(ms + DataAvailable)), True)
+                    Log.Debug(GetHex(x(ms + DataAvailable)))
                 Next
         End Select
-        logging.AddToLog("PLM finished: ms = " & ms & " MessageEnd = " & MessageEnd & " X_Start = " & x_Start, True)
+        'Log.Debug("PLM finished: ms = " & ms & " MessageEnd = " & MessageEnd & " X_Start = " & x_Start)
         Exit Sub
 PLMerror:
         x_Start = x_LastWrite
@@ -1003,7 +1027,7 @@ PLMerror:
         'grdDevices.set_TextMatrix(house * 16 + device, 2, "On")
         If house < 16 Then ' real device, otherwise variable so no signal should be sent
             ' SmartHome PLM
-            logging.AddToLog("CommandOn for PLM", True)
+            Log.Debug("CommandOn for PLM: " & X10(house, device).Name)
             data(0) = 2   ' start first message: send X10 address only
             data(1) = 99  ' 0x063 = Send X10
             data(2) = PLM_X10_House(house + 1) + PLM_X10_Device(device + 1)  ' X10 address (house + device)
@@ -1026,7 +1050,7 @@ PLMerror:
         ' grdDevices.set_TextMatrix(house * 16 + device, 3, 0)
         If house < 16 Then ' real device, otherwise variable so no signal should be sent
             ' SmartHome PLM
-            logging.AddToLog("CommandOff for PLM", True)
+            Log.Debug("CommandOff for PLM")
             data(0) = 2   ' start first message: send X10 address only
             data(1) = 99  ' 0x063 = Send X10
             data(2) = PLM_X10_House(house + 1) + PLM_X10_Device(device + 1)  ' X10 address (house + device)
@@ -1054,7 +1078,7 @@ PLMerror:
         'grdDevices.set_TextMatrix(house * 16 + device, 2, "On")
         ' grdDevices.set_TextMatrix(house * 16 + device, 3, X10(house, device).Level)
         If house < 16 Then ' real device, otherwise variable so no signal should be sent
-            logging.AddToLog("CommandBright for PLM", True)
+            Log.Debug("CommandBright for PLM")
             data(0) = 2   ' start first message: send X10 address only
             data(1) = 99  ' 0x063 = Send X10
             data(2) = PLM_X10_House(house + 1) + PLM_X10_Device(device + 1)  ' X10 address (house + device)
@@ -1086,7 +1110,7 @@ PLMerror:
         'grdDevices.set_TextMatrix(house * 16 + device, 2, "On")
         'grdDevices.set_TextMatrix(house * 16 + device, 3, X10(house, device).Level)
         If house < 16 Then ' real device, otherwise variable so no signal should be sent
-            logging.AddToLog("CommandDim for PLM", True)
+            Log.Debug("CommandDim for PLM")
             data(0) = 2   ' start first message: send X10 address only
             data(1) = 99  ' 0x063 = Send X10
             data(2) = PLM_X10_House(house + 1) + PLM_X10_Device(device + 1)  ' X10 address (house + device)
@@ -1114,6 +1138,7 @@ PLMerror:
     End Sub
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
+        Dim oObject As OSAEObject
         Dim i As Short
         Dim a As String
         Dim data(7) As Byte
@@ -1126,9 +1151,9 @@ PLMerror:
                 sAddress1 = Left(method.Address, 2).ToLower
                 sAddress2 = method.Address.Substring(3, 2).ToLower
                 sAddress3 = method.Address.Substring(6, 2).ToLower
-                logging.AddToLog("SEND: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName, True)
+                Log.Debug("SEND: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName)
             Catch ex As Exception
-                logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
+                Log.Error("Error ProcessCommand - " & ex.Message)
             End Try
             ' User has pressed the Send Command button
             ' Insteon - note that all the levels etc will be updated when the ACK is received, not here
@@ -1140,7 +1165,7 @@ PLMerror:
             Select Case i
                 Case 17, 18, 19, 20 ' On/Off/FastOn/FastOff -- rescale dim level from % scale to 0-255 scale
                     'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " " + TxtDim.Text + vbCrLf)
-                    logging.AddToLog("SEND1: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName, True)
+                    Log.Debug("SEND1: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName)
                     Try
                         data(0) = 2
                         data(1) = 98 ' 0x062 = send Insteon standard or extended message
@@ -1151,9 +1176,9 @@ PLMerror:
                         data(6) = i ' command1
                         data(7) = 100 * 2.55
                         SerialPLM.Write(data, 0, 8)
-                        logging.AddToLog("SENT: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName, True)
+                        Log.Debug("SENT: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName)
                     Catch ex As Exception
-                        logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
+                        Log.Error("Error ProcessCommand - " & ex.Message)
                     End Try
                 Case 21, 22 ' Bright/Dim by one step (on 32 step scale)
                     'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " (one step)" + vbCrLf)
@@ -1168,7 +1193,7 @@ PLMerror:
                     data(7) = 255
                     SerialPLM.Write(data, 0, 8)
                 Case Else
-                    logging.AddToLog("ELSE", True)
+                    Log.Debug("ELSE")
                     'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " " + TxtDim.Text + vbCrLf)
                     a = Replace(method.Address, ".", " ")
                     data(0) = 2
@@ -1189,7 +1214,6 @@ PLMerror:
             Dim device As Integer
             Dim command As String
             Dim x10data(3) As Byte
-            Dim CMD As New MySqlCommand
             Dim sObject As String
             Dim dsResults As DataSet
 
@@ -1205,62 +1229,62 @@ PLMerror:
             Select Case i
                 Case 17 ' On/Off/FastOn/FastOff -- rescale dim level from % scale to 0-255 scale
                     command = "ON"
-                    logging.AddToLog("X10 On " & houseCode & device, True)
+                    Log.Info("Sending X10: " & houseCode.ToString.ToUpper & device & " ON")
                     x10data(0) = 2   ' start first message: send X10 address only
                     x10data(1) = 99  ' 0x063 = Send X10
                     x10data(2) = PLM_X10_House(houseCodeInt) + PLM_X10_Device(device)  ' X10 address (house + device)
                     x10data(3) = 0   ' flag = this is the address
                     SerialPLM.Write(x10data, 0, 4)
+                    Log.Debug("PLM Tansmitted: " & PLM_X10_House(houseCodeInt) + PLM_X10_Device(device))
                     Wait(500)
                     x10data(0) = 2   ' start second message: send X10 house + command
                     x10data(1) = 99  ' 0x063 = Send X10
                     x10data(2) = PLM_X10_House(houseCodeInt) + 2   ' X10 address (house + command)
                     x10data(3) = 128 ' flag = this is house + address
                     SerialPLM.Write(x10data, 0, 4)
+                    Log.Debug("PLM Tansmitted: " & PLM_X10_House(houseCodeInt) + 2)
                 Case 19
                     command = "OFF"
-                    logging.AddToLog("X10 Off " & houseCode & device, True)
+                    Log.Info("Sending X10: " & houseCode.ToString.ToUpper & device & " OFF")
                     x10data(0) = 2   ' start first message: send X10 address only
                     x10data(1) = 99  ' 0x063 = Send X10
                     x10data(2) = PLM_X10_House(houseCodeInt) + PLM_X10_Device(device)  ' X10 address (house + device)
                     x10data(3) = 0   ' flag = this is the address
                     SerialPLM.Write(x10data, 0, 4)
+                    Log.Debug("PLM Tansmitted: " & PLM_X10_House(houseCodeInt) + PLM_X10_Device(device))
                     Wait(500)
                     x10data(0) = 2   ' start second message: send X10 house + command
                     x10data(1) = 99  ' 0x063 = Send X10
                     x10data(2) = PLM_X10_House(houseCodeInt) + 3   ' X10 address (house + command)
                     x10data(3) = 128 ' flag = this is house + address
                     SerialPLM.Write(data, 0, 4)
+                    Log.Debug("PLM Tansmitted: " & PLM_X10_House(houseCodeInt) + 3)
                 Case Else
                     command = "Unknown"
-                    logging.AddToLog("Unknown X10 Command" & houseCode & device, True)
+                    Log.Debug("Unknown X10 Command" & houseCode & device)
             End Select
             Try
-                CMD.CommandType = CommandType.Text
-                CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE UPPER(address)=?pname"
-                CMD.Parameters.AddWithValue("?pname", houseCode & device)
-                dsResults = OSAE.OSAESql.RunQuery(CMD)
-
-                If dsResults.Tables(0).Rows.Count > 0 Then
-                    sObject = dsResults.Tables(0).Rows(0).Item(0)
-                    OSAE.OSAEObjectStateManager.ObjectStateSet(sObject, command, pName)
+                oObject = OSAEObjectManager.GetObjectByAddress(houseCode & device)
+                If oObject.Name <> "" Then
+                    OSAE.OSAEObjectStateManager.ObjectStateSet(oObject.Name, command, pName)
+                    Log.Debug("Object: " & oObject.Name & " State set to: " & command)
                 Else
-                    logging.AddToLog("Could not retrieve X10 Device Status", True)
+                    Log.Debug("Could not retrieve X10 Device Status")
                 End If
 
             Catch ex As Exception
-                logging.AddToLog("X10 Status Set Error (" & ex.Message & ")", True)
-                logging.AddToLog(houseCode & device, True)
+                Log.Error("X10 Status Set Error (" & ex.Message & ")")
+                Log.Error(houseCode & device)
             End Try
         End If
     End Sub
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         pName = pluginName
-        logging.AddToLog("Found my Object Name: " & pName, True)
+        Log.Info("Found my Object Name: " & pName)
 
         gPort = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
-        logging.AddToLog("COM Port is set to: " & gPort, True)
+        Log.Info("COM Port is set to: " & gPort)
 
         SerialPLM = New System.IO.Ports.SerialPort
         SerialPLM.BaudRate = 19200
@@ -1381,6 +1405,6 @@ PLMerror:
     End Sub
 
     Public Overrides Sub Shutdown()
-        logging.AddToLog("*** Received Shutdown", True)
+        Log.Info("*** Received Shutdown")
     End Sub
 End Class
