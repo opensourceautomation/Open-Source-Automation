@@ -29,7 +29,7 @@ namespace OSAE.UI.Controls
             MethodName = screenObject.Property("Method Name").Value; ;
             Param1 = screenObject.Property("Param 1").Value; ;
             Param2 = screenObject.Property("Param 2").Value; ;
-
+            Image.ToolTip = Image.Tag;
             Image.Tag = ObjectName + " - " + MethodName;
             Image.MouseLeftButtonUp += new MouseButtonEventHandler(Method_Image_MouseLeftButtonUp);
 
@@ -57,7 +57,24 @@ namespace OSAE.UI.Controls
 
         private void Method_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
         {
-            OSAEMethodManager.MethodQueueAdd(ObjectName, MethodName, Param1, Param2, "GUI");
+            if (Param1 == "[ASK]" | Param2 == "[ASK]")
+            {
+                ParamInput addControl = new ParamInput("Method", screenObject);
+                string cppX = screenObject.Property("X").Value;
+                string cppY = screenObject.Property("Y").Value;
+                double cpp_X = Convert.ToDouble(cppX);
+                double cpp_Y = Convert.ToDouble(cppY);
+                if (cpp_X < 320) { cpp_X = cpp_X + 200; }
+
+                addControl.Left = cpp_X;
+                addControl.Top = cpp_Y;
+                addControl.Show();
+
+            }
+            else
+            {
+                OSAEMethodManager.MethodQueueAdd(ObjectName, MethodName, Param1, Param2, "GUI");
+            }
         }     
     }
 }
