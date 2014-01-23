@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.Jabber", "OSAE.Jabber.csproj", "{589EDA2C-421D-40F1-9682-D4360E02897A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{589EDA2C-421D-40F1-9682-D4360E02897A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{589EDA2C-421D-40F1-9682-D4360E02897A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{589EDA2C-421D-40F1-9682-D4360E02897A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{589EDA2C-421D-40F1-9682-D4360E02897A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

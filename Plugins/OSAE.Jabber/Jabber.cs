@@ -41,17 +41,17 @@ namespace OSAE.Jabber
                 string to = "";
                 this.Log.Debug("Process command: " + method.MethodName);
                 this.Log.Debug("Message: " + method.Parameter2);
-                this.Log.Debug("To: " + method.Parameter1);
                 OSAEObjectProperty prop = OSAEObjectPropertyManager.GetObjectPropertyValue(method.Parameter1, "JabberID");
+
                 if(prop != null)
                     to = prop.Value;
-                    if (to == "")
-                        to = method.Parameter1;
                 else
                     to = method.Parameter1;
 
                 if (to == "")
                     to = method.Parameter1;
+
+                this.Log.Debug("To: " + to);
 
                 switch (method.MethodName)
                 {
