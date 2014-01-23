@@ -224,10 +224,10 @@
                         dsObjects = OSAE.Common.ObjectNamesStartingWith(word);
                         foreach (DataRow dr in dsObjects.Tables[0].Rows)
                         {
-                            if (str.IndexOf(dr["object_name"].ToString()) > -1)
+                            if (str.IndexOf(dr["object_name"].ToString().ToUpper()) > -1)
                             //return "Found " + dr["object_name"].ToString();
                             {
-                                str = str.Replace(dr["object_name"].ToString(), "[OBJECT]");
+                                str = str.Replace(dr["object_name"].ToString().ToUpper(), "[OBJECT]");
                                 ScriptParameter += dr["object_name"].ToString();
                                 //Here We have found our Object, so we need to look for an appropriate state afterwards
                                 //So we are going to retrieve a state list and compare it to the remainder of the string
@@ -291,7 +291,7 @@
                     DataSet dataset = new DataSet();
                     //command.CommandText = "SELECT object_name FROM osae_object WHERE UPPER(object_name) LIKE '@Pattern%' ORDER BY Length(object_name) DESC";
                     //command.Parameters.AddWithValue("@Pattern", pattern.ToUpper());
-                    dataset = OSAESql.RunSQL("SELECT UPPER(object_name) as object_name FROM osae_object WHERE UPPER(object_name) LIKE '" + pattern + "%' ORDER BY Length(object_name) DESC");
+                    dataset = OSAESql.RunSQL("SELECT object_name FROM osae_object WHERE UPPER(object_name) LIKE '" + pattern + "%' ORDER BY Length(object_name) DESC");
                     return dataset;
                 }
         }
