@@ -72,7 +72,8 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Logs <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="eventlogs.aspx">Event Logs</a></li>
+                                    <li><a href="eventlogs.aspx">Event Log</a></li>
+                                    <li><a href="methodlog.aspx">Method Log</a><li>
                                     <li><a href="logs.aspx">Server Logs</a></li>
                                     <li><a href="debuglog.aspx">Debug Log</a></li>
                                 </ul>
