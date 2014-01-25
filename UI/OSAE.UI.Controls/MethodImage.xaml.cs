@@ -29,8 +29,8 @@ namespace OSAE.UI.Controls
             MethodName = screenObject.Property("Method Name").Value; ;
             Param1 = screenObject.Property("Param 1").Value; ;
             Param2 = screenObject.Property("Param 2").Value; ;
-            Image.ToolTip = Image.Tag;
             Image.Tag = ObjectName + " - " + MethodName;
+            Image.ToolTip = Image.Tag;
             Image.MouseLeftButtonUp += new MouseButtonEventHandler(Method_Image_MouseLeftButtonUp);
 
             string imgName = screenObject.Property("Image").Value;
