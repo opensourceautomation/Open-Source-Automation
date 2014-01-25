@@ -11,6 +11,9 @@
 
             $("#<%=datepickerTo.ClientID%>").datepicker();
             $("#<%=datepickerTo.ClientID%>").datepicker("option", "dateFormat", "yy-mm-dd");
+
+            $('#<%=timepickerTo.ClientID%>').timepicker();
+            $('#<%=timepickerFrom.ClientID%>').timepicker();
         }
 
         $(function () {
@@ -27,11 +30,24 @@
             });
         });
 
+        $(function () {
+            $("#<%=timepickerFrom.ClientID%>").change(function () {
+                if ($('#PropertyGrid tr:has(:checkbox:checked)').length + $('#StateGrid tr:has(:checkbox:checked)').length > 0)
+                    load();
+            });
+        });
+
+        $(function () {
+            $("#<%=timepickerTo.ClientID%>").change(function () {
+                        if ($('#PropertyGrid tr:has(:checkbox:checked)').length + $('#StateGrid tr:has(:checkbox:checked)').length > 0)
+                            load();
+            });
+         });
+
+
         $(document).ready(function () {
             $('#loading').hide();
             host = window.location.hostname;
-
-
         });
 
         window.onload = function () {
@@ -49,7 +65,6 @@
             document.cookie = "yPos=!~" + intY + "~!";
         }
 
-
         function load() {
             $('#chart').html('');
             $('#loading').show();
@@ -58,32 +73,50 @@
             var labels = [];
             var points = [];
             var size = $('#PropertyGrid tr:has(:checkbox:checked)').length + $('#StateGrid tr:has(:checkbox:checked)').length;
+            //  for only first check box use '#PropertyGrid tr:has([ID$=chkEnabled]:checkbox:checked)').length + $('#StateGrid tr:has(:checkbox:checked)'
             var count = 0;
-            var mytemp = {}
 
             $('#PropertyGrid tr:has(:checkbox:checked)').each(function () {
                 var obj = $(this).find('td').eq(1).html();
                 var prop = $(this).find('td').eq(2).html();
-                var check = $(this).find('td').eq(3).html();
-                var propboolean = false;
-                if (check == 'Boolean'){
-					propboolean = true;
-					//alert(obj + " " + prop + " " + check + " " + propboolean);
+                var ptype = $(this).find('td').eq(3).html();
+                var stepscheck = $(this).find('td').eq(4).find(':checkbox').is(':checked');
+                
+                var steps = false;
+                if (stepscheck){
+                    steps = true;
+                }
+                var yaxis = 1;
+                if (ptype == 'B'){
+                    steps = true;
+                    yaxis = 2;
 					}
+                else
+                {
+                    yaxis = 1;
+                }
+
                 var from = '1900-01-01';
                 var to = '2039-01-01';
+
+                var currentdate = new Date();
+                var fromtime = ""; //currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds();
+                var totime ="";
 
                 if ($("#<%=datepickerFrom.ClientID%>").val() != '')
                     from = $("#<%=datepickerFrom.ClientID%>").val()
                 if ($("#<%=datepickerTo.ClientID%>").val() != '')
                     to = $("#<%=datepickerTo.ClientID%>").val()
                     
-                $.getJSON('http://' + host + ':8732/api/analytics/' + obj + '/' + prop + '?f=' + from + '&t=' + to + '&callback=?', null, function (data) {
-                    $.each(data, function (i, mydata) {
-					mytemp = {"data": mydata.data, "label": mydata.label,"lines":{"steps": propboolean}};
+                if ($("#<%=timepickerFrom.ClientID%>").val() != '')
+                    fromtime = 'T' + $("#<%=timepickerFrom.ClientID%>").val()
+                if ($("#<%=timepickerTo.ClientID%>").val() != '')
+                    totime = 'T' + $("#<%=timepickerTo.ClientID%>").val()
+      
+                $.getJSON('http://' + host + ':8732/api/analytics/' + obj + '/' + prop + '?f=' + from + fromtime + '&t=' + to + totime + '&callback=?', null, function (data) {
+                    $.each(data, function (i, returndata) {
+                        datasets.push({"data": returndata.data, "label": returndata.label, "yaxis": yaxis, "lines":{"steps": steps}});
 					});
-				    //alert(JSON.stringify(mytemp));
-				    datasets.push(mytemp);
 					count++;
 				});
             });
@@ -118,13 +151,80 @@
                             mode: "time",
                             tickLength: 5
                         },
+                        yaxes: [{
+                        },{
+                            position: "right",
+                            ticks: [[0, "Off"], [1, "On"], [1.2, ""]]
+                        }
+                        ],
                         selection: {
                             mode: "x"
                         },
-                        grid: { markings: markings }
+
+                        grid: {
+                            markings: markings,
+                            hoverable: true,
+                            //clickable: true
+                        },
+
+                        legend: {
+                          //show: boolean,
+                          //labelFormatter: null or (fn: string, series object -> string)
+                          //labelBoxBorderColor: color
+                          //noColumns: number
+                          position: "nw"
+                          //margin: number of pixels or [x margin, y margin]
+                          //backgroundColor: null or color
+                          //backgroundOpacity: number between 0 and 1
+                          //container: null or jQuery object/DOM element/jQuery expression
+                          }
                     };
 
                     var plot = $.plot("#chart", datasets, options);
+
+                    function showTooltip(x, y, contents) {
+                        $('<div id="tooltip">' + contents + '</div>').css({
+                            position: 'absolute',
+                            display: 'none',
+                            top: y + 5,
+                            left: x + 5,
+                            border: '1px solid #fdd',
+                            padding: '2px',
+                            'background-color': '#fee',
+                            opacity: 0.80
+                        }).appendTo("body").fadeIn(200);
+                    }
+
+                    var previousPoint = null;
+                    $("#chart").bind("plothover", function (event, pos, item) {
+                        $("#x").text(pos.x.toFixed(2));
+                        $("#y").text(pos.y.toFixed(2));
+
+                        if (item) {
+                                if (previousPoint != item.dataIndex) {
+                                    previousPoint = item.dataIndex;
+
+                                    $("#tooltip").remove();
+                                    var x = item.datapoint[0],
+                                        y = item.datapoint[1];
+
+                                    var dUTC = new Date(x);
+                                    var d = new Date(+dUTC + dUTC.getTimezoneOffset() * 60000);
+                                    var day = d.getDate();
+                                    var ordinal = (day > 10 && day < 20 ? 'th' : { 1: 'st', 2: 'nd', 3: 'rd' }[day % 10] || 'th')
+
+                                    // var DATE_FORMAT = "ddd dS H:MM:ss";
+                                    // showTooltip(item.pageX, item.pageY, $.plot.formatDate(d, DATE_FORMAT) + ":" + y);
+
+                                    showTooltip(item.pageX, item.pageY,
+                                                item.series.label + " = " + y + " @ " + d.format("ddd d") + ordinal + d.format(" H:mm:ss"));
+                                }
+                        }
+                        else {
+                                $("#tooltip").remove();
+                                previousPoint = null;
+                        }
+                    });
 
                     var overview = $.plot("#overview", datasets, {
                         series: {
@@ -172,14 +272,10 @@
                         plot.setSelection(ranges);
                     });
 
-
                     clearInterval(videoInterval);
                 }
 
             }, 500);
-
-            
-
         }
 
     </script>
@@ -192,6 +288,19 @@
             position: relative;
             overflow: hidden;
         }
+
+         /* css for timepicker */
+        .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+        .ui-timepicker-div dl { text-align: left; }
+        .ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+        .ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+        .ui-timepicker-div td { font-size: 90%; }
+        .ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+
+        .ui-timepicker-rtl{ direction: rtl; }
+        .ui-timepicker-rtl dl { text-align: right; }
+        .ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }  
+
     </style>
     <div class="row-fluid">
         <div class="span3">
@@ -201,7 +310,8 @@
                     <asp:GridView runat="server" ID="gvProperties"
                         AutoGenerateColumns="False"  
                         GridLines="None"  
-                        CssClass="mGrid" ShowHeader="true" 
+                        CssClass="mGrid"
+                        ShowHeader="true" 
                         AlternatingRowStyle-CssClass="alt" DataKeyNames="property_name, object_name" ShowHeaderWhenEmpty="true">  
                         <Columns>  
                             <asp:TemplateField HeaderText="View" Visible="True">
@@ -212,7 +322,13 @@
                             </asp:TemplateField>
                             <asp:BoundField DataField="object_name" Visible="True" HeaderText="Object" />   
                             <asp:BoundField DataField="property_name" Visible="True" HeaderText="Property" /> 
-                            <asp:BoundField DataField="property_datatype" Visible="True" HeaderText="DataType" /> 
+                            <asp:BoundField DataField="property_datatype" Visible="True" HeaderText="Type" ItemStyle-HorizontalAlign="Center" />  
+                            <asp:TemplateField HeaderText="Step" Visible="True">
+                                <ItemTemplate>
+                                    <asp:CheckBox ID="chkStep" runat="server" onclick="load();"/>
+                                </ItemTemplate>
+                                <ItemStyle HorizontalAlign="Center" />
+                            </asp:TemplateField>
                         </Columns>
                     </asp:GridView>
                 </div>
@@ -238,7 +354,13 @@
         </div>
         <div class="span9">
             <div class="row-fluid">
-                From: <asp:TextBox runat="server" ID="datepickerFrom" style="margin-top:10px;"></asp:TextBox> To: <asp:TextBox runat="server" ID="datepickerTo" style="margin-top:10px;"></asp:TextBox> &nbsp; &nbsp; <img src="Images/refresh.png" onclick="load();" style="margin-top:auto;">
+                From: <asp:TextBox runat="server" ID="datepickerFrom" style="margin-top:10px;"></asp:TextBox>
+                To: <asp:TextBox runat="server" ID="datepickerTo" style="margin-top:10px;"></asp:TextBox>
+                <br>
+                Time: <asp:TextBox runat="server" ID="timepickerFrom" style="margin-top:10px;"></asp:TextBox>
+                &nbsp; &nbsp; &nbsp; <asp:TextBox runat="server" ID="timepickerTo" style="margin-top:10px;"></asp:TextBox>
+
+                &nbsp; &nbsp; <img src="Images/refresh.png" onclick="load();" style="margin-top:auto;">
             </div>
             <div class="row-fluid">
                 <img ID="loading" src="Images/loading.GIF" style="display:block; max-height:100px; margin-left:auto; margin-right:auto;"/>
@@ -256,5 +378,3 @@
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropID" Visible="false"></asp:Label>
 </asp:Content>
-
-

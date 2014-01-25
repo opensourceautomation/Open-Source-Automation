@@ -23,7 +23,6 @@ public partial class analytics : System.Web.UI.Page
     {
         loadProperties();
         loadStates();
-        
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
@@ -32,23 +31,18 @@ public partial class analytics : System.Web.UI.Page
         {
             gvProperties.Rows[Int32.Parse(hdnSelectedRow.Text)].Attributes.Remove("onmouseout");
             gvProperties.Rows[Int32.Parse(hdnSelectedRow.Text)].Style.Add("background", "lightblue");
-
         }
     }
     
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT DISTINCT CONCAT(object_name,' - ',property_name)as prop_name, object_name, property_name, property_datatype FROM osae_v_object_property_history WHERE property_datatype IN ('Integer', 'Float', 'Boolean') ORDER BY prop_name");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT DISTINCT CONCAT(object_name,' - ',property_name) as prop_name, object_name, property_name, LEFT(property_datatype, 1) AS property_datatype FROM osae_v_object_property_history WHERE property_datatype IN ('Integer', 'Float', 'Boolean') ORDER BY prop_name");
         gvProperties.DataBind();
-
-
     }
 
     private void loadStates()
     {
         gvStates.DataSource = OSAESql.RunSQL("SELECT DISTINCT object_name FROM osae_v_object_state_change_history ORDER BY object_name");
         gvStates.DataBind();
-
-
     }
 }
