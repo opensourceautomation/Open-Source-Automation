@@ -18,6 +18,25 @@ public partial class schedules : System.Web.UI.Page
             hdnSelectedQueueRow.Text = args[1];
             hdnSelectedQueueID.Text = gvQueue.DataKeys[Int32.Parse(hdnSelectedQueueRow.Text)]["schedule_id"].ToString();
             btnQueueDelete.Visible = true;
+            txtName.Text = "";
+            tsTime.Text = "";
+            foreach (ListItem li in rbScheduleType.Items) {
+                li.Selected = false;
+            }
+            foreach (ListItem li in rblAction.Items) {
+                li.Selected = false;
+            }
+            chkSunday.Checked = false;
+            chkSaturday.Checked = false;
+            chkMonday.Checked = false;
+            chkTuesday.Checked = false;
+            chkWednesday.Checked = false;
+            chkThursday.Checked = false;
+            chkFriday.Checked = false;
+
+            
+            loadDDLs();
+
         }
         else if (args[0] == "gvRecurring")
         {
@@ -35,6 +54,7 @@ public partial class schedules : System.Web.UI.Page
     {
         loadQueue();
         loadRecurring();
+        chkActive.Checked = true;
         if (!Page.IsPostBack)
         {
             loadDDLs();
@@ -94,7 +114,7 @@ public partial class schedules : System.Web.UI.Page
 
     private void loadQueue()
     {
-        gvQueue.DataSource = OSAESql.RunSQL("SELECT schedule_id, queue_datetime, schedule_name, COALESCE(script_name, CONCAT(object_name,'.',method_name)) AS command_name FROM osae_v_schedule_queue ORDER BY queue_datetime");
+        gvQueue.DataSource = OSAESql.RunSQL("SELECT schedule_id, DAYNAME(queue_datetime) AS day_of_week, queue_datetime, schedule_name, COALESCE(script_name, CONCAT(object_name,'.',method_name)) AS command_name FROM osae_v_schedule_queue ORDER BY queue_datetime");
         gvQueue.DataBind();
     }
 
@@ -216,11 +236,14 @@ public partial class schedules : System.Web.UI.Page
         {
             datepicker.Visible = true;
         }
+        
+        check_if_ready_save();
+
     }
 
     protected void rblAction_SelectedIndexChanged(object sender, EventArgs e)
     {
-        btnAdd.Visible = true;
+        check_if_ready_save();
 
         pnlMethod.Visible = false;
         ddlScript.Visible = false;
@@ -233,6 +256,24 @@ public partial class schedules : System.Web.UI.Page
             pnlMethod.Visible = true;
         }
     }
+    
+    protected void txtName_TextChanged(object sender, EventArgs e)
+    {
+          check_if_ready_save();
+    }
+    
+    protected void check_if_ready_save()
+    {
+        if (rbScheduleType.SelectedValue != "" && rblAction.SelectedValue != "" && txtName.Text !="" )
+        {
+            btnAdd.Visible = true;
+        }
+        else
+        {
+            btnAdd.Visible = false;        
+        }
+    }
+    
     protected void ddlObject_SelectedIndexChanged(object sender, EventArgs e)
     {
         loadMethods();
@@ -290,7 +331,7 @@ public partial class schedules : System.Web.UI.Page
         }
         else
         {
-            OSAEScheduleManager.ScheduleRecurringUpdate(hdnSelectedRecurringName.Text, txtName.Text, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, ddlScript.SelectedItem.Text, tsTime.Text + ":00",
+            OSAEScheduleManager.ScheduleRecurringUpdate(hdnSelectedRecurringName.Text, txtName.Text, ddlObject.SelectedValue, ddlMethod.SelectedValue, txtParam1.Text, txtParam2.Text, "", tsTime.Text + ":00",
                 chkSunday.Checked, chkMonday.Checked, chkTuesday.Checked, chkWednesday.Checked, chkThursday.Checked, chkFriday.Checked, chkSaturday.Checked, rbScheduleType.SelectedValue,
                 Int32.Parse(txtMinutes.Text), ddlMonthDay.SelectedValue, txtPickedDate.Text, chkActive.Checked);
         }

@@ -59,6 +59,7 @@
                             AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvQueue_RowDataBound" DataKeyNames="schedule_id" ShowHeaderWhenEmpty="true">  
                             <Columns>  
                                 <asp:BoundField DataField="schedule_name" HeaderText="Name" />
+                                <asp:BoundField DataField="day_of_week" HeaderText="Day" />
                                 <asp:BoundField DataField="queue_datetime" HeaderText="Date Time" />
                                 <asp:BoundField DataField="schedule_id" Visible="false" /> 
                                 <asp:BoundField DataField="command_name" HeaderText="Command" /> 
@@ -109,7 +110,7 @@
                             Name: 
                         </div>
                         <div class="span10">
-                            <asp:TextBox class="input-xlarge" runat="server" ID="txtName"></asp:TextBox>
+                            <asp:TextBox class="input-xlarge" runat="server" ID="txtName" AutoPostBack="True" OnTextChanged="txtName_TextChanged"></asp:TextBox>
                         </div>
                     </div>
                     <div class="row-fluid">
