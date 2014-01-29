@@ -4,7 +4,7 @@ Imports System.IO.Ports
 
 Public Class W800RF
     Inherits OSAEPluginBase
-    Private Shared logging As Logging = logging.GetLogger("W800RF")
+    Private Log As OSAE.General.OSAELog = New General.OSAELog()
     Private pName As String = ""
 
     Private _baudRate As String = "4800"
@@ -22,27 +22,27 @@ Public Class W800RF
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         pName = pluginName
-        logging.AddToLog("Found my Object Name: " & pName, True)
+        Log.Info("Found my Object Name: " & pName)
         Load_App_Name()
 
         Set_Codes()
         OpenPort()
 
-        logging.AddToLog("Finished Loading: " & pName, True)
+        Log.Debug("Finished Loading: " & pName)
     End Sub
 
     Public Overrides Sub Shutdown()
-        logging.AddToLog("*** Received Shut-Down.", True)
+        Log.Info("*** Received Shut-Down.")
     End Sub
 
     Private Sub Load_App_Name()
         _portName = "COM" & OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
-        logging.AddToLog("Port set to: " & _portName, True)
+        Log.Info("Port set to: " & _portName)
         _Debounce = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Debounce").Value
-        logging.AddToLog("Debounce set to: " & _Debounce, True)
+        Log.Info("Debounce set to: " & _Debounce)
         gLearning = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value
         If gLearning <> "TRUE" And gLearning <> "FALSE" Then gLearning = "FALSE"
-        logging.AddToLog("Learning Mode set to: " & gLearning, True)
+        Log.Info("Learning Mode set to: " & gLearning)
     End Sub
 
     Public Function OpenPort() As Boolean
@@ -57,11 +57,11 @@ Public Class W800RF
             comPort.Parity = DirectCast([Enum].Parse(GetType(Parity), _parity), Parity)
             comPort.PortName = _portName
             comPort.Open()
-            logging.AddToLog("Port " & _portName & " opened", True)
+            Log.Debug("Port " & _portName & " opened")
             AddHandler comPort.DataReceived, AddressOf comPort_DataReceived
             Return True
         Catch ex As Exception
-            logging.AddToLog("Port " & _portName & " error: " & ex.Message, True)
+            Log.Error("Port " & _portName & " error: " & ex.Message)
             Return False
         End Try
     End Function
@@ -92,16 +92,15 @@ Public Class W800RF
         ByteDetail(4).HexValue = Hex(ByteDetail(4).DecimalValue).PadLeft(2, "0")
 
         If DateTime.Now() < gNewTime Then
-            logging.AddToLog("Debounce Filtered: ByteDetails (" & ByteDetail(1).HexValue & "/" & ByteDetail(1).DecimalValue & "," & ByteDetail(2).HexValue & "/" & ByteDetail(2).DecimalValue & "," & ByteDetail(3).HexValue & "/" & ByteDetail(3).DecimalValue & "," & ByteDetail(4).HexValue & "/" & ByteDetail(4).DecimalValue & ")", False)
+            Log.Debug("Debounce Filtered: ByteDetails (Hex:" & ByteDetail(1).HexValue & "." & ByteDetail(2).HexValue & "." & ByteDetail(3).HexValue & ByteDetail(4).HexValue & ", DEC=" & ByteDetail(1).DecimalValue & "." & ByteDetail(2).DecimalValue & "." & ByteDetail(3).DecimalValue & "." & ByteDetail(4).DecimalValue & "." & ")")
             Exit Sub
         End If
-        logging.AddToLog("---------------------------------------------------------------------", True)
         If (ByteDetail(1).DecimalValue Xor ByteDetail(2).DecimalValue) <> &HFF Then
-            logging.AddToLog("ByteDetail 1 or 2 not equal HFF disposing: ByteDetails (" & ByteDetail(1).HexValue & "," & ByteDetail(2).HexValue & ")", False)
+            Log.Debug("ByteDetail 1 or 2 not equal HFF disposing: ByteDetails (" & ByteDetail(1).HexValue & "," & ByteDetail(2).HexValue & ")")
             Exit Sub
         End If
 		
-        logging.AddToLog("Byte Accepted: ByteDetails (" & ByteDetail(1).HexValue & "/" & ByteDetail(1).DecimalValue & "," & ByteDetail(2).HexValue & "/" & ByteDetail(2).DecimalValue & "," & ByteDetail(3).HexValue & "/" & ByteDetail(3).DecimalValue & "," & ByteDetail(4).HexValue & "/" & ByteDetail(4).DecimalValue & ")", False)
+        Log.Debug("Byte Accepted: ByteDetails (Hex:" & ByteDetail(1).HexValue & "." & ByteDetail(2).HexValue & "." & ByteDetail(3).HexValue & ByteDetail(4).HexValue & ", DEC=" & ByteDetail(1).DecimalValue & "." & ByteDetail(2).DecimalValue & "." & ByteDetail(3).DecimalValue & "." & ByteDetail(4).DecimalValue & "." & ")")
 
         If (ByteDetail(3).DecimalValue Xor ByteDetail(4).DecimalValue) <> 255 Then
             ' If Bytes 3 & 4 <> 255 here, then it indicates it is a Security device
@@ -165,7 +164,7 @@ Public Class W800RF
                     gDevice.House_Code = gHouseCodes(ByteDetail(3).DecimalValue - &H20)
                 End If
             Catch ex As Exception
-                logging.AddToLog("Bad House Code Detected: " & ByteDetail(3).DecimalValue, False)
+                Log.Error("Bad House Code Detected: " & ByteDetail(3).DecimalValue)
             End Try
             intUnit = ByteDetail(3).BinaryValue.Substring(2, 1) * 8
             intUnit += ByteDetail(1).BinaryValue.Substring(6, 1) * 4
@@ -186,7 +185,7 @@ Public Class W800RF
                 gDevice.Current_Command = "ON"
             End If
         End If
-        logging.AddToLog(gDevice.House_Code & gDevice.Device_Code & " " & gDevice.Current_Command & " [" & gDevice.Device_Type & "]", True)
+        Log.Info(gDevice.House_Code & gDevice.Device_Code & " " & gDevice.Current_Command & " [" & gDevice.Device_Type & "]")
         ProcessInput()
         gNewTime = DateTime.Now().AddMilliseconds(_Debounce)
     End Sub
@@ -197,34 +196,34 @@ Public Class W800RF
 
         Try
 
-            logging.AddToLog("GetObjectByAddress: " & gDevice.House_Code & gDevice.Device_Code, False)
+            Log.Debug("GetObjectByAddress: " & gDevice.House_Code & gDevice.Device_Code)
             Try
                 oObject = OSAEObjectManager.GetObjectByAddress(gDevice.House_Code & gDevice.Device_Code)
                 If IsNothing(oObject) Then
 
                     If gLearning.ToUpper = "TRUE" Then
                         If gDevice.Device_Type = "X10_SECURITY_DS10" Then
-                            logging.AddToLog("Adding new DS10A: " & gDevice.Device_Code, True)
-                            logging.AddToLog("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)", False)
+                            Log.Info("Adding new DS10A: " & gDevice.Device_Code)
+                            Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '' True)")
                             OSAEObjectManager.ObjectAdd("X10-" & gDevice.Device_Code, "Unknown DS10A found by W800RF", "X10 SENSOR", gDevice.Device_Code, "", True)
                         Else
-                            logging.AddToLog("Adding new X10: " & gDevice.House_Code & gDevice.Device_Code, True)
-                            logging.AddToLog("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)", False)
+                            Log.Info("Adding new X10: " & gDevice.House_Code & gDevice.Device_Code)
+                            Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)")
                             OSAEObjectManager.ObjectAdd("X10-" & gDevice.House_Code & gDevice.Device_Code, "Unknown X10 found by W800RF", "X10 SENSOR", gDevice.House_Code & gDevice.Device_Code, "", True)
                         End If
                     End If
                 Else
                     OSAEObjectStateManager.ObjectStateSet(oObject.Name, gDevice.Current_Command, pName)
-                    logging.AddToLog("Set: " & oObject.Name & " to " & gDevice.Current_Command, True)
+                    Log.Info("Set: " & oObject.Name & " to " & gDevice.Current_Command & "(" & oObject.Address & " " & gDevice.Current_Command & ")")
                 End If
             Catch ex As Exception
-                logging.AddToLog("Object Not Found for: " & gDevice.House_Code & gDevice.Device_Code, True)
-                logging.AddToLog("Error Msg: " & ex.Message, True)
-                logging.AddToLog("--- Msg: " & ex.InnerException.Message, False)
+                Log.Error("Object Not Found for: " & gDevice.House_Code & gDevice.Device_Code)
+                Log.Error("Error Msg: " & ex.Message)
+                Log.Error("--- Msg: " & ex.InnerException.Message)
             End Try
         Catch ex As Exception
-            logging.AddToLog("Error ReadCommPort: " & ex.Message, True)
-            logging.AddToLog("--- Msg: " & ex.InnerException.Message, False)
+            Log.Error("Error ReadCommPort: " & ex.Message)
+            Log.Error("--- Msg: " & ex.InnerException.Message)
         End Try
 DropOut:
     End Sub
@@ -259,19 +258,19 @@ DropOut:
         Try
             If method.MethodName.ToUpper() = "SET COMPORT" Then
                 _portName = "COM" & method.Parameter1
-                logging.AddToLog("ComPort set to: " & _portName, True)
+                Log.Info("ComPort set to: " & _portName)
                 OpenPort()
             ElseIf method.MethodName.ToUpper() = "SET DEBOUNCE" Then
                 _Debounce = method.Parameter1
-                logging.AddToLog("Debounce set to: " & _Debounce, True)
+                Log.Info("Debounce set to: " & _Debounce)
             ElseIf method.MethodName.ToUpper() = "SET LEARNING MODE" Then
                 gLearning = method.Parameter1.ToUpper()
                 If gLearning <> "TRUE" And gLearning <> "FALSE" Then gLearning = "FALSE"
                 OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Learning Mode", gLearning, pName)
-                logging.AddToLog("Learning Mode set to: " & gLearning, True)
+                Log.Info("Learning Mode set to: " & gLearning)
             End If
         Catch ex As Exception
-            logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
+            Log.Error("Error ProcessCommand - " & ex.Message)
         End Try
     End Sub
 
