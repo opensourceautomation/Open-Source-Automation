@@ -154,7 +154,7 @@ namespace OSAE.Jabber
 
             if (!found)
             {
-                OSAEObjectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "PERSON", "", "", true);
+                OSAEObjectManager.ObjectAdd(item.Jid.Bare, "Discovered Jabber contact", "PERSON", "", "Unknown", true);
                 OSAEObjectPropertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
             }
         }
