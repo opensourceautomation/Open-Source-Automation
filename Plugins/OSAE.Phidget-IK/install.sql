@@ -16,7 +16,6 @@ CALL osae_sp_object_type_property_add ('Analog Inputs','Integer','','PHIDGET-IK'
 CALL osae_sp_object_type_property_add ('Sensitivity','Integer','','PHIDGET-IK',0);
 CALL osae_sp_object_type_property_add ('Ratiometric','Boolean','','PHIDGET-IK',0);
 
-
 CALL osae_sp_object_type_add ('PHIDGET ANALOG INPUT','Phidget Analog Input','PHIDGET-IK','PHIDGET ANALOG INPUT',0,0,0,0);
 CALL osae_sp_object_type_state_add ('ON','On','PHIDGET ANALOG INPUT');
 CALL osae_sp_object_type_state_add ('OFF','Off','PHIDGET ANALOG INPUT');
@@ -24,7 +23,6 @@ CALL osae_sp_object_type_event_add ('ON','On','PHIDGET ANALOG INPUT');
 CALL osae_sp_object_type_event_add ('OFF','Off','PHIDGET ANALOG INPUT');
 CALL osae_sp_object_type_property_add ('Formula','String','','PHIDGET ANALOG INPUT',0);
 CALL osae_sp_object_type_property_add ('Analog Value','String','','PHIDGET ANALOG INPUT',0);
-
 
 CALL osae_sp_object_type_add ('PHIDGET DIGITAL INPUT','Phidget Digital Input','PHIDGET-IK','PHIDGET DIGITAL INPUT',0,0,0,0);
 CALL osae_sp_object_type_state_add ('ON','On','PHIDGET DIGITAL INPUT');
