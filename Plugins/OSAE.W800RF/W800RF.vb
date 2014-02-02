@@ -92,15 +92,15 @@ Public Class W800RF
         ByteDetail(4).HexValue = Hex(ByteDetail(4).DecimalValue).PadLeft(2, "0")
 
         If DateTime.Now() < gNewTime Then
-            Log.Debug("Debounce Filtered: ByteDetails (Hex:" & ByteDetail(1).HexValue & "." & ByteDetail(2).HexValue & "." & ByteDetail(3).HexValue & ByteDetail(4).HexValue & ", DEC=" & ByteDetail(1).DecimalValue & "." & ByteDetail(2).DecimalValue & "." & ByteDetail(3).DecimalValue & "." & ByteDetail(4).DecimalValue & "." & ")")
+            'Log.Debug("Debounce Filtered: ByteDetails (Hex:" & ByteDetail(1).HexValue & "." & ByteDetail(2).HexValue & "." & ByteDetail(3).HexValue & "." & ByteDetail(4).HexValue & ", DEC=" & ByteDetail(1).DecimalValue & "." & ByteDetail(2).DecimalValue & "." & ByteDetail(3).DecimalValue & "." & ByteDetail(4).DecimalValue & "." & ")")
             Exit Sub
         End If
         If (ByteDetail(1).DecimalValue Xor ByteDetail(2).DecimalValue) <> &HFF Then
-            Log.Debug("ByteDetail 1 or 2 not equal HFF disposing: ByteDetails (" & ByteDetail(1).HexValue & "," & ByteDetail(2).HexValue & ")")
+            Log.Debug("ByteDetail 1 or 2 not equal HFF disposing: ByteDetails (" & ByteDetail(1).HexValue & "." & ByteDetail(2).HexValue & ")")
             Exit Sub
         End If
 		
-        Log.Debug("Byte Accepted: ByteDetails (Hex:" & ByteDetail(1).HexValue & "." & ByteDetail(2).HexValue & "." & ByteDetail(3).HexValue & ByteDetail(4).HexValue & ", DEC=" & ByteDetail(1).DecimalValue & "." & ByteDetail(2).DecimalValue & "." & ByteDetail(3).DecimalValue & "." & ByteDetail(4).DecimalValue & "." & ")")
+        Log.Debug("Byte Accepted: Bytes 1 & 3 (Hex:" & ByteDetail(1).HexValue & ", " & ByteDetail(3).HexValue & ", DEC=" & ByteDetail(1).DecimalValue & ", " & ByteDetail(3).DecimalValue & "  BIN=" & ByteDetail(1).BinaryValue & " " & ByteDetail(3).BinaryValue & ")")
 
         If (ByteDetail(3).DecimalValue Xor ByteDetail(4).DecimalValue) <> 255 Then
             ' If Bytes 3 & 4 <> 255 here, then it indicates it is a Security device
@@ -166,15 +166,19 @@ Public Class W800RF
             Catch ex As Exception
                 Log.Error("Bad House Code Detected: " & ByteDetail(3).DecimalValue)
             End Try
+
             intUnit = ByteDetail(3).BinaryValue.Substring(2, 1) * 8
             intUnit += ByteDetail(1).BinaryValue.Substring(6, 1) * 4
-            intUnit += ByteDetail(1).BinaryValue.Substring(3, 1) * 2
-            intUnit += ByteDetail(1).BinaryValue.Substring(4, 1) * 1
-            gDevice.Device_Code = intUnit + 1
+            intUnit += ByteDetail(1).BinaryValue.Substring(3, 1) * 2 ' old 3
+            intUnit += ByteDetail(1).BinaryValue.Substring(4, 1) * 1 ' old 4
+            ' gDevice.Device_Code = intUnit + 1
+            ' Took out the above line and moved it to just ON & OFF since dim commands use the Last X10 address like C3 ON, C Dim...
+            'Log.Debug("Unit build " & ByteDetail(1).BinaryValue & " bit 5,1,4,3 = " & ByteDetail(3).BinaryValue.Substring(2, 1) & ByteDetail(1).BinaryValue.Substring(6, 1) & ByteDetail(1).BinaryValue.Substring(3, 1) & ByteDetail(1).BinaryValue.Substring(4, 1) & "  DEC = " & intUnit & "+1 = Unit Code: " & intUnit + 1)
 
             intCommand = ByteDetail(1).BinaryValue.Substring(5, 1)
             If intCommand = 1 Then
                 gDevice.Current_Command = "OFF"
+                gDevice.Device_Code = intUnit + 1
             ElseIf ByteDetail(1).BinaryValue.Substring(7, 1) = 1 Then
                 If ByteDetail(1).BinaryValue.Substring(4, 1) = 1 Then
                     gDevice.Current_Command = "DIM"
@@ -183,6 +187,7 @@ Public Class W800RF
                 End If
             Else
                 gDevice.Current_Command = "ON"
+                gDevice.Device_Code = intUnit + 1
             End If
         End If
         Log.Info(gDevice.House_Code & gDevice.Device_Code & " " & gDevice.Current_Command & " [" & gDevice.Device_Type & "]")
