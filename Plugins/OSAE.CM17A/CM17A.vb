@@ -6,7 +6,7 @@ Imports System.Threading.Thread
 
 Public Class CM17A
     Inherits OSAEPluginBase
-    Private Shared logging As Logging = logging.GetLogger("CM17A")
+    Private Log As OSAE.General.OSAELog = New General.OSAELog()
     Private COMPort As String
     Private ControllerPort As SerialPort
     Dim HouseByte As New Dictionary(Of String, Byte)
@@ -17,14 +17,14 @@ Public Class CM17A
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
             pName = pluginName
-            logging.AddToLog("Initializing plugin: " & pluginName, True)
+            Log.Info("Initializing plugin: " & pluginName)
             'ComputerName = OSAEApi.ComputerName
             COMPort = "COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "Port").Value.ToString
-            logging.AddToLog("Port is set to: " & COMPort, True)
+            Log.Info("Port is set to: " & COMPort)
             InitiArrays()
 
         Catch ex As Exception
-            logging.AddToLog("Error setting up plugin: " & ex.Message, True)
+            Log.Error("Error setting up plugin: " & ex.Message)
         End Try
     End Sub
 
@@ -40,35 +40,35 @@ Public Class CM17A
             UnitCode = Convert.ToInt32(method.Address.Substring(1))
 
             If method.MethodName = "ON" Then
-                logging.AddToLog("Sending address " & method.Address & " " & method.MethodName & " command", True)
+                Log.Info("Sending address " & method.Address & " " & method.MethodName & " command")
                 Transmitt(HouseCode, UnitCode, True)
                 OSAEObjectStateManager.ObjectStateSet(method.ObjectName, method.MethodName, pName)
 
             ElseIf method.MethodName = "OFF" Then
-                logging.AddToLog("Sending address " & method.Address & " " & method.MethodName & " command", True)
+                Log.Info("Sending address " & method.Address & " " & method.MethodName & " command")
                 Transmitt(HouseCode, UnitCode, False)
                 OSAEObjectStateManager.ObjectStateSet(method.ObjectName, method.MethodName, pName)
             ElseIf method.MethodName = "TOGGLE" Then
                 TargetObject = OSAEObjectManager.GetObjectByAddress(HouseCode & UnitCode.ToString)
-                logging.AddToLog("Target Object is " & TargetObject.State.Value, True)
+                Log.Info("Target Object is " & TargetObject.State.Value)
                 If TargetObject.State.Value.ToUpper = "ON" Then
-                    logging.AddToLog("Toggle address " & method.Address & " to OFF", True)
+                    Log.Info("Toggle address " & method.Address & " to OFF")
                     Transmitt(HouseCode, UnitCode, False)
                     OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "OFF", pName)
                 Else
-                    logging.AddToLog("Toggle address " & method.Address & " to ON", True, pName)
+                    Log.Info("Toggle address " & method.Address & " to ON")
                     Transmitt(HouseCode, UnitCode, True)
                     OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName)
                 End If
             End If
 
         Catch ex As Exception
-            logging.AddToLog("Error Processing Command - " & ex.Message, True)
+            Log.Error("Error Processing Command - " & ex.Message)
         End Try
     End Sub
 
     Public Overrides Sub Shutdown()
-        logging.AddToLog("Shutting down plugin", True)
+        Log.Info("Shutting down plugin")
     End Sub
 
     Sub InitiArrays()
@@ -150,7 +150,7 @@ Public Class CM17A
                     Wait()
                     Sleep(1)
                 Next
-                logging.AddToLog("Sent: " & BitString, False)
+                Log.Debug("Sent: " & BitString)
 
             Next
             Sleep(500)
@@ -158,7 +158,7 @@ Public Class CM17A
             ControllerPort.Close()
 
         Catch ex As Exception
-            logging.AddToLog("Error Transmitting Command - " & ex.Message, True)
+            Log.Error("Error Transmitting Command - " & ex.Message)
         End Try
     End Sub
     Private Sub Send1()
