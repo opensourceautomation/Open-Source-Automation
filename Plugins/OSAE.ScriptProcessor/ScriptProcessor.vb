@@ -5,7 +5,8 @@ Imports System.Text.RegularExpressions
 Public Class ScriptProcessor
     Inherits OSAEPluginBase
     'Private OSAEApi As New OSAE("Script Processor")
-    Private Shared logging As Logging = Logging.GetLogger("Script Processor")
+    'Private Shared logging As Logging = logging.GetLogger("Script Processor")
+    Private Log As OSAE.General.OSAELog = New General.OSAELog()
     Private gAppName As String = ""
     Private scriptArray() As String
 
@@ -19,22 +20,22 @@ Public Class ScriptProcessor
                 Dim dsResults As DataSet = OSAESql.RunSQL("SELECT script,script_name FROM osae_script WHERE script_id=" & method.Parameter1)
                 sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("script"))
                 sScriptName = Convert.ToString(dsResults.Tables(0).Rows(0)("script_name"))
-                logging.AddToLog("Found Script: " & sScriptName, True)
+                Log.Info("Found Script: " & sScriptName)
                 RunScript(sScript, method.Parameter2)
-                logging.AddToLog("Executed Script", True)
+                Log.Info("Executed Script")
             Catch ex As Exception
-                logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
+                Log.Error("Error ProcessCommand - " & ex.Message)
             End Try
         End If
     End Sub
 
     Public Overrides Sub RunInterface(ByVal sName As String)
         gAppName = sName
-        logging.AddToLog("Running Interface!", True)
+        Log.Info("Running Interface!")
     End Sub
 
     Public Overrides Sub Shutdown()
-        logging.AddToLog("*** Received Shutdown", True)
+        Log.Info("*** Received Shutdown")
     End Sub
 
     Private Sub RunScript(ByVal scriptText As String, ByVal sScriptParameter As String)
@@ -392,11 +393,9 @@ Public Class ScriptProcessor
         Next iLoop
     End Sub
     Public Sub Display_Results(ByVal sText As String)
-        logging.AddToLog(sText, False)
+        Log.Debug(sText)
     End Sub
     Private Function ReturnSeconds(ByVal strTime As String) As Integer
-
-
         Dim strHours As String
         Dim strMinutes As String
         Dim strSeconds As String
