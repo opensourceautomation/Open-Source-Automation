@@ -5,7 +5,7 @@ Imports OSAE
 
 Public Class USBUIRT
     Inherits OSAEPluginBase
-    Private Shared logging As Logging = logging.GetLogger("USBUIRT")
+    Private Log As OSAE.General.OSAELog = New General.OSAELog()
     Private pName As String = ""
     Private mc As Controller
     Private irCode As String = "0000 0071 0000 0032 0080 0040 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0aad"
@@ -15,25 +15,25 @@ Public Class USBUIRT
         Try
             If method.MethodName = "TRANSMIT" Then
                 mc.Transmit(method.Parameter1, transmitFormat, 10, TimeSpan.Zero)
-                logging.AddToLog("Sent: " & method.Parameter1, True)
+                Log.Info("Sent: " & method.Parameter1)
             End If
         Catch ex As Exception
-            logging.AddToLog("Error ProcessCommand - " & ex.Message, True)
+            Log.Error("Error ProcessCommand - " & ex.Message)
         End Try
     End Sub
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
             pName = pluginName
-            logging.AddToLog("Found my Object Name: " & pName, True)
+            Log.Info("Found my Object Name: " & pName)
             mc = New Controller()
         Catch myerror As Exception
-            logging.AddToLog("Error Finding USB-UIRT Device: " & myerror.Message, True)
+            Log.Error("Error Finding USB-UIRT Device: " & myerror.Message)
         End Try
     End Sub
 
     Public Overrides Sub Shutdown()
-        logging.AddToLog("*** SHUT DOWN Recieved", True)
+        Log.Info("*** SHUT DOWN Recieved")
     End Sub
 
 End Class
