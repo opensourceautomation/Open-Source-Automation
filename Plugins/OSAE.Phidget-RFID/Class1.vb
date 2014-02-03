@@ -10,24 +10,24 @@
     Private gLED As Boolean
     Private gOutput1 As Boolean
     Private gOutput2 As Boolean
-    Private Shared logging As Logging = logging.GetLogger("Script Processor")
+    Private Log As OSAE.General.OSAELog = New General.OSAELog()
 
     Private Sub phidgetRFID_Attach(ByVal sender As Object, ByVal e As Phidgets.Events.AttachEventArgs) Handles phidgetRFID.Attach
         gAttached = sender.Attached.ToString
         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Attached", gAttached, pName)
-        logging.AddToLog("RFID Controller Attached = " & gAttached, True)
+        Log.Info("RFID Controller Attached = " & gAttached)
 
         gName = sender.Name
         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Name", gName, pName)
-        logging.AddToLog("RFID Controller Nam = " & gName, True)
+        Log.Info("RFID Controller Nam = " & gName)
 
         gSerial = sender.SerialNumber.ToString
         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Serial", gSerial, pName)
-        logging.AddToLog("Serial Number = " & gSerial, True)
+        Log.Info("Serial Number = " & gSerial)
 
         gVersion = sender.Version.ToString()
         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Version", gVersion, pName)
-        logging.AddToLog("Version Number = " & gVersion, True)
+        Log.Info("Version Number = " & gVersion)
         ' outputsTxt.Text = sender.outputs.Count.ToString()
         ' antennaChk.Checked = True
         'phidgetRFID.Antenna = True
@@ -36,31 +36,31 @@
     Private Sub phidgetRFID_Detach(ByVal sender As Object, ByVal e As Phidgets.Events.DetachEventArgs) Handles phidgetRFID.Detach
         gAttached = sender.Attached.ToString
         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Attached", gAttached, pName)
-        logging.AddToLog("RFID Controller Attached = " & gAttached, True)
+        Log.Info("RFID Controller Attached = " & gAttached)
         gName = sender.Name
     End Sub
 
     Private Sub phidgetRFID_Error(ByVal sender As Object, ByVal e As Phidgets.Events.ErrorEventArgs) Handles phidgetRFID.Error
-        logging.AddToLog("phidgetRFID_Error: " & e.Description, True)
+        Log.Error("phidgetRFID_Error: " & e.Description)
     End Sub
 
     Private Sub phidgetRFID_Tag(ByVal sender As Object, ByVal e As Phidgets.Events.TagEventArgs) Handles phidgetRFID.Tag
         Dim oObject As OSAEObject
         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Last Tag Read", e.Tag, pName)
-        logging.AddToLog("Read Tag = " & e.Tag, True)
-        logging.AddToLog("GetObjectByAddress: " & e.Tag, True)
+        Log.Info("Read Tag = " & e.Tag)
+        Log.Debug("GetObjectByAddress: " & e.Tag)
         Try
             oObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
             If IsNothing(oObject) Then
-                logging.AddToLog("Adding new RFID Tag: " & e.Tag, True)
+                Log.Info("Adding new RFID Tag: " & e.Tag)
                 OSAEObjectManager.ObjectAdd("RFID-" & e.Tag, "Unknown RFID Tag", "PHIDGET RFID TAG", e.Tag, "", True)
             End If
             oObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
             OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
-            logging.AddToLog("Detected: " & oObject.Name, True)
+            Log.Info("Detected: " & oObject.Name)
         Catch ex As Exception
-            logging.AddToLog("Object Not Found for: " & e.Tag, True)
-            logging.AddToLog("Error Msg: " & ex.Message, True)
+            Log.Error("Object Not Found for: " & e.Tag)
+            Log.Error("Error Msg: " & ex.Message)
         End Try
     End Sub
 
@@ -107,19 +107,19 @@
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
             pName = pluginName
-            logging.AddToLog("Found my Object: " & pName, True)
+            Log.Info("Found my Object: " & pName)
             gAntenna = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Antenna Enabled").Value)
-            logging.AddToLog("Antenna Enabled = " & gAntenna, True)
+            Log.Info("Antenna Enabled = " & gAntenna)
             gLED = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "LED Enabled").Value)
-            logging.AddToLog("LED Enabled = " & gLED, True)
+            Log.Info("LED Enabled = " & gLED)
             gOutput1 = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Output 1 ON").Value)
-            logging.AddToLog("Output 1 ON = " & gOutput1, True)
+            Log.Info("Output 1 ON = " & gOutput1)
             gOutput2 = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Output 2 ON").Value)
-            logging.AddToLog("Output 2 ON = " & gOutput2, True)
+            Log.Info("Output 2 ON = " & gOutput2)
             phidgetRFID = New Phidgets.RFID
             phidgetRFID.open()
         Catch ex As Exception
-            logging.AddToLog("Error in InitializePlugin: " & ex.Message, True)
+            Log.Error("Error in InitializePlugin: " & ex.Message)
         End Try
     End Sub
 
