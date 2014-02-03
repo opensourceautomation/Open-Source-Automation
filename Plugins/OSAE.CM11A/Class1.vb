@@ -5,7 +5,7 @@ Imports OSAE
 Public Class CM11
     Inherits OSAEPluginBase
 
-    Private Shared logging As Logging = logging.GetLogger("CM11A")
+    Private Log As OSAE.General.OSAELog = New General.OSAELog()
     Private pName As String = ""
     Private gPort As Integer
     Private gPollRate As Integer
@@ -68,16 +68,16 @@ Public Class CM11
         Dim sAddress As String = ""
         Dim sCommand As String
         Try
-            logging.AddToLog("----------Event----------", True)
+            Log.Debug("----------Event----------")
             If devices = "" Then
                 sAddress = gLastAddress
-                logging.AddToLog(" Devices Forced to = " & sAddress, True)
+                Log.Debug(" Devices Forced to = " & sAddress)
             Else
                 sAddress = devices
                 gLastAddress = sAddress
-                logging.AddToLog(" Devices= " & devices, True)
+                Log.Debug(" Devices= " & devices)
             End If
-            logging.AddToLog(" House Code= " & housecode, True)
+            Log.Debug(" House Code= " & housecode)
 
             ' logging.AddToLog("Single Event (Devices=" & devices & ", HouseCode=" & housecode & ", Command=" & command & ", Extra=" & extra & ")")
             Select Case command
@@ -88,7 +88,7 @@ Public Class CM11
                 Case 4 : sCommand = "ON"  ' 4=Dim
                 Case 5 : sCommand = "OFF" ' 5=Bright
                 Case Else
-                    logging.AddToLog("Unsupported Event (Command=" & command & ")", True)
+                    Log.Debug("Unsupported Event (Command=" & command & ")")
                     Exit Sub
                     ' 6=All Lights Off
                     ' 7=Extended
@@ -103,7 +103,7 @@ Public Class CM11
                     '16=-1
             End Select
         Catch myerror As Exception
-            logging.AddToLog("Error ctlCM11a_X10Event 1: " & myerror.Message, True)
+            Log.Error("Error ctlCM11a_X10Event 1: " & myerror.Message)
             Exit Sub
         End Try
         Try
@@ -114,9 +114,9 @@ Public Class CM11
             dsResults = OSAESql.RunQuery(CMD)
             sObjectName = dsResults.Tables(0).Rows(0).Item(0)
             OSAEObjectStateManager.ObjectStateSet(sObjectName, sCommand, pName)
-            logging.AddToLog("Set " & sObjectName & " to " & sCommand, True)
+            Log.Info("Set " & sObjectName & " to " & sCommand)
         Catch myerror As Exception
-            logging.AddToLog("Error ctlCM11a_X10Event 2: " & myerror.Message, True)
+            Log.Error("Error ctlCM11a_X10Event 2: " & myerror.Message)
         End Try
     End Sub
 
@@ -137,20 +137,20 @@ Public Class CM11
                         iResults = ctlCM11a.ExecWait(sHouseCode, sDeviceCode, 2, 100, 100, 0)
                         OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Level", 100, pName)
                     Catch ex As Exception
-                        logging.AddToLog("Error ProcessCommand 1a1 - " & ex.Message, True)
+                        Log.Error("Error ProcessCommand 1a1 - " & ex.Message)
                     End Try
                 Else
                     Try
                         iResults = ctlCM11a.ExecWait(sHouseCode, sDeviceCode, 3, 0, 0, 0)
                         OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Level", 0, pName)
                     Catch ex As Exception
-                        logging.AddToLog("Error ProcessCommand 1a2 - " & ex.Message, True)
+                        Log.Error("Error ProcessCommand 1a2 - " & ex.Message)
                     End Try
                 End If
                 OSAEObjectStateManager.ObjectStateSet(method.ObjectName, method.MethodName, pName)
-                logging.AddToLog("Executed " & method.ObjectName & " " & method.MethodName & " (" & method.Address & " " & method.MethodName & ")", True)
+                Log.Info("Executed " & method.ObjectName & " " & method.MethodName & " (" & method.Address & " " & method.MethodName & ")")
             Catch ex As Exception
-                logging.AddToLog("Error ProcessCommand 1 - " & ex.Message, True)
+                Log.Error("Error ProcessCommand 1 - " & ex.Message)
             End Try
         ElseIf method.MethodName = "BRIGHT" Then
             Try
@@ -159,15 +159,15 @@ Public Class CM11
                     iLevel += Val(method.Parameter1)
                     If iLevel > 100 Then iLevel = 100
                     iResults = ctlCM11a.ExecWait(sHouseCode, sDeviceCode, 5, iLevel, iLevel, 0)
-                    logging.AddToLog("Executed " & method.ObjectName & " " & method.MethodName & "  " & iLevel & "% (" & method.Address & " " & method.MethodName & "  " & iLevel & "%)", True)
+                    Log.Info("Executed " & method.ObjectName & " " & method.MethodName & "  " & iLevel & "% (" & method.Address & " " & method.MethodName & "  " & iLevel & "%)")
                 ElseIf Val(method.Parameter1) = 100 Then
                     iResults = ctlCM11a.ExecWait(sHouseCode, sDeviceCode, 2, 100, 100, 0)
-                    logging.AddToLog("Executed " & method.ObjectName & " ON (" & method.Address & " " & method.MethodName & ")", True)
+                    Log.Info("Executed " & method.ObjectName & " ON (" & method.Address & " " & method.MethodName & ")")
                 End If
                 OSAEObjectStateManager.ObjectStateSet(method.ObjectName, "ON", pName)
                 OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Level", iLevel, pName)
             Catch ex As Exception
-                logging.AddToLog("Error ProcessCommand 2 - " & ex.Message, True)
+                Log.Error("Error ProcessCommand 2 - " & ex.Message)
             End Try
         ElseIf method.MethodName = "DIM" Then
             Try
@@ -185,21 +185,21 @@ Public Class CM11
                 End If
                 OSAEObjectStateManager.ObjectStateSet(method.MethodName, "ON", pName)
                 OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Level", iLevel, pName)
-                logging.AddToLog("Executed " & method.ObjectName & " " & method.MethodName & "  " & iLevel & "% (" & method.Address & " " & method.MethodName & "  " & iLevel & "%)", True)
+                Log.Info("Executed " & method.ObjectName & " " & method.MethodName & "  " & iLevel & "% (" & method.Address & " " & method.MethodName & "  " & iLevel & "%)")
             Catch ex As Exception
-                logging.AddToLog("Error ProcessCommand 3 - " & ex.Message, True)
+                Log.Error("Error ProcessCommand 3 - " & ex.Message)
             End Try
         ElseIf method.MethodName = "CLEAR" Then
             Try
                 ctlCM11a.ClearMem()
             Catch ex As Exception
-                logging.AddToLog("Error Clearing Memory - " & ex.Message, True)
+                Log.Error("Error Clearing Memory - " & ex.Message)
             End Try
         ElseIf method.MethodName = "RESET" Then
             Try
                 ctlCM11a.ResetCM()
             Catch ex As Exception
-                logging.AddToLog("Error Resetting CM11A - " & ex.Message, True)
+                Log.Error("Error Resetting CM11A - " & ex.Message)
             End Try
         ElseIf method.MethodName = "SET POLL RATE" Then
             Try
@@ -210,17 +210,17 @@ Public Class CM11
                 st = ctlCM11a.GetEvent(p)
                 gPollRate = p
                 If st = "" Then st = "No Data"
-                logging.AddToLog("Polling Rate Set To (0-65535): " & st, True)
+                Log.Info("Polling Rate Set To (0-65535): " & st)
             Catch ex As Exception
-                logging.AddToLog("Error ProcessCommand 6 - " & ex.Message, True)
+                Log.Error("Error ProcessCommand 6 - " & ex.Message)
             End Try
         ElseIf method.MethodName = "SET LEARNING MODE" Then
             Try
                 gLearning = method.Parameter1
                 OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Learning Mode", gLearning, pName)
-                logging.AddToLog("Learning Mode is set to: " & gLearning, True)
+                Log.Info("Learning Mode is set to: " & gLearning)
             Catch ex As Exception
-                logging.AddToLog("Error Setting Learning Mode - " & ex.Message, True)
+                Log.Error("Error Setting Learning Mode - " & ex.Message)
             End Try
         End If
     End Sub
@@ -228,32 +228,32 @@ Public Class CM11
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
             pName = pluginName
-            logging.AddToLog("Found my Object: " & pName, True)
+            Log.Info("Found my Object: " & pName)
             gPort = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
-            logging.AddToLog("COM Port = " & gPort, True)
+            Log.Info("COM Port = " & gPort)
             gPollRate = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Poll Rate").Value
-            logging.AddToLog("Poll Rate = " & gPollRate, True)
+            Log.Info("Poll Rate = " & gPollRate)
             gLearning = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value
-            logging.AddToLog("Learning Mode = " & gLearning, True)
+            Log.Info("Learning Mode = " & gLearning)
             Dim iResults As Integer
             ctlCM11a = New cm11a.controlcm
             ctlCM11a.comport = gPort
             iResults = ctlCM11a.Init()
             Select Case iResults
                 Case 0
-                    logging.AddToLog("The CM11A was Found and Initilized OK.", True)
+                    Log.Info("The CM11A was Found and Initilized OK.")
                 Case 1
-                    logging.AddToLog("COM Port is OK, But there is no CM11A on it.", True)
+                    Log.Error("COM Port is OK, But there is no CM11A on it.")
                 Case Else
-                    logging.AddToLog("I am getting an Error from that COM Port. MSComm control error= " & iResults.ToString, True)
+                    Log.Error("I am getting an Error from that COM Port. MSComm control error= " & iResults.ToString)
             End Select
         Catch ex As Exception
-            logging.AddToLog("Error in InitializePlugin: " & ex.Message, True)
+            Log.Error("Error in InitializePlugin: " & ex.Message)
         End Try
     End Sub
 
     Public Overrides Sub Shutdown()
-        logging.AddToLog("Shutting down plugin", True)
+        Log.Info("Shutting down plugin")
     End Sub
 
 End Class
