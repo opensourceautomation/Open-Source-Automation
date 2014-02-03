@@ -2,7 +2,7 @@
 
 Public Class PhidgetServo
     Inherits OSAEPluginBase
-    Private Shared logging As Logging = logging.GetLogger("Phidget-Servo")
+    Private Log As OSAE.General.OSAELog = New General.OSAELog()
     Private pName As String = ""
     Private gAttached As Boolean
     Private gName As String = ""
@@ -17,13 +17,13 @@ Public Class PhidgetServo
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
             pName = pluginName
-            logging.AddToLog("Found my Object: " & pName, True)
+            Log.Info("Found my Object: " & pName)
             phidgetServo = New Phidgets.Servo
             'gPosition = Val(OSAEApi.GetObjectProperty(gAppName, "Default Position"))
             'logging.AddToLog("Initial Position: " & gPosition)
             phidgetServo.open()
         Catch ex As Exception
-            logging.AddToLog("Error in InitializePlugin: " & ex.Message, True)
+            Log.Error("Error in InitializePlugin: " & ex.Message)
         End Try
     End Sub
 
@@ -34,11 +34,11 @@ Public Class PhidgetServo
         Try
             gAttached = "TRUE"
             OSAEObjectPropertyManager.ObjectPropertySet(pName, "Attached", gAttached, pName)
-            Logging.AddToLog("Attached set to: " & gAttached, True)
+            Log.Info("Attached set to: " & gAttached)
 
             gSerial = (Str(phidgetServo.SerialNumber))
             OSAEObjectPropertyManager.ObjectPropertySet(pName, "Serial", gSerial, pName)
-            Logging.AddToLog("Serial set to: " & gSerial, True)
+            Log.Info("Serial set to: " & gSerial)
 
             Dim i As Integer
             For i = 0 To sender.servos.Count - 1
@@ -50,16 +50,16 @@ Public Class PhidgetServo
                 Try
                     oObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-" & i)
                     sServoName = oObject.Name.ToString()
-                    Logging.AddToLog("-- Configuring Servo " & i & ": " & sServoName, True)
+                    Log.Info("-- Configuring Servo " & i & ": " & sServoName)
                     gMin(i) = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(sServoName, "Min Position").Value)
-                    logging.AddToLog("-- Minimum Position: " & gMin(i), True)
+                    Log.Info("-- Minimum Position: " & gMin(i))
                     gMax(i) = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(sServoName, "Max Position").Value)
-                    logging.AddToLog("-- Maximum Position: " & gMax(i), True)
+                    Log.Info("-- Maximum Position: " & gMax(i))
                     gDefaultPos(i) = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(sServoName, "Default Position").Value)
                     'logging.AddToLog("-- Default Position: " & gDefaultPos(i), True)
                     'phidgetServo.servos(i).Position = gDefaultPos(i)
                 Catch ex As Exception
-                    Logging.AddToLog("Error in phidgetServo_Attach Get Object: " & ex.Message, True)
+                    Log.Error("Error in phidgetServo_Attach Get Object: " & ex.Message)
                 End Try
 
                 ' If oObject = Nothing Then
@@ -73,18 +73,18 @@ Public Class PhidgetServo
             'OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Max Position", gMax)
             'logging.AddToLog("Maximum Position: " & gMax)
         Catch ex As Exception
-            Logging.AddToLog("Error in phidgetServo_Attach: " & ex.Message, True)
+            Log.Error("Error in phidgetServo_Attach: " & ex.Message)
         End Try
     End Sub
 
     Private Sub phidgetServo_Detach(ByVal sender As Object, ByVal e As Phidgets.Events.DetachEventArgs) Handles phidgetServo.Detach
         gAttached = "FALSE"
         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Attached", gAttached, pName)
-        Logging.AddToLog("Attached set to: " & gAttached, True)
+        Log.Info("Attached set to: " & gAttached)
     End Sub
 
     Private Sub phidgetServo_Error(ByVal sender As Object, ByVal e As Phidgets.Events.ErrorEventArgs) Handles phidgetServo.Error
-        Logging.AddToLog("phidgetServo_Error: " & e.Description, True)
+        Log.Info("phidgetServo_Error: " & e.Description)
     End Sub
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
@@ -109,16 +109,16 @@ Public Class PhidgetServo
                 'phidgetServo.servos(sAddress).Engaged = True
                 phidgetServo.servos(sAddress).Position = iNewPosition
                 OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Position", iNewPosition.ToString(), pName)
-                logging.AddToLog("Servo " & sAddress & " (" & method.ObjectName & ") set to Position: " & iNewPosition.ToString() & " (" & gMin(sAddress) & "-" & gMax(sAddress) & ")", True)
+                Log.Info("Servo " & sAddress & " (" & method.ObjectName & ") set to Position: " & iNewPosition.ToString() & " (" & gMin(sAddress) & "-" & gMax(sAddress) & ")")
             ElseIf method.MethodName = "ENGAGE" Then
                 phidgetServo.servos(sAddress).Engaged = True
-                logging.AddToLog("Servo " & sAddress & " (" & method.ObjectName & ") Engaged", True)
+                Log.Info("Servo " & sAddress & " (" & method.ObjectName & ") Engaged")
             ElseIf method.MethodName = "DISENGAGE" Then
                 phidgetServo.servos(sAddress).Engaged = False
-                logging.AddToLog("Servo " & sAddress & " (" & method.ObjectName & ") Disengaged", True)
+                Log.Info("Servo " & sAddress & " (" & method.ObjectName & ") Disengaged")
             End If
         Catch ex As Exception
-            logging.AddToLog("Error in ProcessCommand: " & ex.Message, True)
+            Log.Error("Error in ProcessCommand: " & ex.Message)
         End Try
     End Sub
 
