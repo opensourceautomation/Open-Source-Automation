@@ -160,6 +160,25 @@
         }
 
         /// <summary>
+        /// Get Export script for object type
+        /// </summary>
+        /// <param name="object_type_name">The name of the object type</param>
+        public static string ObjectTypeExport(string ObjectTypeName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+
+                command.CommandText = "CALL osae_sp_object_type_export (@object_type_name)";
+                command.Parameters.AddWithValue("@object_type_name", ObjectTypeName);
+                //command.Parameters.Add(new MySqlParameter("@pexport_script", MySqlDbType.Text));
+                //command.Parameters["@pexport_script"].Direction = System.Data.ParameterDirection.Output;
+                DataSet ds = OSAESql.RunQuery(command);
+
+                return ds.Tables[0].Rows[0][0].ToString();
+            }
+        }
+
+        /// <summary>
         /// Add an event top an existing object type
         /// </summary>
         /// <param name="Name"></param>

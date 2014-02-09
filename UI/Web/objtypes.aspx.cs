@@ -84,6 +84,7 @@ public partial class objtypes : System.Web.UI.Page
         {
             loadDDLs();
         }
+
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
@@ -127,7 +128,13 @@ public partial class objtypes : System.Web.UI.Page
             txtEventName.Text = hdnSelectedEventName.Text;
             txtEventLabel.Text = gvEvents.DataKeys[Int32.Parse(hdnSelectedEventRow.Text)]["event_label"].ToString();
         }
-
+        
+        if (hdnSelectedObjectName.Text != "")
+        {
+            lblExportScript.Text = OSAEObjectTypeManager.ObjectTypeExport(hdnSelectedObjectName.Text);
+           // lblExportScript.Text = OSAEObjectTypeManager.ObjectTypeExport(hdnSelectedObjectName.Text).Replace(";",";" + Environment.NewLine);
+           // lblExportScript.Text = "Line 1 " + Environment.NewLine + "Line 2";
+        }
         //if (gvMethods.Rows.Count == 0)
         //    divMethods.Visible = false;
         //else
