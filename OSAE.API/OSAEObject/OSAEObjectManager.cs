@@ -407,6 +407,25 @@
         }
 
         /// <summary>
+        /// Get Export script for object 
+        /// </summary>
+        /// <param name="object_name">The name of the object</param>
+        public static string ObjectExport(string ObjectName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+
+                command.CommandText = "CALL osae_sp_object_export (@object_name)";
+                command.Parameters.AddWithValue("@object_name", ObjectName);
+                //command.Parameters.Add(new MySqlParameter("@pexport_script", MySqlDbType.Text));
+                //command.Parameters["@pexport_script"].Direction = System.Data.ParameterDirection.Output;
+                DataSet ds = OSAESql.RunQuery(command);
+
+                return ds.Tables[0].Rows[0][0].ToString();
+            }
+        }
+
+        /// <summary>
         /// Update an existing object
         /// </summary>
         /// <param name="oldName"></param>

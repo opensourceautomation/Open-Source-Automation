@@ -138,6 +138,7 @@
                         <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
                         <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp
                         <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object?');" />
+                        <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
                     </div>
                 </div>
             </div>
@@ -269,6 +270,20 @@
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>
     </div>
+
+        <!-- Modal -->
+    <div id="linkModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="H1">Object Export Script</h3>
+        </div>
+        <div id="exportModalBody" class="modal-body">
+            <asp:TextBox ID="txtExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
+        </div>
+    </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      </div>
     
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>

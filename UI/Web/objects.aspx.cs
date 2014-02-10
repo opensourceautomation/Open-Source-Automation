@@ -120,6 +120,10 @@ public partial class home : System.Web.UI.Page
             gvProperties.Rows[Int32.Parse(hdnSelectedPropRow.Text)].Attributes.Remove("onmouseout");
             gvProperties.Rows[Int32.Parse(hdnSelectedPropRow.Text)].Style.Add("background", "lightblue");
         }
+        if (hdnSelectedObjectName.Text != "")
+        {
+            txtExportScript.Text = OSAEObjectManager.ObjectExport(hdnSelectedObjectName.Text);
+        }
         hdnEditingPropList.Value = hdnEditingPropList.Value;
     }
 
