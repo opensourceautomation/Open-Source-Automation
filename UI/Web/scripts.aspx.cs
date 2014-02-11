@@ -237,6 +237,14 @@ public partial class scripts : System.Web.UI.Page
             hdnSelectedRow.Text = selectedRow.ToString();
     }
 
+    protected void btnTest_Click(object sender, EventArgs e)
+    {
+        OSAEScriptManager.ScriptDelete("Test Script");
+        OSAEScriptManager.ScriptAdd("Test Script", ddlScriptProcessor.SelectedValue, hdnScript.Value);
+        OSAEScriptManager.RunScript("Test Script",txtTestParameter.Text, "WebUI");
+    }
+
+
     protected void ddlObject_SelectedIndexChanged(object sender, EventArgs e)
     {
         ddlEvent.DataSource = OSAESql.RunSQL("SELECT event_label as Text, event_name as Value FROM osae_v_object_event WHERE object_id = " + ddlObject.SelectedValue + " ORDER BY event_label");

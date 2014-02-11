@@ -396,6 +396,15 @@
             }
         }
 
+        public static void RunScript(string scriptname, string scriptparameter, string from)
+        {
+
+            int iScriptID = OSAEScriptManager.GetScriptID(scriptname);
+
+            OSAEMethodManager.MethodQueueAdd(GetDestinationScriptProcessor(iScriptID), "RUN SCRIPT", iScriptID.ToString(), scriptparameter, from);
+
+        }
+
         public static List<int> GetScriptsForPattern(string pattern)
         {
             List<int> scriptIDs = new List<int>();
@@ -422,6 +431,34 @@
             }
 
             return scriptIDs;        
+        }
+
+        public static int GetScriptID(string scriptname)
+        {
+// int scriptIDs = new List<int>();
+            int iScriptID = 0;
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
+                {
+                    MySqlCommand command = new MySqlCommand("SELECT script_id FROM osae_script WHERE script_name=@pscriptname", connection);
+                    command.Parameters.AddWithValue("@pscriptname", scriptname);
+                    connection.Open();
+
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        iScriptID = Int32.Parse(reader.GetString("script_id"));
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                Logging.GetLogger().AddToLog("Failed to get script id, error detals: \r\n" + exc.Message, true);
+            }
+
+            return iScriptID;
         }
     }
 }

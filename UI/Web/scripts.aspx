@@ -106,6 +106,8 @@
                     <br />
                     <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Linkage</a>
                     <a href="#myModal" role="button" class="btn" data-toggle="modal" onclick="copyScript();">Copy</a>
+                    <asp:TextBox ID="txtTestParameter" runat="server"></asp:TextBox>
+                    <asp:Button runat="server" ID="btnTest" class="btn" OnClick="btnTest_Click" Text="Test" /> 
                 </div>
                 <div class="span6" style="text-align:left;">
                     <div class="alert alert-error" runat="server" id="alert" visible="false"  >Must enter script name and Script Processor</div> &nbsp;
@@ -117,6 +119,7 @@
                     <asp:Button runat="server" ID="btnAdd" class="btn" OnClientClick="saveScriptAdd(); return false;" Text="Add" /> &nbsp;
                     <asp:Button runat="server" ID="btnUpdate" class="btn" OnClientClick="saveScriptUpdate(); return false;" Text="Update" /> &nbsp;
                     <asp:Button runat="server" ID="btnDelete" class="btn" OnClick="btnDelete_Click" Text="Delete" OnClientClick="return confirm('Are you sure you want to delete the script?');"/>
+                    &nbsp;
                     <asp:Button runat="server" ID="btnAdd2" OnClick="btnAdd_Click" style="display:none;" /> &nbsp;
                     <asp:Button runat="server" ID="btnUpdate2" OnClick="btnUpdate_Click" style="display:none;" /> &nbsp;
                     
