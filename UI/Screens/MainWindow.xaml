@@ -16,6 +16,7 @@
                         <MenuItem Name="menuAddNavImage" Header="Navigation Image" Click="menuAddNavImage_Click" />
                         <MenuItem Name="menuAddTimerLabel" Header="Timer Label" Click="menuAddTimerLabel_Click" />
                         <MenuItem Name="menuAddCameraViewer" Header="Camera Viewer" Click="menuAddCameraViewer_Click" />
+                        <MenuItem Name="menuAddWebBrowser" Header="Web Browser" Click="menuAddWebBrowser_Click" />
                         <MenuItem Name="menuAddUserControl" Header="User Control" Click="menuAddUserControl_Click" />
                     </MenuItem>
                     <MenuItem Header="Window">

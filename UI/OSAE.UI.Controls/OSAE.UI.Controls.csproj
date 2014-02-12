@@ -59,6 +59,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddBrowserControl.xaml.cs">
+      <DependentUpon>AddBrowserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AddControlMethodImage.xaml.cs">
       <DependentUpon>AddControlMethodImage.xaml</DependentUpon>
     </Compile>
@@ -82,6 +85,9 @@
     </Compile>
     <Compile Include="AddNewObject.xaml.cs">
       <DependentUpon>AddNewObject.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BrowserFrame.xaml.cs">
+      <DependentUpon>BrowserFrame.xaml</DependentUpon>
     </Compile>
     <Compile Include="ChangeScreen.xaml.cs">
       <DependentUpon>ChangeScreen.xaml</DependentUpon>
@@ -122,6 +128,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AddBrowserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="AddControlMethodImage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -151,6 +161,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AddNewObject.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BrowserFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

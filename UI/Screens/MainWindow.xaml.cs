@@ -33,7 +33,8 @@
         List<StaticLabel> staticLabels = new List<StaticLabel>();
         List<TimerLabel> timerLabels = new List<TimerLabel>();
         List<dynamic> userControls = new List<dynamic>();
-
+        List<dynamic> browserFrames = new List<dynamic>();
+        
         bool loadingScreen = true;
         bool editMode = false;
         bool closing = false;
@@ -110,7 +111,8 @@
                 navImages.Clear();
                 methodImages.Clear();
                 cameraViewers.Clear();
-                canGUI.Children.Clear(); 
+                canGUI.Children.Clear();
+                browserFrames.Clear();
                 
                 loadingScreen = true;
                 this.Log.Debug("Loading screen: " + sScreen);
@@ -307,6 +309,39 @@
                             }
                         }
                         #endregion
+
+                        #region CONTROL BROWSER
+                        if (newCtrl.ControlType == "CONTROL BROWSER")
+                        {
+                        //    foreach (BrowserFrame oBrowser in browserFrames)
+                       //     {
+                          //      if (newCtrl.ControlName == oBrowser.screenObject.Name)
+                          //      {
+                                  //  if (newCtrl.LastUpdated != sImage.LastUpdated)
+                                  //  {
+                                //        this.Log.Debug("Updating:  " + newCtrl.ControlName);
+                                      //  sImage.LastUpdated = newCtrl.LastUpdated;
+                                     //   try
+                                     //   {
+                                      //      sImage.Update();
+                                      //  }
+                                     //   catch (Exception ex)
+                                     //   {
+
+                                    //    }
+                                //        this.Dispatcher.Invoke((Action)(() =>
+                                //        {
+                                 //           Canvas.SetLeft(oBrowser, oBrowser.Location.X);
+                                 //           Canvas.SetTop(oBrowser, oBrowser.Location.Y);
+                             //           }));
+                              //          this.Log.Debug("Complete:  " + newCtrl.ControlName);
+                              //      }
+                             //       oldCtrl = true;
+                             //   }
+                         //   }
+                        }
+                        #endregion
+
                         
                         if (!oldCtrl)
                         {
@@ -561,6 +596,35 @@
                         userControls.Add(wc);
                         controlTypes.Add(typeof(Weather));
                         wc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    }
+                }
+                #endregion
+
+                #region CONTROL BROWSER
+                else if (obj.Type == "CONTROL BROWSER")
+                {
+                    this.Log.Debug("Loading BrowserControl: " + obj.Name);
+                    try
+                    {
+                        OSAE.UI.Controls.BrowserFrame bf = new OSAE.UI.Controls.BrowserFrame(obj);
+                        //OSAE.UI.Controls.StaticLabel sl = new OSAE.UI.Controls.StaticLabel(obj);
+                        canGUI.Children.Add(bf);
+                        int dZ = Int32.Parse(obj.Property("ZOrder").Value);
+                        bf.Location.X = Double.Parse(obj.Property("X").Value);
+                        bf.Location.Y = Double.Parse(obj.Property("Y").Value);
+                        bf.Width = Double.Parse(obj.Property("Width").Value);
+                        bf.Height = Double.Parse(obj.Property("Height").Value);
+                        Canvas.SetLeft(bf, bf.Location.X);
+                        Canvas.SetTop(bf, bf.Location.Y);
+                        Canvas.SetZIndex(bf, dZ);
+                        browserFrames.Add(bf);
+                        controlTypes.Add(typeof(OSAE.UI.Controls.BrowserFrame));
+                        bf.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Log.Error("Error updating BrowserControl", ex);
+                        return;
                     }
                 }
                 #endregion
@@ -847,6 +911,17 @@
             AddNewCameraViewer csi = new AddNewCameraViewer(gCurrentScreen);
             addControl.Width = csi.Width + 40;
             addControl.Height = csi.Height + 40;
+            addControl.Content = csi;
+            addControl.Show();
+        }
+
+        private void menuAddWebBrowser_Click(object sender, RoutedEventArgs e)
+        {
+            AddControl addControl = new AddControl();
+
+            AddControlBrowser csi = new AddControlBrowser(gCurrentScreen);
+            addControl.Width = csi.Width + 80;
+            addControl.Height = csi.Height + 80;
             addControl.Content = csi;
             addControl.Show();
         }
