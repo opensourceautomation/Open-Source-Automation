@@ -18,7 +18,13 @@
                         </ItemTemplate>
                         <ItemStyle HorizontalAlign="Center" />
                     </asp:TemplateField>
-                    <asp:BoundField DataField="Type" HeaderText="Plugin" /> 
+                    <asp:TemplateField HeaderText="Plugin" Visible="True">
+                        <ItemTemplate>
+                            <asp:HyperLink ID="WikiUrl" runat="server" NavigateUrl='<%# Eval("WikiUrl") %>'
+                                Text='<%# Eval("Type") %>'>
+                            </asp:HyperLink>
+                        </ItemTemplate>
+                    </asp:TemplateField>
                     <asp:BoundField DataField="Status" HeaderText="Status" />  
                     <asp:BoundField DataField="Author" HeaderText="Author" /> 
                     <asp:TemplateField HeaderText="OSA Object" Visible="True">
