@@ -46,6 +46,11 @@ public partial class plugins : System.Web.UI.Page
                 desc.Status = "Stopped";
                 desc.Enabled = false;
                 
+                if (desc.WikiUrl.Trim() == "")
+                {
+                    desc.WikiUrl = "http://www.opensourceautomation.com/wiki/index.php?title=Plugins";
+                }
+                
 
                 OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                 foreach (OSAEObject o in objs)
