@@ -34,25 +34,23 @@
         }
 
         function runMethod(object, method, p1, p2) {
-            if (p1 != '') {
-                $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&callback=?', null, function (data) {
-                    return data;
+            if (p1 == '[ASK]') {
+                p1 = prompt('Enter the value for: ' + object + '-' + method + '-Parameter 1', '');
+                if (p1 == null) { p1 = 'null'; }  // Check to see if user clicked Cancel
+                if (p1.replace(/\s/g, "") == "") { p1 = 'null'; }   // Check to see if user entered any data, if NOT, Do not execute.
+            }
+            if (p2 == "[ASK]") {
+                p2 = prompt('Enter the value for: ' + object + '-' + method + '-Parameter 2', '');
+                if (p2 == null) { p2 = 'null'; }  // Check to see if user clicked Cancel
+                if (p2.replace(/\s/g, "") == "") { p2 = 'null'; }   // Check to see if user entered any data, if NOT, Do not execute.
+            }   
+	        if (p1 != 'null' && p2 != 'null') {
+	            $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
+	            return data;
                 });
             }
-            else if (p2 != '') {
-                $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
-                    return data;
-                });
-            }
-            else {
-                $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?callback=?', null, function (data) {
-                    return data;
-                });
-            }
-
         }
-    </script>
-
+    </script>	
     <div class="row-fluid">
         <div class="span1"></div>
         <div class="span10">
@@ -64,8 +62,8 @@
             </asp:UpdatePanel>
             <asp:PlaceHolder runat="server" ID="StaticPlaceholder" />
             <asp:Image ID="imgBackground" CssClass="screen-bg" runat="server" />
-        </div>   
-        <div class="span1"></div>           
+         </div>   
+-        <div class="span1"></div>                     
     </div>
 </asp:Content>
 

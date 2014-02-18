@@ -17,6 +17,11 @@ namespace OSAE.UI.Controls
         //OSAELog
         private OSAE.General.OSAELog Log = new General.OSAELog();
 
+        string CamipAddress;
+        string CamPort;
+        string UserName;
+        string Password;
+
         public VideoStreamViewer(string url, OSAEObject obj)
         {
             InitializeComponent();
@@ -24,8 +29,31 @@ namespace OSAE.UI.Controls
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
             _mjpeg.Error += _mjpeg_Error;
-            
-            _mjpeg.ParseStream(new Uri(url));
+            CamipAddress = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "IP Address").Value;
+            CamPort = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Port").Value;         
+            UserName = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Username").Value;
+            Password = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Password").Value;
+            string streamURI = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
+            if (streamURI == null)
+            {
+                this.Log.Info("Stream Path Not Found: " + streamURI);
+                message.Content = "Can Not Open: " + streamURI;
+            }
+            else
+            {
+                streamURI = replaceFielddata(streamURI);
+                _mjpeg.ParseStream(new Uri(streamURI));
+            }
+        }
+
+        public string replaceFielddata(string fieldData)
+        {
+            string XmlData1 = fieldData.Replace("[address]", CamipAddress);
+            string XmlData2 = XmlData1.Replace("[port]", CamPort);
+            string XmlData3 = XmlData2.Replace("[username]", UserName);
+            string XmlData4 = XmlData3.Replace("[password]", Password);
+            XmlData4 = @"http://" + XmlData4;
+            return XmlData4;
         }
 
         private void _mjpeg_Error(object sender, ErrorEventArgs e)

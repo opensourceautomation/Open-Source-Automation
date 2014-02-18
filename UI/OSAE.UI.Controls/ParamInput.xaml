@@ -1,0 +1,17 @@
+﻿<Window x:Class="OSAE.UI.Controls.ParamInput"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Height="241"
+             Title="Enter Parameters" Width="319">
+    <Grid Margin="0,0,-8,0">
+        <Label Content="Please enter the required Parameter/s Below." HorizontalAlignment="Left" Height="30" Margin="30,10,0,0" VerticalAlignment="Top" Width="245"/>
+        <Button x:Name="OKButt" Content="OK" HorizontalAlignment="Left" Height="35" Margin="190,155,0,0" VerticalAlignment="Top" Width="85" Click="Button_Click" IsEnabled="False" Cursor="Hand" ToolTip="Click Here to Execute" IsDefault="True"/>
+        <TextBox x:Name="inputParam1" HorizontalAlignment="Left" Height="25" Margin="20,60,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="255" TextChanged="inputParam1_TextChanged"/>
+        <TextBox x:Name="inputParam2" HorizontalAlignment="Left" Height="25" Margin="20,115,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="255" TextChanged="inputParam2_TextChanged"/>
+        <Label x:Name="inputParam1Lab" Content="Parameter 1" HorizontalAlignment="Left" Height="25" Margin="20,35,0,0" VerticalAlignment="Top" Width="110"/>
+        <Label x:Name="inputParam2Lab" Content="Parameter 2" HorizontalAlignment="Left" Height="25" Margin="20,90,0,0" VerticalAlignment="Top" Width="110"/>
+        <Label x:Name="BadInputLab" Content="Invalid Entry" HorizontalAlignment="Left" Height="25" Margin="20,155,0,0" VerticalAlignment="Top" Width="80" FontWeight="Bold" Foreground="#FFFF0202"/>
+    </Grid>
+</Window>
