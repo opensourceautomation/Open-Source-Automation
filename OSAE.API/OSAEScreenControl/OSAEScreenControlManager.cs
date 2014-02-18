@@ -38,7 +38,7 @@
                     DataSet dataset = new DataSet();
                     OSAEScreenControl ctrl = new OSAEScreenControl();
 
-                    command.CommandText = "SELECT object_name, control_name, control_type, state_name, last_updated, coalesce(time_in_state, 0) as time_in_state FROM osae_v_screen_object WHERE screen_name=@ScreenName";
+                    command.CommandText = "SELECT object_name, control_name, control_type, state_name, last_updated, coalesce(time_in_state, 0) as time_in_state FROM osae_v_screen_object WHERE screen_name=@ScreenName AND control_enabled = 1";
                     command.Parameters.AddWithValue("@ScreenName", screenName);
                     dataset = OSAESql.RunQuery(command);
 
