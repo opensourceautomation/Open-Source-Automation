@@ -165,6 +165,7 @@ Public Class ScriptProcessor
 
                                     ' Find First parameter based on a pair of "" or a Comma
                                     sParam1 = ""
+                                    sParam2 = ""
                                     iParam1Pos = sWorking.IndexOf(Chr(34))
                                     iQuotePos = sWorking.IndexOf(Chr(34))
                                     iCommaPos = sWorking.IndexOf(",")

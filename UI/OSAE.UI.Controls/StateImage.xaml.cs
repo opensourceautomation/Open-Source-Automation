@@ -19,6 +19,7 @@ namespace OSAE.UI.Controls
         
         public string StateMatch;
         public string CurState;
+        public string CurStateLabel;
 
         public string ObjectName;
         private OSAEImageManager imgMgr = new OSAEImageManager();
@@ -79,13 +80,14 @@ namespace OSAE.UI.Controls
             try
             {
                 CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
+                CurStateLabel = OSAEObjectStateManager.GetObjectStateValue(ObjectName).StateLabel;
                 LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
             }
             catch (Exception ex)
             {
 
             }
-            Image.ToolTip = ObjectName + "\n" + CurState + " since: " + LastStateChange;
+            
             foreach (OSAEObjectProperty p in screenObject.Properties)
             {
                 if (p.Value.ToLower() == CurState.ToLower())
@@ -94,25 +96,33 @@ namespace OSAE.UI.Controls
                 }
             }
 
-            Location.X = Double.Parse(screenObject.Property(StateMatch + " X").Value);
-            Location.Y = Double.Parse(screenObject.Property(StateMatch + " Y").Value);
-
-            string imgName = screenObject.Property(StateMatch + " Image").Value;
-            OSAEImage img = imgMgr.GetImage(imgName);
-
-            if (img.Data != null)
+            try
             {
-                var imageStream = new MemoryStream(img.Data);
+                //Location.X = Double.Parse(screenObject.Property(StateMatch + " X").Value);
+               //Location.Y = Double.Parse(screenObject.Property(StateMatch + " Y").Value);
+                Location.X = Double.Parse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, StateMatch + " X").Value);
+                Location.Y = Double.Parse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, StateMatch + " Y").Value);                 
 
+                string imgName = screenObject.Property(StateMatch + " Image").Value;
+                OSAEImage img = imgMgr.GetImage(imgName);
 
-                this.Dispatcher.Invoke((Action)(() =>
+                if (img.Data != null)
+                {
+                    var imageStream = new MemoryStream(img.Data);
+                    this.Dispatcher.Invoke((Action)(() =>
                 {
                     var bitmapImage = new BitmapImage();
                     bitmapImage.BeginInit();
                     bitmapImage.StreamSource = imageStream;
                     bitmapImage.EndInit();
                     Image.Source = bitmapImage;
-                }));
+                    Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
+                    }));
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 

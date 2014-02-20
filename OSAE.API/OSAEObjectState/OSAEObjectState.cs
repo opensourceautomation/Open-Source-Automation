@@ -11,7 +11,7 @@
     public class OSAEObjectState
     {
         private string _value;
-        private string _label;
+        private string _stateLabel;
         private long _timeInState;
         private DateTime _lastStateChange;
 
@@ -26,6 +26,16 @@
         }
 
         /// <summary>
+        /// The label of the state the object was in
+        /// </summary>=
+        [DataMember]
+        public string StateLabel
+        {
+            get { return _stateLabel; }
+            set { _stateLabel = value; }
+        }
+
+        /// <summary>
         /// The amount of time the object was in the state
         /// </summary>
         [DataMember]
@@ -36,15 +46,9 @@
         }
 
         /// <summary>
-        /// The label of the state the object was in
+        /// The time of the Last State Change
         /// </summary>=
         [DataMember]
-        public string Label
-        {
-            get { return _label; }
-            set { _label = Label; }
-        }
-
         public DateTime LastStateChange
         {
             get { return _lastStateChange; }
