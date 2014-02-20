@@ -100,7 +100,7 @@
             DataSet ds = new DataSet();
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "SELECT state_label FROM osae_v_object_state WHERE object_name = '" + objectName + "' ORDER BY state_label asc";
+                command.CommandText = "SELECT state_name,state_label FROM osae_v_object_state WHERE object_name = '" + objectName + "' ORDER BY state_label asc";
                 try
                 {
                     ds = OSAESql.RunQuery(command);

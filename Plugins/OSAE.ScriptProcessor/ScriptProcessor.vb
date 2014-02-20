@@ -43,10 +43,11 @@ Public Class ScriptProcessor
         Dim iLoop As Integer
         Dim sObject As String = "", sOption As String = "", sMethod As String = "", sParam1 As String = "", sParam2 As String = ""
         Dim iObjectPos As Integer, iOptionPos As Integer, iMethodPos As Integer
+        Dim oObject As OSAEObject
         Dim iParam1Pos As Integer ', iParam2Pos As Integer
         Dim iQuotePos As Integer, iCommaPos As Integer
         Dim sOperator As String, iOperatorPos As Integer, lSeconds As ULong
-        Dim sValue As String, sState As String
+        Dim sValue, sState, sContainer As String
         Dim sConditionResults As String = ""
         Dim dtStartTime As Date, dtEndTime As Date
         Dim sWorking As String, sProperty As String = "", pProperty As New OSAEObjectProperty
@@ -301,9 +302,10 @@ Public Class ScriptProcessor
                                 Try
                                     If sOption.ToUpper = "STATE" Then
                                         sState = OSAEObjectStateManager.GetObjectStateValue(sObject).Value
-
-
                                         If sState.ToUpper <> sValue.ToUpper Then sNesting(iNestingLevel) = "FAIL"
+                                    ElseIf sOption.ToUpper = "CONTAINER" Then
+                                        oObject = OSAEObjectManager.GetObjectByName(sObject)
+                                        If oObject.Container.ToUpper <> sValue.ToUpper Then sNesting(iNestingLevel) = "FAIL"
                                     Else
                                         pProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sOption)
                                         If pProperty.DataType = "String" Then pProperty.Value = pProperty.Value.ToUpper

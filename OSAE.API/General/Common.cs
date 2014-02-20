@@ -226,9 +226,14 @@
                         foreach (DataRow dr in dsObjects.Tables[0].Rows)
                         {
                             if (str.IndexOf(dr["object_name"].ToString().ToUpper()) > -1)
+
                             //return "Found " + dr["object_name"].ToString();
                             {
                                 str = str.Replace(dr["object_name"].ToString().ToUpper(), "[OBJECT]");
+                                if (ScriptParameter.Length > 1)
+                                {
+                                    ScriptParameter = ScriptParameter + ",";
+                                }
                                 ScriptParameter += dr["object_name"].ToString();
                                 //Here We have found our Object, so we need to look for an appropriate state afterwards
                                 //So we are going to retrieve a state list and compare it to the remainder of the string
@@ -247,11 +252,11 @@
                                         {
                                             replacementString = replacementString + " ";
                                         }
-                                        if (drState["state_label"].ToString().ToUpper() == w)
+                                        if (drState["state_label"].ToString().ToUpper() == w || drState["state_name"].ToString().ToUpper() == w)
                                         {
                                             replacementString = replacementString + "[STATE]";
                                             //str = str.Replace(drState["state_label"].ToString().ToUpper(), "[STATE]");
-                                            ScriptParameter += ", " + drState["state_label"].ToString();
+                                            ScriptParameter += ", " + drState["state_name"].ToString();
                                         }
                                         else
                                         {
@@ -272,9 +277,9 @@
                                             OSAEScriptManager.RunPatternScript(dataset.Tables[0].Rows[0]["pattern"].ToString(), ScriptParameter, "Jabber");
                                             return dataset.Tables[0].Rows[0]["pattern"].ToString();
                                         }
-                                        break;
+                                        //break;
                                 }
-                                break;
+                                //break;
                             }
                         }
                     }
