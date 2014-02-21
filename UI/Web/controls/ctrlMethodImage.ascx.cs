@@ -10,7 +10,9 @@ public partial class controls_ctrlMethodImage : System.Web.UI.UserControl
 {
     public OSAEObject screenObject { get; set; }
     public string ObjectName;
-    public string MethodName;
+    public string MethodName; 
+    public string p1;
+    public string p2;
     private OSAEImageManager imgMgr = new OSAEImageManager();
 
     protected void Page_Load(object sender, EventArgs e)

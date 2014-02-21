@@ -9,8 +9,8 @@
     /// Interaction logic for the logs control
     /// </summary>
     public partial class Logs : UserControl
-    {        
-        Logging logging = Logging.GetLogger();
+    {
+        
 
         /// <summary>
         /// Timer to allow reload of log data after given period
@@ -55,7 +55,7 @@
         /// <param name="e">Standard RoutedEventArgs argument see MSDN</param>
         private void clearLogButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            this.logging.EventLogClear();
+            OSAE.General.OSAELog.EventLogClear();
             this.LoadLoags();
         }
 
