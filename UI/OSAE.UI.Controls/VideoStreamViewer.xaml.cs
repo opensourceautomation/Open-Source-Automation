@@ -21,6 +21,8 @@ namespace OSAE.UI.Controls
         string CamPort;
         string UserName;
         string Password;
+        double imgWidth = 400;
+        double imgHeight = 300;
 
         public VideoStreamViewer(string url, OSAEObject obj)
         {
@@ -33,7 +35,15 @@ namespace OSAE.UI.Controls
             CamPort = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Port").Value;         
             UserName = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Username").Value;
             Password = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Password").Value;
+            var imgsWidth = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Width").Value;
+            var imgsHeight = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Height").Value;
             string streamURI = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
+            if (imgsWidth != "") { imgWidth = Convert.ToDouble(imgsWidth); }
+            if (imgsHeight != "") { imgHeight = Convert.ToDouble(imgsHeight); }
+            this.Width = imgWidth;
+            this.Height = imgHeight;
+            image.Width = imgWidth;
+            image.Height = imgHeight;
             if (streamURI == null)
             {
                 this.Log.Info("Stream Path Not Found: " + streamURI);
