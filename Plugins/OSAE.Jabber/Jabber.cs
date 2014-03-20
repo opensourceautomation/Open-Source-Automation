@@ -60,6 +60,7 @@ namespace OSAE.Jabber
                         break;
 
                     case "SEND FROM LIST":
+                        //Speech List here should not be hard coded, but I understand we only have 2 parameters to work with...
                         sendMessage(Common.PatternParse(OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
                         break;
                 }
@@ -86,12 +87,13 @@ namespace OSAE.Jabber
                 return;
 
             this.Log.Debug(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()));
-            this.Log.Debug("Message: " + msg.Body);
+            this.Log.Debug("INPUT: " + msg.Body);
             string pattern = Common.MatchPattern(msg.Body);
-          //  if (pattern != string.Empty)
-           // {
+            if (pattern == string.Empty)
+            {
+                this.Log.Debug("INPUT: No Matching Pattern found!" );
                 //OSAEScriptManager.RunPatternScript(pattern, msg.From.Bare, "Jabber");
-           // }             
+            }             
         }
 
         void xmppCon_OnClose(object sender)
@@ -202,7 +204,7 @@ namespace OSAE.Jabber
 
         private void sendMessage(string message, string contact)
         {
-            this.Log.Debug("Sending message: '" + message + "' to " + contact);
+            this.Log.Debug("OUTPUT: '" + message + "' to " + contact);
             // Send a message
             agsXMPP.protocol.client.Message msg = new agsXMPP.protocol.client.Message();
             msg.Type = agsXMPP.protocol.client.MessageType.chat;

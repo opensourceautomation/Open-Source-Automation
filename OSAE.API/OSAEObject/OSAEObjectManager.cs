@@ -146,7 +146,7 @@
                 }
                 else
                 {
-                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName ORDER BY object_name ASC";
+                    command.CommandText = "SELECT object_name, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName AND enabled = 1 ORDER BY object_name ASC";
                     command.Parameters.AddWithValue("@ContainerName", ContainerName);
                 }
 

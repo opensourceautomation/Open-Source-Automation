@@ -36,7 +36,7 @@ namespace OSAE.UI.Controls
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            string sName = currentScreen + " - " + objectComboBox.Text;
+            string sName = currentScreen + " - " + objectComboBox.Text + " - " + methodComboBox.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL METHOD IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Method Name", methodComboBox.Text, "GUI");

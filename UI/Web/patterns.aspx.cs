@@ -57,11 +57,13 @@ public partial class patterns : System.Web.UI.Page
             gvPatterns.Rows[Int32.Parse(hdnSelectedPatternRow.Text)].Style.Add("background", "lightblue");
             pnlMatchForm.Visible = true;
             pnlScriptForm.Visible = true;
+            txtPattern.Text = hdnSelectedPatternName.Text;
         }
         if (hdnSelectedMatchRow.Text != "")
         {
             gvMatches.Rows[Int32.Parse(hdnSelectedMatchRow.Text)].Attributes.Remove("onmouseout");
             gvMatches.Rows[Int32.Parse(hdnSelectedMatchRow.Text)].Style.Add("background", "lightblue");
+            txtMatch.Text = hdnSelectedMatchName.Text;
         }
 
         if (hdnSelectedScriptRow.Text != "")
@@ -115,6 +117,7 @@ public partial class patterns : System.Web.UI.Page
     {
         gvPatterns.DataSource = OSAESql.RunSQL("SELECT pattern, pattern_id FROM osae_pattern ORDER BY pattern");
         gvPatterns.DataBind();
+       
     }
 
     private void loadMatches()
@@ -164,9 +167,19 @@ public partial class patterns : System.Web.UI.Page
         OSAEScriptManager.PatternMatchAdd(hdnSelectedPatternName.Text, txtMatch.Text);
         loadMatches();
     }
+    protected void btnMatchUpdate_Click(object sender, EventArgs e)
+    {
+        OSAEScriptManager.PatternMatchUpdate(hdnSelectedPatternName.Text, hdnSelectedMatchName.Text, txtMatch.Text);
+        loadMatches();
+    }
     protected void btnPatternAdd_Click(object sender, EventArgs e)
     {
         OSAEScriptManager.PatternAdd(txtPattern.Text);
+        loadPatterns();
+    }
+    protected void btnPatternUpdate_Click(object sender, EventArgs e)
+    {
+        OSAEScriptManager.PatternUpdate(hdnSelectedPatternName.Text, txtPattern.Text);
         loadPatterns();
     }
     protected void btnPatternDelete_Click(object sender, EventArgs e)

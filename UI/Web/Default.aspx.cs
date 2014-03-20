@@ -28,9 +28,9 @@ public partial class _Default : System.Web.UI.Page
             {
                 // Success, create non-persistent authentication cookie.
                 FormsAuthentication.SetAuthCookie(
-                        this.txtUserName.Text.Trim(), false);                
-
-                FormsAuthenticationTicket ticket1 = new FormsAuthenticationTicket(this.txtUserName.Text.Trim(),true,10);
+                        this.txtUserName.Text.Trim(), false);
+                Int32 cto = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value);
+                FormsAuthenticationTicket ticket1 = new FormsAuthenticationTicket(this.txtUserName.Text.Trim(),true,cto);
                 HttpCookie cookie1 = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket1));
                 Response.Cookies.Add(cookie1);
 

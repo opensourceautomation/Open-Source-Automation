@@ -104,6 +104,9 @@
     <Compile Include="NavigationImage.xaml.cs">
       <DependentUpon>NavigationImage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ParamInput.xaml.cs">
+      <DependentUpon>ParamInput.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyLabel.xaml.cs">
       <DependentUpon>PropertyLabel.xaml</DependentUpon>
@@ -188,6 +191,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ParamInput.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="PropertyLabel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -219,7 +226,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
-      <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
+      <Project>{022f45f1-c988-41a1-a203-39e97be928b6}</Project>
       <Name>OSAE.API</Name>
     </ProjectReference>
   </ItemGroup>

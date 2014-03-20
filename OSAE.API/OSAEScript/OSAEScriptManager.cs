@@ -186,7 +186,26 @@
                 }
                 catch (Exception ex)
                 {
-                    Logging.GetLogger().AddToLog("API - PatterAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                    Logging.GetLogger().AddToLog("API - PatternAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static void PatternUpdate(string oldName, string newName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_update (@oldName,@newName)";
+                command.Parameters.AddWithValue("@oldName", oldName);
+                command.Parameters.AddWithValue("@newName", newName);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - PatterUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }
@@ -244,6 +263,26 @@
                 catch (Exception ex)
                 {
                     Logging.GetLogger().AddToLog("API - PatternMatchAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        public static void PatternMatchUpdate(string pattern, string oldMatch, string newMatch)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_match_update (@Pattern, @OldMatch, @NewMatch)";
+                command.Parameters.AddWithValue("@Pattern", pattern);
+                command.Parameters.AddWithValue("@OldMatch", oldMatch);
+                command.Parameters.AddWithValue("@NewMatch", newMatch);
+                
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - PatternMatchUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
             }
         }

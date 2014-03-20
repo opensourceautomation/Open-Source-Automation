@@ -77,8 +77,11 @@
             <div class="row-fluid">
                 <div class="span12">
                     <br />
-                    <asp:TextBox runat="server" ID="txtPattern" class="input-large"></asp:TextBox>
+
+                    <asp:TextBox runat="server" ID="txtPattern" class="input-large" Width="341px"></asp:TextBox>
+                    <br />
                     <asp:Button runat="server" ID="btnPatternSave" class="btn" OnClick="btnPatternAdd_Click" Text="Add" /> &nbsp;
+                    <asp:Button runat="server" ID="btnPatternUpdate" class="btn" OnClick="btnPatternUpdate_Click" Text="Update" /> &nbsp;
                     <asp:Button runat="server" ID="btnPatternDelete" class="btn" OnClick="btnPatternDelete_Click" Text="Delete"/>
                 </div>
             </div>
@@ -97,6 +100,7 @@
                                 <asp:BoundField DataField="match_id" Visible="false" /> 
                             </Columns>  
                         </asp:GridView>
+
                     </div>
                 </div>
             </div>
@@ -104,8 +108,10 @@
                 <div class="span12" style="text-align:right;">
                     <asp:Panel runat="server" ID="pnlMatchForm" Visible ="false">
                         <br />
-                        <asp:TextBox runat="server" ID="txtMatch" class="input-large"></asp:TextBox>
+                        <asp:TextBox runat="server" ID="txtMatch" class="input-large" Width="344px"></asp:TextBox>
+                        <br />
                         <asp:Button runat="server" ID="btnMatchAdd" class="btn" OnClick="btnMatchAdd_Click" Text="Add" /> &nbsp;
+                        <asp:Button runat="server" ID="btnMatchUpdate" class="btn" OnClick="btnMatchUpdate_Click" Text="Update" /> &nbsp;
                         <asp:Button runat="server" ID="btnMatchDelete" class="btn" OnClick="btnMatchDelete_Click" Text="Delete"/>
                     </asp:Panel>
                 </div>

@@ -161,7 +161,7 @@
 
         /// <summary>
         /// CALL osae_sp_pattern_parse(pattern) and returns result
-        /// </summary>
+        /// This is parsing OUTPUT and not the OSA Patterns, it should be renamed...
         /// <param name="pattern"></param>
         /// <returns></returns>
         public static string PatternParse(string pattern)
@@ -197,6 +197,7 @@
             string ScriptParameter = "";
             try
             {
+                str = str.TrimEnd('?','.','!');
                 DataSet dataset = new DataSet();
                 //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                 //command.Parameters.AddWithValue("@Name", str);
@@ -236,17 +237,34 @@
                                 dsStates = OSAEObjectStateManager.ObjectStateListGet(dr["object_name"].ToString());
                                 foreach (DataRow drState in dsStates.Tables[0].Rows)
                                 {
-                                    if (str.IndexOf(drState["state_label"].ToString().ToUpper()) > 0)
+                                    //Here we need to break the string into words to avoid partial matches
+                                    string replacementString = "";
+
+                                    string[] wordArray = str.Split(new Char[] { ' ' });
+                                    foreach (string w in wordArray)
                                     {
-                                        str = str.Replace(drState["state_label"].ToString().ToUpper(), "[STATE]");
-                                        ScriptParameter += ", " + drState["state_label"].ToString();
+                                        if (replacementString.Length > 1)
+                                        {
+                                            replacementString = replacementString + " ";
+                                        }
+                                        if (drState["state_label"].ToString().ToUpper() == w)
+                                        {
+                                            replacementString = replacementString + "[STATE]";
+                                            //str = str.Replace(drState["state_label"].ToString().ToUpper(), "[STATE]");
+                                            ScriptParameter += ", " + drState["state_label"].ToString();
+                                        }
+                                        else
+                                        {
+                                            replacementString = replacementString + w;
+                                        }
+                                    }
 
                                         //Now that we have replaced the Object and State, Lets check for a match again
                                         //DataSet dataset = new DataSet();
                                         //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                                         //command.Parameters.AddWithValue("@Name", str);
                                         //dataset = OSAESql.RunQuery(command);
-                                        dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern WHERE `match`='" + str + "'");
+                                        dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern WHERE `match`='" + replacementString + "'");
                                         if (dataset.Tables[0].Rows.Count > 0)
                                         {
                                             //return dataset.Tables[0].Rows[0]["pattern"].ToString();
@@ -255,14 +273,12 @@
                                             return dataset.Tables[0].Rows[0]["pattern"].ToString();
                                         }
                                         break;
-                                    }
                                 }
                                 break;
                             }
                         }
                     }
                     return string.Empty;
-                    //return string.Empty;
                 }
             }
             catch (Exception ex)

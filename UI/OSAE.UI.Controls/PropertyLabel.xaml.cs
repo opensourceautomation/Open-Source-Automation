@@ -4,6 +4,7 @@
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
+    using OSAE;
 
     /// <summary>
     /// Interaction logic for PropertyLabel.xaml

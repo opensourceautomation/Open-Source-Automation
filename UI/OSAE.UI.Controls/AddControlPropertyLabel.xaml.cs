@@ -88,7 +88,7 @@ namespace OSAE.UI.Controls
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            string sName = "Screen - " + currentScreen + " - " + objectComboBox.Text + ": " + propertyComboBox.Text;
+            string sName = currentScreen + " - " + objectComboBox.Text + ": " + propertyComboBox.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");

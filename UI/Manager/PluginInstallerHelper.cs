@@ -200,7 +200,7 @@
 
             string ip = Common.WcfServer;
             if (ip == "localhost")
-                ip = "127.0.0.1";
+                ip = Common.LocalIPAddress();
             NetworkComms.SendObject("Plugin", ip, 10000, desc.Type + "|False");
 
             Thread.Sleep(2000);
