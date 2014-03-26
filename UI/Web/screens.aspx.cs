@@ -13,10 +13,14 @@ public partial class screens : System.Web.UI.Page
     {
         List<ASP.ctrlStateImage> stateImages = new List<ASP.ctrlStateImage>();
         DataSet ds = OSAESql.RunSQL("SELECT object_name, property_value, image_id FROM osae_v_object_property p INNER JOIN osae_images i ON i.image_name = p.property_value WHERE object_name = '" + Request.QueryString["id"] + "' AND property_name = 'Background Image'");
-        string screenName = ds.Tables[0].Rows[0]["object_name"].ToString();
+        try
+        {
+
+            string screenName = ds.Tables[0].Rows[0]["object_name"].ToString();
+
         OSAEObject screen = OSAEObjectManager.GetObjectByName(screenName);
         List<OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(screenName);
-        imgBackground.ImageUrl = "imgHandler.aspx?ImageID=" + ds.Tables[0].Rows[0]["image_id"].ToString();
+        imgBackground.ImageUrl = "~/ImageHandler.ashx?id=" + ds.Tables[0].Rows[0]["image_id"].ToString();
         
         foreach (OSAEScreenControl sc in controls)
         {
@@ -73,6 +77,11 @@ public partial class screens : System.Web.UI.Page
             //    ctrl.height = "300";
             //    StaticPlaceholder.Controls.Add(ctrl);
             //}
+        }
+        }
+        catch
+        {
+            return;
         }
     }
 
