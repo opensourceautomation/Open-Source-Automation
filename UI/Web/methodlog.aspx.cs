@@ -22,7 +22,7 @@ public partial class methodlog : System.Web.UI.Page
     {
         try
         {
-            methodLogGridView.DataSource = OSAESql.RunSQL("SELECT entry_time, object_name, method_name, parameter_1, parameter_2, debug_trace FROM osae_v_method_log ORDER BY entry_time DESC, method_log_id DESC LIMIT 500");
+            methodLogGridView.DataSource = OSAESql.RunSQL("SELECT entry_time, osae_v_method_log.object_name, method_name, parameter_1, parameter_2, osae_object.object_name As from_object FROM osae_v_method_log join osae_object on (osae_v_method_log.from_object_id = osae_object.object_id) ORDER BY entry_time DESC, method_log_id DESC LIMIT 500");
             methodLogGridView.DataBind();
         }
         catch (Exception ex)
