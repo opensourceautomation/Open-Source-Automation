@@ -61,6 +61,8 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
@@ -87,6 +89,15 @@
     <Compile Include="OSAESchedule.cs\OSAERecurringSchedule.cs" />
     <Compile Include="OSAEScreenControl\OSAEScreenControlManager.cs" />
     <Compile Include="OSAEScript\OSAEScriptProcessor.cs" />
+    <Compile Include="OSAEService\OSAEServiceBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OSAEService\OSAEServiceController.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OSAEService\OSAEServiceController.Designer.cs">
+      <DependentUpon>OSAEServiceController.cs</DependentUpon>
+    </Compile>
     <Compile Include="Plugin\OSAEPluginCollection.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginDescription.cs" />
@@ -110,7 +121,11 @@
     <None Include="App.config" />
     <None Include="keyfile.snk" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="OSAEService\OSAEServiceController.resx">
+      <DependentUpon>OSAEServiceController.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

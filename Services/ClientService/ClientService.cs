@@ -1,5 +1,10 @@
-﻿namespace OSAE.ClientService
+﻿//#define OSAESERVICECONTROLLER
+
+namespace OSAE.ClientService
 {
+    #region Usings
+
+    using OSAE;
     using System;
     using System.Collections.Generic;
     using System.ServiceModel;
@@ -12,8 +17,15 @@
     using log4net.Config;
     using log4net;
     using System.Reflection;
+    using System.Windows.Forms;
 
+    #endregion
+
+#if OSAESERVICECONTROLLER
+    public partial class ClientService : OSAEServiceBase
+#else
     public partial class ClientService : ServiceBase
+#endif
     {
         private const string sourceName = "Client Service";
         private OSAEPluginCollection plugins = new OSAEPluginCollection();
@@ -36,7 +48,18 @@
             else
             {
                 //Debugger.Launch();
+#if OSAESERVICECONTROLLER
+                if (Environment.UserInteractive)
+                {
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new OSAEServiceController(new ClientService(), "Client Service Controller"));
+                }
+                else
+                    OSAEServiceBase.Run(new ClientService());
+#else
                 ServiceBase.Run(new ClientService());
+#endif
             }
         }
 
@@ -84,8 +107,8 @@
             {
                 this.Log.Error("Error starting listener", ex);
             }
-            
-            Common.CreateComputerObject(sourceName);            
+
+            Common.CreateComputerObject(sourceName);
 
             try
             {
@@ -104,7 +127,7 @@
 
             Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
             loadPluginsThread.Start();
-            
+
             //Clock.Interval = 5000;
             //Clock.Start();
             //Clock.Elapsed += new System.Timers.ElapsedEventHandler(checkConnection);
@@ -160,7 +183,7 @@
                     this.Log.Info("plugin type: " + plugin.PluginType);
 
                     if (plugin.PluginName != string.Empty)
-                    {                       
+                    {
                         OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
 
                         this.Log.Info("setting found: " + obj.Name + " - " + obj.Enabled.ToString());
@@ -198,7 +221,7 @@
                             this.Log.Info("PluginVersion: " + plugin.PluginVersion);
 
                             NetworkComms.SendObject("Plugin", Common.WcfServer, 10000, plugin.PluginName + "|" + plugin.Status + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
-                        }                       
+                        }
                     }
                     else
                     {
@@ -221,7 +244,7 @@
                                 + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
                         }
 
-                    }                                        
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -325,7 +348,7 @@
                 }
             }
         }
-        
+
         private void enablePlugin(Plugin plugin)
         {
             OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
@@ -343,7 +366,7 @@
             catch (Exception ex)
             {
                 this.Log.Error("Error activating plugin (" + plugin.PluginName + ")", ex);
-            }           
+            }
         }
 
         private void disablePlugin(Plugin p)
@@ -356,7 +379,7 @@
                 p.Shutdown();
                 p.Enabled = false;
                 p.Domain = Common.CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet, typeof(ClientService));
-                
+
             }
             catch (Exception ex)
             {
@@ -364,5 +387,5 @@
             }
         }
 
-    }    
+    }
 }
