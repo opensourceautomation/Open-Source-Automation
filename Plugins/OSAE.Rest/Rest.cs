@@ -11,7 +11,7 @@
     public class Rest : OSAEPluginBase
     {
         //OSAELog
-        //fix this --private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         /// <summary>
         /// Hosts the web service
@@ -42,7 +42,7 @@
 
             try
             {
-                //fix this --this.Log.Info("Starting Rest Interface");
+                this.Log.Info("Starting Rest Interface");
 
                 bool showHelp = bool.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Show Help").Value);
                 int restPort = 8732;
@@ -55,15 +55,15 @@
                     }
                     catch (FormatException ex)
                     {
-                        //fix this --this.Log.Error("Error pulling REST port from property (not a valid number)", ex);
+                        this.Log.Error("Error pulling REST port from property (not a valid number)", ex);
                     }
                     catch (OverflowException ex)
                     {
-                        //fix this --this.Log.Error("Error pulling REST port from property (too large)", ex);
+                        this.Log.Error("Error pulling REST port from property (too large)", ex);
                     }
                     catch (ArgumentNullException ex)
                     {
-                        //fix this --this.Log.Error("Error pulling REST port from property (null)", ex);
+                        this.Log.Error("Error pulling REST port from property (null)", ex);
                     }
                 }
 
@@ -82,12 +82,12 @@
                     serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
                 }
 
-                //fix this --this.Log.Info("Starting Rest Interface");
+                this.Log.Info("Starting Rest Interface");
                 serviceHost.Open();                                
             }
             catch (Exception ex)
             {
-                //fix this --this.Log.Error("Error starting RESTful web service", ex);
+                this.Log.Error("Error starting RESTful web service", ex);
             }
         }
 
