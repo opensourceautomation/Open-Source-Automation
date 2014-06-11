@@ -31,14 +31,13 @@
       });
 
 
-
       function load() {
           $('#homeBtn').addClass("ui-btn-active");
           $('#statusBtn').removeClass("ui-btn-active");
           $('#propsBtn').removeClass("ui-btn-active");
           $('#callback').html('');
 
-          $.getJSON('http://' + host + ':8732/api/objects/type/place?callback=?', null, function (data) {
+          $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/objects/type/place?callback=?', null, function (data) {
               //$('#callback').html(data);
               $("#callback").append('<ul id="places" data-role="listview" data-theme="g">');
               $.each(data, function (i, obj) {
@@ -67,7 +66,7 @@
 
       function openPlace(place) {
           $('#callback').html('');
-          $.getJSON('http://' + host + ':8732/api/objects/container/' + place + '?callback=?', null, function (data) {
+          $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/objects/container/' + place + '?callback=?', null, function (data) {
 
               $("#callback").append('<ul id="places" data-role="listview" data-theme="g">');
               $.each(data, function (i, obj) {
@@ -105,7 +104,7 @@
 
       function openObject(place, object) {
           $('#callback').html('');
-          $.getJSON('http://' + host + ':8732/api/object/' + object + '?callback=?', null, function (data) {
+          $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + object + '?callback=?', null, function (data) {
 
 
               if (data.BaseType == 'BINARY SWITCH' || data.BaseType == 'MULTILEVEL SWITCH') {
@@ -247,7 +246,7 @@
           $('#propsBtn').removeClass("ui-btn-active");
           $('#callback').html('');
 
-          $.getJSON('http://' + host + ':8732/api/system/states?callback=?', null, function (data) {
+          $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/system/states?callback=?', null, function (data) {
               $("#callback").append('<div id="states" data-role="controlgroup">');
               $.each(data, function (i, obj) {
                   $("#states").append('<a href="#" id="btn_' + obj + '" onclick="changeState(\'' + obj + '\');" data-role="button">' + obj + '</a></li>');
@@ -255,7 +254,7 @@
               });
           });
 
-          $.getJSON('http://' + host + ':8732/api/object/system?callback=?', null, function (data) {
+          $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/object/system?callback=?', null, function (data) {
               $('#btn_' + data.State.Value.toUpperCase()).attr("data-theme", "b").removeClass("ui-btn-up-a").addClass("ui-btn-up-b");
           });
 
@@ -272,17 +271,17 @@
 
       function runMethod(object, method, p1, p2) {
           if (p1 != '') {
-              $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&callback=?', null, function (data) {
+              $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + object + '/' + method + '?param1=' + p1 + '&callback=?', null, function (data) {
                   return data;
               });
           }
           else if (p2 != '') {
-              $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
+              $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
                   return data;
               });
           }
           else {
-              $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?callback=?', null, function (data) {
+              $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + object + '/' + method + '?callback=?', null, function (data) {
                   return data;
               });
           }
@@ -295,11 +294,11 @@
           $('#propsBtn').addClass("ui-btn-active");
           $('#callback').html('');
 
-          $.getJSON('http://' + host + ':8732/api/object/propertylist/Custom Property List/Values?callback=?', null, function (data) {
+          $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/object/propertylist/Custom Property List/Values?callback=?', null, function (data) {
               $("#callback").append('<div id="props" class="ui-grid-a"></div>');
               $.each(data, function (i, obj) {
                   var array = obj.split(':=');
-                  $.getJSON('http://' + host + ':8732/api/object/' + array[0] + '?callback=?', null, function (data2) {
+                  $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + array[0] + '?callback=?', null, function (data2) {
                       var val = '';
                       var objName = array[1];
                       if (objName.toLowerCase() == 'state') {
@@ -319,7 +318,7 @@
               });
           });
 
-          $.getJSON('http://' + host + ':8732/api/object/system?callback=?', null, function (data) {
+          $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/object/system?callback=?', null, function (data) {
               $('#btn_' + data.State.Value.toUpperCase()).attr("data-theme", "b").removeClass("ui-btn-up-a").addClass("ui-btn-up-b");
           });
 
@@ -352,4 +351,6 @@
         </div>                           
       </div> 
     </div>
+
+    <asp:HiddenField runat="server" ID="hdnRestPort"/>
 </asp:Content>

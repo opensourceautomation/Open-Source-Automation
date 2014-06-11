@@ -11,7 +11,7 @@
     public class Rest : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        //fix this --private OSAE.General.OSAELog Log = new General.OSAELog();
 
         /// <summary>
         /// Hosts the web service
@@ -42,12 +42,34 @@
 
             try
             {
-                this.Log.Info("Starting Rest Interface");
+                //fix this --this.Log.Info("Starting Rest Interface");
 
                 bool showHelp = bool.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Show Help").Value);
-                
-                serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri("http://localhost:8732/api"));
-                WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None);
+                int restPort = 8732;
+
+                if (!OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "REST Port").Id.Equals(String.Empty))
+                {
+                    try
+                    {
+                        restPort = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "REST Port").Value);
+                    }
+                    catch (FormatException ex)
+                    {
+                        //fix this --this.Log.Error("Error pulling REST port from property (not a valid number)", ex);
+                    }
+                    catch (OverflowException ex)
+                    {
+                        //fix this --this.Log.Error("Error pulling REST port from property (too large)", ex);
+                    }
+                    catch (ArgumentNullException ex)
+                    {
+                        //fix this --this.Log.Error("Error pulling REST port from property (null)", ex);
+                    }
+                }
+
+                String restUrl = "http://localhost:"+restPort.ToString()+"/api";
+                serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri(restUrl));
+                WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None); 
                 binding.CrossDomainScriptAccessEnabled = true;
 
                 var endpoint = serviceHost.AddServiceEndpoint(typeof(IRestService), binding, "");
@@ -60,12 +82,12 @@
                     serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
                 }
 
-                this.Log.Info("Starting Rest Interface");
+                //fix this --this.Log.Info("Starting Rest Interface");
                 serviceHost.Open();                                
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error starting RESTful web service", ex);
+                //fix this --this.Log.Error("Error starting RESTful web service", ex);
             }
         }
 
