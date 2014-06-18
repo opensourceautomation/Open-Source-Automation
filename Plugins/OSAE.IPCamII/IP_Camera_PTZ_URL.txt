@@ -60,7 +60,7 @@ Type in your Brand or Model and click Find Next.
 Continue to click Find Next or F3 and search again to see if there are more matches.
 
 You may have to try sever entries before you find the one that works for you.
-Many cameras use the same firmware, thus, use the same URL;s for controls.
+Many cameras use the same firmware, thus, use the same URL's for controls.
 
 This compilation is from many different sources and may contain typo's or incorrect information.
 There is no guarentee that the information here will work with your device!
