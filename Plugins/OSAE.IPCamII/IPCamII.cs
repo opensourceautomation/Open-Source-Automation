@@ -33,6 +33,12 @@ namespace OSAE.IPCamII
         string ptzPRESET4;
         string ptzPRESET5;
         string ptzPRESET6;
+        string CUSTOM1;
+        string CUSTOM2;
+        string CUSTOM3;
+        string CUSTOM4;
+        string CUSTOM5;
+        string CUSTOM6;
         string camSloc;
         string camDegrees;
         string camOptional;
@@ -73,6 +79,12 @@ namespace OSAE.IPCamII
             ptzPRESET4 = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "ptzPRESET4").Value;
             ptzPRESET5 = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "ptzPRESET5").Value;
             ptzPRESET6 = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "ptzPRESET6").Value;
+            CUSTOM1 = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "CUSTOM1").Value;
+            CUSTOM2 = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "CUSTOM2").Value;
+            CUSTOM3 = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "CUSTOM3").Value;
+            CUSTOM4 = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "CUSTOM4").Value;
+            CUSTOM5 = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "CUSTOM5").Value;
+            CUSTOM6 = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "CUSTOM6").Value;
             camSloc = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "Save Location").Value;
             camDegrees = OSAEObjectPropertyManager.GetObjectPropertyValue(camName, "Degrees").Value;
             camSloc = camSloc + @"\";
@@ -235,6 +247,72 @@ namespace OSAE.IPCamII
                 try
                 {
                     wc.UploadStringAsync(new Uri(replaceFielddata(ptzPRESET6)), "POST", "");
+                }
+                catch (Exception ex)
+                {
+                    this.Log.Info("An error occurred!!!: " + ex.Message);
+                }
+            }
+            else if (sMethod == "CUSTOM1")
+            {
+                try
+                {
+                    wc.UploadStringAsync(new Uri(replaceFielddata(CUSTOM1)), "POST", "");
+                }
+                catch (Exception ex)
+                {
+                    this.Log.Info("An error occurred!!!: " + ex.Message);
+                }
+            }
+            else if (sMethod == "CUSTOM2")
+            {
+                try
+                {
+                    wc.UploadStringAsync(new Uri(replaceFielddata(CUSTOM2)), "POST", "");
+                }
+                catch (Exception ex)
+                {
+                    this.Log.Info("An error occurred!!!: " + ex.Message);
+                }
+            }
+            else if (sMethod == "CUSTOM3")
+            {
+                try
+                {
+                    wc.UploadStringAsync(new Uri(replaceFielddata(CUSTOM3)), "POST", "");
+                }
+                catch (Exception ex)
+                {
+                    this.Log.Info("An error occurred!!!: " + ex.Message);
+                }
+            }
+            else if (sMethod == "CUSTOM4")
+            {
+                try
+                {
+                    wc.UploadStringAsync(new Uri(replaceFielddata(CUSTOM4)), "POST", "");
+                }
+                catch (Exception ex)
+                {
+                    this.Log.Info("An error occurred!!!: " + ex.Message);
+                }
+            }
+            else if (sMethod == "CUSTOM5")
+            {
+                try
+                {
+                    wc.UploadStringAsync(new Uri(replaceFielddata(CUSTOM5)), "POST", "");
+                }
+                catch (Exception ex)
+                {
+                    this.Log.Info("An error occurred!!!: " + ex.Message);
+                }
+            }
+            else if (sMethod == "CUSTOM6")
+            {
+                try
+                {
+                    wc.UploadStringAsync(new Uri(replaceFielddata(CUSTOM6)), "POST", "");
                 }
                 catch (Exception ex)
                 {

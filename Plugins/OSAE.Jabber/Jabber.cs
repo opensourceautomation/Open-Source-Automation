@@ -75,6 +75,7 @@ namespace OSAE.Jabber
         {
             shuttingDown = true;
             xmppCon.Close();
+            this.Log.Info("Shutdown!");
         }
         #endregion
 
@@ -84,6 +85,9 @@ namespace OSAE.Jabber
 
             // ignore empty messages (events)
             if (msg.Body == null)
+                return;
+
+            if (msg.Type == agsXMPP.protocol.client.MessageType.error)
                 return;
 
             this.Log.Debug(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()));
@@ -198,7 +202,7 @@ namespace OSAE.Jabber
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error connecting ", ex);
+                this.Log.Error("Error connecting: ", ex);
             }
         }
 
@@ -211,7 +215,7 @@ namespace OSAE.Jabber
             msg.To = new Jid(contact);
             msg.Body = message;
 
-            xmppCon.Send(msg);
+                xmppCon.Send(msg);
         }
 
     }
