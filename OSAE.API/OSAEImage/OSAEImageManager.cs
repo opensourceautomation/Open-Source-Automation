@@ -139,7 +139,8 @@
             }
             catch (Exception ex)
             {
-                throw new Exception("API - Failed to get requested image from DB: " + imageName + ", exception encountered: " + ex.Message, ex);
+                //throw new Exception("API - Failed to get requested image from DB: " + imageName + ", exception encountered: " + ex.Message, ex);
+                return null;
             }
             
         }

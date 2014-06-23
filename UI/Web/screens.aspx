@@ -4,7 +4,7 @@
 <%@ Reference Control="~/controls/ctrlStateImage.ascx"  %>
 <%@ Reference Control="~/controls/ctrlPropertyLabel.ascx"  %>
 <%@ Reference Control="~/controls/ctrlTimerLabel.ascx"  %>
-<%@ Reference Control="~/controls/ctrlMethodImage.ascx"  %>
+<%@ Reference Control="~/controls/ctrlClickImage.ascx"  %>
 <%@ Reference Control="~/controls/ctrlNavigationImage.ascx"  %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server">

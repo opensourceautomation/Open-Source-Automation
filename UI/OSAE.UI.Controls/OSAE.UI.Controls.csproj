@@ -62,8 +62,8 @@
     <Compile Include="AddBrowserControl.xaml.cs">
       <DependentUpon>AddBrowserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AddControlMethodImage.xaml.cs">
-      <DependentUpon>AddControlMethodImage.xaml</DependentUpon>
+    <Compile Include="AddControlClickImage.xaml.cs">
+      <DependentUpon>AddControlClickImage.xaml</DependentUpon>
     </Compile>
     <Compile Include="AddControlNavigationImage.xaml.cs">
       <DependentUpon>AddControlNavigationImage.xaml</DependentUpon>
@@ -98,8 +98,8 @@
     <Compile Include="Logs.xaml.cs">
       <DependentUpon>Logs.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MethodImage.xaml.cs">
-      <DependentUpon>MethodImage.xaml</DependentUpon>
+    <Compile Include="ClickImage.xaml.cs">
+      <DependentUpon>ClickImage.xaml</DependentUpon>
     </Compile>
     <Compile Include="NavigationImage.xaml.cs">
       <DependentUpon>NavigationImage.xaml</DependentUpon>
@@ -135,7 +135,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="AddControlMethodImage.xaml">
+    <Page Include="AddControlClickImage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -183,7 +183,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MethodImage.xaml">
+    <Page Include="ClickImage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

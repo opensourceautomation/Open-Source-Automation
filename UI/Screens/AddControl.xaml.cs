@@ -21,7 +21,6 @@ namespace GUI2
         public AddControl()
         {
             InitializeComponent();
-
         }
     }
 }
