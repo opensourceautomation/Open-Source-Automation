@@ -11,7 +11,7 @@
                     <asp:BoundField DataField="method_name" HeaderText="Method" />
                     <asp:BoundField DataField="parameter_1" HeaderText="Parameter 1" />
                     <asp:BoundField DataField="parameter_2" HeaderText="Parameter 2" />
-                    <asp:BoundField DataField="debug_trace" HeaderText="Debug Trace" />
+                    <asp:BoundField DataField="from_object" HeaderText="From" />
                 </Columns>
             </asp:GridView>
             <asp:Button class="btn" runat="server" ID="clearLogButton" Text="Clear Method Log" OnClick="clearLogButton_Click" />
