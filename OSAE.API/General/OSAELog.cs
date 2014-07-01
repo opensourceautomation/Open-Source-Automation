@@ -11,6 +11,7 @@ using System.Reflection;
 using log4net.Config;
 using log4net;
 using MySql.Data.MySqlClient;
+using OSAE;
 
 namespace OSAE.General
 {
@@ -20,7 +21,7 @@ namespace OSAE.General
     {
         private static ILog Log;
         private Type logSource;
-
+        private Boolean bDebug = false;
         public OSAELog()
         {
             StackFrame frame = new StackFrame(1);
@@ -29,7 +30,7 @@ namespace OSAE.General
             Log = LogManager.GetLogger(logSource);
 
 
-
+            bDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value);
             var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;
             var attachable = root as log4net.Core.IAppenderAttachable;
 
@@ -66,7 +67,7 @@ namespace OSAE.General
 
         public void Debug(string log)
         {
-            Log.Debug(log);
+            if (bDebug) Log.Debug(log);
         }
 
         public void Error(string log)

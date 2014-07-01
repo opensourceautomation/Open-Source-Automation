@@ -161,11 +161,13 @@
 
         private void Update_Objects()
         {
-            try
-            {
+         //   try
+         //   {
 
-                while (!closing && !loadingScreen)
+                while (!closing)
                 {
+                    while (loadingScreen) { System.Threading.Thread.Sleep(100); };
+
                     bool oldCtrl = false;
                     this.Log.Debug("Entering Update_Objects");
                     List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
@@ -179,8 +181,7 @@
                         {
                             foreach (StateImage sImage in stateImages)
                             {
-                                if (loadingScreen)
-                                    return;
+                                while (loadingScreen) { System.Threading.Thread.Sleep(100); };
                                 if (newCtrl.ControlName == sImage.screenObject.Name)
                                 {
                                     if (newCtrl.LastUpdated != sImage.LastUpdated)
@@ -213,8 +214,7 @@
                         {
                             foreach (PropertyLabel pl in propLabels)
                             {
-                                if (loadingScreen)
-                                    return;
+                                while (loadingScreen) { System.Threading.Thread.Sleep(100); };
                                 if (newCtrl.ControlName == pl.screenObject.Name)
                                 {
                                     if (newCtrl.LastUpdated != pl.LastUpdated)
@@ -235,6 +235,7 @@
                         {
                             foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
                             {
+                                while (loadingScreen) { System.Threading.Thread.Sleep(100); };
                                 if (newCtrl.ControlName == tl.screenObject.Name)
                                 {
                                     if (newCtrl.LastUpdated != tl.LastUpdated)
@@ -355,13 +356,14 @@
                         }
                         this.Log.Debug("Leaving Update_Objects");
                     }
+                    System.Threading.Thread.Sleep(1000);
                 }
-                System.Threading.Thread.Sleep(1000);
-            }
-            catch (Exception ex)
-            {
-                System.Threading.Thread.Sleep(100);
-            }
+               
+        //    }
+      //      catch (Exception ex)
+       //     {
+       //         System.Threading.Thread.Sleep(100);
+       //     }
         }
 
         private void LoadControl(OSAE.OSAEObject obj)
@@ -393,6 +395,7 @@
                     try
                     {
                         int dZ = Int32.Parse(obj.Property("ZOrder").Value);
+                        stateImageControl.MouseRightButtonDown += new MouseButtonEventHandler(State_Image_MouseRightButtonDown);
                         stateImageControl.Location.X = Double.Parse(obj.Property(sStateMatch + " X").Value);
                         stateImageControl.Location.Y = Double.Parse(obj.Property(sStateMatch + " Y").Value);
                         canGUI.Children.Add(stateImageControl);
@@ -684,6 +687,20 @@
             //MessageBox.Show(navCtrl.screenObject.Name);
             AddControl addControl = new AddControl();
             AddControlClickImage cmi = new AddControlClickImage(gCurrentScreen, navCtrl.screenObject.Name);
+            addControl.Content = cmi;
+            addControl.Width = cmi.Width + 80;
+            addControl.Height = cmi.Height + 80;
+            addControl.Owner = this;
+            addControl.ShowDialog();
+            Load_Screen(gCurrentScreen);
+        }
+
+        private void State_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
+        {
+            StateImage navCtrl = (StateImage)sender;
+            //MessageBox.Show(navCtrl.screenObject.Name);
+            AddControl addControl = new AddControl();
+            AddControlStateImage cmi = new AddControlStateImage(gCurrentScreen, navCtrl.screenObject.Name);
             addControl.Content = cmi;
             addControl.Width = cmi.Width + 80;
             addControl.Height = cmi.Height + 80;
