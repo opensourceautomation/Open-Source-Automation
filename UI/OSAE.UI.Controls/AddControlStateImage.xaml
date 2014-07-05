@@ -18,7 +18,7 @@
         <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="90,368,0,0" VerticalAlignment="Top" Width="75" Click="btnUpdate_Click"/>
         <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="170,368,0,0" VerticalAlignment="Top" Width="75" Click="btnDelete_Click"/>
         <Label Content="Name" Height="28" HorizontalAlignment="Left" Margin="10,9,0,0" x:Name="label3_Copy" VerticalAlignment="Top" Width="53" />
-        <TextBox x:Name="txtControlName" HorizontalAlignment="Left" Height="23" Margin="76,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="357"/>
+        <TextBox x:Name="txtControlName" HorizontalAlignment="Left" Height="23" Margin="76,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="357" TextChanged="txtControlName_TextChanged"/>
         <TextBox x:Name="txtState1X" HorizontalAlignment="Left" Height="26" Margin="261,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Text="100"/>
         <TextBox x:Name="txtState1Y" HorizontalAlignment="Left" Height="26" Margin="336,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100"/>
         <Label Content="Y" HorizontalAlignment="Left" Margin="319,71,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
@@ -27,21 +27,21 @@
         <TextBox x:Name="txtState2Y" HorizontalAlignment="Left" Height="26" Margin="336,211,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100"/>
         <Label Content="Y" HorizontalAlignment="Left" Margin="319,207,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
         <Label Content="X" HorizontalAlignment="Left" Margin="244,211,0,0" VerticalAlignment="Top"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="76,131,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState1Img1" MouseUp="btnLoadS1I1_Click"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="76,131,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState1Img1" MouseLeftButtonUp="btnLoadS1I1_Click" MouseRightButtonUp="btnLoadS1I1_RightClick"/>
         <Button x:Name="btnLoadS1I2" Content="Image 2" HorizontalAlignment="Left" Margin="165,104,0,0" VerticalAlignment="Top" Width="75" Click="btnLoadS1I2_Click" RenderTransformOrigin="0.411,0.455"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="165,131,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState1Img2" MouseUp="btnLoadS1I2_Click"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="165,131,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState1Img2" MouseLeftButtonUp="btnLoadS1I2_Click" MouseRightButtonUp="btnLoadS1I2_RightClick"/>
         <Button x:Name="btnLoadS1I3" Content="Image 3" HorizontalAlignment="Left" Margin="261,104,0,0" VerticalAlignment="Top" Width="75" Click="btnLoadS1I3_Click" RenderTransformOrigin="0.411,0.455"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="261,131,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState1Img3" MouseUp="btnLoadS1I3_Click"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="261,131,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState1Img3" MouseLeftButtonUp="btnLoadS1I3_Click" MouseRightButtonUp="btnLoadS1I3_RightClick"/>
         <Button x:Name="btnLoadS1I4" Content="Image 4" HorizontalAlignment="Left" Margin="353,104,0,0" VerticalAlignment="Top" Width="75" Click="btnLoadS1I4_Click" RenderTransformOrigin="0.411,0.455"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="353,131,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState1Img4" MouseUp="btnLoadS1I4_Click"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="353,131,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState1Img4" MouseLeftButtonUp="btnLoadS1I4_Click" MouseRightButtonUp="btnLoadS1I4_RightClick"/>
         <Button x:Name="btnLoadS2I1" Content="Image 1" HorizontalAlignment="Left" Margin="76,245,0,0" VerticalAlignment="Top" Width="75" Click="btnLoadS2I1_Click" RenderTransformOrigin="0.411,0.455"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="76,272,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState2Img1" MouseUp="btnLoadS2I1_Click"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="76,272,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState2Img1" MouseLeftButtonUp="btnLoadS2I1_Click" MouseRightButtonUp="btnLoadS2I1_RightClick"/>
         <Button x:Name="btnLoadS2I2" Content="Image 2" HorizontalAlignment="Left" Margin="165,245,0,0" VerticalAlignment="Top" Width="75" Click="btnLoadS2I2_Click" RenderTransformOrigin="0.411,0.455"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="165,272,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState2Img2" MouseUp="btnLoadS2I2_Click"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="165,272,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState2Img2" MouseLeftButtonUp="btnLoadS2I2_Click" MouseRightButtonUp="btnLoadS2I2_RightClick"/>
         <Button x:Name="btnLoadS2I3" Content="Image 3" HorizontalAlignment="Left" Margin="261,245,0,0" VerticalAlignment="Top" Width="75" Click="btnLoadS2I3_Click" RenderTransformOrigin="0.411,0.455"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="261,272,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState2Img3" MouseUp="btnLoadS2I3_Click"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="261,272,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState2Img3" MouseLeftButtonUp="btnLoadS2I3_Click" MouseRightButtonUp="btnLoadS2I3_RightClick"/>
         <Button x:Name="btnLoadS2I4" Content="Image 4" HorizontalAlignment="Left" Margin="353,245,0,0" VerticalAlignment="Top" Width="75" Click="btnLoadS2I4_Click" RenderTransformOrigin="0.411,0.455"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="353,272,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState2Img4" MouseUp="btnLoadS2I4_Click"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="353,272,0,0" VerticalAlignment="Top" Width="75" x:Name="imgState2Img4" MouseLeftButtonUp="btnLoadS2I4_Click" MouseRightButtonUp="btnLoadS2I4_RightClick"/>
         <TextBox x:Name="txtDelay" HorizontalAlignment="Left" Height="26" Margin="295,368,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100" ToolTip="If you are animating multiple frames, this is the delay inbetween frames (in milliseconds)"/>
         <Label Content="Delay" HorizontalAlignment="Left" Margin="250,366,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
         <CheckBox x:Name="chkRepeat" Content="Repeat" HorizontalAlignment="Left" Margin="353,374,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.25,0"/>

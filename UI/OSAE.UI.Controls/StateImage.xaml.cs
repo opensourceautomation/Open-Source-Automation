@@ -32,7 +32,7 @@ namespace OSAE.UI.Controls
         private int currentFrame = 0;
         private int frameDelay = 100;
         private bool repeatAnimation;
-     
+        private DispatcherTimer timer = new DispatcherTimer();
 
         public StateImage(OSAEObject sObject)
         {
@@ -116,13 +116,10 @@ namespace OSAE.UI.Controls
             {
             }
 
-            if (imageFrames > 1)
-            {
-                var timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromMilliseconds(frameDelay);
-                timer.Tick += this.timer_Tick;
-                timer.Start();
-            }
+            timer.Interval = TimeSpan.FromMilliseconds(frameDelay);
+            timer.Tick += this.timer_Tick;
+
+            if (imageFrames > 1) timer.Start();
         }
 
         void timer_Tick(object sender, EventArgs e)
@@ -182,15 +179,22 @@ namespace OSAE.UI.Controls
             {
                 //Location.X = Double.Parse(screenObject.Property(StateMatch + " X").Value);
                //Location.Y = Double.Parse(screenObject.Property(StateMatch + " Y").Value);
+                timer.Stop();
                 Location.X = Double.Parse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, StateMatch + " X").Value);
                 Location.Y = Double.Parse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, StateMatch + " Y").Value);                 
 
                 string imgName = screenObject.Property(StateMatch + " Image").Value;
-                OSAEImage img = imgMgr.GetImage(imgName);
-
-                if (img.Data != null)
+                img1 = imgMgr.GetImage(imgName);
+                imgName = screenObject.Property(StateMatch + " Image 2").Value;
+                img2 = imgMgr.GetImage(imgName);
+                imgName = screenObject.Property(StateMatch + " Image 3").Value;
+                img3 = imgMgr.GetImage(imgName);
+                imgName = screenObject.Property(StateMatch + " Image 4").Value;
+                img4 = imgMgr.GetImage(imgName);
+                if (img1.Data != null)
                 {
-                    var imageStream = new MemoryStream(img.Data);
+                    var imageStream = new MemoryStream(img1.Data);
+                    imageFrames = 1;
                     this.Dispatcher.Invoke((Action)(() =>
                 {
                     var bitmapImage = new BitmapImage();
@@ -200,6 +204,16 @@ namespace OSAE.UI.Controls
                     Image.Source = bitmapImage;
                     Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
                     }));
+                }
+                if (img2.Data != null)
+                    imageFrames = 2;
+                if (img3.Data != null)
+                    imageFrames = 3;
+                if (img4.Data != null)
+                    imageFrames = 4;
+                if (imageFrames > 1)
+                {
+                    timer.Start();
                 }
             }
             catch (Exception ex)

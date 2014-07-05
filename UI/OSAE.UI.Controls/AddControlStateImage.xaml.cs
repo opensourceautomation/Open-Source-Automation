@@ -207,6 +207,7 @@ namespace OSAE.UI.Controls
             }
         }
 
+
         private void Validate_Initial_Coordinates()
         {
             //If there is an image, make sure X & Y are not blank
@@ -227,6 +228,7 @@ namespace OSAE.UI.Controls
             }
         }
 
+
         /// <summary>
         /// Load the objects from the DB into the combo box
         /// </summary>
@@ -246,6 +248,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+        private void btnLoadS1I1_RightClick(object sender, RoutedEventArgs e)
+        {
+            State1Img1 = null;
+            imgState1Img1.Source = null;
+        }
 
         private void btnLoadS1I2_Click(object sender, RoutedEventArgs e)
         {
@@ -256,6 +263,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Height = si.Height + 80;
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
+        }
+        private void btnLoadS1I2_RightClick(object sender, RoutedEventArgs e)
+        {
+            State1Img2 = null;
+            imgState1Img2.Source = null;
         }
 
         private void btnLoadS1I3_Click(object sender, RoutedEventArgs e)
@@ -268,6 +280,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+        private void btnLoadS1I3_RightClick(object sender, RoutedEventArgs e)
+        {
+            State1Img3 = null;
+            imgState1Img3.Source = null;
+        }
 
         private void btnLoadS1I4_Click(object sender, RoutedEventArgs e)
         {
@@ -278,6 +295,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Height = si.Height + 80;
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
+        }
+        private void btnLoadS1I4_RightClick(object sender, RoutedEventArgs e)
+        {
+            State1Img4 = null;
+            imgState1Img4.Source = null;
         }
 
         private void btnLoadS2I1_Click(object sender, RoutedEventArgs e)
@@ -290,6 +312,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+        private void btnLoadS2I1_RightClick(object sender, RoutedEventArgs e)
+        {
+            State2Img1 = null;
+            imgState2Img1.Source = null;
+        }
 
         private void btnLoadS2I2_Click(object sender, RoutedEventArgs e)
         {
@@ -300,6 +327,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Height = si.Height + 80;
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
+        }
+        private void btnLoadS2I2_RightClick(object sender, RoutedEventArgs e)
+        {
+            State2Img2 = null;
+            imgState2Img2.Source = null;
         }
 
         private void btnLoadS2I3_Click(object sender, RoutedEventArgs e)
@@ -312,6 +344,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+        private void btnLoadS2I3_RightClick(object sender, RoutedEventArgs e)
+        {
+            State2Img3 = null;
+            imgState2Img3.Source = null;
+        }
 
         private void btnLoadS2I4_Click(object sender, RoutedEventArgs e)
         {
@@ -322,6 +359,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Height = si.Height + 80;
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
+        }
+        private void btnLoadS2I4_RightClick(object sender, RoutedEventArgs e)
+        {
+            State2Img4 = null;
+            imgState2Img4.Source = null;
         }
 
 
@@ -374,23 +416,31 @@ namespace OSAE.UI.Controls
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
 
-            string sName = currentScreen + " - " + cboObject.Text;
+            string sName = txtControlName.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", State1Img2.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", State1Img3.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", State1Img4.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", "100", "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", "100", "GUI");
+            if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", "", "GUI");
+            if (State1Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", State1Img2.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", "", "GUI");
+            if (State1Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", State1Img3.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", "", "GUI");
+            if (State1Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", State1Img4.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", "", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", txtState1X.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", txtState1Y.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", cboState2.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", "100", "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", "100", "GUI");
+            if (State2Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", "", "GUI");
+            if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", "GUI");
+            if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", "GUI");
+            if (State2Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", txtState2X.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", txtState2Y.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, "GUI");
@@ -430,6 +480,7 @@ namespace OSAE.UI.Controls
 
             State1Img1 = imgMgr.GetImage((int)sender);
             imgState1Img1.Source = LoadImage(State1Img1.Data);
+            imgState1Img1.ToolTip = "Width:" + imgState1Img1.Width + " Height:" + imgState1Img1.Height;
             Validate_Initial_Coordinates();
         }
 
@@ -453,6 +504,7 @@ namespace OSAE.UI.Controls
 
         protected void si_S1I4ImagePicked(object sender, EventArgs e)
         {
+            
             OSAEImageManager imgMgr = new OSAEImageManager();
 
             State1Img4 = imgMgr.GetImage((int)sender);
@@ -515,5 +567,12 @@ namespace OSAE.UI.Controls
             image.Freeze();
             return image;
         }
+
+        private void txtControlName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Enable_Buttons();
+        }
+
+
     }
 }

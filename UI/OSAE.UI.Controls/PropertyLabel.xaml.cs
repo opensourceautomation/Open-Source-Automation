@@ -77,6 +77,16 @@
                     {
                     }
                 }
+                if (sFontName != "")
+                {
+                    try
+                    {
+                        propLabel.FontFamily = new FontFamily(sFontName);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
                 propLabel.Content = sPrefix + sPropertyValue + sSuffix;
             }
             else

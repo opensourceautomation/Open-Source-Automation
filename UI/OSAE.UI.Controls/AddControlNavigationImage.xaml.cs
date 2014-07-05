@@ -43,7 +43,7 @@ namespace OSAE.UI.Controls
             if (controlName == "")
             {
                 //Let's create a new name
-                sWorkingName = currentScreen + " - New Object";
+                sWorkingName = currentScreen + " - Nav - New Nav Image";
                 DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
                 int iCount = 0;
 
@@ -51,7 +51,7 @@ namespace OSAE.UI.Controls
                 {
                     // We have a duplicate name, we must get a unique name
                     iCount += 1;
-                    sWorkingName = currentScreen + " - New Nav Image " + iCount;
+                    sWorkingName = currentScreen + " - Nav - New Nav Image " + iCount;
                     dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
                 }
                 sMode = "Add";
@@ -153,7 +153,7 @@ namespace OSAE.UI.Controls
             }
 
 
-            string sName = "Screen - Nav - " + txtName.Text;
+            string sName = txtName.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
@@ -193,12 +193,12 @@ namespace OSAE.UI.Controls
             OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
 
 
-            string sName = "Screen - Nav - " + txtName.Text;
+            string sName = txtName.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboScreens.Text, sName);

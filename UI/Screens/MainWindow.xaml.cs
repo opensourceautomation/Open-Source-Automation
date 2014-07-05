@@ -174,6 +174,7 @@
 
                     foreach (OSAE.OSAEScreenControl newCtrl in controls)
                     {
+                        while (loadingScreen) { System.Threading.Thread.Sleep(100); };
                         oldCtrl = false;
 
                         #region CONTROL STATE IMAGE
@@ -212,6 +213,7 @@
                         #region CONTROL PROPERTY LABEL
                         else if (newCtrl.ControlType == "CONTROL PROPERTY LABEL")
                         {
+                            while (loadingScreen) { System.Threading.Thread.Sleep(100); };
                             foreach (PropertyLabel pl in propLabels)
                             {
                                 while (loadingScreen) { System.Threading.Thread.Sleep(100); };
@@ -223,6 +225,7 @@
                                         pl.LastUpdated = newCtrl.LastUpdated;
                                         pl.Update();
                                         this.Log.Debug("Complete:  " + newCtrl.ControlName);
+                                        while (loadingScreen) { System.Threading.Thread.Sleep(100); };
                                     }
                                     oldCtrl = true;
                                 }
@@ -421,6 +424,7 @@
                     try
                     {
                         PropertyLabel pl = new PropertyLabel(obj);
+                        pl.MouseRightButtonDown += new MouseButtonEventHandler(Property_Label_MouseRightButtonDown);
                         canGUI.Children.Add(pl);
                         int dZ = Int32.Parse(obj.Property("ZOrder").Value);
                         pl.Location.X = Double.Parse(obj.Property("X").Value);
@@ -727,6 +731,19 @@
             NavigationImage navCtrl = (NavigationImage)sender;
             AddControl addControl = new AddControl();
             AddControlNavigationImage cmi = new AddControlNavigationImage(gCurrentScreen, navCtrl.screenObject.Name);
+            addControl.Content = cmi;
+            addControl.Width = cmi.Width + 80;
+            addControl.Height = cmi.Height + 80;
+            addControl.Owner = this;
+            addControl.ShowDialog();
+            Load_Screen(gCurrentScreen);
+        }
+
+        private void Property_Label_MouseRightButtonDown(object sender, MouseEventArgs e)
+        {
+            PropertyLabel propLabel = (PropertyLabel)sender;
+            AddControl addControl = new AddControl();
+            AddControlPropertyLabel cmi = new AddControlPropertyLabel(gCurrentScreen, propLabel.screenObject.Name);
             addControl.Content = cmi;
             addControl.Width = cmi.Width + 80;
             addControl.Height = cmi.Height + 80;
