@@ -88,7 +88,7 @@
             canGUI.Width = bitmapImage.Width;
 
             Load_App_Name();
-            gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
+            gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screenccccc").Value;
             if (gCurrentScreen == "")
             {
                 Set_Default_Screen();
@@ -687,6 +687,7 @@
 
         private void Click_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
+            if (editMode == false) return;
             ClickImage navCtrl = (ClickImage)sender;
             //MessageBox.Show(navCtrl.screenObject.Name);
             AddControl addControl = new AddControl();
@@ -701,6 +702,7 @@
 
         private void State_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
+            if (editMode == false) return;
             StateImage navCtrl = (StateImage)sender;
             //MessageBox.Show(navCtrl.screenObject.Name);
             AddControl addControl = new AddControl();
@@ -715,6 +717,7 @@
 
         private void Broswer_Control_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
+            if (editMode == false) return;
             ClickImage bfCtrl = (ClickImage)sender;
             AddControl addControl = new AddControl();
             AddControlBrowser cmi = new AddControlBrowser(gCurrentScreen, bfCtrl.screenObject.Name);
@@ -728,6 +731,7 @@
 
         private void Navigaton_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
+            if (editMode == false) return;
             NavigationImage navCtrl = (NavigationImage)sender;
             AddControl addControl = new AddControl();
             AddControlNavigationImage cmi = new AddControlNavigationImage(gCurrentScreen, navCtrl.screenObject.Name);
@@ -741,6 +745,7 @@
 
         private void Property_Label_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
+            if (editMode == false) return;
             PropertyLabel propLabel = (PropertyLabel)sender;
             AddControl addControl = new AddControl();
             AddControlPropertyLabel cmi = new AddControlPropertyLabel(gCurrentScreen, propLabel.screenObject.Name);

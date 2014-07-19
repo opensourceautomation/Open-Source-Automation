@@ -136,9 +136,10 @@ namespace OSAE.UI.Controls
         {
             sWorkingName = txtControlName.Text;
             OSAEObjectManager.ObjectAdd(sWorkingName, sWorkingName, "CONTROL CLICK IMAGE", "", currentScreen, true);
-            OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, "GUI");
-
+            if (imgNormalRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", "", "GUI");
+            if (imgPressedRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", "", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Object Name", cboPressObject.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Method Name", cboPressMethod.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Param 1", txtPressParam1.Text, "GUI");
@@ -174,8 +175,10 @@ namespace OSAE.UI.Controls
             //We call an object update here in case the Name was changed, then perform the updates against the New name
             OSAEObjectManager.ObjectUpdate(sOriginalName,sWorkingName,obj.Description,obj.Type,obj.Address,obj.Container,obj.Enabled);
 
-            OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, "GUI");
+            if (imgNormalRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", "", "GUI");
+            if (imgPressedRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, "GUI");
+            else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", "", "GUI");
 
             OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Object Name", cboPressObject.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Method Name", cboPressMethod.Text, "GUI");

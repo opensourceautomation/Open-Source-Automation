@@ -38,12 +38,22 @@ public partial class schedules : System.Web.UI.Page
             loadDDLs();
 
         }
-        else if (args[0] == "gvRecurring")
+        else if (args[0] == "gvRecurring" && txtName.Text != "")
         {
             hdnSelectedRecurringRow.Text = args[1];
             hdnSelectedRecurringID.Text = gvRecurring.DataKeys[Int32.Parse(hdnSelectedRecurringRow.Text)]["recurring_id"].ToString();
             hdnSelectedRecurringName.Text = gvRecurring.DataKeys[Int32.Parse(hdnSelectedRecurringRow.Text)]["schedule_name"].ToString();
             btnUpdate.Visible = true;
+            btnDelete.Visible = true;
+            loadDetails();
+            alert.Visible = false;
+        }
+        else if (args[0] == "gvRecurring" && txtName.Text == "")
+        {
+            hdnSelectedRecurringRow.Text = args[1];
+            hdnSelectedRecurringID.Text = gvRecurring.DataKeys[Int32.Parse(hdnSelectedRecurringRow.Text)]["recurring_id"].ToString();
+            hdnSelectedRecurringName.Text = gvRecurring.DataKeys[Int32.Parse(hdnSelectedRecurringRow.Text)]["schedule_name"].ToString();
+            btnUpdate.Visible = false;
             btnDelete.Visible = true;
             loadDetails();
             alert.Visible = false;
@@ -267,11 +277,15 @@ public partial class schedules : System.Web.UI.Page
         if (rbScheduleType.SelectedValue != "" && rblAction.SelectedValue != "" && txtName.Text !="" )
         {
             btnAdd.Visible = true;
+            if (hdnSelectedRecurringID.Text != "") btnUpdate.Visible = true;
         }
         else
         {
-            btnAdd.Visible = false;        
+            btnAdd.Visible = false;
+            btnUpdate.Visible = false;
         }
+
+
     }
     
     protected void ddlObject_SelectedIndexChanged(object sender, EventArgs e)

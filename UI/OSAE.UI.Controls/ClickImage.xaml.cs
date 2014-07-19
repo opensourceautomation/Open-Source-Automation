@@ -94,7 +94,7 @@ namespace OSAE.UI.Controls
             string imgName = screenObject.Property("Pressed Image").Value;
             OSAEImage img = imgMgr.GetImage(imgName);
 
-            if (img.Data != null)
+            if (img != null)
             {
                 var imageStream = new MemoryStream(img.Data);
                 var bitmapImage = new BitmapImage();
@@ -105,11 +105,11 @@ namespace OSAE.UI.Controls
                 Image.Source = bitmapImage;
                 Image.Visibility = System.Windows.Visibility.Visible;
             }
-            else
-            {
-                Image.Source = null;
-                Image.Visibility = System.Windows.Visibility.Hidden;
-            }
+           // else
+          //  {
+          //      Image.Source = null;
+          //      Image.Visibility = System.Windows.Visibility.Hidden;
+         //   }
             if (PressMethodName != "")
             {
                 if (PressMethodParam1 == "[ASK]" | PressMethodParam2 == "[ASK]")
