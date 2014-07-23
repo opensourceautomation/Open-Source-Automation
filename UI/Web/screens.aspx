@@ -45,7 +45,7 @@
                 if (p2.replace(/\s/g, "") == "") { p2 = 'null'; }   // Check to see if user entered any data, if NOT, Do not execute.
             }   
 	        if (p1 != 'null' && p2 != 'null') {
-	            $.post('http://' + host + ':8732/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
+	            $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
 	            return data;
                 });
             }
@@ -65,5 +65,7 @@
          </div>   
 -        <div class="span1"></div>                     
     </div>
+
+    <asp:HiddenField runat="server" ID="hdnRestPort"/>
 </asp:Content>
 

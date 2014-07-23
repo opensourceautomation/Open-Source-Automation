@@ -9,8 +9,13 @@ using OSAE;
 
 public partial class screens : System.Web.UI.Page
 {
+
+    private int restPort = 8732;
+
     protected void Page_Load(object sender, EventArgs e)
     {
+        getRestPort();
+
         List<ASP.ctrlStateImage> stateImages = new List<ASP.ctrlStateImage>();
         DataSet ds = OSAESql.RunSQL("SELECT object_name, property_value, image_id FROM osae_v_object_property p INNER JOIN osae_images i ON i.image_name = p.property_value WHERE object_name = '" + Request.QueryString["id"] + "' AND property_name = 'Background Image'");
         try
@@ -94,5 +99,31 @@ public partial class screens : System.Web.UI.Page
         //        control.Update();
         //    }
         //}
+    }
+
+    private void getRestPort()
+    {
+
+        if (!OSAEObjectPropertyManager.GetObjectPropertyValue("Rest", "REST Port").Id.Equals(String.Empty))
+        {
+            try
+            {
+                restPort = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue("Rest", "REST Port").Value);
+            }
+            catch (FormatException)
+            {
+                // do nothing and move on
+            }
+            catch (OverflowException)
+            {
+                // do nothing and move on
+            }
+            catch (ArgumentNullException)
+            {
+                // do nothing and move on
+            }
+        }
+
+        hdnRestPort.Value = restPort.ToString();
     }
 }
