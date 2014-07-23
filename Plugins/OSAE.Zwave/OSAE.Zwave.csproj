@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OSAE.Zwave</RootNamespace>
     <AssemblyName>OSAE.Zwave</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -28,6 +28,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,6 +38,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenZWaveDotNet">
@@ -98,21 +100,30 @@
     <Content Include="config\aeon_labs\hem.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\aeon_labs\hemg2.xml" />
     <Content Include="config\aeon_labs\keyfob.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config\aeon_labs\minimote.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\aeon_labs\recessed_doorsensor.xml" />
     <Content Include="config\aeon_labs\ses.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\assa_abloy\RealLivingCapTouch.xml" />
+    <Content Include="config\BeNext\1poleswitch.xml" />
+    <Content Include="config\BeNext\2poleswitch.xml" />
+    <Content Include="config\BeNext\AlarmSound.xml" />
+    <Content Include="config\BeNext\BuiltinDimmer.xml" />
     <Content Include="config\BeNext\DoorSensor.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config\BeNext\EnergySwitch.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\BeNext\Molite.xml" />
+    <Content Include="config\BeNext\PluginDimmer.xml" />
     <Content Include="config\BeNext\TagReader.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -128,6 +139,7 @@
     <Content Include="config\duwi\ZWES1000.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\eurotronic\eur_stellaz.xml" />
     <Content Include="config\everspringct\hsm02.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -170,18 +182,23 @@
     <Content Include="config\fibaro\fgd211.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\fibaro\fgfs101.xml" />
     <Content Include="config\fibaro\fgk001.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\fibaro\fgms.xml" />
     <Content Include="config\fibaro\fgr221.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\fibaro\fgrgbwm441.xml" />
+    <Content Include="config\fibaro\fgrm222.xml" />
     <Content Include="config\fibaro\fgs211.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config\fibaro\fgs221.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\fibaro\fgss101.xml" />
     <Content Include="config\fibaro\fgwpe.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -236,15 +253,29 @@
     <Content Include="config\northq\nq92021.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\philio\pan04.xml" />
+    <Content Include="config\philio\psm02.xml" />
+    <Content Include="config\qees\reto-plugin-switch.xml" />
+    <Content Include="config\remotec\zxt-120.xml" />
     <Content Include="config\schlagelink\itemp.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\vision\zm1601eu.xml" />
+    <Content Include="config\vision\zs5101eu.xml" />
+    <Content Include="config\vitrum\vitrumBS.xml" />
+    <Content Include="config\wenzhou\tz65d.xml" />
+    <Content Include="config\wenzhou\tz66d.xml" />
+    <Content Include="config\wenzhou\tz88.xml" />
+    <Content Include="config\zwave.me\iTemp.xml" />
     <Content Include="config\zwave.me\kfob.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\zwave.me\ZME_05431.xml" />
     <Content Include="config\zwave.me\ZME_06433.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\zwave.me\ZME_06436.xml" />
+    <Content Include="config\zwave.me\ZME_WCD2.xml" />
     <Content Include="options.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
