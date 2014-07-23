@@ -1,4 +1,6 @@
-﻿namespace OSAE.Service
+﻿//#define OSAESERVICECONTROLLER
+
+namespace OSAE.Service
 {
     #region Usings
 
@@ -11,27 +13,32 @@
     using log4net.Config;
     using log4net;
     using System.Reflection;
+    using System.Windows.Forms;
 
     #endregion
 
     /// <summary>
     /// The primary server used in the OSA infrastructure to process information
     /// </summary>
+#if OSAESERVICECONTROLLER
+    partial class OSAEService : OSAEServiceBase
+#else
     partial class OSAEService : ServiceBase
+#endif
     {
         #region Member Variables
         /// <summary>
         /// Used when generating messages to identify where the message came from
         /// </summary>
         private const string sourceName = "OSAE Service";
-              
+
         private OSAEPluginCollection plugins = new OSAEPluginCollection();
         private OSAEPluginCollection masterPlugins = new OSAEPluginCollection();
 
         private bool goodConnection = false;
 
         private bool running = true;
-        
+
         /// <summary>
         /// Timer used to periodically check if plugins are still running
         /// </summary>
@@ -59,10 +66,21 @@
             else
             {
                 //Debugger.Launch();
+#if OSAESERVICECONTROLLER
+                if (Environment.UserInteractive)
+                {
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new OSAEServiceController(new OSAEService(), "OSAE Service Controller"));
+                }
+                else
+                OSAEServiceBase.Run(new OSAEService());
+#else
                 ServiceBase.Run(new OSAEService());
+#endif
             }
         }
-        
+
         /// <summary>
         /// Public Constructor for WindowsService.
         /// - Put all of your Initialization code here.
@@ -72,12 +90,12 @@
             this.Log.Info("================");
             this.Log.Info("Service Starting");
             this.Log.Info("================");
-            
+
             InitialiseOSAInEventLog();
 
             // These Flags set whether or not to handle that specific
             // type of event. Set to true if you need it, false otherwise.
-            
+
             this.CanStop = true;
             this.CanShutdown = true;
         }
@@ -115,7 +133,7 @@
             }
 
             this.Log.Info("OnStart");
-            
+
             this.Log.Info("Removing Orphaned Methods");
             OSAEMethodManager.ClearMethodQueue();
 
@@ -132,7 +150,7 @@
             // Start the threads that monitor the plugin 
             // updates check the method queue and so on
             StartThreads();
-        }                            
+        }
 
         /// <summary>
         /// The service control manager has requested us to stop
@@ -143,12 +161,12 @@
             NetworkComms.Shutdown();
             ShutDownSystems();
             OSAE.General.OSAELog.FlushBuffers();
-        }        
+        }
 
         /// <summary>
         /// The service control manager has requested us to shitdown
         /// </summary>
-        protected override void OnShutdown() 
+        protected override void OnShutdown()
         {
             this.Log.Info("OnShutdown Invoked");
             ShutDownSystems();
