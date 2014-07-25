@@ -8,6 +8,9 @@ using OSAE;
 
 public partial class analytics : System.Web.UI.Page
 {
+
+    private int restPort = 8732;
+
     public void RaisePostBackEvent(string eventArgument)
     {
         string[] args = eventArgument.Split('_');
@@ -23,6 +26,7 @@ public partial class analytics : System.Web.UI.Page
     {
         loadProperties();
         loadStates();
+        getRestPort();
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
@@ -44,5 +48,30 @@ public partial class analytics : System.Web.UI.Page
     {
         gvStates.DataSource = OSAESql.RunSQL("SELECT DISTINCT object_name FROM osae_v_object_state_change_history ORDER BY object_name");
         gvStates.DataBind();
+    }
+    private void getRestPort()
+    {
+        
+        if (!OSAEObjectPropertyManager.GetObjectPropertyValue("Rest", "REST Port").Id.Equals(String.Empty))
+        {
+            try
+            {
+                restPort = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue("Rest", "REST Port").Value);
+            }
+            catch (FormatException)
+            {
+                // do nothing and move on
+            }
+            catch (OverflowException)
+            {
+                // do nothing and move on
+            }
+            catch (ArgumentNullException)
+            {
+                // do nothing and move on
+            }
+        }
+
+        hdnRestPort.Value = restPort.ToString();
     }
 }

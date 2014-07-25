@@ -45,9 +45,31 @@
                 this.Log.Info("Starting Rest Interface");
 
                 bool showHelp = bool.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Show Help").Value);
-                
-                serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri("http://localhost:8732/api"));
-                WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None);
+                int restPort = 8732;
+
+                if (!OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "REST Port").Id.Equals(String.Empty))
+                {
+                    try
+                    {
+                        restPort = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "REST Port").Value);
+                    }
+                    catch (FormatException ex)
+                    {
+                        this.Log.Error("Error pulling REST port from property (not a valid number)", ex);
+                    }
+                    catch (OverflowException ex)
+                    {
+                        this.Log.Error("Error pulling REST port from property (too large)", ex);
+                    }
+                    catch (ArgumentNullException ex)
+                    {
+                        this.Log.Error("Error pulling REST port from property (null)", ex);
+                    }
+                }
+
+                String restUrl = "http://localhost:"+restPort.ToString()+"/api";
+                serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri(restUrl));
+                WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None); 
                 binding.CrossDomainScriptAccessEnabled = true;
 
                 var endpoint = serviceHost.AddServiceEndpoint(typeof(IRestService), binding, "");

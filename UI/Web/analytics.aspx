@@ -113,7 +113,7 @@
                 if ($("#<%=timepickerTo.ClientID%>").val() != '')
                     totime = 'T' + $("#<%=timepickerTo.ClientID%>").val()
       
-                $.getJSON('http://' + host + ':8732/api/analytics/' + obj + '/' + prop + '?f=' + from + fromtime + '&t=' + to + totime + '&callback=?', null, function (data) {
+                $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/analytics/' + obj + '/' + prop + '?f=' + from + fromtime + '&t=' + to + totime + '&callback=?', null, function (data) {
                     $.each(data, function (i, returndata) {
                         datasets.push({"data": returndata.data, "label": returndata.label, "yaxis": yaxis, "lines":{"steps": steps}});
 					});
@@ -131,7 +131,7 @@
                 if ($("#<%=datepickerTo.ClientID%>").val() != '')
                     to = $("#<%=datepickerTo.ClientID%>").val()
 
-                $.getJSON('http://' + host + ':8732/api/analytics/state/' + obj + '?f=' + from + '&t=' + to + '&callback=?', null, function (data) {
+                $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/analytics/state/' + obj + '?f=' + from + '&t=' + to + '&callback=?', null, function (data) {
                     $.each(data, function (i, obj) {
                         markings.push({ color: "#000", lineWidth: 1, xaxis: { from: + obj.datetime , to:  + obj.datetime } });
                         labels.push(obj.obj + ' - ' + obj.state);
@@ -377,4 +377,5 @@
     </div>
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropID" Visible="false"></asp:Label>
+    <asp:HiddenField runat="server" ID="hdnRestPort"/>
 </asp:Content>
