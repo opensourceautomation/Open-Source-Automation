@@ -185,8 +185,8 @@ namespace VR2
             DataSet dsResults = new DataSet();
             try
             {
-                
-                dsResults = OSAESql.RunSQL("SELECT `match` FROM osae_pattern_match ORDER BY `match`");
+                //Load all unique patterns with no place-holders into a single grammer, our main one.
+                dsResults = OSAESql.RunSQL("SELECT `match` FROM osae_pattern_match WHERE UPPER(`match`) NOT LIKE '%[OBJECT]%' AND UPPER(`match`) NOT LIKE '%[STATE]%' ORDER BY `match`");
                 grammerList.Add(gWakePhrase);
                 grammerList.Add(gSleepPhrase);
                 for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)

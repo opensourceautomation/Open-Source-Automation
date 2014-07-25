@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>IPCam</plugin-name>
+<plugin-id>b3328af6-021f-4d98-a0cb-398d2ac71206</plugin-id>
+<plugin-version>0.2.3</plugin-version>
+<plugin-state>beta</plugin-state>
+<short-description>Upgrades 
+IP Camera Viewer with PTZ control and snapshot</short-description>
+<author>Kirk Herron</author>
+<destination-folder>IPCam</destination-folder>
+<main-file>OSAE.IPCam.dll</main-file>
+<wiki-url></wiki-url>
+<additional-assemblies>
+</additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
+</plugin-description>
