@@ -163,6 +163,8 @@ namespace OSAE.UI.Controls
             txtState2X.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 X").Value;
             txtState2Y.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Y").Value;
 
+            cboSliderMethod.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Slider Method").Value;
+
             try
             {
                 chkRepeat.IsChecked = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Repeat Animation").Value);
@@ -170,6 +172,14 @@ namespace OSAE.UI.Controls
             catch (Exception ex)
             {
                 chkRepeat.IsChecked = true;
+            }
+            try
+            {
+                chkSlider.IsChecked = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Show Slider").Value);
+            }
+            catch (Exception ex)
+            {
+                chkSlider.IsChecked = false;
             }
             try
             {
@@ -372,6 +382,10 @@ namespace OSAE.UI.Controls
             DataSet dataSet = OSAESql.RunSQL("SELECT state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue + "' order by state_name");
             cboState1.ItemsSource = dataSet.Tables[0].DefaultView;
             cboState2.ItemsSource = dataSet.Tables[0].DefaultView;
+
+            DataSet dataSet2 = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_name");
+            cboSliderMethod.ItemsSource = dataSet.Tables[0].DefaultView;
+
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -408,6 +422,9 @@ namespace OSAE.UI.Controls
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, "GUI");
+
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.Text, "GUI");
+
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
 
             NotifyParentFinished();
@@ -444,6 +461,7 @@ namespace OSAE.UI.Controls
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.Text, "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
 

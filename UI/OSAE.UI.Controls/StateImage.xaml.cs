@@ -21,8 +21,10 @@ namespace OSAE.UI.Controls
         public string StateMatch;
         public string CurState;
         public string CurStateLabel;
+        public string CurLevel = "";
 
         public string ObjectName;
+        public string SliderMethod;
         private OSAEImageManager imgMgr = new OSAEImageManager();
         private OSAEImage img1;
         private OSAEImage img2;
@@ -32,6 +34,8 @@ namespace OSAE.UI.Controls
         private int currentFrame = 0;
         private int frameDelay = 100;
         private bool repeatAnimation;
+        private Boolean sliderVisible = false;
+        private Boolean updatingSlider = false; 
         private DispatcherTimer timer = new DispatcherTimer();
 
         public StateImage(OSAEObject sObject)
@@ -39,11 +43,13 @@ namespace OSAE.UI.Controls
             InitializeComponent();
 
             screenObject = sObject;
-            try
-            {
+          //  try
+          //  {
 
                 ObjectName = screenObject.Property("Object Name").Value;
+                SliderMethod = screenObject.Property("Slider Method").Value;
                 CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
+              
                 LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
                 Image.ToolTip = ObjectName + "\n" + CurState + " since: " + LastStateChange;
 
@@ -81,7 +87,7 @@ namespace OSAE.UI.Controls
                     OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Frame Delay", "100", "GUI");
                 }
                 img1 = imgMgr.GetImage(imgName);
-                if (img1.Data != null)
+                if (img1 != null)
                 {
                     var imageStream = new MemoryStream(img1.Data);
                     var bitmapImage = new BitmapImage();
@@ -101,20 +107,34 @@ namespace OSAE.UI.Controls
                     Image.Source = null;
                     Image.Visibility = System.Windows.Visibility.Hidden;
                 }
+
+                sliderVisible = Convert.ToBoolean(screenObject.Property("Show Slider").Value);
+
+                if (sliderVisible)
+                {
+                    sldSlider.Visibility = System.Windows.Visibility.Visible;
+                    CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
+                    sldSlider.Value = Convert.ToUInt16( CurLevel);
+                }
+
+                else
+                    sldSlider.Visibility = System.Windows.Visibility.Hidden;
+
                 // Primary Frame is loaded, load up additional frames for the time to display.
                 img2 = imgMgr.GetImage(imgName2);
-                if (img2.Data != null)
+                if (img2 != null)
                     imageFrames = 2;
                 img3 = imgMgr.GetImage(imgName3);
-                if (img3.Data != null)
+                if (img3 != null)
                     imageFrames = 3;
                 img4 = imgMgr.GetImage(imgName4);
-                if (img4.Data != null)
+                if (img4 != null)
                     imageFrames = 4;
-            }
-            catch (Exception ex)
-            {
-            }
+        //    }
+         //   catch (Exception ex)
+         //   {
+         //       MessageBox.Show(ex.Message, "StateImage Load");
+          //  }
 
             timer.Interval = TimeSpan.FromMilliseconds(frameDelay);
             timer.Tick += this.timer_Tick;
@@ -181,7 +201,9 @@ namespace OSAE.UI.Controls
                //Location.Y = Double.Parse(screenObject.Property(StateMatch + " Y").Value);
                 timer.Stop();
                 Location.X = Double.Parse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, StateMatch + " X").Value);
-                Location.Y = Double.Parse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, StateMatch + " Y").Value);                 
+                Location.Y = Double.Parse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, StateMatch + " Y").Value);
+
+
 
                 string imgName = screenObject.Property(StateMatch + " Image").Value;
                 img1 = imgMgr.GetImage(imgName);
@@ -191,7 +213,7 @@ namespace OSAE.UI.Controls
                 img3 = imgMgr.GetImage(imgName);
                 imgName = screenObject.Property(StateMatch + " Image 4").Value;
                 img4 = imgMgr.GetImage(imgName);
-                if (img1.Data != null)
+                if (img1 != null)
                 {
                     var imageStream = new MemoryStream(img1.Data);
                     imageFrames = 1;
@@ -202,14 +224,25 @@ namespace OSAE.UI.Controls
                     bitmapImage.StreamSource = imageStream;
                     bitmapImage.EndInit();
                     Image.Source = bitmapImage;
-                    Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
+                    
+                    if (sliderVisible && updatingSlider == false)
+                    {
+                        CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
+                        sldSlider.ToolTip = CurLevel + "%";
+                        sldSlider.Value = Convert.ToUInt16(CurLevel);
+                    }
+                    if (CurLevel != "")
+                        Image.ToolTip = ObjectName + "\n" + CurStateLabel + " (" + CurLevel + "%) since: " + LastStateChange;
+
+                    else
+                        Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
                     }));
                 }
-                if (img2.Data != null)
+                if (img2 != null)
                     imageFrames = 2;
-                if (img3.Data != null)
+                if (img3 != null)
                     imageFrames = 3;
-                if (img4.Data != null)
+                if (img4 != null)
                     imageFrames = 4;
                 if (imageFrames > 1)
                 {
@@ -218,7 +251,7 @@ namespace OSAE.UI.Controls
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message,"StateImage Update");
             }
         }
 
@@ -226,14 +259,31 @@ namespace OSAE.UI.Controls
         {             
             if (CurState == "ON")
             {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "", "", "GUI");
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "0", "", "GUI");
                 OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", "GUI");
             }
             else
             {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "", "", "GUI");
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "100", "", "GUI");
                 OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", "GUI");
             }        
-        }            
+        }
+
+        private void Slider_ValueChanged_1(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (updatingSlider) return;
+
+        }
+
+        private void Slider_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            updatingSlider = true;
+        }
+
+        private void Slider_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            OSAEMethodManager.MethodQueueAdd(ObjectName, SliderMethod, Convert.ToUInt16(sldSlider.Value).ToString(), "", "GUI");
+            updatingSlider = false;
+        }        
     }
 }
