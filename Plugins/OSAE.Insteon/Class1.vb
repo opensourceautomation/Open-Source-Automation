@@ -179,7 +179,7 @@
                         Case 32 ' 001 ACK direct message
                             If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (ACK direct) ")
                         Case 64 ' 010 Group cleanup direct message
-                            If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (Group cleanup direct) ")
+                            If gDebug Then Log.Debug(" Flags: DEC=" & Flags & ", HEX=" & GetHex(Flags) & "  (Group cleanup direct) ")
                         Case 96 ' 011 ACK group cleanup direct message
                             If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (ACK Group cleanup direct) ")
                         Case 128 ' 100 Broadcast message
@@ -191,8 +191,8 @@
                         Case 224 ' 111 NAK group cleanup direct message
                             If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (NAK Group cleanup direct) ")
                     End Select
-                    If gDebug Then Log.Debug(" Command1: " & GetHex(Command1) & " (" & CommandsInsteon(Command1) & ")")
-                    If gDebug Then Log.Debug(" Command2: " & GetHex(Command2))
+                    If gDebug Then Log.Debug(" Command1: DEC=" & Command1 & ", HEX=" & GetHex(Command1) & ", Insteon Command=" & CommandsInsteon(Command1))
+                    If gDebug Then Log.Debug(" Command2: DEC=" & Command2 & ", HEX=" & GetHex(Command2))
 
                     ' Update the status of the sending device
                     IAddress = InsteonNum(FromAddress)  ' already checked to make sure it was in list
@@ -201,9 +201,11 @@
                         Select Case Command1
                             Case 17, 18 ' On, Fast On
                                 If (Flags And 64) = 64 Then ' Group message (broadcast or cleanup)
-                                    'Insteon(IAddress).Level = 100  ' the real level is the preset for the link, but...
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
-                                    Log.Info("Set: " & oObject.Name & " to ON")
+                                    If Command2 <> 4 Then
+                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                        Log.Info("Set: " & oObject.Name & " to ON")
+                                    End If
+
                                 Else
                                     ' Direct message
                                     'Insteon(IAddress).Level = Command2 / 2.55  ' scale of 0-255, change to scale of 0-100
@@ -219,40 +221,40 @@
 
                                 End If
                             Case 46 ' Light On At Ramp Rate (slow on)
-                                'Insteon(IAddress).Device_On = True
-                                If (Flags And 64) = 64 Then
-                                    ' Group message (broadcast or cleanup)
-                                    ' Insteon(IAddress).Level = 100  ' the real level is the preset for the link, but...
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
-                                    OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", pName)
-                                    Log.Info("Set: " & oObject.Name & "to ON")
-                                Else
-                                    ' Direct message
-                                    ' Insteon(IAddress).Level = (Command2 Or 15) / 2.55  ' high bits of cmd2 + binary 1111
-                                    'MsgBox("Light On At Ramp Rate, Command2 = " & Command2 & " (Command2 or 15)/2.55 = " & Insteon(IAddress).Level)
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
-                                    OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", pName)
-                                    Log.Info("Set: " & oObject.Name & "to ON")
-                                End If
+                                    'Insteon(IAddress).Device_On = True
+                                    If (Flags And 64) = 64 Then
+                                        ' Group message (broadcast or cleanup)
+                                        ' Insteon(IAddress).Level = 100  ' the real level is the preset for the link, but...
+                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                        OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", pName)
+                                        Log.Info("Set: " & oObject.Name & " to ON")
+                                    Else
+                                        ' Direct message
+                                        ' Insteon(IAddress).Level = (Command2 Or 15) / 2.55  ' high bits of cmd2 + binary 1111
+                                        'MsgBox("Light On At Ramp Rate, Command2 = " & Command2 & " (Command2 or 15)/2.55 = " & Insteon(IAddress).Level)
+                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                        OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", pName)
+                                        Log.Info("Set: " & oObject.Name & " to ON")
+                                    End If
                             Case 19, 20, 47 ' Off, Fast Off, Light Off At Ramp Rate (slow off)
-                                'MsgBox("Off, Fast Off, Light Off At Ramp Rate")
-                                'Insteon(IAddress).Device_On = False
-                                'Insteon(IAddress).Level = 0
-                                OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", pName)
-                                OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "0", pName)
-                                Log.Info("Set: " & oObject.Name & "to OFF")
+                                    'MsgBox("Off, Fast Off, Light Off At Ramp Rate")
+                                    'Insteon(IAddress).Device_On = False
+                                    'Insteon(IAddress).Level = 0
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", pName)
+                                    OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "0", pName)
+                                    Log.Info("Set: " & oObject.Name & " to OFF")
                             Case 21 ' Bright
-                                OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
-                                Log.Info("Set: " & oObject.Name & "to ON")
-                                ' Insteon(IAddress).Device_On = True
-                                'If Insteon(IAddress).Level > 100 Then Insteon(IAddress).Level = 100
-                                'Insteon(IAddress).Level = Insteon(IAddress).Level + 3
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                    Log.Info("Set: " & oObject.Name & " to ON")
+                                    ' Insteon(IAddress).Device_On = True
+                                    'If Insteon(IAddress).Level > 100 Then Insteon(IAddress).Level = 100
+                                    'Insteon(IAddress).Level = Insteon(IAddress).Level + 3
                             Case 22 ' Dim
-                                OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
-                                Log.Info("Set: " & oObject.Name & "to ON")
-                                'Insteon(IAddress).Level = Insteon(IAddress).Level - 3
-                                'If Insteon(IAddress).Level < 0 Then Insteon(IAddress).Level = 0
-                                ' If Insteon(IAddress).Level = 0 Then Insteon(IAddress).Device_On = False
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                    Log.Info("Set: " & oObject.Name & " to ON")
+                                    'Insteon(IAddress).Level = Insteon(IAddress).Level - 3
+                                    'If Insteon(IAddress).Level < 0 Then Insteon(IAddress).Level = 0
+                                    ' If Insteon(IAddress).Level = 0 Then Insteon(IAddress).Device_On = False
                         End Select
                         ' Check whether this was a response to a Status Request
                         If (Flags And 224) = 32 Then
