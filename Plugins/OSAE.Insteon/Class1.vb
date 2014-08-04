@@ -1394,7 +1394,37 @@ PLMerror:
                 Next
             Next
         Next
+
+        OwnTypes()
+
         Start_PLM()
+    End Sub
+
+    Public Sub OwnTypes()
+        Dim oType As OSAEObjectType
+        'Added the follow to automatically own X10 Base types that have no owner.
+        'This should become the standard in plugins to try and avoid ever having to manually set the owners
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 RELAY")
+        Log.Info("Checking on the X10 Relay Object Type.")
+        If oType.OwnedBy = "" Then
+            Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            Log.Info("Insteon Plugin took ownership of the X10 Relay Object Type.")
+        End If
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 DIMMER")
+        Log.Info("Checking on the X10 DIMMER Object Type.")
+        If oType.OwnedBy = "" Then
+            Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            Log.Info("Insteon Plugin took ownership of the X10 DIMMER Object Type.")
+        End If
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("INSTEON DIMMER")
+        Log.Info("Checking on the INSTEON DIMMER Object Type.")
+        If oType.OwnedBy = "" Then
+            Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            Log.Info("Insteon Plugin took ownership of the INSTEON DIMMER Object Type.")
+        End If
     End Sub
 
     Public Overrides Sub Shutdown()
