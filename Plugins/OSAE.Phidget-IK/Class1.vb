@@ -16,6 +16,7 @@
     Private gDigitalOutputs As Integer
     Private gAnalogInputs As Integer
     Private gIsLoading As Boolean = True
+    Private gDebug As Boolean = False
     Private tmrStartup As New Timers.Timer
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
@@ -55,12 +56,22 @@
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         pName = pluginName
         Log.Info("Found my Object: " & pName)
+        gDebug = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Debug").Value
+        Log.Info("Plugin Debug Mode is set to: " & gDebug)
+
+        OwnTypes()
         Try
             phidgetIFK = New Phidgets.InterfaceKit
             phidgetIFK.open()
         Catch ex As Exception
             Log.Error(pName & " Error: Form1_Load: " & ex.ToString())
         End Try
+        If phidgetIFK.Attached Then
+            Log.Info("Phidget Interface Kit is attached.")
+        Else
+            Log.Info("Phidget Interface Kit is NOT attached.")
+        End If
+
         tmrStartup.Interval = 5000
         AddHandler tmrStartup.Elapsed, AddressOf ResetStartupFlag
         tmrStartup.Enabled = True
@@ -171,6 +182,18 @@
         gAnalogInputs = ""
         gSensitivity = 0
         gRatiometric = 0
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Attached", gAttached, pName)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Name", gName, pName)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Version", gVersion, pName)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Serial", gSerial, pName)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Digital Inputs", gDigitalInputs, pName)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Digital Outputs", gDigitalOutputs, pName)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Analog Inputs", gAnalogInputs, pName)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Sensitivity", gSensitivity, pName)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Ratiometric", gRatiometric, pName)
+        Log.Info("*** !!!!!!!!!!!!!!!!!!! ***")
+        Log.Info("*** Controller Detached ***")
+        Log.Info("*** !!!!!!!!!!!!!!!!!!! ***")
     End Sub
 
     Private Sub phidgetIFK_Error(ByVal sender As Object, ByVal e As Phidgets.Events.ErrorEventArgs) Handles phidgetIFK.Error
@@ -179,40 +202,52 @@
 
     Private Sub phidgetIFK_InputChange(ByVal sender As Object, ByVal e As Phidgets.Events.InputChangeEventArgs) Handles phidgetIFK.InputChange
         If gIsLoading = True Then Exit Sub
-        Log.Debug("Digital Input Changed")
-        Dim sState As String
-        If e.Value = True Then sState = "ON" Else sState = "OFF"
-        Log.Info(gDINames(e.Index) & " " & sState)
-        OSAEObjectStateManager.ObjectStateSet(gDINames(e.Index), sState, pName)
+        Try
+            If gDebug Then Log.Debug("Digital Input Changed")
+            Dim sState As String
+            If e.Value = True Then sState = "ON" Else sState = "OFF"
+            Log.Info(gDINames(e.Index) & " " & sState)
+            OSAEObjectStateManager.ObjectStateSet(gDINames(e.Index), sState, pName)
+        Catch ex As Exception
+            Log.Error("phidgetIFK_InputChange: " & ex.Message)
+        End Try
     End Sub
 
     Private Sub phidgetIFK_OutputChange(ByVal sender As Object, ByVal e As Phidgets.Events.OutputChangeEventArgs) Handles phidgetIFK.OutputChange
         If gIsLoading = True Then Exit Sub
-        Log.Debug("Digital Output Changed")
-        Dim sState As String
-        If e.Value = True Then sState = "ON" Else sState = "OFF"
-        Log.Info(gDONames(e.Index) & " " & sState)
-        OSAEObjectStateManager.ObjectStateSet(gDONames(e.Index), sState, pName)
+        Try
+            If gDebug Then Log.Debug("Digital Output Changed")
+            Dim sState As String
+            If e.Value = True Then sState = "ON" Else sState = "OFF"
+            Log.Info(gDONames(e.Index) & " " & sState)
+            OSAEObjectStateManager.ObjectStateSet(gDONames(e.Index), sState, pName)
+        Catch ex As Exception
+            Log.Error("phidgetIFK_OutputChange: " & ex.Message)
+        End Try
     End Sub
 
     Private Sub phidgetIFK_SensorChange(ByVal sender As Object, ByVal e As Phidgets.Events.SensorChangeEventArgs) Handles phidgetIFK.SensorChange
         If gIsLoading = True Then Exit Sub
-        Log.Debug("Analog Input Changed")
-        Dim sState As String
-        If e.Value > 0 Then sState = "ON" Else sState = "OFF"
-        Log.Info(gAINames(e.Index) & " " & sState)
-        OSAEObjectStateManager.ObjectStateSet(gDONames(e.Index), sState, pName)
-        Dim SC As New MSScriptControl.ScriptControl
-        SC.Language = "VBSCRIPT"
-        Dim iResults As Integer
-        Dim sFormula As String = OSAEObjectPropertyManager.GetObjectPropertyValue(gDONames(e.Index), "Formula").Value.ToString()
-        sFormula = sFormula.Replace("Analog Value", e.Value.ToString())
-        If sFormula = "" Then
-            iResults = e.Value.ToString()
-        Else
-            iResults = SC.Eval(sFormula)
-        End If
-        OSAEObjectPropertyManager.ObjectPropertySet(gAINames(e.Index), "Analog Value", iResults, pName)
+        Try
+            If gDebug Then Log.Debug("Analog Input Changed")
+            Dim sState As String
+            If e.Value > 0 Then sState = "ON" Else sState = "OFF"
+            Log.Info(gAINames(e.Index) & " " & sState)
+            OSAEObjectStateManager.ObjectStateSet(gDONames(e.Index), sState, pName)
+            Dim SC As New MSScriptControl.ScriptControl
+            SC.Language = "VBSCRIPT"
+            Dim iResults As Integer
+            Dim sFormula As String = OSAEObjectPropertyManager.GetObjectPropertyValue(gDONames(e.Index), "Formula").Value.ToString()
+            sFormula = sFormula.Replace("Analog Value", e.Value.ToString())
+            If sFormula = "" Then
+                iResults = e.Value.ToString()
+            Else
+                iResults = SC.Eval(sFormula)
+            End If
+            OSAEObjectPropertyManager.ObjectPropertySet(gAINames(e.Index), "Analog Value", iResults, pName)
+        Catch ex As Exception
+            Log.Error("phidgetIFK_SensorChange: " & ex.Message)
+        End Try
     End Sub
 
     'Modify the sensitivity of the analog inputs. In other words, the amount that the inputs must change between sensorchange events.
@@ -227,5 +262,39 @@
     'End Sub
 
     'When the application is terminating, close the Phidget.
+
+    Public Sub OwnTypes()
+        Dim oType As OSAEObjectType
+        'Added the follow to automatically own relevant Base types that have no owner.
+        'This should become the standard in plugins to try and avoid ever having to manually set the owners
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("PHIDGET ANALOG INPUT")
+        Log.Info("Checking on the PHIDGET ANALOG INPUT Object Type.")
+        If oType.OwnedBy = "" Then
+            If gDebug Then Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            Log.Info(pName & " Plugin took ownership of the PHIDGET ANALOG INPUT Object Type.")
+        End If
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("PHIDGET DIGITAL INPUT")
+        Log.Info("Checking on the PHIDGET DIGITAL INPUT Object Type.")
+        If oType.OwnedBy = "" Then
+            If gDebug Then Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            Log.Info(pName & " Plugin took ownership of the PHIDGET DIGITAL INPUT Object Type.")
+        End If
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("PHIDGET DIGITAL INPUT OC")
+        Log.Info("Checking on the PHIDGET DIGITAL INPUT OC Object Type.")
+        If oType.OwnedBy = "" Then
+            If gDebug Then Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            Log.Info(pName & " Plugin took ownership of the PHIDGET DIGITAL INPUT OC Object Type.")
+        End If
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("PHIDGET DIGITAL OUTPUT")
+        Log.Info("Checking on the PHIDGET DIGITAL OUTPUT Object Type.")
+        If oType.OwnedBy = "" Then
+            If gDebug Then Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            Log.Info(pName & " Plugin took ownership of the PHIDGET DIGITAL OUTPUT Object Type.")
+        End If
+    End Sub
 
 End Class
