@@ -70,7 +70,7 @@
 
                     foreach (var type in assembly.GetExportedTypes())
                     {
-                        this.Log.Info("Exposed Type: " + type);
+                        this.Log.Debug("Exposed Type: " + type);
 
                         if (!type.Equals(_pluginBaseType) &&
                             _pluginBaseType.IsAssignableFrom(type))
