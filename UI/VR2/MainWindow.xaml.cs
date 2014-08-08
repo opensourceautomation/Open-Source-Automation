@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Speech;
 using System.Speech.Recognition;
 using System.Data;
+using System.Threading;
 using OSAE;
 namespace VR2
 
@@ -61,6 +62,7 @@ namespace VR2
            
             Load_Settings();
             Load_Grammer();
+            Load_Grammer_With_Substitutions();
             try
             {
                 oRecognizer.SetInputToDefaultAudioDevice();
@@ -76,7 +78,18 @@ namespace VR2
                 AddToLog("--  Average Bytes Per Second: " + oRecognizer.AudioFormat.AverageBytesPerSecond);
                 gSpeechPlugin = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Can Hear this Plugin").Value.ToString();
                 AddToLog("--  I will ignore speech from: " + gSpeechPlugin);
-                oRecognizer.RecognizeAsync();
+                Thread t1 = new Thread(delegate()
+                {
+                    oRecognizer.SetInputToDefaultAudioDevice();
+                    oRecognizer.RecognizeAsync();
+                    while (true)
+                    {
+                        Thread.Sleep(333);
+                    }
+                });
+                t1.Start();
+
+                //oRecognizer.RecognizeAsync();
 
                AddToLog("Finished Loading, Recognition Started...");
             }
@@ -210,7 +223,7 @@ namespace VR2
             GrammarBuilder builder = new GrammarBuilder(myChoices);
             Grammar gram = new Grammar(builder);
             oRecognizer.LoadGrammar(gram);
-            AddToLog("Grammer Load Completed (" + grammerList.Count + " items)");
+            AddToLog("Grammer Load Completed (" + grammerList.Count + " unique items)");
             }
             catch (Exception ex)
             {
@@ -218,6 +231,48 @@ namespace VR2
                 AddToLog("Error: " + ex.Message);
             }
         }
+
+        private void Load_Grammer_With_Substitutions()
+        {
+            List<string> objectList = new List<string>();
+            DataSet dsResults = new DataSet();
+            try
+            {
+                //Load all unique patterns with no place-holders into a single grammer, our main one.
+                dsResults = OSAESql.RunSQL("SELECT object_name FROM osae_object ORDER BY object_name");
+                for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
+                {
+                    string grammer = dsResults.Tables[0].Rows[i][0].ToString();
+
+                    if (!string.IsNullOrEmpty(grammer))
+                    {
+                        objectList.Add(grammer);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddToLog("Error getting Object Set set from the DB!");
+                AddToLog("Error: " + ex.Message);
+            }
+            try
+            {
+                Choices myChoices = new Choices(objectList.ToArray());
+
+                // Construct the phrase.
+                GrammarBuilder builder = new GrammarBuilder("Where is");
+                builder.Append(myChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer Load Completed (" + objectList.Count + " items with place-holders)");
+            }
+            catch (Exception ex)
+            {
+                AddToLog("I could Not build the Grammer set!");
+                AddToLog("Error: " + ex.Message);
+            }
+        }
+
 
         private void oRecognizer_SpeechRecognized(object sender, System.Speech.Recognition.SpeechRecognizedEventArgs e)
         {
