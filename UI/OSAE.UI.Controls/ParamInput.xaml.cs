@@ -97,7 +97,7 @@ using System.Windows.Shapes;
                    }
                    if (Param2 == "[ASK]")
                    {
-                       Param2 = inputParam1.Text;
+                       Param2 = inputParam2.Text;
                    }
                 }
                 OSAEMethodManager.MethodQueueAdd(ObjectName, MethodName, Param1, Param2, "GUI");
