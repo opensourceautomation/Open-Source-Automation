@@ -5,27 +5,29 @@
 
     public class SPEECH : OSAEPluginBase
     {
-        //OSAELog
         private OSAE.General.OSAELog Log = new General.OSAELog();
 
         SpeechSynthesizer oSpeech = new SpeechSynthesizer();
         WMPLib.WindowsMediaPlayer wmPlayer = new WMPLib.WindowsMediaPlayer();
         String gAppName = "";
         String gSelectedVoice = "";
+        Boolean gDebug = false;
+
         public override void RunInterface(string pluginName)
         {
             gAppName = pluginName;
-            this.Log.Info("Speech Client's Object Name: " + gAppName);
+            if (OSAEObjectManager.ObjectExists(gAppName))
+                Log.Info("Found Speech Client's Object (" + gAppName + ")");
+            else
+                Log.Info("Could Not Find Speech Client's Object!!! (" + gAppName + ")");
             OwnTypes();
             Load_Settings();
             oSpeech.Speak("speech client started");
-
         }
 
         public void OwnTypes()
         {
             //Added the follow to automatically own Speech Base types that have no owner.
-            Log.Info("Checking if the plugin owns its own Object Type.");
             OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("SPEECH");
 
             if (oType.OwnedBy == "")
@@ -45,54 +47,54 @@
             string sParam1 = method.Parameter1;
             string sParam2 = method.Parameter2;
 
-            this.Log.Info("Received Command to: " + sMethod + " (" + sParam1 + ", " + sParam2 + ")");
+            if (gDebug) Log.Debug("Received Command to: " + sMethod + " (" + sParam1 + ", " + sParam2 + ")");
 
             if (sMethod == "SPEAK")
             {
                 string sText = Common.PatternParse(sParam1);
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "TRUE", gAppName);
                 oSpeech.Speak(sText);
-                this.Log.Info("Said " + sText);
+                Log.Info("Said " + sText);
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "FALSE", gAppName);
             }
             else if (sMethod == "SPEAKFROM")
             {
-                this.Log.Info("--Speak From Object: " + sParam1 + " and pick From list: " + sParam2);
+                Log.Info("--Speak From Object: " + sParam1 + " and pick From list: " + sParam2);
                 string sText = OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
                 sText = Common.PatternParse(sText);
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "TRUE", gAppName);
                 oSpeech.Speak(sText);
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "FALSE", gAppName);
-                this.Log.Info("Said " + sText);
+                Log.Info("Said " + sText);
             }
             else if (sMethod == "PLAY")
             {
                 wmPlayer.URL = sParam1;
                 wmPlayer.controls.play();
-                this.Log.Info("Played " + sParam1);
+                Log.Info("Played " + sParam1);
             }
             else if (sMethod == "PLAYFROM")
             {
                 string sFile = OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom(sParam1, sParam2).ToString();
                 wmPlayer.URL = sFile;
                 wmPlayer.controls.play();
-                this.Log.Info("Played " + sFile);
+                Log.Info("Played " + sFile);
             }
             else if (sMethod == "STOP")
             {
                 wmPlayer.controls.stop();
-                this.Log.Info("Stopped");
+                Log.Info("Stopped");
             }
             else if (sMethod == "PAUSE")
             {
                 wmPlayer.controls.pause();
-                this.Log.Info("Paused");
+                Log.Info("Paused");
             }
             else if (sMethod == "SETVOICE")
             {
                 gSelectedVoice = sParam1;
                 oSpeech.SelectVoice(gSelectedVoice);
-                this.Log.Info("Voice Set to " + gSelectedVoice);
+                Log.Info("Voice Set to " + gSelectedVoice);
             }
             else if (sMethod == "SETTTSVOLUME")
             {
@@ -100,7 +102,7 @@
                 {
                     oSpeech.Volume = Convert.ToInt16(sParam1);
                     OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", sParam1, "SPEECH");
-                    this.Log.Info("TTS Volume Set to " + Convert.ToInt16(sParam1));
+                    Log.Info("TTS Volume Set to " + Convert.ToInt16(sParam1));
                 }
             }
             else if (sMethod == "SETTTSRATE")
@@ -110,10 +112,10 @@
                 if (iTTSRate < -10 || iTTSRate > 10)
                 {
                     iTTSRate = 0;
-                    this.Log.Info("TTS Rate was invalid! I changed it to " + iTTSRate.ToString());
+                    Log.Info("TTS Rate was invalid! I changed it to " + iTTSRate.ToString());
                 }
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
-                this.Log.Info("TTS Rate Set to " + iTTSRate.ToString());
+                Log.Info("TTS Rate Set to " + iTTSRate.ToString());
                 oSpeech.Rate = iTTSRate;
             }
         }
@@ -122,6 +124,8 @@
         {        
             try
             {
+                gDebug = Convert.ToBoolean( OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
+                Log.Info("Debug Mode Set to " + gDebug);
                 gSelectedVoice = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Voice").Value;
                 OSAEObjectPropertyManager.ObjectPropertyArrayDeleteAll(gAppName, "Voices");
                 foreach (System.Speech.Synthesis.InstalledVoice i in oSpeech.GetInstalledVoices())
@@ -130,16 +134,16 @@
                     {
                         gSelectedVoice = i.VoiceInfo.Name;
                         OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Voice", gSelectedVoice, "SPEECH");
-                        this.Log.Info("Default Voice Set to " + gSelectedVoice);
+                        Log.Info("Default Voice Set to " + gSelectedVoice);
                     }
-                    this.Log.Info("Adding Voice: " + i.VoiceInfo.Name);
+                    Log.Info("Adding Voice: " + i.VoiceInfo.Name);
                     OSAEObjectPropertyManager.ObjectPropertyArrayAdd(gAppName, "Voices", i.VoiceInfo.Name, "Voice");
                 }
 
                 if (gSelectedVoice != "")
                 {
                     oSpeech.SelectVoice(gSelectedVoice);
-                    this.Log.Info("Current Voice Set to " + gSelectedVoice);
+                    Log.Info("Current Voice Set to " + gSelectedVoice);
                 }
 
                 // Load the speech rate, which must be -10 to 10, and set it to 0 if it is not valid.
@@ -148,28 +152,30 @@
                 {
                     iTTSRate = 0;
                     OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
-                    this.Log.Info("TTS Rate was invalid! I changed it to " + iTTSRate.ToString());
+                    Log.Info("TTS Rate was invalid! I changed it to " + iTTSRate.ToString());
                 }
-                this.Log.Info("TTS Rate Set to " + iTTSRate.ToString());
+                Log.Info("TTS Rate Set to " + iTTSRate.ToString());
                 oSpeech.Rate = iTTSRate;
                 
-
                 Int16 iTTSVolume = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
-                if (iTTSVolume > -11 && iTTSVolume <= 11)
+                if (iTTSVolume < -10 || iTTSVolume > 10)
                 {
-                    oSpeech.Rate = iTTSVolume;
-                    this.Log.Info("TTS Rate Set to " + iTTSVolume.ToString());
+                    iTTSVolume = 0;
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", iTTSVolume.ToString(), gAppName);
+                    Log.Info("TTS Volume was invalid! I changed it to " + iTTSVolume.ToString());
                 }
+                oSpeech.Rate = iTTSVolume;
+                Log.Info("TTS Volume Set to " + iTTSVolume.ToString());
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error in Load_Voices!", ex);
+                Log.Error("Error in Load_Settings!", ex);
             }
         }
 
         public override void Shutdown()
         {
-            this.Log.Info("Recieved Shutdown Order.   All I do is display this...");
+            this.Log.Info("Recieved Shutdown Order.");
         }
     }
 }
