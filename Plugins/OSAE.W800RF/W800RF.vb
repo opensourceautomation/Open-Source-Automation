@@ -5,8 +5,7 @@ Imports System.IO.Ports
 Public Class W800RF
     Inherits OSAEPluginBase
     Private Log As OSAE.General.OSAELog = New General.OSAELog()
-    Private pName As String = ""
-
+    Private gAppName As String = ""
     Private _baudRate As String = "4800"
     Private _parity As String = "None"
     Private _stopBits As String = "1"
@@ -19,28 +18,42 @@ Public Class W800RF
     Dim gLearning As String
     Private previousBuffer As Byte()
     Dim ByteDetail(4) As ByteDetails
+    Private gDebug As Boolean = False
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
-        pName = pluginName
-        Log.Info("Found my Object Name: " & pName)
-        Load_App_Name()
+        gAppName = pluginName
+        If OSAEObjectManager.ObjectExists(gAppName) Then
+            Log.Info("Found the W800RF plugin's Object (" & gAppName & ")")
+        Else
+            Log.Info("Could Not Find the W800RF plugin's Object!!! (" & gAppName & ")")
+        End If
+        Load_Settings()
 
         Set_Codes()
         OpenPort()
 
-        Log.Debug("Finished Loading: " & pName)
+        Log.Debug("Finished Loading: " & gAppName)
     End Sub
 
     Public Overrides Sub Shutdown()
         Log.Info("*** Received Shut-Down.")
     End Sub
 
-    Private Sub Load_App_Name()
-        _portName = "COM" & OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
+    Private Sub Load_Settings()
+        Try
+            gDebug = CBool(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value)
+        Catch ex As Exception
+            Log.Error("W800RF Object Type is missing the Debug Property!")
+        End Try
+        Log.Info("Debug Mode Set to " & gDebug)
+
+        _portName = "COM" & OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Port").Value
         Log.Info("Port set to: " & _portName)
-        _Debounce = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Debounce").Value
+
+        _Debounce = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debounce").Value
         Log.Info("Debounce set to: " & _Debounce)
-        gLearning = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value
+
+        gLearning = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Learning Mode").Value
         If gLearning <> "TRUE" And gLearning <> "FALSE" Then gLearning = "FALSE"
         Log.Info("Learning Mode set to: " & gLearning)
     End Sub
@@ -57,7 +70,7 @@ Public Class W800RF
             comPort.Parity = DirectCast([Enum].Parse(GetType(Parity), _parity), Parity)
             comPort.PortName = _portName
             comPort.Open()
-            Log.Debug("Port " & _portName & " opened")
+            Log.Info("Port " & _portName & " opened")
             AddHandler comPort.DataReceived, AddressOf comPort_DataReceived
             Return True
         Catch ex As Exception
@@ -68,7 +81,6 @@ Public Class W800RF
 
     Private Sub comPort_DataReceived(ByVal sender As Object, ByVal e As SerialDataReceivedEventArgs)
         Dim intUnit As Integer, intCommand As Short
-
         Dim readBytes As Integer = comPort.BytesToRead
         If readBytes < 4 Then Exit Sub
         Dim comBuffer As Byte() = New Byte(readBytes - 1) {}
@@ -96,11 +108,11 @@ Public Class W800RF
             Exit Sub
         End If
         If (ByteDetail(1).DecimalValue Xor ByteDetail(2).DecimalValue) <> &HFF Then
-            Log.Debug("ByteDetail 1 or 2 not equal HFF disposing: ByteDetails (" & ByteDetail(1).HexValue & "." & ByteDetail(2).HexValue & ")")
+            If gDebug Then Log.Debug("ByteDetail 1 or 2 not equal HFF disposing: ByteDetails (" & ByteDetail(1).HexValue & "." & ByteDetail(2).HexValue & ")")
             Exit Sub
         End If
 		
-        Log.Debug("Byte Accepted: Bytes 1 & 3 (Hex:" & ByteDetail(1).HexValue & ", " & ByteDetail(3).HexValue & ", DEC=" & ByteDetail(1).DecimalValue & ", " & ByteDetail(3).DecimalValue & "  BIN=" & ByteDetail(1).BinaryValue & " " & ByteDetail(3).BinaryValue & ")")
+        If gDebug Then Log.Debug("Byte Accepted: Bytes 1 & 3 (Hex:" & ByteDetail(1).HexValue & ", " & ByteDetail(3).HexValue & ", DEC=" & ByteDetail(1).DecimalValue & ", " & ByteDetail(3).DecimalValue & "  BIN=" & ByteDetail(1).BinaryValue & " " & ByteDetail(3).BinaryValue & ")")
 
         If (ByteDetail(3).DecimalValue Xor ByteDetail(4).DecimalValue) <> 255 Then
             ' If Bytes 3 & 4 <> 255 here, then it indicates it is a Security device
@@ -200,25 +212,23 @@ Public Class W800RF
         Dim oObject As OSAEObject
 
         Try
-
-            Log.Debug("GetObjectByAddress: " & gDevice.House_Code & gDevice.Device_Code)
+            If gDebug Then Log.Debug("GetObjectByAddress: " & gDevice.House_Code & gDevice.Device_Code)
             Try
                 oObject = OSAEObjectManager.GetObjectByAddress(gDevice.House_Code & gDevice.Device_Code)
                 If IsNothing(oObject) Then
-
                     If gLearning.ToUpper = "TRUE" Then
                         If gDevice.Device_Type = "X10_SECURITY_DS10" Then
                             Log.Info("Adding new DS10A: " & gDevice.Device_Code)
-                            Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '' True)")
+                            If gDebug Then Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '' True)")
                             OSAEObjectManager.ObjectAdd("X10-" & gDevice.Device_Code, "Unknown DS10A found by W800RF", "X10 SENSOR", gDevice.Device_Code, "", True)
                         Else
                             Log.Info("Adding new X10: " & gDevice.House_Code & gDevice.Device_Code)
-                            Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)")
+                            If gDebug Then Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,X10 SENSOR, " & gDevice.Device_Code & ", '', True)")
                             OSAEObjectManager.ObjectAdd("X10-" & gDevice.House_Code & gDevice.Device_Code, "Unknown X10 found by W800RF", "X10 SENSOR", gDevice.House_Code & gDevice.Device_Code, "", True)
                         End If
                     End If
                 Else
-                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, gDevice.Current_Command, pName)
+                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, gDevice.Current_Command, gAppName)
                     Log.Info("Set: " & oObject.Name & " to " & gDevice.Current_Command & "(" & oObject.Address & " " & gDevice.Current_Command & ")")
                 End If
             Catch ex As Exception
@@ -271,7 +281,7 @@ DropOut:
             ElseIf method.MethodName.ToUpper() = "SET LEARNING MODE" Then
                 gLearning = method.Parameter1.ToUpper()
                 If gLearning <> "TRUE" And gLearning <> "FALSE" Then gLearning = "FALSE"
-                OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Learning Mode", gLearning, pName)
+                OSAEObjectPropertyManager.ObjectPropertySet(method.ObjectName, "Learning Mode", gLearning, gAppName)
                 Log.Info("Learning Mode set to: " & gLearning)
             End If
         Catch ex As Exception
