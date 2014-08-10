@@ -7,16 +7,31 @@ namespace OSAE.Jabber
     public class Jabber : OSAEPluginBase
     {
         XmppClientConnection xmppCon = new XmppClientConnection();
-        string pName;
+        string gAppName;
         bool shuttingDown = false;
-
-        //OSAELog
+        Boolean gDebug = false;
         private OSAE.General.OSAELog Log = new General.OSAELog();
 
-        #region OSAPlugin Methods
         public override void RunInterface(string pluginName)
         {
-            pName = pluginName;
+            gAppName = pluginName;
+            if (OSAEObjectManager.ObjectExists(gAppName))
+                Log.Info("Found the Jabber plugin's Object (" + gAppName + ")");
+            else
+                Log.Info("Could Not Find the Jabber plugin's Object!!! (" + gAppName + ")");
+
+            try
+            {
+                gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
+            }
+            catch
+            {
+                Log.Info("The JABBER Object Type seems to be missing the Debug Property!");
+            }
+            Log.Info("Debug Mode Set to " + gDebug);
+
+            OwnTypes();
+
             // Subscribe to Events
             xmppCon.OnLogin += new ObjectHandler(xmppCon_OnLogin);
             xmppCon.OnRosterStart += new ObjectHandler(xmppCon_OnRosterStart);
@@ -27,9 +42,24 @@ namespace OSAE.Jabber
             xmppCon.OnError += new ErrorHandler(xmppCon_OnError);
             xmppCon.OnClose += new ObjectHandler(xmppCon_OnClose);
             xmppCon.OnMessage += new agsXMPP.protocol.client.MessageHandler(xmppCon_OnMessage);
-            
-            this.Log.Info("Connecting to server...");
+
             connect();
+        }
+
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("JABBER");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("Jabber Plugin took ownership of the JABBER Object Type.");
+            }
+            else
+            {
+                Log.Info("Jabber Plugin correctly owns the JABBER Object Type.");
+            }
         }
 
         public override void ProcessCommand(OSAEMethod method)
@@ -39,8 +69,8 @@ namespace OSAE.Jabber
                 //basically just need to send parameter two to the contact in parameter one with sendMessage();
                 //Process incomming command
                 string to = "";
-                this.Log.Debug("Process command: " + method.MethodName);
-                this.Log.Debug("Message: " + method.Parameter2);
+                if (gDebug) Log.Debug("Process command: " + method.MethodName);
+                if (gDebug) Log.Debug("Message: " + method.Parameter2);
                 OSAEObjectProperty prop = OSAEObjectPropertyManager.GetObjectPropertyValue(method.Parameter1, "JabberID");
 
                 if(prop != null)
@@ -48,10 +78,9 @@ namespace OSAE.Jabber
                 else
                     to = method.Parameter1;
 
-                if (to == "")
-                    to = method.Parameter1;
+                if (to == "") to = method.Parameter1;
 
-                this.Log.Debug("To: " + to);
+                if (gDebug) Log.Debug("To: " + to);
 
                 switch (method.MethodName)
                 {
@@ -67,7 +96,7 @@ namespace OSAE.Jabber
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error processing command ", ex);
+                Log.Error("Error processing command ", ex);
             }
         }
 
@@ -75,54 +104,46 @@ namespace OSAE.Jabber
         {
             shuttingDown = true;
             xmppCon.Close();
-            this.Log.Info("Shutdown!");
+            Log.Info("Shutdown!");
         }
-        #endregion
 
-        #region Events
         void xmppCon_OnMessage(object sender, agsXMPP.protocol.client.Message msg)
         {
-
             // ignore empty messages (events)
-            if (msg.Body == null)
-                return;
+            if (msg.Body == null) return;
 
-            if (msg.Type == agsXMPP.protocol.client.MessageType.error)
-                return;
+            if (msg.Type == agsXMPP.protocol.client.MessageType.error) return;
 
-            this.Log.Debug(String.Format("OnMessage from:{0} type:{1}", msg.From.Bare, msg.Type.ToString()));
-            this.Log.Debug("INPUT: " + msg.Body);
+            if (gDebug) Log.Debug(String.Format("OnMessage from: {0} type: {1}", msg.From.Bare, msg.Type.ToString()));
+            if (gDebug) Log.Debug("INPUT: " + msg.Body);
             string pattern = Common.MatchPattern(msg.Body);
             if (pattern == string.Empty)
-            {
-                this.Log.Debug("INPUT: No Matching Pattern found!" );
-                //OSAEScriptManager.RunPatternScript(pattern, msg.From.Bare, "Jabber");
-            }             
+                if (gDebug) Log.Debug("INPUT: No Matching Pattern found!" );
         }
 
         void xmppCon_OnClose(object sender)
         {
-            this.Log.Info("OnClose Connection closed");
+            Log.Info("OnClose Connection Closed");
             if (!shuttingDown)
             {
-                this.Log.Info("Connection closed unexpectedly.  Attempting reconnect...");
+                Log.Info("Connection Closed unexpectedly.  Attempting Reconnect...");
                 connect();
             }
         }
 
         void xmppCon_OnError(object sender, Exception ex)
         {
-            this.Log.Info("OnError");
+            Log.Error("OnError");
         }
 
         void xmppCon_OnAuthError(object sender, agsXMPP.Xml.Dom.Element e)
         {
-            this.Log.Info("OnAuthError");
+            Log.Error("OnAuthError");
         }
 
         void xmppCon_OnPresence(object sender, agsXMPP.protocol.client.Presence pres)
         {
-            this.Log.Debug(String.Format("Received Presence from:{0} show:{1} status:{2}", pres.From.ToString(), pres.Show.ToString(), pres.Status));
+            Log.Info(String.Format("Received Presence from: {0} show: {1} status: {2}", pres.From.ToString(), pres.Show.ToString(), pres.Status));
 
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
@@ -144,7 +165,7 @@ namespace OSAE.Jabber
         void xmppCon_OnRosterItem(object sender, agsXMPP.protocol.iq.roster.RosterItem item)
         {
             bool found = false;
-            this.Log.Info(String.Format("Received Contact {0}", item.Jid.Bare));
+            Log.Info(String.Format("Received Contact {0}", item.Jid.Bare));
 
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
@@ -167,7 +188,7 @@ namespace OSAE.Jabber
 
         void xmppCon_OnRosterEnd(object sender)
         {
-            this.Log.Info("OnRosterEnd");
+            if (gDebug) Log.Debug("OnRosterEnd");
 
             // Send our own presence to teh server, so other epople send us online
             // and the server sends us the presences of our contacts when they are
@@ -177,24 +198,23 @@ namespace OSAE.Jabber
 
         void xmppCon_OnRosterStart(object sender)
         {
-            this.Log.Info("OnRosterStart");
+            if (gDebug) Log.Debug("OnRosterStart");
         }
 
         void xmppCon_OnLogin(object sender)
         {
-            this.Log.Info("OnLogin");
+            if (gDebug) Log.Debug("OnLogin");
         }
-        #endregion
 
         private void connect()
         {
-            Jid jidUser = new Jid(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Username").Value);
+            Jid jidUser = new Jid(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Username").Value);
 
             xmppCon.Username = jidUser.User;
             xmppCon.Server = jidUser.Server;
-            xmppCon.Password = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Password").Value;
+            xmppCon.Password = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Password").Value;
             xmppCon.AutoResolveConnectServer = true;
-            this.Log.Info("Connecting to: " + xmppCon.Server + " as user: " + xmppCon.Username);
+            Log.Info("Connecting to: " + xmppCon.Server + " as user: " + xmppCon.Username);
 
             try
             {
@@ -202,21 +222,20 @@ namespace OSAE.Jabber
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error connecting: ", ex);
+                Log.Error("Error connecting: ", ex);
             }
         }
 
         private void sendMessage(string message, string contact)
         {
-            this.Log.Debug("OUTPUT: '" + message + "' to " + contact);
+            if (gDebug) Log.Debug("OUTPUT: '" + message + "' to " + contact);
             // Send a message
             agsXMPP.protocol.client.Message msg = new agsXMPP.protocol.client.Message();
             msg.Type = agsXMPP.protocol.client.MessageType.chat;
             msg.To = new Jid(contact);
             msg.Body = message;
 
-                xmppCon.Send(msg);
+            xmppCon.Send(msg);
         }
-
     }
 }
