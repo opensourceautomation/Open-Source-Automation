@@ -4,13 +4,10 @@ Imports System.Text.RegularExpressions
 
 Public Class ScriptProcessor
     Inherits OSAEPluginBase
-    'Private OSAEApi As New OSAE("Script Processor")
-    'Private Shared logging As Logging = logging.GetLogger("Script Processor")
     Private Log As OSAE.General.OSAELog = New General.OSAELog()
     Private gAppName As String = ""
     Private scriptArray() As String
-
-
+    Private gDebug As Boolean = False
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
         Dim sScript As String = "", sScriptName As String = ""
@@ -31,7 +28,19 @@ Public Class ScriptProcessor
 
     Public Overrides Sub RunInterface(ByVal sName As String)
         gAppName = sName
+        If OSAEObjectManager.ObjectExists(gAppName) Then
+            Log.Info("Found the Script Processor plugin's Object (" & gAppName & ")")
+        Else
+            Log.Info("Could Not Find the Script Processor plugin's Object!!! (" & gAppName & ")")
+        End If
         OwnTypes()
+        Try
+            gDebug = CBool(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value)
+        Catch ex As Exception
+            Log.Error("Script Processor Object Type is missing the Debug Property!")
+        End Try
+
+        Log.Info("Plugin Debug Mode is set to: " & gDebug)
         Log.Info("Script Processor has started.")
     End Sub
 
@@ -51,7 +60,6 @@ Public Class ScriptProcessor
             Log.Info("The Plugin correctly owns the Script Processor Object Type.")
         End If
     End Sub
-
 
     Private Sub RunScript(ByVal scriptText As String, ByVal sScriptParameter As String)
         Dim sType As String = ""
@@ -87,7 +95,7 @@ Public Class ScriptProcessor
                 iEmbeddedScriptStart = sScript.IndexOf("Script:", iEmbeddedScriptEnd)
             Loop
         Catch ex As Exception
-            Display_Results("Error in Script: :" & ex.Message)
+            Log.Error("Error in Script: :" & ex.Message)
         End Try
 
         'This regex removes c# style like: //comments
@@ -114,12 +122,12 @@ Public Class ScriptProcessor
                         iNestingLevel += 1
                         sNesting(iNestingLevel) = sNesting(iNestingLevel - 1)
                         If sNesting(iNestingLevel) = "FAIL" Then
-                            Display_Results(iLoop + 1 & " L" & iNestingLevel & " SKIP: " & scriptArray(iLoop))
+                            If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " SKIP: " & scriptArray(iLoop))
                         End If
                     ElseIf scriptArray(iLoop).ToUpper.Trim.StartsWith("ENDIF") Then
                         sType = "ENDIF"
                         sNesting(iNestingLevel) = sNesting(iNestingLevel - 1)
-                        Display_Results(iLoop + 1 & " L" & iNestingLevel & " " & sNesting(iNestingLevel) & ": " & scriptArray(iLoop))
+                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " " & sNesting(iNestingLevel) & ": " & scriptArray(iLoop))
                         iNestingLevel -= 1
                     ElseIf scriptArray(iLoop).ToUpper.Trim.StartsWith("ELSEIF") Then
                         sType = "ELSEIF"
@@ -127,7 +135,7 @@ Public Class ScriptProcessor
                             sNesting(iNestingLevel) = "PASS"
                         ElseIf sNesting(iNestingLevel) = "PASS" Then
                             sNesting(iNestingLevel) = "FAIL"
-                            Display_Results(iLoop + 1 & " L" & iNestingLevel & " SKIP: " & scriptArray(iLoop))
+                            If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " SKIP: " & scriptArray(iLoop))
                         End If
                     ElseIf scriptArray(iLoop).ToUpper.Trim.StartsWith("ELSE") Then
                         sType = "ELSE"
@@ -136,12 +144,10 @@ Public Class ScriptProcessor
                         ElseIf sNesting(iNestingLevel) = "PASS" Then
                             sNesting(iNestingLevel) = "FAIL"
                         End If
-                        Display_Results(iLoop + 1 & " L" & iNestingLevel & " " & sNesting(iNestingLevel) & ": " & scriptArray(iLoop))
+                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " " & sNesting(iNestingLevel) & ": " & scriptArray(iLoop))
                     Else
                         sType = "SET"
-                        If sNesting(iNestingLevel) = "FAIL" Then
-                            Display_Results(iLoop + 1 & " L" & iNestingLevel & " SKIP: " & scriptArray(iLoop))
-                        End If
+                        If sNesting(iNestingLevel) = "FAIL" And gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " SKIP: " & scriptArray(iLoop))
                     End If
                 End If
                 '------------------------------------------------------------------------------------------------
@@ -223,13 +229,13 @@ Public Class ScriptProcessor
                                     End If
                                     If sOption.ToUpper = "RUN METHOD" Then
                                         OSAEMethodManager.MethodQueueAdd(sObject, sMethod, sParam1, sParam2, gAppName)
-                                        Display_Results(iLoop + 1 & " L" & iNestingLevel & " EXEC: Ran Method: " & sObject & "." & sMethod & " (" & sParam1 & "," & sParam2 & ")")
+                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Ran Method: " & sObject & "." & sMethod & " (" & sParam1 & "," & sParam2 & ")")
                                     ElseIf sOption.ToUpper = "SET STATE" Then
                                         OSAEObjectStateManager.ObjectStateSet(sObject, sMethod, gAppName)
-                                        Display_Results(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set State: " & sObject & "." & sMethod)
+                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set State: " & sObject & "." & sMethod)
                                     ElseIf sOption.ToUpper = "SET CONTAINER" Then
                                         OSAEObjectManager.ObjectUpdate(oCurrentObject.Name, oCurrentObject.Name, oCurrentObject.Description, oCurrentObject.Type, oCurrentObject.Address, sMethod, oCurrentObject.Enabled)
-                                        Display_Results(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Container: " & sObject & "." & sMethod)
+                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Container: " & sObject & "." & sMethod)
                                     ElseIf sOption.ToUpper = "SET PROPERTY" Then
                                         iOptionPos = sWorking.IndexOf("+=")
                                         If iOptionPos <= 0 Then iOptionPos = sWorking.IndexOf("=")
@@ -243,11 +249,11 @@ Public Class ScriptProcessor
                                                 sValue = sWorking
                                                 If sMethod = "=" Then
                                                     OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, sValue, gAppName)
-                                                    Display_Results(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sParam1 & " = " & sValue)
+                                                    If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sParam1 & " = " & sValue)
                                                 ElseIf sMethod = "+=" Then
                                                     sWorking = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sParam1).Value
                                                     OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue), gAppName)
-                                                    Display_Results(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sParam1 & " = " & sValue)
+                                                    If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sParam1 & " = " & sValue)
                                                 End If
                                             End If
 
@@ -270,7 +276,7 @@ Public Class ScriptProcessor
                                             sValue = sWorking
                                             If sMethod = "=" Then
                                                 OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, sValue, gAppName)
-                                                Display_Results(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sObject & "." & sParam1)
+                                                If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sObject & "." & sParam1)
                                             ElseIf sMethod = "+=" Then
                                                 sWorking = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sParam1).Value
                                                 OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue), gAppName)
@@ -330,7 +336,7 @@ Public Class ScriptProcessor
                                         End If
                                     End If
                                 Catch ex As Exception
-                                    Display_Results("Error in IF = :" & ex.Message)
+                                    Log.Error("Error in IF = :" & ex.Message)
                                 End Try
 
 
@@ -350,7 +356,7 @@ Public Class ScriptProcessor
                                         End If
                                     End If
                                 Catch ex As Exception
-                                    Display_Results("Error in IF <>,!= :" & ex.Message)
+                                    Log.Error("Error in IF <>,!= :" & ex.Message)
                                 End Try
                             ElseIf sOperator = ">" Then
                                 Try
@@ -370,7 +376,7 @@ Public Class ScriptProcessor
                                         End If
                                     End If
                                 Catch ex As Exception
-                                    Display_Results("Error in IF > :" & ex.Message)
+                                    Log.Error("Error in IF > :" & ex.Message)
                                 End Try
                             ElseIf sOperator = "<" Then
                                 Try
@@ -394,7 +400,7 @@ Public Class ScriptProcessor
                                         End If
                                     End If
                                 Catch ex As Exception
-                                    Display_Results("Error in IF < :" & ex.Message)
+                                    Log.Error("Error in IF < :" & ex.Message)
                                 End Try
                             ElseIf sOperator = "=>" Or sOperator = ">=" Then
                                 Try
@@ -407,7 +413,7 @@ Public Class ScriptProcessor
                                         If sProperty.ToUpper < sValue.ToUpper Then sNesting(iNestingLevel) = "FAIL"
                                     End If
                                 Catch ex As Exception
-                                    Display_Results("Error in IF =>,>= :" & ex.Message)
+                                    Log.Error("Error in IF =>,>= :" & ex.Message)
                                 End Try
                             ElseIf sOperator = "=<" Or sOperator = "<=" Then
                                 Try
@@ -420,24 +426,22 @@ Public Class ScriptProcessor
                                         If sProperty.ToUpper > sValue.ToUpper Then sNesting(iNestingLevel) = "FAIL"
                                     End If
                                 Catch ex As Exception
-                                    Display_Results("Error in IF =<,<= :" & ex.Message)
+                                    Log.Error("Error in IF =<,<= :" & ex.Message)
                                 End Try
                             End If
                             'Display_Results(iLoop + 1 & "." & iNestingLevel & " (" & scriptArray(iLoop) & ")  ||| Results = " & sNesting(iNestingLevel))
-                            Display_Results(iLoop + 1 & " L" & iNestingLevel & " " & sNesting(iNestingLevel) & ": " & scriptArray(iLoop))
+                            If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " " & sNesting(iNestingLevel) & ": " & scriptArray(iLoop))
                         End If
                     ElseIf sType = "ELSEIF" And sNesting(iNestingLevel) = "PASS" Then
                         sNesting(iNestingLevel) = "FAIL"
                     End If
                 End If
             Catch ex As Exception
-                Display_Results("Error RunScript - " & ex.Message)
+                Log.Error("Error RunScript - " & ex.Message)
             End Try
         Next iLoop
     End Sub
-    Public Sub Display_Results(ByVal sText As String)
-        Log.Debug(sText)
-    End Sub
+
     Private Function ReturnSeconds(ByVal strTime As String) As Integer
         Dim strHours As String
         Dim strMinutes As String

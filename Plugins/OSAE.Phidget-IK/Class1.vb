@@ -126,7 +126,7 @@
             Try
                 Dim bExists = OSAEObjectManager.ObjectExists(gSerial & "-DI" & i)
                 If Not bExists = True Then
-                    OSAEObjectManager.ObjectAdd("Unknown Phidget " & gSerial & "-DI" & i, "Unknown Phidget " & gSerial & "-DI" & i, "PHIDGET DIGITAL INPUT", gSerial & "-DI" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("Phidget " & gSerial & "-DI" & i, "Phidget " & gSerial & "-DI" & i, "PHIDGET DIGITAL INPUT", gSerial & "-DI" & i, "", True)
                 End If
                 Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-DI" & i)
                 gDINames(i) = oObject.Name.ToString()
@@ -140,7 +140,7 @@
             Try
                 Dim bExists = OSAEObjectManager.ObjectExists(gSerial & "-DO" & i)
                 If Not bExists = True Then
-                    OSAEObjectManager.ObjectAdd("Unknow Phidget " & gSerial & "-DO" & i, "Unknow Phidget " & gSerial & "-DO" & i, "PHIDGET DIGITAL OUTPUT", gSerial & "-DO" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("Phidget " & gSerial & "-DO" & i, "Phidget " & gSerial & "-DO" & i, "PHIDGET DIGITAL OUTPUT", gSerial & "-DO" & i, "", True)
                 End If
                 Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-DO" & i)
                 gDONames(i) = oObject.Name.ToString()
@@ -154,7 +154,7 @@
             Try
                 Dim bExists = OSAEObjectManager.ObjectExists(gSerial & "-AI" & i)
                 If Not bExists = True Then
-                    OSAEObjectManager.ObjectAdd("Unknow Phidget " & gSerial & "-AI" & i, "Unknow Phidget " & gSerial & "-AI" & i, "PHIDGET ANALOG INPUT", gSerial & "-AI" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("Phidget " & gSerial & "-AI" & i, "Phidget " & gSerial & "-AI" & i, "PHIDGET ANALOG INPUT", gSerial & "-AI" & i, "", True)
                 End If
                 Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-AI" & i)
                 gAINames(i) = oObject.Name.ToString()
