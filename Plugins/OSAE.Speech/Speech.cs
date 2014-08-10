@@ -16,9 +16,27 @@
         {
             gAppName = pluginName;
             this.Log.Info("Speech Client's Object Name: " + gAppName);
+            OwnTypes();
             Load_Settings();
             oSpeech.Speak("speech client started");
 
+        }
+
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            Log.Info("Checking if the plugin owns its own Object Type.");
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("SPEECH");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("Speech Plugin took ownership of the Speech Object Type.");
+            }
+            else
+            {
+                Log.Info("The Speech Plugin correctly owns the Speech Object Type.");
+            }
         }
 
         public override void ProcessCommand(OSAEMethod method)
