@@ -31,12 +31,27 @@ Public Class ScriptProcessor
 
     Public Overrides Sub RunInterface(ByVal sName As String)
         gAppName = sName
-        Log.Info("Running Interface!")
+        OwnTypes()
+        Log.Info("Script Processor has started.")
     End Sub
 
     Public Overrides Sub Shutdown()
         Log.Info("*** Received Shutdown")
     End Sub
+
+    Public Sub OwnTypes()
+        Dim oType As OSAEObjectType
+        'Added the follow to automatically own Script Processor Base types that have no owner.
+        'This should become the standard in plugins to try and avoid ever having to manually set the owners
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("SCRIPT PROCESSOR")
+        If oType.OwnedBy = "" Then
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+            Log.Info("Script Processor Plugin took ownership of the Script Processor Object Type.")
+        Else
+            Log.Info("The Plugin correctly owns the Script Processor Object Type.")
+        End If
+    End Sub
+
 
     Private Sub RunScript(ByVal scriptText As String, ByVal sScriptParameter As String)
         Dim sType As String = ""
