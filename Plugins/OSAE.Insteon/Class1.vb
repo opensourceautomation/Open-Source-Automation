@@ -5,7 +5,7 @@
     Private x_LastWrite As Short              ' Index of last byte in the array updated with new data
     Private x_Start As Short
     Dim PLM_Address As String
-    Private pName As String = ""
+    Private gAppName As String = ""
     Private gPort As Integer
     Private gDebug As Boolean
     Private Log As OSAE.General.OSAELog = New General.OSAELog()
@@ -93,7 +93,7 @@
         If DataAvailable < 1 Then Exit Sub ' not enough for a full message of any type
 
         ' Interpret the message and handle it
-        Log.Debug("PLM Received: 02 " & GetHex(x(ms + 1)) & " x_LastWrite: " & x_LastWrite & " x_Start: " & x_Start & " DataAvailable: " & DataAvailable)
+        If gDebug Then Log.Debug("PLM Received: 02 " & GetHex(x(ms + 1)) & " x_LastWrite: " & x_LastWrite & " x_Start: " & x_Start & " DataAvailable: " & DataAvailable)
         Select Case x(ms + 1)
             Case 96 ' 0x060 response to Get IM Info
                 MessageEnd = ms + 8
@@ -102,7 +102,7 @@
                     x_Start = MessageEnd
                     ' Display message
                     PLM_Address = GetHex(x(ms + 2)) & "." & GetHex(x(ms + 3)) & "." & GetHex(x(ms + 4))
-                    Log.Info("PLM response to Get IM Info: PLM ID: " & PLM_Address)
+                    If gDebug Then Log.Debug("PLM response to Get IM Info: PLM ID: " & PLM_Address)
                     Try
                         If gDebug Then Log.Debug("Looking up Object for PLM Address: " & PLM_Address)
                         oObject = OSAEObjectManager.GetObjectByAddress(PLM_Address)
@@ -130,7 +130,7 @@
                         ' Log.Error("sObject= (" & sObject & ")")
                     End Try
 
-                    Debug.WriteLine("Device Category: " & GetHex(x(ms + 5)) & " Subcategory: " & GetHex(x(ms + 6)) & " Firmware: " & GetHex(x(ms + 7)) & " ACK/NAK: " & GetHex(x(ms + 8)))
+                    'Debug.WriteLine("Device Category: " & GetHex(x(ms + 5)) & " Subcategory: " & GetHex(x(ms + 6)) & " Firmware: " & GetHex(x(ms + 7)) & " ACK/NAK: " & GetHex(x(ms + 8)))
                     ' Set the PLM as the controller
                     Log.Info("Insteon PLM connected at " & PLM_Address)
                 End If
@@ -202,7 +202,7 @@
                             Case 17, 18 ' On, Fast On
                                 If (Flags And 64) = 64 Then ' Group message (broadcast or cleanup)
                                     If Command2 <> 4 Then
-                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
                                         Log.Info("Set: " & oObject.Name & " to ON")
                                     End If
 
@@ -210,12 +210,12 @@
                                     ' Direct message
                                     'Insteon(IAddress).Level = Command2 / 2.55  ' scale of 0-255, change to scale of 0-100
                                     Dim sLevel As String = CStr(CInt(Command2 / 2.55))
-                                    OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", sLevel, pName)
+                                    OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", sLevel, gAppName)
                                     If Convert.ToUInt16(sLevel) > 0 Then
-                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
                                         Log.Info("Set: " & oObject.Name & " to ON (" & sLevel & "%)")
                                     Else
-                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", pName)
+                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", gAppName)
                                         Log.Info("Set: " & oObject.Name & " to OFF (" & sLevel & "%)")
                                     End If
 
@@ -225,32 +225,32 @@
                                     If (Flags And 64) = 64 Then
                                         ' Group message (broadcast or cleanup)
                                         ' Insteon(IAddress).Level = 100  ' the real level is the preset for the link, but...
-                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
-                                        OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", pName)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
+                                    OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", gAppName)
                                         Log.Info("Set: " & oObject.Name & " to ON")
                                     Else
                                         ' Direct message
                                         ' Insteon(IAddress).Level = (Command2 Or 15) / 2.55  ' high bits of cmd2 + binary 1111
                                         'MsgBox("Light On At Ramp Rate, Command2 = " & Command2 & " (Command2 or 15)/2.55 = " & Insteon(IAddress).Level)
-                                        OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
-                                        OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", pName)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
+                                    OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", gAppName)
                                         Log.Info("Set: " & oObject.Name & " to ON")
                                     End If
                             Case 19, 20, 47 ' Off, Fast Off, Light Off At Ramp Rate (slow off)
                                     'MsgBox("Off, Fast Off, Light Off At Ramp Rate")
                                     'Insteon(IAddress).Device_On = False
                                     'Insteon(IAddress).Level = 0
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", pName)
-                                    OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "0", pName)
+                                OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", gAppName)
+                                OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "0", gAppName)
                                     Log.Info("Set: " & oObject.Name & " to OFF")
                             Case 21 ' Bright
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
                                     Log.Info("Set: " & oObject.Name & " to ON")
                                     ' Insteon(IAddress).Device_On = True
                                     'If Insteon(IAddress).Level > 100 Then Insteon(IAddress).Level = 100
                                     'Insteon(IAddress).Level = Insteon(IAddress).Level + 3
                             Case 22 ' Dim
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
                                     Log.Info("Set: " & oObject.Name & " to ON")
                                     'Insteon(IAddress).Level = Insteon(IAddress).Level - 3
                                     'If Insteon(IAddress).Level < 0 Then Insteon(IAddress).Level = 0
@@ -574,13 +574,13 @@
                             Select Case X10Code
                                 Case 3 ' On
                                     Log.Info("PLM X10 received: " & oObject.Name & " ON  (" & X10Address & " ON)")
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
                                 Case 4 ' Off
                                     Log.Info("PLM X10 received: " & oObject.Name & " OFF  (" & X10Address & " OFF)")
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", pName)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", gAppName)
                                 Case 5 ' Dim
                                     Log.Info("PLM X10 received: " & oObject.Name & " DIM  (" & X10Address & " DIM)")
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
                                     'If X10(X10House, PLM_LastX10Device).Device_On = False Then
                                     '    X10(X10House, PLM_LastX10Device).Level = 100
                                     '    X10(X10House, PLM_LastX10Device).Device_On = True
@@ -592,7 +592,7 @@
                                     ' RunMacro(X10Address, 2)
                                 Case 6 ' Bright
                                     Log.Info("PLM X10 received: " & oObject.Name & " BRIGHT  (" & X10Address & " BRIGHT)")
-                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
+                                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
                                     'If X10(X10House, PLM_LastX10Device).Device_On = False Then
                                     '    X10(X10House, PLM_LastX10Device).Level = 100
                                     '    X10(X10House, PLM_LastX10Device).Device_On = True
@@ -1258,7 +1258,7 @@ PLMerror:
             Try
                 oObject = OSAEObjectManager.GetObjectByAddress(houseCode & device)
                 If oObject.Name <> "" Then
-                    OSAE.OSAEObjectStateManager.ObjectStateSet(oObject.Name, command, pName)
+                    OSAE.OSAEObjectStateManager.ObjectStateSet(oObject.Name, command, gAppName)
                     If gDebug Then Log.Debug("Object: " & oObject.Name & " State set to: " & command)
                 Else
                     If gDebug Then Log.Debug("Could not retrieve X10 Device Status")
@@ -1272,13 +1272,17 @@ PLMerror:
     End Sub
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
-        pName = pluginName
-        Log.Info("Found my Object Name: " & pName)
+        gAppName = pluginName
+        If OSAEObjectManager.ObjectExists(gAppName) Then
+            Log.Info("Found the Script Processor plugin's Object (" & gAppName & ")")
+        Else
+            Log.Info("Could Not Find the Script Processor plugin's Object!!! (" & gAppName & ")")
+        End If
 
-        gPort = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
+        gPort = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Port").Value
         Log.Info("COM Port is set to: " & gPort)
 
-        gDebug = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Debug").Value
+        gDebug = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value
         Log.Info("Plugin Debug Mode is set to: " & gDebug)
 
         SerialPLM = New System.IO.Ports.SerialPort
@@ -1305,7 +1309,6 @@ PLMerror:
         Commands(14) = "Status on"
         Commands(15) = "Status off"
         Commands(16) = "Status request"
-
 
         For i = 0 To 80
             CommandsInsteon(i) = ""
@@ -1404,32 +1407,41 @@ PLMerror:
 
     Public Sub OwnTypes()
         Dim oType As OSAEObjectType
-        'Added the follow to automatically own X10 Base types that have no owner.
-        'This should become the standard in plugins to try and avoid ever having to manually set the owners
-        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 RELAY")
-        Log.Info("Checking on the X10 Relay Object Type.")
+
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("INSTEON")
         If oType.OwnedBy = "" Then
-            Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+            Log.Info("Insteon Plugin took ownership of the INSTEON Object Type.")
+        Else
+            Log.Info("INSTEON Object Type is correctly owned by: " & oType.OwnedBy)
+        End If
+
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("INSTEON DIMMER")
+        If oType.OwnedBy = "" Then
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+            Log.Info("Insteon Plugin took ownership of the INSTEON DIMMER Object Type.")
+        Else
+            Log.Info("INSTEON DIMMER Object Type is correctly owned by: " & oType.OwnedBy)
+        End If
+
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 RELAY")
+        If oType.OwnedBy = "" Then
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
             Log.Info("Insteon Plugin took ownership of the X10 Relay Object Type.")
+        Else
+            Log.Info("X10 RELAY Object Type is correctly owned by: " & oType.OwnedBy)
         End If
         oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 DIMMER")
-        Log.Info("Checking on the X10 DIMMER Object Type.")
         If oType.OwnedBy = "" Then
-            Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
             Log.Info("Insteon Plugin took ownership of the X10 DIMMER Object Type.")
-        End If
-        oType = OSAEObjectTypeManager.ObjectTypeLoad("INSTEON DIMMER")
-        Log.Info("Checking on the INSTEON DIMMER Object Type.")
-        If oType.OwnedBy = "" Then
-            Log.Debug("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
-            Log.Info("Insteon Plugin took ownership of the INSTEON DIMMER Object Type.")
+        Else
+            Log.Info("X10 DIMMER Object Type is correctly owned by: " & oType.OwnedBy)
         End If
     End Sub
 
     Public Overrides Sub Shutdown()
         Log.Info("*** Received Shutdown")
     End Sub
+
 End Class
