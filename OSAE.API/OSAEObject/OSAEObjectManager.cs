@@ -12,7 +12,7 @@
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public static bool ObjectExists(string address)
+        public static bool ObjectExists(string objectName)
         {           
             try
             {
@@ -20,7 +20,41 @@
                 {
                     DataSet dataset = new DataSet();
 
-                    command.CommandText = "SELECT * FROM osae_v_object WHERE address=@Address";
+                    command.CommandText = "SELECT object_id FROM osae_v_object WHERE UPPER(object_name)=UPPER(@Address)";
+                    command.Parameters.AddWithValue("@Address", objectName);
+                    dataset = OSAESql.RunQuery(command);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - ObjectExists Error: " + ex.Message, true);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns true or false whether the object with the specified address exists
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public static bool ObjectExistsByAddress(string address)
+        {
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    DataSet dataset = new DataSet();
+
+                    command.CommandText = "SELECT object_id FROM osae_v_object WHERE address=@Address";
                     command.Parameters.AddWithValue("@Address", address);
                     dataset = OSAESql.RunQuery(command);
 
