@@ -124,7 +124,14 @@
         {        
             try
             {
-                gDebug = Convert.ToBoolean( OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
+                try
+                {
+                    gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
+                }
+                catch
+                {
+                    Log.Error("I think the Debug property is missing from the Speech object type!");
+                }
                 Log.Info("Debug Mode Set to " + gDebug);
                 gSelectedVoice = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Voice").Value;
                 OSAEObjectPropertyManager.ObjectPropertyArrayDeleteAll(gAppName, "Voices");

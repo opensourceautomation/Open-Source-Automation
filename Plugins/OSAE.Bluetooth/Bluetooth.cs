@@ -18,7 +18,8 @@
         BluetoothDeviceInfo[] nearosaeDevices;
         System.Timers.Timer Clock;
         private Thread search_thread;
-        string pName;
+        string gAppName;
+        bool gDebug = false;
 
         public override void ProcessCommand(OSAEMethod method)
         {
@@ -27,24 +28,42 @@
 
         public override void RunInterface(string pluginName)
         {
-            pName = pluginName;
-            this.Log.Info("Running Interface!");
+            this.Log.Info("*** Running Interface! ***");
+            gAppName = pluginName;
+            if (OSAEObjectManager.ObjectExists(gAppName))
+                Log.Info("Found Speech Client's Object (" + gAppName + ")");
+            else
+                Log.Info("Could Not Find Speech Client's Object!!! (" + gAppName + ")");
+
+            try
+            {
+                gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
+            }
+            catch
+            {
+                Log.Error("I think the Debug property is missing from the Speech object type!");
+            }
+            Log.Info("Debug Mode Set to " + gDebug);
+
+            int iScanInterval = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Scan Interval").Value);
+            Log.Info("Scan Interval Set to " + iScanInterval);
+
             Clock = new System.Timers.Timer();
-            Clock.Interval = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Scan Interval").Value) * 1000;
+            Clock.Interval = iScanInterval * 1000;
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
 
             this.search_thread = new Thread(new ThreadStart(search));
             this.search_thread.Start();
+            Log.Info("Bluetooth Plugin is now scanning for devices.");
         }
 
         public override void Shutdown()
         {
             Clock.Stop();
-            this.Log.Info("Shutting Down");
+            Log.Info("*** Shutting Down ***");
         }
-
-
+        
         #endregion
 
         #region Plugin Specific Code
@@ -59,7 +78,6 @@
                     this.search_thread.Start();
                 }
             }
-
         }
 
         private void search()
@@ -75,7 +93,7 @@
 
                 bc = new BluetoothClient();
 
-                bc.InquiryLength = new TimeSpan(0, 0, 0, int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Discover Length").Value), 0);
+                bc.InquiryLength = new TimeSpan(0, 0, 0, int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Discover Length").Value), 0);
                 nearosaeDevices = bc.DiscoverDevices(10, false, false, true);
 
                 for (int j = 0; j < nearosaeDevices.Length; j++)
@@ -86,11 +104,11 @@
 
                     if (obj == null)
                     {
-                        if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
+                        if (OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Learning Mode").Value == "TRUE")
                         {
                             OSAEObjectManager.ObjectAdd(nearosaeDevices[j].DeviceName, nearosaeDevices[j].DeviceName, "BLUETOOTH DEVICE", nearosaeDevices[j].DeviceAddress.ToString(), string.Empty, true);
-                            OSAEObjectPropertyManager.ObjectPropertySet(nearosaeDevices[j].DeviceName, "Discover Type", "0", pName);
-                            this.Log.Debug(addr + " - " + nearosaeDevices[j].DeviceName + ": added to OSA");
+                            OSAEObjectPropertyManager.ObjectPropertySet(nearosaeDevices[j].DeviceName, "Discover Type", "0", gAppName);
+                            if (gDebug) Log.Debug(addr + " - " + nearosaeDevices[j].DeviceName + ": added to OSA");
                         }
                     }
                 }
@@ -113,84 +131,74 @@
                     byteArray[3] = tmp;
                     ba = new BluetoothAddress(byteArray);
                     bdi = new BluetoothDeviceInfo(ba);
-                    this.Log.Debug("begin search for " + address);
+                    if (gDebug) Log.Debug("Begin search for " + address);
 
                     for (int j = 0; j < nearosaeDevices.Length; j++)
                     {
                         if (nearosaeDevices[j].DeviceAddress.ToString() == address)
                         {
                             found = true;
-                            this.Log.Debug(address + " - " + obj.Name + ": found with DiscoverDevices");
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + ": found with DiscoverDevices");
                         }
                     }
                     if (!found)
                     {
-                        this.Log.Debug(address + " - " + obj.Name + ": failed with DiscoverDevices");
-
+                        if (gDebug) Log.Debug(address + " - " + obj.Name + ": failed with DiscoverDevices");
                     }
 
                     try
                     {
                         if (!found && (int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 2 || Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
                         {
-                            this.Log.Debug(address + " - " + obj.Name + ": attempting GetServiceRecords");
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + ": attempting GetServiceRecords");
 
                             bdi.GetServiceRecords(uuid);
                             found = true;
-                            this.Log.Debug(address + " - " + obj.Name + " found with GetServiceRecords");
-
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + " found with GetServiceRecords");
                         }
                     }
                     catch (Exception ex)
                     {
-                        this.Log.Debug(address + " - " + obj.Name + " failed GetServiceRecords. exception: " + ex.Message);
-
+                        if (gDebug) Log.Debug(address + " - " + obj.Name + " failed GetServiceRecords. exception: " + ex.Message);
                     }
 
                     try
                     {
                         if (!found && (int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 3 || int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
                         {
-                            this.Log.Debug(address + " - " + obj.Name + ": attempting Connection");
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + ": attempting Connection");
                             //attempt a connect
                             BluetoothEndPoint ep;
                             ep = new BluetoothEndPoint(bdi.DeviceAddress, BluetoothService.Handsfree);
                             //MessageBox.Show("attempt connect: " + pairedDevices[i].DeviceAddress);
                             bc.Connect(ep);
-                            this.Log.Debug(address + " - " + obj.Name + " found with Connect attempt");
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + " found with Connect attempt");
                             bc.Close();
                             found = true;
                         }
                     }
                     catch (Exception ex)
                     {
-                        this.Log.Debug(address + " - " + obj.Name + " failed with Connect attempt. exception: " + ex.Message);
+                        Log.Error(address + " - " + obj.Name + " failed with Connect attempt. exception: " + ex.Message);
                     }
-
-
 
                     if (found)
                     {
-                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
-                        this.Log.Debug("Status Updated in osae");
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", gAppName);
+                        if (gDebug) Log.Debug(obj.Name + " Status Updated in osae");
                     }
                     else
                     {
-                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
-                        this.Log.Debug("Status Updated in osae");
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", gAppName);
+                        if (gDebug) Log.Debug(obj.Name + " Status Updated in osae");
                     }
-
                 }
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error searching for devices", ex);
+                Log.Error("Error searching for devices", ex);
             }
         }
-
-       
-
-       
 
         #endregion
     }
@@ -201,6 +209,7 @@
         {
             // TODO: Add constructor logic here
         }
+
         public static int GetByteCount(string hexString)
         {
             int numHexChars = 0;
@@ -219,6 +228,7 @@
             }
             return numHexChars / 2; // 2 characters per byte
         }
+
         /// <summary>
         /// Creates a byte array from the hexadecimal string. Each two characters are combined
         /// to create one byte. First two hexadecimal characters become first byte in returned array.
@@ -260,6 +270,7 @@
             }
             return bytes;
         }
+
         public static string ToString(byte[] bytes)
         {
             string hexString = string.Empty;
@@ -269,6 +280,7 @@
             }
             return hexString;
         }
+
         /// <summary>
         /// Determines if given string is in proper hexadecimal string format
         /// </summary>
@@ -307,6 +319,7 @@
                 return true;
             return false;
         }
+
         /// <summary>
         /// Converts 1 or 2 character string into equivalant byte value
         /// </summary>
@@ -319,7 +332,6 @@
             byte newByte = byte.Parse(hex, System.Globalization.NumberStyles.HexNumber);
             return newByte;
         }
-
 
     }
 }
