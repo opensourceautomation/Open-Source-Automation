@@ -1,4 +1,4 @@
-CALL osae_sp_object_type_add ('INSTEON','INSTEON PLM PLUGIN','','PLUGIN',1,1,0,1);
+CALL osae_sp_object_type_add ('INSTEON','INSTEON PLM PLUGIN','Insteon','PLUGIN',1,1,0,1);
 CALL osae_sp_object_type_state_add('ON','On','INSTEON');
 CALL osae_sp_object_type_state_add('OFF','Off','INSTEON');
 CALL osae_sp_object_type_event_add('ON','On','INSTEON');
