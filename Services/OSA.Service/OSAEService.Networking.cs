@@ -40,11 +40,11 @@ namespace OSAE.Service
 
             string[] arguments = message.Split('|');
             bool local = false;
-            if (arguments[1] == "ON")
+            if (arguments[1] == "True")
             {
                 OSAEObjectStateManager.ObjectStateSet(arguments[0], "ON", sourceName);
             }
-            else if (arguments[1] == "OFF")
+            else if (arguments[1] == "False")
             {
                 OSAEObjectStateManager.ObjectStateSet(arguments[0], "OFF", sourceName);
             }
@@ -58,12 +58,12 @@ namespace OSAE.Service
                     OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
                     if (obj != null)
                     {
-                        if (arguments[1] == "ON")
+                        if (arguments[1] == "True")
                         {
                             enablePlugin(p);
                             UDPConnection.SendObject("Plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Running | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
                         }
-                        else if (arguments[1] == "OFF")
+                        else if (arguments[1] == "False")
                         {
                             disablePlugin(p);
                             UDPConnection.SendObject("Plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
