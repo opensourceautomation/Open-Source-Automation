@@ -21,7 +21,7 @@ namespace OSAE.XBMC
 
         public override void ProcessCommand(OSAEMethod method)
         {
-            Log.Info("Running Command: " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2);
+            Log.Info("Running Command: " + method.ObjectName + " " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2);
 
             XBMCSystem s = getXBMCSystem(method.ObjectName);
             if (s != null)
@@ -96,19 +96,30 @@ namespace OSAE.XBMC
                 {
                     XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
                     if (system.Connect())
+                    {
                         Systems.Add(system);
+                        Log.Info("XBMC System connection Successfull for: " + obj.Name);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Error connecting to XBMC system: " + ex.Message + " - " + ex.InnerException.Message);
+                    Log.Error("Error connecting to XBMC system",ex);
                 }
             }
 
-            Clock = new System.Timers.Timer();
-            Clock.Interval = 10000;
-            
-            Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
-            Clock.Start();
+            try
+            {
+                Clock = new System.Timers.Timer();
+                Clock.Interval = 10000;
+
+                Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
+                Clock.Start();
+                if (gDebug) Log.Debug("Timers Started");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error starting timers ", ex);
+            }
         }
 
         public override void Shutdown()
@@ -154,7 +165,6 @@ namespace OSAE.XBMC
 
         public void Timer_Tick(object sender, EventArgs eArgs)
         {
-            
             try
             {
                 foreach (XBMCSystem r in Systems)
@@ -217,7 +227,7 @@ namespace OSAE.XBMC
 
     public class XBMCSystem
     {
-        private System.Timers.Timer Clock;
+       // private System.Timers.Timer Clock;
         private string _name;
         private string _username;
         private string _password;
@@ -228,7 +238,6 @@ namespace OSAE.XBMC
         private bool _pinging;
         private bool _Debug = false;
         private Client _xbmcSystem;
-        //OSAELog
         private OSAE.General.OSAELog Log = new General.OSAELog();
 
         public string Name
@@ -256,6 +265,7 @@ namespace OSAE.XBMC
             get { return _port; }
             set { _port = value; }
         }
+
         public bool Connected
         {
             get 
@@ -271,7 +281,7 @@ namespace OSAE.XBMC
                             return await _xbmcSystem.JSONRPC.Ping();
                         });
                         ping = task.Result;
-                        //Log.Debug(_name + " status: " + ping);
+                        Log.Debug(_name + " status: " + ping);
                     }
                     if (ping == "pong")
                     {
