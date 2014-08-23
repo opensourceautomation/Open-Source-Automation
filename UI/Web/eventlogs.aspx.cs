@@ -19,7 +19,7 @@ public partial class eventlogs : System.Web.UI.Page
     {
         try
         {
-            eventLogGridView.DataSource = OSAESql.RunSQL("SELECT DATE_FORMAT(log_time,'%y-%m-%d %H:%i:%s') as log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY log_time DESC LIMIT 500");
+            eventLogGridView.DataSource = OSAESql.RunSQL("SELECT DATE_FORMAT(log_time,'%m/%d %h:%i:%s %p') as log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY log_time DESC LIMIT 500");
             eventLogGridView.DataBind();
         }
         catch (Exception ex)

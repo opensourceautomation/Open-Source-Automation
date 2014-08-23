@@ -26,9 +26,9 @@
                 CssClass="mGrid"
                 AlternatingRowStyle-CssClass="alt" >
                 <Columns>
-                    <asp:BoundField HeaderText="Time" DataField="Date" ItemStyle-Width="20%"/>
-                    <asp:BoundField HeaderText="Level" DataField="Level" ItemStyle-Width="10%"/>
-                    <asp:TemplateField ItemStyle-Width="10%">
+                    <asp:BoundField HeaderText="Time" DataField="Date" ItemStyle-Width="10em"/>
+                    <asp:BoundField HeaderText="Level" DataField="Level"/>
+                    <asp:TemplateField>
                         <HeaderTemplate>
                             Source:
                             <asp:DropDownList ID="ddlSource" runat="server"
@@ -41,8 +41,8 @@
                             <%# Eval("Logger") %>
                         </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:BoundField HeaderText="Message" DataField="Message" ItemStyle-Width="30%"/>
-                    <asp:BoundField HeaderText="Exception" DataField="Exception" ItemStyle-Width="30%" />
+                    <asp:BoundField HeaderText="Message" DataField="Message"/>
+                    <asp:BoundField HeaderText="Exception" DataField="Exception"/>
                 </Columns>
             </asp:GridView>
             

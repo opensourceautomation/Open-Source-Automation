@@ -78,7 +78,7 @@
                             <asp:BoundField DataField="object_name" HeaderText="Object" />  
                             <asp:BoundField DataField="object_type" HeaderText="Type" />  
                             <asp:BoundField DataField="state_label" HeaderText="State" />  
-                            <asp:BoundField DataField="last_updated" HeaderText="Updated" />  
+                            <asp:BoundField DataField="last_updated" HeaderText="Updated" ItemStyle-Width="10em" />  
                             <asp:BoundField DataField="address" HeaderText="Address" />  
                         </Columns>  
                     </asp:GridView>
