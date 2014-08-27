@@ -79,7 +79,6 @@
         {
             Uri uri = new Uri("pack://siteoforigin:,,,/OSA.png");
             var bitmapImage = new BitmapImage(uri);
-
             
             canGUI.Background = new ImageBrush(bitmapImage);
             canGUI.Height = bitmapImage.Height;
@@ -112,7 +111,7 @@
                     System.Threading.Thread.Sleep(100);
                 }
                 loadingScreen = true;
-                this.Log.Debug("Loading screen: " + sScreen);
+                //this.Log.Debug("Loading screen: " + sScreen);
 
                 stateImages.Clear();
                 propLabels.Clear();
@@ -150,7 +149,7 @@
                 Load_Objects(sScreen);
                 loadingScreen = false;
 
-                this.Log.Debug("Loading screen complete: " + sScreen);
+                //this.Log.Debug("Loading screen complete: " + sScreen);
             }
             catch (Exception ex)
             {
@@ -184,7 +183,7 @@
                     }
                     updatingScreen = true;
                     bool oldCtrl = false;
-                    Log.Debug("Entering Update_Objects");
+                    //Log.Debug("Entering Update_Objects");
                     List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
 
                     foreach (OSAE.OSAEScreenControl newCtrl in controls)
@@ -406,7 +405,7 @@
                         }
                         catch (Exception ex)
                         {
-                            this.Log.Error("Error finding object ", ex);
+                            Log.Error("Error finding object ", ex);
                             return;
                         }
                     }
