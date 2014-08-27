@@ -36,6 +36,7 @@
         List<dynamic> browserFrames = new List<dynamic>();
         
         bool loadingScreen = true;
+        bool updatingScreen = false;
         bool editMode = false;
         bool closing = false;
 
@@ -106,6 +107,13 @@
         {
             try
             {
+                while (updatingScreen)
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
+                loadingScreen = true;
+                this.Log.Debug("Loading screen: " + sScreen);
+
                 stateImages.Clear();
                 propLabels.Clear();
                 navImages.Clear();
@@ -114,8 +122,6 @@
                 canGUI.Children.Clear();
                 browserFrames.Clear();
                 
-                loadingScreen = true;
-                this.Log.Debug("Loading screen: " + sScreen);
                 gCurrentScreen = sScreen;
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
                 OSAE.OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
@@ -137,8 +143,12 @@
                     canGUI.Height = bitmapImage.Height;
                     canGUI.Width = bitmapImage.Width;
                 }
-                Thread thread = new Thread(() => Load_Objects(sScreen));
-                thread.Start();
+
+                //Thread threadLoad = new Thread(() => Load_Objects(sScreen));
+                //threadLoad.Start();
+
+                Load_Objects(sScreen);
+                loadingScreen = false;
 
                 this.Log.Debug("Loading screen complete: " + sScreen);
             }
@@ -156,25 +166,30 @@
             {
                 LoadControl(obj);
             }
-            loadingScreen = false;
+
+            //Thread threadUpdate = new Thread(() => Update_Objects());
+            //threadUpdate.Start();
         }
 
         private void Update_Objects()
         {
          //   try
          //   {
-
-                while (!closing)
+                 
+                 while (!closing)
                 {
-                    while (loadingScreen) { System.Threading.Thread.Sleep(100); };
-
+                    while (loadingScreen)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }
+                    updatingScreen = true;
                     bool oldCtrl = false;
-                    this.Log.Debug("Entering Update_Objects");
+                    Log.Debug("Entering Update_Objects");
                     List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
 
                     foreach (OSAE.OSAEScreenControl newCtrl in controls)
                     {
-                        while (loadingScreen) { System.Threading.Thread.Sleep(100); };
+                        if (loadingScreen) return;
                         oldCtrl = false;
 
                         #region CONTROL STATE IMAGE
@@ -182,7 +197,7 @@
                         {
                             foreach (StateImage sImage in stateImages)
                             {
-                                while (loadingScreen) { System.Threading.Thread.Sleep(100); };
+                                if (loadingScreen) return;
                                 if (newCtrl.ControlName == sImage.screenObject.Name)
                                 {
                                     if (newCtrl.LastUpdated != sImage.LastUpdated)
@@ -213,10 +228,10 @@
                         #region CONTROL PROPERTY LABEL
                         else if (newCtrl.ControlType == "CONTROL PROPERTY LABEL")
                         {
-                            while (loadingScreen) { System.Threading.Thread.Sleep(100); };
+                            if (loadingScreen) return;
                             foreach (PropertyLabel pl in propLabels)
                             {
-                                while (loadingScreen) { System.Threading.Thread.Sleep(100); };
+                                if (loadingScreen) return;
                                 if (newCtrl.ControlName == pl.screenObject.Name)
                                 {
                                     if (newCtrl.LastUpdated != pl.LastUpdated)
@@ -225,7 +240,7 @@
                                         pl.LastUpdated = newCtrl.LastUpdated;
                                         pl.Update();
                                         this.Log.Debug("Complete:  " + newCtrl.ControlName);
-                                        while (loadingScreen) { System.Threading.Thread.Sleep(100); };
+                                        if (loadingScreen) return;
                                     }
                                     oldCtrl = true;
                                 }
@@ -238,7 +253,7 @@
                         {
                             foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
                             {
-                                while (loadingScreen) { System.Threading.Thread.Sleep(100); };
+                                if (loadingScreen) return;
                                 if (newCtrl.ControlName == tl.screenObject.Name)
                                 {
                                     if (newCtrl.LastUpdated != tl.LastUpdated)
@@ -357,9 +372,9 @@
                             this.Log.Debug("Load new control: " + newCtrl.ControlName);
                             LoadControl(obj);
                         }
-                        this.Log.Debug("Leaving Update_Objects");
                     }
-                    System.Threading.Thread.Sleep(1000);
+                    updatingScreen = false;
+                    System.Threading.Thread.Sleep(500);
                 }
                
         //    }
