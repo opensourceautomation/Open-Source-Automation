@@ -14,15 +14,11 @@ namespace OSAE.UI.Controls
         MjpegDecoder _mjpeg;
         public Point Location;
         public OSAEObject screenObject = new OSAEObject();
-        //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
-
-        string CamipAddress;
-        string CamPort;
-        string UserName;
-        string Password;
+        private OSAE.General.OSAELog Log = new General.OSAELog();     
+        string newData;
         double imgWidth = 400;
         double imgHeight = 300;
+        string streamURI;
 
         public VideoStreamViewer(string url, OSAEObject obj)
         {
@@ -31,13 +27,9 @@ namespace OSAE.UI.Controls
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
             _mjpeg.Error += _mjpeg_Error;
-            CamipAddress = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "IP Address").Value;
-            CamPort = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Port").Value;         
-            UserName = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Username").Value;
-            Password = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Password").Value;
             var imgsWidth = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Width").Value;
             var imgsHeight = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Height").Value;
-            string streamURI = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
+            streamURI = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
             if (imgsWidth != "") { imgWidth = Convert.ToDouble(imgsWidth); }
             if (imgsHeight != "") { imgHeight = Convert.ToDouble(imgsHeight); }
             this.Width = imgWidth;
@@ -46,24 +38,42 @@ namespace OSAE.UI.Controls
             image.Height = imgHeight;
             if (streamURI == null)
             {
-                this.Log.Info("Stream Path Not Found: " + streamURI);
+                this.Log.Error("Stream Path Not Found: " + streamURI);
                 message.Content = "Can Not Open: " + streamURI;
             }
             else
             {
-                streamURI = replaceFielddata(streamURI);
+                streamURI = renameingSys(streamURI);
+                this.Log.Info("Streaming: " + streamURI);
                 _mjpeg.ParseStream(new Uri(streamURI));
             }
         }
 
-        public string replaceFielddata(string fieldData)
+        public string renameingSys(string fieldData)
         {
-            string XmlData1 = fieldData.Replace("[address]", CamipAddress);
-            string XmlData2 = XmlData1.Replace("[port]", CamPort);
-            string XmlData3 = XmlData2.Replace("[username]", UserName);
-            string XmlData4 = XmlData3.Replace("[password]", Password);
-            XmlData4 = @"http://" + XmlData4;
-            return XmlData4;
+            newData = fieldData.Replace("http://", "");
+            while (newData.IndexOf("[") != -1)
+            {
+                int ss = newData.IndexOf("[");
+                int es = newData.IndexOf("]");
+                string renameProperty = newData.Substring(ss + 1, (es - ss) - 1);
+                string getProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Property("Object Name").Value, renameProperty).Value;
+                // log any errors
+                if (getProperty.Length > 0)
+                {
+                    newData = newData.Replace("[" + renameProperty + "]", getProperty);
+                }
+                else
+                {
+                    this.Log.Error("Property has NO data");
+                }
+                if (getProperty == null)
+                {
+                    this.Log.Error("Property: NOT FOUND");
+                }
+            }
+            newData = @"http://" + newData;
+            return newData;
         }
 
         private void _mjpeg_Error(object sender, ErrorEventArgs e)
@@ -79,6 +89,7 @@ namespace OSAE.UI.Controls
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             _mjpeg.StopStream();
+            this.Log.Info("Stopping stream:" + streamURI);
         }
     }
 }
