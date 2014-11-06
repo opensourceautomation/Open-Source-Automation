@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>CM15A</plugin-name>
 <plugin-id>031d1870-2202-4e5d-9d1a-648158d44230</plugin-id>
-<plugin-version>1.1.1</plugin-version>
+<plugin-version>1.2.0</plugin-version>
 <plugin-state>stable</plugin-state>
 <short-description>X10 CM15A/19A Plugin</short-description>
 <author>Vaughn Rupp</author>
@@ -10,6 +10,7 @@
 <main-file>OSAE.CM15A.dll</main-file>
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=CM15A</wiki-url>
 <additional-assemblies>
+<name>ahscript.dll</name>
 <name>Interop.ActiveHomeScriptLib.dll</name>
 </additional-assemblies>
 <x64-additional-assemblies>
