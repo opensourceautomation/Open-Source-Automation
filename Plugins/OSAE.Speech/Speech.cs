@@ -16,10 +16,6 @@
         public override void RunInterface(string pluginName)
         {
             gAppName = pluginName;
-            if (OSAEObjectManager.ObjectExists(gAppName))
-                Log.Info("Found Speech Client's Object (" + gAppName + ")");
-            else
-                Log.Info("Could Not Find Speech Client's Object!!! (" + gAppName + ")");
             OwnTypes();
             Load_Settings();
             oSpeech.Speak("speech client started");
@@ -134,9 +130,12 @@
                 }
                 Log.Info("Debug Mode Set to " + gDebug);
                 gSelectedVoice = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Voice").Value;
+                bool VoiceValid = false;
+                string aValidVoice = "";
                 OSAEObjectPropertyManager.ObjectPropertyArrayDeleteAll(gAppName, "Voices");
                 foreach (System.Speech.Synthesis.InstalledVoice i in oSpeech.GetInstalledVoices())
                 {
+                    if (aValidVoice == "") aValidVoice = i.VoiceInfo.Name;
                     if (gSelectedVoice == "")
                     {
                         gSelectedVoice = i.VoiceInfo.Name;
@@ -144,17 +143,29 @@
                         Log.Info("Default Voice Set to " + gSelectedVoice);
                     }
                     Log.Info("Adding Voice: " + i.VoiceInfo.Name);
+                    if (gSelectedVoice == i.VoiceInfo.Name) VoiceValid = true;
                     OSAEObjectPropertyManager.ObjectPropertyArrayAdd(gAppName, "Voices", i.VoiceInfo.Name, "Voice");
                 }
+                if (VoiceValid != true) gSelectedVoice = aValidVoice;
 
                 if (gSelectedVoice != "")
                 {
                     oSpeech.SelectVoice(gSelectedVoice);
                     Log.Info("Current Voice Set to " + gSelectedVoice);
                 }
+                
 
                 // Load the speech rate, which must be -10 to 10, and set it to 0 if it is not valid.
-                Int16 iTTSRate = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
+                Int16 iTTSRate = 0;
+                try
+                {
+                    iTTSRate = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
+                }
+                catch
+                {
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
+                    Log.Info("TTS Rate was invalid! I changed it to " + iTTSRate.ToString());
+                }
                 if (iTTSRate < -10 || iTTSRate > 10)
                 {
                     iTTSRate = 0;
@@ -163,8 +174,16 @@
                 }
                 Log.Info("TTS Rate Set to " + iTTSRate.ToString());
                 oSpeech.Rate = iTTSRate;
-                
-                Int16 iTTSVolume = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
+                Int16 iTTSVolume = 0;
+                try
+                {
+                    iTTSVolume = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
+                }
+                catch
+                {
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", iTTSVolume.ToString(), gAppName);
+                    Log.Info("TTS Volume was invalid! I changed it to " + iTTSVolume.ToString());
+                }
                 if (iTTSVolume < -10 || iTTSVolume > 10)
                 {
                     iTTSVolume = 0;
