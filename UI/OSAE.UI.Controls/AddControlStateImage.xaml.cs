@@ -231,10 +231,10 @@ namespace OSAE.UI.Controls
 
             if (imgState2Img1 != null)
             {
-                if (txtState1X.Text == "")
-                    txtState1X.Text = "100";
-                if (txtState1Y.Text == "")
-                    txtState1Y.Text = "100";
+                if (txtState2X.Text == "")
+                    txtState2X.Text = "100";
+                if (txtState2Y.Text == "")
+                    txtState2Y.Text = "100";
             }
         }
 
