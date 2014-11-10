@@ -225,7 +225,6 @@ Public Class CM15A
             Shutdown()
         End Try
         pName = pluginName
-        Log.Info("Found my Object Name: " & pName)
         Try
             gTransmitOnly = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Transmit Only").Value().ToUpper()
             Log.Info("Transmit Only is set to: " & gTransmitOnly)
@@ -237,35 +236,34 @@ Public Class CM15A
             Log.Error("Error Load_App_Name: " & myerror.Message)
         End Try
 
-        Dim oType As OSAEObjectType
         'Added the follow to automatically own X10 Base types that have no owner.
         'This should become the standard in plugins to try and avoid ever having to manually set the owners
-        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 Relay")
+        Dim oType As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("X10 Relay")
         Log.Info("Checking on the X10 Relay Object Type.")
         If oType.OwnedBy = "" Then
             Log.Info("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
             OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
             Log.Info("I took ownership of the X10 Relay Object Type.")
         End If
-        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 DIMMER")
+        Dim oType1 As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("X10 DIMMER")
         Log.Info("Checking on the X10 DIMMER Object Type.")
-        If oType.OwnedBy = "" Then
-            Log.Info("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+        If oType1.OwnedBy = "" Then
+            Log.Info("ObjectTypeUpdate(" & oType1.Name & ", " & oType1.Name & ", " & oType1.Description & ", " & pName & ", " & oType1.BaseType & ", 0, 0, 0, " & IIf(oType1.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType1.Name, oType1.Name, oType1.Description, pName, oType1.BaseType, 0, 0, 0, IIf(oType1.HideRedundant, 1, 0))
             Log.Info("I took ownership of the X10 DIMMER Object Type.")
         End If
-        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 DS10A")
+        Dim oType2 As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("X10 DS10A")
         Log.Info("Checking on the X10 DS10A Object Type.")
-        If oType.OwnedBy = "" Then
-            Log.Info("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+        If oType2.OwnedBy = "" Then
+            Log.Info("ObjectTypeUpdate(" & oType2.Name & ", " & oType2.Name & ", " & oType2.Description & ", " & pName & ", " & oType2.BaseType & ", 0, 0, 0, " & IIf(oType2.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType2.Name, oType2.Name, oType2.Description, pName, oType2.BaseType, 0, 0, 0, IIf(oType2.HideRedundant, 1, 0))
             Log.Info("I took ownership of the X10 DS10A Object Type.")
         End If
-        oType = OSAEObjectTypeManager.ObjectTypeLoad("X10 SENSOR")
+        Dim oType3 As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("X10 SENSOR")
         Log.Info("Checking on the X10 SENSOR Object Type.")
-        If oType.OwnedBy = "" Then
-            Log.Info("ObjectTypeUpdate(" & oType.Name & ", " & oType.Name & ", " & oType.Description & ", " & pName & ", " & oType.BaseType & ", 0, 0, 0, " & IIf(oType.HideRedundant, 1, 0) & ")")
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+        If oType3.OwnedBy = "" Then
+            Log.Info("ObjectTypeUpdate(" & oType3.Name & ", " & oType3.Name & ", " & oType3.Description & ", " & pName & ", " & oType3.BaseType & ", 0, 0, 0, " & IIf(oType3.HideRedundant, 1, 0) & ")")
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType3.Name, oType3.Name, oType3.Description, pName, oType3.BaseType, 0, 0, 0, IIf(oType3.HideRedundant, 1, 0))
             Log.Info("I took ownership of the X10 SENSOR Object Type.")
         End If
     End Sub
