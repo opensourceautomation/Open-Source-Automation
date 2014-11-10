@@ -230,22 +230,25 @@
             List<string> osapdFiles = new List<string>();
             string[] pluginFile = Directory.GetFiles(Common.ApiPath + "\\Plugins", "*.osapd", SearchOption.AllDirectories);
             osapdFiles.AddRange(pluginFile);
-
+            bool bFoundObject = false;
             foreach (string path in osapdFiles)
             {
                 if (!string.IsNullOrEmpty(path))
                 {
+                    bFoundObject = false;
                     PluginDescription desc = new PluginDescription();
                  
                     desc.Deserialize(path);
-                    desc.Status = "Stopped";
+                    desc.Status = "No Object";
                     desc.Enabled = false;
+                    this.Log.Info(desc.Type + ":  Plugin DLL found, Desc ID = " + desc.ID);
                     OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                     foreach (OSAEObject o in objs)
                     {
                         if (OSAEObjectPropertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
                         {
                             desc.Name = o.Name;
+                            bFoundObject = true;
                             if (o.Enabled == 1)
                                 desc.Enabled = true;
                             if (o.State.Value == "ON")
@@ -254,10 +257,41 @@
                                 desc.Status = "Stopped";
                             else
                                 desc.Status = o.State.Value;
+
+                            this.Log.Info(desc.Type + ":  Plugin Object found, Object Name = " + o.Name);
+                            pluginList.Add(desc);
                         }
                     }
-                    pluginList.Add(desc);
-                    this.Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
+                    // Here we try to create the Object if none was found above, we need a valid Object Type for this.
+                    if (bFoundObject == false)
+                    {
+                        this.Log.Info(desc.Type + ":  Plugin Object Missing!");
+                        bool bObjectTypeExists = OSAEObjectTypeManager.ObjectTypeExists(desc.Type);
+                        if (bObjectTypeExists)
+                        {
+                            this.Log.Info(desc.Type + ":  Valid Object Type found.  Attempting to create Object...");
+                            OSAEObjectManager.ObjectAdd(desc.Type, desc.Type + " plugin's Object", desc.Type, "", "SYSTEM", false);
+                            OSAEObject obj = OSAEObjectManager.GetObjectByName(desc.Type);
+                            if (obj != null)
+                            {
+                                desc.Name = obj.Name;
+                                desc.Enabled = false;
+                                if (obj.State.Value == "ON")
+                                    desc.Status = "Running";
+                                else if (obj.State.Value == "OFF")
+                                    desc.Status = "Stopped";
+                                else
+                                    desc.Status = obj.State.Value;
+
+                                this.Log.Info(desc.Type + ":  Plugin Object now found!");
+                                pluginList.Add(desc);
+                            }
+                        }
+                        else
+                        {
+                            this.Log.Info(desc.Type + ":  NO Valid Object Type found!  I cannot create an Object!  Please run Install.sql for this plugin.");
+                        }
+                    }
                 }
             }            
             dgLocalPlugins.ItemsSource = pluginList;

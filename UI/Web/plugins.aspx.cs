@@ -43,7 +43,7 @@ public partial class plugins : System.Web.UI.Page
                 PluginDescription desc = new PluginDescription();
 
                 desc.Deserialize(path);
-                desc.Status = "Stopped";
+                desc.Status = "No Object";
                 desc.Enabled = false;
                 
                 if (desc.WikiUrl.Trim() == "")
@@ -51,7 +51,6 @@ public partial class plugins : System.Web.UI.Page
                     desc.WikiUrl = "http://www.opensourceautomation.com/wiki/index.php?title=Plugins";
                 }
                 
-
                 OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                 foreach (OSAEObject o in objs)
                 {
@@ -64,11 +63,12 @@ public partial class plugins : System.Web.UI.Page
                             desc.Status = "Running";
                         else
                             desc.Status = "Stopped";
+
+                        pluginList.Add(desc);
+                        Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
                     }
+
                 }
-                pluginList.Add(desc);
-                
-                Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
             }
         }
 

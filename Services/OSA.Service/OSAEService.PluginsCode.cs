@@ -16,7 +16,7 @@
     {
         public void enablePlugin(Plugin plugin)
         {
-            this.Log.Info("Enabling plugin: " + plugin.PluginName);
+            this.Log.Info(plugin.PluginName + ":  Enabling Plugin...");
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
 
@@ -28,7 +28,7 @@
                     plugin.Enabled = true;
                     plugin.RunInterface();
                     OSAEObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", sourceName);
-                    this.Log.Debug("Plugin enabled: " + plugin.PluginName);
+                    this.Log.Debug(plugin.PluginName + ":  Plugin enabled.");
                 }
             }
             catch (Exception ex)
@@ -39,7 +39,7 @@
 
         public void disablePlugin(Plugin p)
         {
-            this.Log.Info("Disabling Plugin: " + p.PluginName);
+            this.Log.Info(p.PluginName + ":  Disabling Plugin...");
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
             OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
@@ -115,90 +115,100 @@
                 Plugin p = new Plugin(type.AssemblyName, type.TypeName, domain, type.Location);
                 if (!pluginLoaded(p.PluginType))
                 {
-                    newPlugins.Add(p);
+                    newPlugins.Add(p); 
                 }
             }
 
-            this.Log.Info("Found " + newPlugins.Count.ToString() + " plugins");
+            this.Log.Info("Found " + newPlugins.Count.ToString() + " Assemblies");
             MySqlConnection connection = new MySqlConnection(Common.ConnectionString);
 
             foreach (Plugin plugin in newPlugins)
             {
                 try
                 {
-                    this.Log.Info("---------------------------------------");
-                    this.Log.Info("Plugin name: " + plugin.PluginName);
-                    this.Log.Info("Testing connection");
-                    if (!goodConnection)
+                    if (plugin.PluginName != "")
                     {
-                        try
+                        this.Log.Info("----------------------------------------------------");
+                        if (!goodConnection)
                         {
-                            connection.Open();
-                            goodConnection = true;
-                        }
-                        catch
-                        {
-                        }
-                    }
-
-                    if (goodConnection)
-                    {
-                        if (plugin.PluginName != "")
-                        {
-                            OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
-
-                            if (obj != null)
+                            try
                             {
-                                this.Log.Info("Plugin Object found: " + obj.Name + " - Enabled: " + obj.Enabled.ToString());
-                                if (obj.Enabled == 1)
-                                {
-                                    enablePlugin(plugin);
-                                }
-                                else
-                                    plugin.Enabled = false;
-
-                                this.Log.Info("Status: " + plugin.Enabled.ToString());
-                                this.Log.Info("PluginVersion: " + plugin.PluginVersion);
+                                connection.Open();
+                                goodConnection = true;
+                            }
+                            catch
+                            {
                             }
                         }
-                        else
+                        this.Log.Info(plugin.PluginName + ":  Connection Passed (" + goodConnection + ")");
+                        if (goodConnection)
                         {
-                            //add code to create the object.  We need the plugin to specify the type though
-
-                            MySqlDataAdapter adapter;
-                            DataSet dataset = new DataSet();
-                            DataSet dataset2 = new DataSet();
-                            MySqlCommand command = new MySqlCommand();
-
-                            command.Connection = connection;
-                            command.CommandText = "SELECT * FROM osae_object_type_property p inner join osae_object_type t on p.object_type_id = t.object_type_id WHERE object_type=@type AND property_name='Computer Name'";
-                            command.Parameters.AddWithValue("@type", plugin.PluginType);
-                            adapter = new MySqlDataAdapter(command);
-                            adapter.Fill(dataset);
-
-                            command.CommandText = "SELECT * FROM osae_v_object WHERE object_type=@type";
-                            command.Parameters.AddWithValue("@type", plugin.PluginType);
-                            adapter = new MySqlDataAdapter(command);
-                            adapter.Fill(dataset2);
-
-                            if (dataset.Tables[0].Rows.Count > 0 && dataset2.Tables[0].Rows.Count > 0)
+                            if (plugin.PluginName != "")
                             {
-                                plugin.PluginName = plugin.PluginType + "-" + Common.ComputerName;
+                                OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
+
+                                if (obj == null)
+                                {
+                                    OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName + " plugin's Object", plugin.PluginType, "", "", true);
+                                    obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
+                                }
+
+                                if (obj != null)
+                                {
+                                    this.Log.Info(obj.Name + ":  Plugin Object found.  Plugin Object Enabled = " + obj.Enabled.ToString());
+                                    if (obj.Enabled == 1)
+                                    {
+                                        enablePlugin(plugin);
+                                    }
+                                    else
+                                        plugin.Enabled = false;
+
+                                    this.Log.Info(obj.Name + ":  Plugin Enabled =  " + plugin.Enabled.ToString());
+                                    this.Log.Info(obj.Name + ":  Plugin Version = " + plugin.PluginVersion);
+                                }
                             }
                             else
                             {
-                                plugin.PluginName = plugin.PluginType;
+                                //add code to create the object.  We need the plugin to specify the type though
+
+                                MySqlDataAdapter adapter;
+                                DataSet dataset = new DataSet();
+                                DataSet dataset2 = new DataSet();
+                                MySqlCommand command = new MySqlCommand();
+
+                                command.Connection = connection;
+                                command.CommandText = "SELECT * FROM osae_object_type_property p inner join osae_object_type t on p.object_type_id = t.object_type_id WHERE object_type=@type AND property_name='Computer Name'";
+                                command.Parameters.AddWithValue("@type", plugin.PluginType);
+                                adapter = new MySqlDataAdapter(command);
+                                adapter.Fill(dataset);
+
+                                command.CommandText = "SELECT * FROM osae_v_object WHERE object_type=@type";
+                                command.Parameters.AddWithValue("@type", plugin.PluginType);
+                                adapter = new MySqlDataAdapter(command);
+                                adapter.Fill(dataset2);
+
+                                if (dataset.Tables[0].Rows.Count > 0 && dataset2.Tables[0].Rows.Count > 0)
+                                {
+                                    plugin.PluginName = plugin.PluginType + "-" + Common.ComputerName;
+                                }
+                                else
+                                {
+                                    plugin.PluginName = plugin.PluginType;
+                                }
+
+                                this.Log.Info(plugin.PluginName + ":  Plugin object does not exist in DB!");
+                                OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
+                                OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
+                                this.Log.Info(plugin.PluginName + ":  Plugin added to DB.");
+                                UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
                             }
-
-                            this.Log.Info("Plugin object does not exist in DB: " + plugin.PluginName);
-                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
-                            OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
-
-                            this.Log.Info("Plugin added to DB: " + plugin.PluginName);
-                            UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
+                            plugins.Add(plugin);
+                            masterPlugins.Add(plugin);
                         }
-                        plugins.Add(plugin);
-                        masterPlugins.Add(plugin);
+                    }
+                    else
+                    {
+                        this.Log.Info(plugin.PluginType + " Skipped! (Not Loaded due to missing Object or other issue)");
                     }
                 }
                 catch (Exception ex)
