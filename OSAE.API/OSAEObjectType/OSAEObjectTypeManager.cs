@@ -9,7 +9,34 @@
     /// </summary>
     public class OSAEObjectTypeManager
     {
-        /// <summary>
+
+        public static bool ObjectTypeExists(string name)
+        {
+            MySqlCommand command = new MySqlCommand();
+            DataSet dataset = new DataSet();
+            try
+            {
+                command.CommandText = "SELECT object_type FROM osae_v_object_type WHERE UPPER(object_type)=UPPER(@Name)";
+                command.Parameters.AddWithValue("@Name", name);
+                dataset = OSAESql.RunQuery(command);
+
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - GetObjectTypeExists (" + name + ")error: " + ex.Message, true);
+                return false;
+            }
+        }
+
+       /// <summary>
         /// Loads the requested object Type
         /// </summary>
         /// <param name="name">The name of the object type to load</param>
