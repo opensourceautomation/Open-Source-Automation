@@ -220,7 +220,7 @@ namespace OSAE.ClientService
                             this.Log.Info("PluginName: " + plugin.PluginName);
                             this.Log.Info("PluginVersion: " + plugin.PluginVersion);
 
-                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10000, plugin.PluginName + "|" + plugin.Status + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
+                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10051, plugin.PluginName + "|" + plugin.Status + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
                         }
                     }
                     else
@@ -240,7 +240,7 @@ namespace OSAE.ClientService
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, "Client Service");
 
                             this.Log.Info("Plugin added to DB: " + plugin.PluginName);
-                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10000, plugin.PluginName + "|" + plugin.Status
+                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10051, plugin.PluginName + "|" + plugin.Status
                                 + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
                         }
 

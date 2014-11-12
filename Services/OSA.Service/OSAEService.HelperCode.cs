@@ -14,6 +14,7 @@
         /// <summary>
         /// Check if there is a OSA message container in the Event log and create one if not.
         /// </summary>
+
         private void InitialiseOSAInEventLog()
         {
             this.Log.Debug("Initializing Event Log");
@@ -118,6 +119,7 @@
         {
             this.Log.Debug("QueryCommandQueue");
 
+
             while (running)
             {
                 try
@@ -134,7 +136,7 @@
                             {
                                 case "EXECUTE" : 
                                     this.Log.Info("Recieved Execute Method Name");
-                                    UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
+                                    UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                                     break;
                                 case "START PLUGIN":
                                     StartPlugin(method);
@@ -153,7 +155,7 @@
                         {
                             this.Log.Debug("Method for client service.  Sending Broadcast.");
                             if(method.MethodName == "EXECUTE")
-                                UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8), new IPEndPoint(IPAddress.Broadcast, 10000));
+                                UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8), new IPEndPoint(IPAddress.Broadcast, 10051));
 
                             OSAEMethodManager.MethodQueueDelete(method.Id);
                         }
@@ -177,7 +179,7 @@
                                 this.Log.Debug("Method found for client service plugin.  Sending Broadcast.");
                                 UDPConnection.SendObject("Method", method.ObjectName + " | " + method.Owner + " | "
                                     + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | "
-                                    + method.Address + " | " + method.Id, new IPEndPoint(IPAddress.Broadcast, 10000));
+                                    + method.Address + " | " + method.Id, new IPEndPoint(IPAddress.Broadcast, 10051));
 
                                 this.Log.Debug("Removing method from queue with ID: " + method.Id);
                             }
@@ -222,7 +224,7 @@
                     if (obj != null)
                     {
                         disablePlugin(p);
-                        UDPConnection.SendObject("Plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10000));
+                        UDPConnection.SendObject("Plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                     }
                 }
             }

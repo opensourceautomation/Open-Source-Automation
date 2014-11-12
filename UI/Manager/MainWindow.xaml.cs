@@ -460,9 +460,11 @@
                 {
                     PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
 
-                    this.Log.Info("checked: " + pd.Name);
+                    this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=True");
+                    OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
+                    OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
 
-                    NetworkComms.SendObject("Plugin", "127.0.0.1", 10000, pd.Name + "|True");
+                    NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|True");
 
                     this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True");
                     if (myService.Status == ServiceControllerStatus.Running)
@@ -475,9 +477,6 @@
                             }
                         }
                     }
-
-                    OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
-                    OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
                 }
             }
             catch (Exception ex)
@@ -491,10 +490,14 @@
             try
             {
                 PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
-                this.Log.Info("unchecked: " + pd.Name);
 
-                NetworkComms.SendObject("Plugin", "127.0.0.1", 10000, pd.Name + "|False");
+                this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=False");
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);   
+
+                NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|False");
                 this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False");
+
 
                 if (myService.Status == ServiceControllerStatus.Running)
                 {
@@ -506,9 +509,6 @@
                         }
                     }
                 }
-
-                OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
-                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);                
             }
             catch (Exception ex)
             {
