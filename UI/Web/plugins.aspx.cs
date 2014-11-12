@@ -126,7 +126,7 @@ public partial class plugins : System.Web.UI.Page
                 }
             }
 
-            NetworkComms.SendObject("Plugin", Common.LocalIPAddress(), 10000, pluginName + "|" + enabled);
+            NetworkComms.SendObject("Plugin", Common.LocalIPAddress(), 10051, pluginName + "|" + enabled);
             Log.Info("Sending message: " + "ENABLEPLUGIN|" + pluginName + "|" + enabled);
 
             foreach (PluginDescription plugin in pluginList)
