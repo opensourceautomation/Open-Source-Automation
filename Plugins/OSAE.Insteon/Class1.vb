@@ -1397,28 +1397,38 @@ PLMerror:
             End If
 
             Dim oType1 As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("INSTEON DIMMER")
-            If oType.OwnedBy = "" Then
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+            If oType1.OwnedBy = "" Then
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType1.Name, oType1.Name, oType1.Description, gAppName, oType1.BaseType, oType1.Owner, oType1.SysType, oType1.Container, oType1.HideRedundant)
                 Log.Info("Insteon Plugin took ownership of the INSTEON DIMMER Object Type.")
             Else
-                Log.Info("INSTEON DIMMER Object Type is correctly owned by: " & oType.OwnedBy)
+                Log.Info("INSTEON DIMMER Object Type is correctly owned by: " & oType1.OwnedBy)
+            End If
+
+            Dim oType4 As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("INSTEON RELAY")
+            If oType4.OwnedBy = "" Then
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType4.Name, oType4.Name, oType4.Description, gAppName, oType4.BaseType, oType4.Owner, oType4.SysType, oType4.Container, oType4.HideRedundant)
+                Log.Info("Insteon Plugin took ownership of the INSTEON RELAY Object Type.")
+            Else
+                Log.Info("INSTEON RELAY Object Type is correctly owned by: " & oType4.OwnedBy)
             End If
 
             Dim oType2 As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("X10 RELAY")
-            If oType.OwnedBy = "" Then
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+            If oType2.OwnedBy = "" Then
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType2.Name, oType2.Name, oType2.Description, gAppName, oType2.BaseType, oType2.Owner, oType2.SysType, oType2.Container, oType2.HideRedundant)
                 Log.Info("Insteon Plugin took ownership of the X10 Relay Object Type.")
             Else
-                Log.Info("X10 RELAY Object Type is correctly owned by: " & oType.OwnedBy)
+                Log.Info("X10 RELAY Object Type is correctly owned by: " & oType2.OwnedBy)
             End If
 
             Dim oType3 As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("X10 DIMMER")
-            If oType.OwnedBy = "" Then
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+            If oType3.OwnedBy = "" Then
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType3.Name, oType3.Name, oType3.Description, gAppName, oType3.BaseType, oType3.Owner, oType3.SysType, oType3.Container, oType3.HideRedundant)
                 Log.Info("Insteon Plugin took ownership of the X10 DIMMER Object Type.")
             Else
-                Log.Info("X10 DIMMER Object Type is correctly owned by: " & oType.OwnedBy)
+                Log.Info("X10 DIMMER Object Type is correctly owned by: " & oType3.OwnedBy)
             End If
+
+
         Catch ex As Exception
             Log.Error("Error in Own Types: " & ex.Message)
         End Try
