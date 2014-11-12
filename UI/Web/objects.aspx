@@ -136,7 +136,7 @@
                     </div>
                     <div class="span5" style="text-align:right;" >
                         <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
-                        <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp
+                        <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" Visible="false"/>&nbsp
                         <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object?');" />
                         <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
                     </div>
@@ -280,10 +280,10 @@
         <div id="exportModalBody" class="modal-body">
             <asp:TextBox ID="txtExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
         </div>
-    </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>
+    </div>
     
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>

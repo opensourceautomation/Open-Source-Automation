@@ -21,6 +21,7 @@ public partial class home : System.Web.UI.Page
             alert.Visible = false;
             hdnSelectedRow.Text = args[1];
             panelEditForm.Visible = true;
+            btnUpdate.Visible = true;
             panelPropForm.Visible = false;
             divParameters.Visible = false;
             hdnSelectedPropRow.Text = "";
