@@ -384,7 +384,7 @@ namespace OSAE.UI.Controls
             cboState2.ItemsSource = dataSet.Tables[0].DefaultView;
 
             DataSet dataSet2 = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_name");
-            cboSliderMethod.ItemsSource = dataSet.Tables[0].DefaultView;
+            cboSliderMethod.ItemsSource = dataSet2.Tables[0].DefaultView;
 
         }
 
@@ -423,6 +423,7 @@ namespace OSAE.UI.Controls
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, "GUI");
 
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Show Slider", chkSlider.IsChecked.ToString(), "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.Text, "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
@@ -461,6 +462,8 @@ namespace OSAE.UI.Controls
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, "GUI");
+
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Show Slider", chkSlider.IsChecked.ToString(), "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.Text, "GUI");
 
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
@@ -591,6 +594,14 @@ namespace OSAE.UI.Controls
             Enable_Buttons();
         }
 
+        private void chkSlider_Checked(object sender, RoutedEventArgs e)
+        {
+            cboSliderMethod.IsEnabled = true;
+        }
 
+        private void chkSlider_Unchecked(object sender, RoutedEventArgs e)
+        {
+            cboSliderMethod.IsEnabled = false;
+        }
     }
 }

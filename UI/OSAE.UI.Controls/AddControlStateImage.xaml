@@ -45,9 +45,9 @@
         <TextBox x:Name="txtDelay" HorizontalAlignment="Left" Height="26" Margin="112,363,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100" ToolTip="If you are animating multiple frames, this is the delay inbetween frames (in milliseconds)"/>
         <Label Content="AnimationDelay" HorizontalAlignment="Left" Margin="13,363,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
         <CheckBox x:Name="chkRepeat" Content="Repeat Animation" HorizontalAlignment="Left" Margin="170,369,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.25,0"/>
-        <CheckBox x:Name="chkSlider" Content="Show Slider" HorizontalAlignment="Left" Margin="13,403,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.25,0" ToolTip="Show a slider to control dimmers, etc."/>
-        <Label Content="Slider Method" HorizontalAlignment="Left" Margin="125,398,0,0" VerticalAlignment="Top"/>
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="215,403,0,0" x:Name="cboSliderMethod" VerticalAlignment="Top" Width="147" ItemsSource="{Binding state_name}"  DisplayMemberPath="state_name" SelectedValuePath="state_name" IsEditable="False" />
+        <CheckBox x:Name="chkSlider" Content="Show Slider" HorizontalAlignment="Left" Margin="13,403,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.25,0" ToolTip="Show a slider to control dimmers, etc." Checked="chkSlider_Checked" Unchecked="chkSlider_Unchecked"/>
+        <Label x:Name="lblSliderMethod" Content="Slider Method" HorizontalAlignment="Left" Margin="125,398,0,0" VerticalAlignment="Top"/>
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="215,403,0,0" x:Name="cboSliderMethod" VerticalAlignment="Top" Width="147" ItemsSource="{Binding method_name}"  DisplayMemberPath="method_name" SelectedValuePath="method_name" IsEditable="False" ToolTip="Select the ABSOLUTE Dimming Method, usually ON" />
 
     </Grid>
 </UserControl>
