@@ -17,8 +17,6 @@ namespace OSAE.Jabber
             gAppName = pluginName;
             if (OSAEObjectManager.ObjectExists(gAppName))
                 Log.Info("Found the Jabber plugin's Object (" + gAppName + ")");
-            else
-                Log.Info("Could Not Find the Jabber plugin's Object!!! (" + gAppName + ")");
 
             try
             {

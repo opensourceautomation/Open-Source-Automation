@@ -8,7 +8,6 @@
     {
         string gAppName;
 
-        //OSAELog
         private OSAE.General.OSAELog Log = new General.OSAELog();
         
         public override void ProcessCommand(OSAEMethod method)
@@ -85,20 +84,20 @@
                     smtpClient.EnableSsl = false;
                 }
 
-                smtpClient.Timeout = 10000;
+                smtpClient.Timeout = 20000;
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Username").Value, OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Password").Value);
                 
-                this.Log.Info("to: " + mailMsg.To);
-                this.Log.Info("from: " + mailMsg.From);
-                this.Log.Info("subject: " + mailMsg.Subject);
-                this.Log.Info("body: " + mailMsg.Body);
-                this.Log.Info("smtpServer: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "SMTP Server").Value);
-                this.Log.Info("smtpPort: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "SMTP Port").Value);
-                this.Log.Info("username: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Username").Value);
-                this.Log.Info("password: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Password").Value);
-                this.Log.Info("ssl: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "ssl").Value);
+                Log.Info("to: " + mailMsg.To);
+                Log.Info("from: " + mailMsg.From);
+                Log.Info("subject: " + mailMsg.Subject);
+                Log.Info("body: " + mailMsg.Body);
+                Log.Info("smtpServer: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "SMTP Server").Value);
+                Log.Info("smtpPort: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "SMTP Port").Value);
+                Log.Info("username: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Username").Value);
+                Log.Info("password: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Password").Value);
+                Log.Info("ssl: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "ssl").Value);
 
                 smtpClient.Send(mailMsg);
             }
@@ -118,12 +117,28 @@
 
         public override void RunInterface(string pluginName)
         {
-            this.Log.Info("*** Email Plugin is Starting ***");
+            this.Log.Info("Email Plugin is Starting...");
             gAppName = pluginName;
             if (OSAEObjectManager.ObjectExists(gAppName))
                 Log.Info("Found Email Plugin's Object (" + gAppName + ")");
+            
+            OwnTypes();
+        }
+
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("EMAIL");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("Email Plugin took ownership of the EMAIL Object Type.");
+            }
             else
-                Log.Info("Could Not Find Email Plugin's Object!!! (" + gAppName + ")");
+            {
+                Log.Info("EMail Plugin correctly owns the EMAIL Object Type.");
+            }
         }
     }
 }

@@ -30,8 +30,6 @@ Public Class ScriptProcessor
         gAppName = sName
         If OSAEObjectManager.ObjectExists(gAppName) Then
             Log.Info("Found the Script Processor plugin's Object (" & gAppName & ")")
-        Else
-            Log.Info("Could Not Find the Script Processor plugin's Object!!! (" & gAppName & ")")
         End If
         OwnTypes()
         Try

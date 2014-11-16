@@ -12,7 +12,6 @@
     {
         #region OSAEPlugin Members
 
-        //OSAELog
         private OSAE.General.OSAELog Log = new General.OSAELog();
         BluetoothClient bc;
         BluetoothDeviceInfo[] nearosaeDevices;
@@ -31,9 +30,7 @@
             this.Log.Info("*** Running Interface! ***");
             gAppName = pluginName;
             if (OSAEObjectManager.ObjectExists(gAppName))
-                Log.Info("Found Speech Client's Object (" + gAppName + ")");
-            else
-                Log.Info("Could Not Find Speech Client's Object!!! (" + gAppName + ")");
+               Log.Info("Found Bluetooth Client's Object (" + gAppName + ")");
 
             try
             {
@@ -223,9 +220,8 @@
             }
             // if odd number of characters, discard last character
             if (numHexChars % 2 != 0)
-            {
                 numHexChars--;
-            }
+
             return numHexChars / 2; // 2 characters per byte
         }
 

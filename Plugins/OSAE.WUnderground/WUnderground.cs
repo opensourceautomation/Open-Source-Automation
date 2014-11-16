@@ -114,20 +114,19 @@
                 this.Log.Error("Error initializing the plugin ", ex);
             }
          }
-
-        
+                
         public override void ProcessCommand(OSAEMethod method)
         {
             if (method.MethodName == "UPDATE")
                 update();
         }
-
-
+        
         public override void Shutdown()
         {
             this.Log.Info("Shutting down");
             if (Forecastupdatetime > 0)
                 ForecastUpdateTimer.Stop();
+
             if (Conditionsupdatetime > 0)
                 ConditionsUpdateTimer.Stop();
 
@@ -170,7 +169,6 @@
             }
         }
 
-
         private string GetNodeValue(XmlDocument xml, string xPathQuery)
         {
             string nodeValue = string.Empty;
@@ -182,7 +180,6 @@
             }
             return nodeValue;
         }
-
 
         private void ReportFieldValue(string fieldName, string fieldValue)
         {
@@ -218,6 +215,7 @@
         {
             if (Conditionsupdatetime > 0)
                 updateconditions();
+
             if (Forecastupdatetime > 0)
                 updateforecast();
         }
@@ -498,6 +496,7 @@
             }
             FirstForcastRun = false;
         }
+
         public void updateDayNight()
         {
             TimeSpan Now;
