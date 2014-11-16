@@ -52,7 +52,7 @@
             }
         }
 
-        public  bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
+        public bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
             if (Directory.Exists(exePath + "/tempDir/"))

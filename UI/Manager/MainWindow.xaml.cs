@@ -394,7 +394,7 @@
         {
             try
             {
-                this.Log.Info("Closing");
+                this.Log.Info("Manager Closing");
                 Clock.Stop();
                 Clock = null;
                 this.Log.Info("Timer stopped");
@@ -464,19 +464,19 @@
                     OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
                     OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
 
-                    NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|True");
+                    //NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|True");
 
-                    this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True");
-                    if (myService.Status == ServiceControllerStatus.Running)
-                    {
-                        foreach (PluginDescription plugin in pluginList)
-                        {
-                            if (plugin.Name == pd.Name && plugin.Name != null)
-                            {
-                                plugin.Status = "Starting...";
-                            }
-                        }
-                    }
+                    //this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True");
+                    //if (myService.Status == ServiceControllerStatus.Running)
+                   // {
+                    //    foreach (PluginDescription plugin in pluginList)
+                    //    {
+                     //       if (plugin.Name == pd.Name && plugin.Name != null)
+                     //       {
+                     //           plugin.Status = "Starting...";
+                    //        }
+                  //      }
+                   // }
                 }
             }
             catch (Exception ex)
@@ -495,20 +495,20 @@
                 OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
                 OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);   
 
-                NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|False");
-                this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False");
+             //   NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|False");
+             //   this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False");
 
 
-                if (myService.Status == ServiceControllerStatus.Running)
-                {
-                    foreach (PluginDescription plugin in pluginList)
-                    {
-                        if (plugin.Name == pd.Name && plugin.Name != null)
-                        {
-                            plugin.Status = "Stopping...";
-                        }
-                    }
-                }
+            //    if (myService.Status == ServiceControllerStatus.Running)
+            //    {
+             //       foreach (PluginDescription plugin in pluginList)
+             //       {
+             //           if (plugin.Name == pd.Name && plugin.Name != null)
+             //           {
+              //              plugin.Status = "Stopping...";
+             //           }
+             //       }
+             //   }
             }
             catch (Exception ex)
             {
