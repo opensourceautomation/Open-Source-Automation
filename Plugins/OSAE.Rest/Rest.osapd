@@ -2,12 +2,12 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Rest</plugin-name>
 <plugin-id>094267E6-416B-4A75-BA16-188842265C17</plugin-id>
-<plugin-version>0.0.2</plugin-version>
+<plugin-version>0.4.4</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Provides Rest Access to OSA</short-description>
 <author>Matthew Stebbings</author>
 <destination-folder>Rest</destination-folder>
-<main-file>bin\Debug\OSAE.Rest.dll</main-file>
+<main-file>OSAE.Rest.dll</main-file>
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=REST</wiki-url>
 <additional-assemblies>
 </additional-assemblies>
