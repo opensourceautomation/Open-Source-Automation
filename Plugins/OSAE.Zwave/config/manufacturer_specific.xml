@@ -81,7 +81,7 @@
 		<Product type="0007" id="0101" name="Tag Reader" config="BeNext/TagReader.xml"/>
 		<Product type="0008" id="0101" name="Power Switch"/>
 		<Product type="000d" id="0100" name="Built-in Dimmer" config="BeNext/BuiltinDimmer.xml"/>
-		<Product type="0018" id="0100" name="Plug-in Dimmer" config="Benext/PluginDimmer.xml"/>
+		<Product type="0018" id="0100" name="Plug-in Dimmer" config="BeNext/PluginDimmer.xml"/>
 		<Product type="001e" id="0001" name="1Pole Switch" config="BeNext/1poleswitch.xml"/>
 		<Product type="001f" id="0001" name="2Pole Switch" config="BeNext/2poleswitch.xml"/>
 	</Manufacturer>
@@ -126,6 +126,9 @@
 	<Manufacturer id="0012" name="E Housekeeper">
 		<Product type="0001" id="0001" name="Switchkeeper Plug-in Appliance Module"/>
 	</Manufacturer>
+        <Manufacturer id="014a" name="Ecolink">
+                <Product type="0001" id="0003" name="Garage Door Sensor"/>
+        </Manufacturer>
 	<Manufacturer id="0087" name="Eka Systems">
 	</Manufacturer>
 	<Manufacturer id="0033" name="Electronic Solutions Inc">
@@ -176,11 +179,13 @@
 	<Manufacturer id="010f" name="FIBARO System">
 		<Product type="0501" id="0102" name="FGBS001 Universal Binary Sensor" config="fibaro/fgbs001.xml" />
 		<Product type="0501" id="1002" name="FGBS001 Universal Binary Sensor" config="fibaro/fgbs001.xml" />
-		<Product type="0100" id="0104" name="FGD211 Universal Dimmer 500W" />
+		<Product type="0501" id="4002" name="FGBS001 Universal Binary Sensor" config="fibaro/fgbs001.xml" />
+		<Product type="0100" id="0104" name="FGD211 Universal Dimmer 500W" config="fibaro/fgd211.xml" />
 		<Product type="0100" id="0107" name="FGD211 Universal Dimmer 500W" config="fibaro/fgd211.xml" />
 		<Product type="0100" id="0109" name="FGD211 Universal Dimmer 500W" config="fibaro/fgd211.xml" />
 		<Product type="0100" id="100a" name="FGD211 Universal Dimmer 500W" config="fibaro/fgd211.xml" />
 		<Product type="0700" id="1000" name="FGK101 Door Opening Sensor" config="fibaro/fgk001.xml" />
+		<Product type="0700" id="4000" name="FGK101 Door Opening Sensor" config="fibaro/fgk001.xml" />
 		<Product type="0300" id="0104" name="FGR221 Roller Shutter Controller" config="fibaro/fgr221.xml"/>
 		<Product type="0300" id="100a" name="FGR221 Roller Shutter Controller" config="fibaro/fgr221.xml"/>
 		<Product type="0300" id="0106" name="FGR221 Roller Shutter Controller" config="fibaro/fgr221.xml"/>
@@ -200,9 +205,11 @@
 		<Product type="0200" id="0109" name="FGS221 Double Relay Switch 2x1.5kW" config="fibaro/fgs221.xml" />
 		<Product type="0200" id="100a" name="FGS221 Double Relay Switch 2x1.5kW" config="fibaro/fgs221.xml" />
 		<Product type="0600" id="1000" name="FGWPE Wall Plug" config="fibaro/fgwpe.xml" />
-		<Product type="0800" id="1001" name="FGMS-001 Motion Sensor" config="fibaro/fgms.xml" />
+		<Product type="0800" id="1001" name="FGMS001 Motion Sensor" config="fibaro/fgms.xml" />
+		<Product type="0800" id="4001" name="FGMS001 Motion Sensor" config="fibaro/fgms.xml" />
 		<Product type="0b00" id="3001" name="FGFS101 Flood Sensor" config ="fibaro/fgfs101.xml" />
 		<Product type="0b00" id="1001" name="FGFS101 Flood Sensor" config ="fibaro/fgfs101.xml" />
+		<Product type="0b00" id="9e00" name="FGFS101 Flood Sensor" config="fibaro/fgfs101.xml" />
     		<Product type="0900" id="1000" name="FGRGBWM441 RGBW Controller" config="fibaro/fgrgbwm441.xml" />
     		<Product type="0c00" id="1000" name="FGSS101 Smoke Sensor" config="fibaro/fgss101.xml" />
   	</Manufacturer>
@@ -294,6 +301,7 @@
 	<Manufacturer id="0091" name="Kamstrup">
 	</Manufacturer>
 	<Manufacturer id="0090" name="Kwikset">
+		<Product type="0001" id="0001" name="Touchpad Electronic Deadbolt"/>
 	</Manufacturer>
 	<Manufacturer id="0051" name="Lagotek Corp">
 	</Manufacturer>
@@ -361,6 +369,11 @@
 		<Product type="0001" id="0003" name="PAN04-1 Double Relay Switch 2x1.5kW with Power Measurement" config="philio/pan04.xml" />
 		<Product type="0002" id="0002" name="Slim Multi-Sensor PSM02" config="philio/psm02.xml" />
 	</Manufacturer>
+	<Manufacturer id="0154" name="Popp">
+		<Product type="1100" id="0002" name="123580 Plug-in Dimmer" config="popp/123580.xml" />
+		<Product type="1100" id="0001" name="123601 Plug-in Switch" config="popp/123601.xml" />
+		<Product type="0001" id="0001" name="123658 Plug-in Switch plus Power Meter" config="popp/123658.xml" />
+	</Manufacturer>
 	<Manufacturer id="0064" name="Popp / Duwi">
 		<Product type="0001" id="0000" name="ZW EDAN 300 Flush Mounted Dimmer" />
 		<Product type="1001" id="0000" name="Plugin Dimmer" />
@@ -377,6 +390,12 @@
 	<Manufacturer id="0095" name="Qees">
 		<Product type="3101" id="0001" name="RETO Dimmer Plus 2013"/>
 		<Product type="3103" id="0001" name="RETO Plug-in Switch Plus" config="qees/reto-plugin-switch.xml" />
+	</Manufacturer>
+	<Manufacturer id="0159" name="Qubino">
+		<Product type="0001" id="0001" name="ZMNHDA2 Flush Dimmer" config="qubino/ZMNHDA2.xml"/>
+		<Product type="0002" id="0001" name="ZMNHBA2 Flush 2 Relays" config="qubino/ZMNHBA2.xml"/>
+		<Product type="0002" id="0002" name="ZMNHAA2 Flush 1 Relay" config="qubino/ZMNHAA2.xml"/>
+		<Product type="0003" id="0002" name="ZMNHCA2 Flush Shutter" config="qubino/ZMNHCA2.xml"/>
 	</Manufacturer>
 	<Manufacturer id="0100" name="Reitz-Group.de">
 	</Manufacturer>
@@ -403,6 +422,7 @@
 	</Manufacturer>
 	<Manufacturer id="0097" name="Schlage Link">
 		<Product type="1182" id="4501" name="iTemp Dual Sensor" config="schlagelink/itemp.xml" />
+		<Product type="1188" id="4501" name="iTemp Dual Sensor" config="schlagelink/itemp.xml" />
 		<Product type="6941" id="5501" name="LE120 Appliance Module"/>
 	</Manufacturer>
 	<Manufacturer id="001f" name="Scientia Tech">
@@ -485,14 +505,15 @@
 		<Product type="2002" id="0204" name="ZP3102 PIR Motion Sensor"/>
 		<Product type="2003" id="0302" name="ZS5101 Shock and Vibration Sensor"/>
 		<Product type="2004" id="0403" name="ZS6101 Smoke Detector"/>
-		<Product type="2005" id="0503" name="ZM1601 Battery Operated Siren" config="vision/zm160eu.xml"/>
+		<Product type="2005" id="0503" name="ZM1601 Battery Operated Siren" config="vision/zm1601eu.xml"/>
 		<Product type="2005" id="0505" name="ZM1601 Battery Operated Siren"/>
 		<Product type="2006" id="0610" name="ZM1701 Electronic Deadbolt Door Lock without Handle"/>
 		<Product type="2006" id="0620" name="ZM1702 Electronic Deadbolt Door Lock with Handle"/>
 		<Product type="2006" id="0621" name="ZM1701 Electronic Deadbolt Door Lock without Handle"/>
 		<Product type="2008" id="0803" name="ZL7101 Plug-in Dimmer Module"/>
 		<Product type="200a" id="0a02" name="ZG8101 Garage Door Detector"/>
-		<Product type="200f" id="0f02" name="ZG6301 CO Detector"/>
+		<Product type="200f" id="0f02" name="ZS6301 CO Detector"/>
+		<Product type="200f" id="0f03" name="ZS6301 CO Detector"/>
 		<Product type="2012" id="1203" name="ZR1202 Repeater"/>
 		<Product type="2014" id="1401" name="ZL7101 Plug-in Dimmer Module"/>
 		<Product type="2017" id="1717" name="ZL7432 In-Wall Switch, Dual Relay"/>
@@ -509,6 +530,10 @@
 		<Product type="0200" id="0001" name="iTemp" config="zwave.me/iTemp.xml" />
 	</Manufacturer>
 	<Manufacturer id="004f" name="Z-Wave Technologia">
+	</Manufacturer>
+	<Manufacturer id="0131" name="Zipato">
+		<Product type="0002" id="0002" name="RGBW LED Bulb" config="zipato/RGBBulb.xml" />
+		<Product type="6131" id="4501" name="Zipato Mini Keypad" config="zipato/MiniKeypad.xml" />
 	</Manufacturer>
 	<Manufacturer id="0021" name="Zykronix">
 	</Manufacturer>

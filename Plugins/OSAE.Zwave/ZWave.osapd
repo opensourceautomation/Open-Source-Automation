@@ -2,8 +2,8 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>ZWave</plugin-name>
 <plugin-id>c2481db0-5871-4cd8-b6c6-2d12273b8758</plugin-id>
-<plugin-version>0.5.6</plugin-version>
-<plugin-state>alpha</plugin-state>
+<plugin-version>0.6.0</plugin-version>
+<plugin-state>beta</plugin-state>
 <short-description>Control your Z-Wave devices</short-description>
 <author>Brian Woodworth</author>
 <destination-folder>ZWave</destination-folder>

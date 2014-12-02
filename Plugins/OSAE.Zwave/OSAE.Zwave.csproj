@@ -255,6 +255,15 @@
     </Content>
     <Content Include="config\philio\pan04.xml" />
     <Content Include="config\philio\psm02.xml" />
+    <Content Include="config\popp\123580.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\popp\123601.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\popp\123658.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="config\qees\reto-plugin-switch.xml" />
     <Content Include="config\remotec\zxt-120.xml" />
     <Content Include="config\schlagelink\itemp.xml">
@@ -266,6 +275,12 @@
     <Content Include="config\wenzhou\tz65d.xml" />
     <Content Include="config\wenzhou\tz66d.xml" />
     <Content Include="config\wenzhou\tz88.xml" />
+    <Content Include="config\zipato\MiniKeypad.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\zipato\RGBBulb.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="config\zwave.me\iTemp.xml" />
     <Content Include="config\zwave.me\kfob.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

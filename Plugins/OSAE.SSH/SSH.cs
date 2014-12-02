@@ -9,7 +9,7 @@ namespace OSAE.SSH
     public class SSH : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("SSH");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
         
         string pName;
         string server = "";

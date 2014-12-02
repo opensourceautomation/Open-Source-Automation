@@ -6,7 +6,7 @@
     public class RFXCOM : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("RFXCOM");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         private System.Timers.Timer tmrRead = new System.Timers.Timer(100);
         private string rcvdStr = "";
@@ -2724,6 +2724,7 @@
 
                 double temp = Math.Round((double)(recbuf[(byte)TEMP.temperatureh] * 256 + recbuf[(byte)TEMP.temperaturel]) / 10, 2);
                 string strTemp = "";
+                double prevTemp = Double.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Temperature").Value);
 
                 if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Temp Units").Value.Trim() == "Farenheit")
                 {
@@ -2733,26 +2734,33 @@
                 else
                     strTemp = temp.ToString() + " °C";
 
-                if ((recbuf[(byte)TEMP.tempsign] & 0x80) == 0)
+                if (Math.Abs(prevTemp - temp) < 5)
                 {
-                    this.Log.Debug("Temperature   = " + strTemp);
-                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", temp.ToString(), pName);
+                    if ((recbuf[(byte)TEMP.tempsign] & 0x80) == 0)
+                    {
+                        this.Log.Debug("Temperature   = " + strTemp);
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", temp.ToString(), pName);
+                    }
+                    else
+                    {
+                        this.Log.Debug("Temperature   = -" + strTemp);
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + temp.ToString(), pName);
+                    }
+                    this.Log.Debug("Signal level  = " + (recbuf[(byte)TEMP.rssi] >> 4).ToString());
+                    if ((recbuf[(byte)TEMP.battery_level] & 0xf) == 0)
+                    {
+                        this.Log.Debug("Battery       = Low");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
+                    }
+                    else
+                    {
+                        this.Log.Debug("Battery       = OK");
+                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
+                    }
                 }
                 else
                 {
-                    this.Log.Debug("Temperature   = -" + strTemp);
-                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Temperature", "-" + temp.ToString(), pName);
-                }
-                this.Log.Debug("Signal level  = " + (recbuf[(byte)TEMP.rssi] >> 4).ToString());
-                if ((recbuf[(byte)TEMP.battery_level] & 0xf) == 0)
-                {
-                    this.Log.Debug("Battery       = Low");
-                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "Low", pName);
-                }
-                else
-                {
-                    this.Log.Debug("Battery       = OK");
-                    OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Battery", "OK", pName);
+                    this.Log.Debug("Temperature not logged.  Too much of a difference from previous temp");
                 }
             }
         }

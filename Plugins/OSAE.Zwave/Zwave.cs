@@ -286,7 +286,6 @@ namespace OSAE.Zwave
         {
             Node node2 = GetNode(m_notification.GetHomeId(), m_notification.GetNodeId());
 
-            Log.Info(" --- ");
             Log.Info("Notification: " + m_notification.GetType().ToString() + " | Node: " + node2.ID.ToString());
             switch (m_notification.GetType())
             {
@@ -581,7 +580,7 @@ namespace OSAE.Zwave
                                         }
                                 }
 
-                                OSAEObjectTypeManager.ObjectTypeAdd(node.Product, node.Label, pName, baseType,  0, 0, 0, 1);
+                                OSAEObjectTypeManager.ObjectTypeAdd(node.Product, node.Label, pName, baseType,  false, false, false, true);
                                 OSAEObjectTypeManager.ObjectTypeMethodAdd("NODE NEIGHBOR UPDATE", "Node Neighbor Update", node.Product, "", "", "", "");
                                 OSAEObjectTypeManager.ObjectTypePropertyAdd("Home ID", "String", "", node.Product, false);
                                 OSAEObjectTypeManager.ObjectTypePropertyAdd("Poll", "Boolean", "", node.Product, false);
@@ -784,7 +783,6 @@ namespace OSAE.Zwave
                     }
                 #endregion
             }
-            Log.Info(" --- ");
         }
 
         public static void MyControllerStateChangedHandler(ZWControllerState state)

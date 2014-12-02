@@ -12,7 +12,7 @@
     {
         string pName;
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("RSS");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
         System.Timers.Timer Clock;
         Thread updateThread;
         int updateInterval=60;
