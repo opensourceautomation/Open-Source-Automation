@@ -1,4 +1,4 @@
-﻿//#define OSAESERVICECONTROLLER
+﻿#define OSAESERVICECONTROLLER
 
 namespace OSAE.Service
 {
@@ -9,6 +9,7 @@ namespace OSAE.Service
     using System.ServiceModel;
     using System.ServiceProcess;
     using System.Diagnostics;
+    using System.Timers;
     using NetworkCommsDotNet;
     using log4net.Config;
     using log4net;
@@ -40,9 +41,9 @@ namespace OSAE.Service
         private bool running = true;
 
         /// <summary>
-        /// Timer used to periodically check if plugins are still running
+        /// Timer used to periodically check log to prune
         /// </summary>
-        //private System.Timers.Timer checkPlugins = new System.Timers.Timer();
+        private static System.Timers.Timer checkLog;
 
         //OSAELog
         private OSAE.General.OSAELog Log = new General.OSAELog();
@@ -87,9 +88,7 @@ namespace OSAE.Service
         /// </summary>
         public OSAEService()
         {
-            this.Log.Info("================");
             this.Log.Info("Service Starting");
-            this.Log.Info("================");
 
             InitialiseOSAInEventLog();
 
@@ -142,6 +141,10 @@ namespace OSAE.Service
 
             OSAE.OSAESql.RunSQL("SET GLOBAL event_scheduler = ON;");
 
+            checkLog = new System.Timers.Timer(60000);
+            checkLog.Elapsed += checkLogEvent;
+            checkLog.Enabled = true;
+
             // Start the network service so messages can be  
             // received by the service
             StartNetworkListener();
@@ -177,6 +180,12 @@ namespace OSAE.Service
             Exception e = (Exception)args.ExceptionObject;
             this.Log.Fatal("UnhandledExceptions caught : " + e.Message, e);
         }
+
+        private void checkLogEvent(Object source, ElapsedEventArgs e)
+        {
+            this.Log.PruneLogs();
+        }
+
         #endregion
     }
 }

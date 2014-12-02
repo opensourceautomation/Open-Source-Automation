@@ -62,6 +62,7 @@
                             <h3><asp:Label ID="dbSize" runat="server" Text="" /></h3>
                                 <div>
                                     &emsp;<b>Images:</b><asp:Label ID="imagesSize" runat="server" Text="" /> <br />
+                                    &emsp;<b>Server Log:</b><asp:Label ID="serverLog" runat="server" Text="" /><br /> 
                                     &emsp;<b>Debug Log:</b><asp:Label ID="debugLog" runat="server" Text="" /><br /> 
                                     &emsp;<b>Event Log:</b><asp:Label ID="eventLogSize" runat="server" Text="" /> <br />
                                     &emsp;<b>Method Log:</b><asp:Label ID="methodLogSize" runat="server" Text="" /> <br />

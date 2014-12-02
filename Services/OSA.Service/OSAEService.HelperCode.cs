@@ -5,7 +5,6 @@
     using System.IO;
     using System.ServiceModel;
     using System.Threading;
-    using System.Timers;
     using System.Net;
     using NetworkCommsDotNet;
 

@@ -76,6 +76,7 @@ public partial class config : System.Web.UI.Page
 
     private void GetTableSizes()
     {
+        serverLog.Text = GetTableSize("osae_log");
         imagesSize.Text = GetTableSize("osae_images");
         debugLog.Text = GetTableSize("osae_debug_log");
         objectsSize.Text = GetTableSize("osae_object");
