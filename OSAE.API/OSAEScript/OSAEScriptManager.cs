@@ -1,6 +1,7 @@
 ﻿namespace OSAE
 {
     using System;
+    using System.Data;
     using MySql.Data.MySqlClient;
     using System.Collections.Generic;
 
@@ -230,6 +231,26 @@
             }
         }
 
+        public static string PatternExport(string Name)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_pattern_export (@Name)";
+                command.Parameters.AddWithValue("@Name", Name);
+
+                try
+                {
+                    DataSet ds = OSAESql.RunQuery(command);
+                    return ds.Tables[0].Rows[0][0].ToString();
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - PatterExport error: " + command.CommandText + " - error: " + ex.Message, true);
+                    return null;
+                }
+            }
+        }
+
         public static void PatternMatchDelete(string name)
         {
             using (MySqlCommand command = new MySqlCommand())
@@ -287,13 +308,13 @@
             }
         }
 
-        public static void PatternScriptAdd(string name, int scriptID)
+        public static void PatternScriptAdd(string name, string script)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_pattern_script_add (@Name, @ScriptID)";
+                command.CommandText = "CALL osae_sp_pattern_script_add (@Name, @Script)";
                 command.Parameters.AddWithValue("@Name", name);
-                command.Parameters.AddWithValue("@ScriptID", scriptID);
+                command.Parameters.AddWithValue("@Script", script);
 
                 try
                 {
