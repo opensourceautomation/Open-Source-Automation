@@ -275,7 +275,7 @@
     <div id="linkModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="H1">Object Export Script</h3>
+            <h3 id="H1">Object Export</h3>
         </div>
         <div id="exportModalBody" class="modal-body">
             <asp:TextBox ID="txtExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>

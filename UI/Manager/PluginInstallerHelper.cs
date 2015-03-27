@@ -97,7 +97,6 @@
                     DescPath = osapdFiles[0];
                 }
 
-
                 if (!string.IsNullOrEmpty(DescPath))
                 {
                     desc.Deserialize(DescPath);
@@ -107,7 +106,7 @@
                     //uninstall previous plugin and delete the folder
                     if (UninstallPlugin(desc))
                     {
-
+                        MessageBox.Show("Starting 4.");
                         // get the plugin folder path
                         string pluginFolder = desc.Path;
                         if (!string.IsNullOrEmpty(pluginFolder))  //only extract valid plugins
@@ -116,6 +115,7 @@
 
                             string ConnectionString = string.Format("Uid={0};Pwd={1};Server={2};Port={3};Database={4};allow user variables=true",
                                 Common.DBUsername, Common.DBPassword, Common.DBConnection, Common.DBPort, Common.DBName);
+                            MessageBox.Show("Connecting to DB using:  " + Common.DBUsername + "  " + Common.DBPassword + "  " + Common.DBConnection + "  " + Common.DBPort + "  " + Common.DBName);
                             MySql.Data.MySqlClient.MySqlConnection connection = new MySql.Data.MySqlClient.MySqlConnection(ConnectionString);
                             connection.Open();
                             foreach (string s in sqlFile)
@@ -198,7 +198,8 @@
         {
             bool returnValue = false;
 
-            string ip = Common.WcfServer;
+            string ip = "localhost";
+           
             if (ip == "localhost")
                 ip = Common.LocalIPAddress();
             NetworkComms.SendObject("Plugin", ip, 10051, desc.Type + "|False");
