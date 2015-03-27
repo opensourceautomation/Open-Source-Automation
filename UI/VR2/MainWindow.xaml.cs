@@ -31,6 +31,8 @@ namespace VR2
         Boolean gVREnabled = false;
         String gWakePhrase = "Computer";
         String gSleepPhrase = "Thank You";
+        //String gWakeResponse = "Wake Response";
+        //String gSleepResponse = "You're Welcome";
         String gSpeechPlugin = "";
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
 
@@ -295,6 +297,11 @@ namespace VR2
                     gVRMuted = true;
                     lblStatus.Content = "I am sleeping";
                 }
+                else if ((sInput.ToUpper() == gSleepPhrase.ToUpper()) & (gVRMuted == true))
+                {
+                    return;
+                }
+                
                 // gSpeechPlugin;
                 String temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gSpeechPlugin, "Speaking").Value.ToString().ToLower();
 
@@ -368,7 +375,7 @@ namespace VR2
                     DataSet dataset = new DataSet();
                     //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                     //command.Parameters.AddWithValue("@Name", str);
-                    dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern WHERE `match`='" + str + "'");
+                    dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern_match WHERE `match`='" + str + "'");
 
                     if (dataset.Tables[0].Rows.Count > 0)
                     {
@@ -414,7 +421,7 @@ namespace VR2
                                             //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                                             //command.Parameters.AddWithValue("@Name", str);
                                             //dataset = OSAESql.RunQuery(command);
-                                            dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern WHERE `match`='" + str + "'");
+                                            dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern_match WHERE `match`='" + str + "'");
                                             if (dataset.Tables[0].Rows.Count > 0)
                                             {
                                                 //return dataset.Tables[0].Rows[0]["pattern"].ToString();
