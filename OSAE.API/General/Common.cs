@@ -94,7 +94,7 @@
                 ModifyRegistry registry = new ModifyRegistry();
                 registry.SubKey = "SOFTWARE\\OSAE\\";
 
-                return registry.Read("WcfServer");
+                return registry.Read("WCFSERVER");
             }
         }
              
@@ -201,7 +201,7 @@
                 DataSet dataset = new DataSet();
                 //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                 //command.Parameters.AddWithValue("@Name", str);
-                dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern WHERE `match`='" + str + "'");
+                dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern_match WHERE `match`='" + str + "'");
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
@@ -269,7 +269,7 @@
                                         //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                                         //command.Parameters.AddWithValue("@Name", str);
                                         //dataset = OSAESql.RunQuery(command);
-                                        dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern WHERE `match`='" + replacementString + "'");
+                                        dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern_match WHERE `match`='" + replacementString + "'");
                                         if (dataset.Tables[0].Rows.Count > 0)
                                         {
                                             //return dataset.Tables[0].Rows[0]["pattern"].ToString();

@@ -83,6 +83,7 @@
                     <asp:Button runat="server" ID="btnPatternSave" class="btn" OnClick="btnPatternAdd_Click" Text="Add" /> &nbsp;
                     <asp:Button runat="server" ID="btnPatternUpdate" class="btn" OnClick="btnPatternUpdate_Click" Text="Update" /> &nbsp;
                     <asp:Button runat="server" ID="btnPatternDelete" class="btn" OnClick="btnPatternDelete_Click" Text="Delete"/>
+                    <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
                 </div>
             </div>
         </div>
@@ -145,6 +146,17 @@
                     </asp:Panel>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="linkModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="H1">Pattern Export Script</h3>
+        </div>
+        <div id="exportModalBody" class="modal-body">
+            <asp:TextBox ID="lblExportPattern" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
         </div>
     </div>
         
