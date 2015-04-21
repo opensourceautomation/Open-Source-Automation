@@ -124,13 +124,13 @@ public partial class patterns : System.Web.UI.Page
 
     private void loadMatches()
     {
-        gvMatches.DataSource = OSAESql.RunSQL("SELECT `match`, match_id FROM osae_v_pattern_match WHERE pattern = '" + hdnSelectedPatternName.Text + "' ORDER BY `match`");
+        gvMatches.DataSource = OSAESql.RunSQL("SELECT `match`, match_id FROM osae_v_pattern_match WHERE pattern = '" + hdnSelectedPatternName.Text.Replace("'", "''") + "' ORDER BY `match`");
         gvMatches.DataBind();
     }
 
     private void loadScripts()
     {
-        gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, os.script_id, script_sequence, pattern_script_id FROM osae_script os INNER JOIN osae_pattern_script s ON s.script_id = os.script_id INNER JOIN osae_pattern p ON p.pattern_id = s.pattern_id WHERE pattern = '" + hdnSelectedPatternName.Text + "' ORDER BY script_sequence ASC");
+        gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, os.script_id, script_sequence, pattern_script_id FROM osae_script os INNER JOIN osae_pattern_script s ON s.script_id = os.script_id INNER JOIN osae_pattern p ON p.pattern_id = s.pattern_id WHERE pattern = '" + hdnSelectedPatternName.Text.Replace("'", "''") + "' ORDER BY script_sequence ASC");
         gvScripts.DataBind();
     }
 
