@@ -2,6 +2,7 @@
 {
     using System;
     using System.Speech.Synthesis;
+    using System.Threading;
 
     public class SPEECH : OSAEPluginBase
     {
@@ -51,6 +52,7 @@
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "TRUE", gAppName);
                 oSpeech.Speak(sText);
                 Log.Info("Said " + sText);
+                Thread.Sleep(500);
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "FALSE", gAppName);
             }
             else if (sMethod == "SPEAKFROM")
@@ -60,8 +62,9 @@
                 sText = Common.PatternParse(sText);
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "TRUE", gAppName);
                 oSpeech.Speak(sText);
-                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "FALSE", gAppName);
                 Log.Info("Said " + sText);
+                Thread.Sleep(500);
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "FALSE", gAppName);
             }
             else if (sMethod == "PLAY")
             {
