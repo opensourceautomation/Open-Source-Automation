@@ -92,8 +92,8 @@
     <Compile Include="ChangeScreen.xaml.cs">
       <DependentUpon>ChangeScreen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CreateScreen.xaml.cs">
-      <DependentUpon>CreateScreen.xaml</DependentUpon>
+    <Compile Include="AddControlScreen.xaml.cs">
+      <DependentUpon>AddControlScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logs.xaml.cs">
       <DependentUpon>Logs.xaml</DependentUpon>
@@ -175,7 +175,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CreateScreen.xaml">
+    <Page Include="AddControlScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

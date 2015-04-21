@@ -1,4 +1,4 @@
-﻿namespace GUI2
+﻿namespace Screens
 {
     using System;
     using System.Collections.Generic;
@@ -215,6 +215,7 @@
                                         {
                                             Canvas.SetLeft(sImage, sImage.Location.X);
                                             Canvas.SetTop(sImage, sImage.Location.Y);
+                                            sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
                                         }));
                                         this.Log.Debug("Complete:  " + newCtrl.ControlName);
                                     }
@@ -415,6 +416,9 @@
                         stateImageControl.MouseRightButtonDown += new MouseButtonEventHandler(State_Image_MouseRightButtonDown);
                         stateImageControl.Location.X = Double.Parse(obj.Property(sStateMatch + " X").Value);
                         stateImageControl.Location.Y = Double.Parse(obj.Property(sStateMatch + " Y").Value);
+                        double dOpacity = Convert.ToDouble(stateImageControl.LightLevel) / 100.00;
+                        //Opacity is new and unknow in 044
+                        stateImageControl.Opacity = dOpacity;
                         canGUI.Children.Add(stateImageControl);
                         Canvas.SetLeft(stateImageControl, stateImageControl.Location.X);
                         Canvas.SetTop(stateImageControl, stateImageControl.Location.Y);
@@ -1050,8 +1054,13 @@
 
         private void menuCreateScreen_Click(object sender, RoutedEventArgs e)
         {
-            CreateScreen addControl = new CreateScreen(this);
-            addControl.Show();
+            AddControl addControl = new AddControl();
+            AddControlScreen cscr = new AddControlScreen(gCurrentScreen);
+            addControl.Width = cscr.Width + 80;
+            addControl.Height = cscr.Height + 80;
+            addControl.Content = cscr;
+            addControl.ShowDialog();
+            Load_Screen(gCurrentScreen);
         }
 
         #endregion
@@ -1063,6 +1072,7 @@
 
         private void menuChangeScreen_Click(object sender, RoutedEventArgs e)
         {
+            
             ChangeScreen chgScrn = new ChangeScreen(this);
             chgScrn.Show();
         }

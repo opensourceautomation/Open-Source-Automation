@@ -1,4 +1,4 @@
-﻿<Window x:Class="GUI2.MainWindow"
+﻿<Window x:Class="Screens.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Open Source Automation - Main Window" Height="195" Width="576" Loaded="Window_Loaded" Closing="Window_Closing_1" Icon="icon.png" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight">
@@ -7,8 +7,8 @@
             <Canvas.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="menuEditMode" Header="Edit Mode" IsCheckable="True" Checked="menuEditMode_Checked" Unchecked="menuEditMode_Unchecked"/>
-                    <MenuItem Name="menuChangeScreen" Header="Change Screen" Click="menuChangeScreen_Click"/>
-                    <MenuItem Name="menuCreateScreen" Header="Create Screen" Click="menuCreateScreen_Click" />
+                    <MenuItem Name="menuChangeScreen" Header="Switch Screen" Click="menuChangeScreen_Click"/>
+                    <MenuItem Name="menuCreateScreen" Header="Add/Edit Screen" Click="menuCreateScreen_Click" />
                     <MenuItem Header="Add Control">
                         <MenuItem Name="menuAddStateImage" Header="State Image" Click="menuAddStateImage_Click" />
                         <MenuItem Name="menuAddPropertyLabel" Header="Property Label" Click="menuAddPropertyLabel_Click" />

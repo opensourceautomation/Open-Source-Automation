@@ -22,6 +22,7 @@ namespace OSAE.UI.Controls
         public string CurState;
         public string CurStateLabel;
         public string CurLevel = "";
+        public int LightLevel = 100;
 
         public string ObjectName;
         public string SliderMethod;
@@ -49,7 +50,15 @@ namespace OSAE.UI.Controls
                 ObjectName = screenObject.Property("Object Name").Value;
                 SliderMethod = screenObject.Property("Slider Method").Value;
                 CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
-              
+                try
+                {
+                    LightLevel = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value);
+                }
+                catch (Exception ex)
+                {
+                    LightLevel = 100;
+                }
+
                 LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
                 Image.ToolTip = ObjectName + "\n" + CurState + " since: " + LastStateChange;
 
@@ -203,7 +212,14 @@ namespace OSAE.UI.Controls
                 Location.X = Double.Parse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, StateMatch + " X").Value);
                 Location.Y = Double.Parse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, StateMatch + " Y").Value);
 
-
+                try
+                {
+                    LightLevel = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value);
+                }
+                catch (Exception ex)
+                {
+                    LightLevel = 100;
+                }
 
                 string imgName = screenObject.Property(StateMatch + " Image").Value;
                 img1 = imgMgr.GetImage(imgName);

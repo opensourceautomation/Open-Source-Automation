@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="OSAE.UI.Controls.AddControlScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Height="402" Width="464">
+    <Grid>
+        <Button Name="btnOpen" Content="Select" HorizontalAlignment="Left" Margin="83,44,0,0" VerticalAlignment="Top" Width="73" Click="btnOpen_Click"/>
+        <Label Content="Image" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtScreenName" HorizontalAlignment="Left" Height="23" Margin="83,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="342" TextChanged="txtScreenName_TextChanged"/>
+        <Label Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Image Name="imgScreen" HorizontalAlignment="Left" Height="294" Margin="10,71,0,0" VerticalAlignment="Top" Width="444"/>
+        <Button Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="10,370,0,0" VerticalAlignment="Top" Width="75" Click="btnAdd_Click"/>
+        <Button Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="379,370,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"/>
+        <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="107,370,0,0" VerticalAlignment="Top" Width="75" Click="btnUpdate_Click"/>
+        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="206,370,0,0" VerticalAlignment="Top" Width="75" Click="btnDelete_Click"/>
+
+    </Grid>
+</UserControl>

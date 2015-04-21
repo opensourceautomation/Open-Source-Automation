@@ -63,15 +63,6 @@
                 LoadCurrentScreenObject(controlName);
             }
 
-
-
-
-
-
-
-
-
-
             txtName.Text = currentScreen + " - Browser";
         }
 
