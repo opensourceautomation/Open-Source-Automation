@@ -81,6 +81,11 @@ namespace VR2
                 AddToLog("--  Samples Per Second: " + oRecognizer.AudioFormat.SamplesPerSecond);
                 AddToLog("--  Average Bytes Per Second: " + oRecognizer.AudioFormat.AverageBytesPerSecond);
                 gSpeechPlugin = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Can Hear this Plugin").Value.ToString();
+                if (gSpeechPlugin == "")
+                {
+                    gSpeechPlugin = "Speech";
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Can Hear this Plugin", "Speech","VR Client");
+                }
                 AddToLog("--  I will ignore speech from: " + gSpeechPlugin);
                 Thread t1 = new Thread(delegate()
                 {
