@@ -496,6 +496,7 @@
                     {
 
                         OSAE.UI.Controls.TimerLabel tl = new OSAE.UI.Controls.TimerLabel(obj);
+                        tl.MouseRightButtonDown += new MouseButtonEventHandler(Timer_Label_MouseRightButtonDown);
                         canGUI.Children.Add(tl);
                         int dZ = Int32.Parse(obj.Property("ZOrder").Value);
                         tl.Location.X = Double.Parse(obj.Property("X").Value);
@@ -782,6 +783,19 @@
             Load_Screen(gCurrentScreen);
         }
 
+        private void Timer_Label_MouseRightButtonDown(object sender, MouseEventArgs e)
+        {
+            if (editMode == false) return;
+            TimerLabel tmrLbl = (TimerLabel)sender;
+            AddControl addControl = new AddControl();
+            AddControlTimerLabel cmi = new AddControlTimerLabel(gCurrentScreen, tmrLbl.screenObject.Name);
+            addControl.Content = cmi;
+            addControl.Width = cmi.Width + 80;
+            addControl.Height = cmi.Height + 80;
+            addControl.Owner = this;
+            addControl.ShowDialog();
+            Load_Screen(gCurrentScreen);
+        }
 
         #region Drag Events
         void DragSource_Drop(dynamic sender, DragEventArgs e)

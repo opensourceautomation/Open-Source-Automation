@@ -21,6 +21,7 @@ namespace OSAE.UI.Controls
     public partial class TimerLabel : UserControl
     {
         public OSAEObject screenObject { get; set; }
+        public string screenName { get; set; }
         public Point Location;
         public DateTime LastUpdated;
         
@@ -35,7 +36,8 @@ namespace OSAE.UI.Controls
         public TimerLabel(OSAEObject sObj)
         {
             InitializeComponent();
-            screenObject = sObj;            
+            screenObject = sObj;
+            screenName = Name;
 
             ObjectName = screenObject.Property("Object Name").Value;
             OSAEObject timerObj = OSAEObjectManager.GetObjectByName(ObjectName);
