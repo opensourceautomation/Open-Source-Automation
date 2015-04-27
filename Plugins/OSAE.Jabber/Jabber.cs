@@ -88,7 +88,10 @@ namespace OSAE.Jabber
 
                     case "SEND FROM LIST":
                         //Speech List here should not be hard coded, but I understand we only have 2 parameters to work with...
-                        sendMessage(Common.PatternParse(OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom("Speech List", method.Parameter2)), to);
+                        string speechList = method.Parameter2.Substring(0,method.Parameter2.IndexOf(","));
+                        string listItem = method.Parameter2.Substring(method.Parameter2.IndexOf(",") + 1, method.Parameter2.Length - (method.Parameter2.IndexOf(",")+ 1));
+                        if (gDebug) Log.Debug("List = " + speechList + "   Item=" + listItem);
+                        sendMessage(Common.PatternParse(OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom(speechList, listItem)), to);
                         break;
                 }
             }
