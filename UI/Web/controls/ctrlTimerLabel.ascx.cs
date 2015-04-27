@@ -17,28 +17,16 @@ public partial class controls_ctrlTimerLabel : System.Web.UI.UserControl
     private string CurrentState;
     private int TimeInState;
     TimeSpan span;
-    string time;
+    string sValue;
 
     protected void Page_Load(object sender, EventArgs e)
     {
         ObjectName = screenObject.Property("Object Name").Value;
-        OSAEObject timerObj = OSAEObjectManager.GetObjectByName(ObjectName);
-        if (timerObj.Property("OFF TIMER").Value != "")
-            OffTimer = Int32.Parse(timerObj.Property("OFF TIMER").Value);
-        else
-            OffTimer = 0;
-        CurrentState = timerObj.State.Value;
+        OSAEObjectState os = OSAEObjectStateManager.GetObjectStateValue(ObjectName);
+        CurrentState = os.Value;
 
-        TimeSpan ts = DateTime.Now - DateTime.Parse(timerObj.LastUpd);
-        TimeInState = (int)ts.TotalSeconds;
-
-        if (CurrentState == "OFF")
-            time = "OFF";
-        else
-        {
-            span = TimeSpan.FromSeconds(OffTimer - TimeInState); 
-            time = span.ToString(@"mm\:ss");
-        }
+        OffTimer = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "OFF TIMER").Value);
+        TimeInState = (int)os.TimeInState;
 
         string sBackColor = screenObject.Property("Back Color").Value;
         string sForeColor = screenObject.Property("Fore Color").Value;
@@ -46,7 +34,15 @@ public partial class controls_ctrlTimerLabel : System.Web.UI.UserControl
         string sSuffix = screenObject.Property("Suffix").Value;
         string iFontSize = screenObject.Property("Font Size").Value;
 
-        TimerLabel.Text = time;
+        if (CurrentState == "OFF")
+            sValue = os.StateLabel;
+        else
+        {
+            span = TimeSpan.FromSeconds(OffTimer - TimeInState); //Or TimeSpan.FromSeconds(seconds); (see Jakob C´s answer)
+            sValue = span.ToString(@"mm\:ss");
+        }
+
+        TimerLabel.Text = sValue;
         TimerLabel.Attributes.Add("Style", "position:absolute;top:" + (Int32.Parse(screenObject.Property("Y").Value) + 50).ToString() + "px;left:" + (Int32.Parse(screenObject.Property("X").Value) + 10).ToString() + "px;z-index:" + (Int32.Parse(screenObject.Property("ZOrder").Value) + 10).ToString() + ";");
 
         if (sBackColor != "")

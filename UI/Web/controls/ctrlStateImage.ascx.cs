@@ -38,7 +38,7 @@ public partial class controls_ctrlStateImage : System.Web.UI.UserControl
         {
             LightLevel = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value);
         }
-        catch (Exception ex)
+        catch
         {
             LightLevel = 100.00;
         }
@@ -62,6 +62,7 @@ public partial class controls_ctrlStateImage : System.Web.UI.UserControl
         }
     }
 
+    /*
     public void Update()
     {
         if (OSAEObjectStateManager.GetObjectStateValue(hdnObjName.Value).Value != hdnCurState.Value)
@@ -86,7 +87,6 @@ public partial class controls_ctrlStateImage : System.Web.UI.UserControl
                 LightLevel = 100.00;
             }
 
-
             string imgName = screenObject.Property(StateMatch + " Image").Value;
             OSAEImage img = imgMgr.GetImage(imgName);
             imgStateImage.ImageUrl = "~/ImageHandler.ashx?id=" + img.ID;
@@ -101,5 +101,5 @@ public partial class controls_ctrlStateImage : System.Web.UI.UserControl
                 imgStateImage.Attributes.Add("onclick", "runMethod('" + ObjectName + "','ON','','');");
             }
         }
-    }
+    }*/
 }
