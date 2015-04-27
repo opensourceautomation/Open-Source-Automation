@@ -26,7 +26,7 @@
                 CssClass="mGrid"
                 AlternatingRowStyle-CssClass="alt" >
                 <Columns>
-                    <asp:BoundField HeaderText="Time" DataField="Date" ItemStyle-Width="10em"/>
+                    <asp:BoundField HeaderText="Time" DataField="log_time" ItemStyle-Width="12em"/>
                     <asp:BoundField HeaderText="Level" DataField="Level"/>
                     <asp:TemplateField>
                         <HeaderTemplate>
