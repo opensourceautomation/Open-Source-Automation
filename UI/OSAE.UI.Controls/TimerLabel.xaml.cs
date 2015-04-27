@@ -40,13 +40,12 @@ namespace OSAE.UI.Controls
             screenName = Name;
 
             ObjectName = screenObject.Property("Object Name").Value;
-            OSAEObject timerObj = OSAEObjectManager.GetObjectByName(ObjectName);
-            if (timerObj.Property("OFF TIMER").Value != "")
-                OffTimer = Int32.Parse(timerObj.Property("OFF TIMER").Value);
-            else
-                OffTimer = 0;
-            CurrentState = timerObj.State.Value;
-            TimeInState = (int)timerObj.State.TimeInState;
+
+            OSAEObjectState os = OSAEObjectStateManager.GetObjectStateValue(ObjectName);
+            CurrentState = os.Value;
+
+            OffTimer = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName,"OFF TIMER").Value);
+            TimeInState = (int)os.TimeInState;
 
             string sValue;
             string sBackColor = screenObject.Property("Back Color").Value;
@@ -55,7 +54,7 @@ namespace OSAE.UI.Controls
             string sFontName = screenObject.Property("Font Name").Value;
 
             if (CurrentState == "OFF")
-                sValue = "OFF";
+                sValue = os.StateLabel;
             else
             {
                 span = TimeSpan.FromSeconds(OffTimer - TimeInState); //Or TimeSpan.FromSeconds(seconds); (see Jakob C´s answer)
@@ -72,9 +71,8 @@ namespace OSAE.UI.Controls
                         SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
                         timerLabel.Background = brush;
                     }
-                    catch (Exception myerror)
+                    catch
                     {
-                        
                     }
                 }
                 if (sForeColor != "")
@@ -85,7 +83,7 @@ namespace OSAE.UI.Controls
                         SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
                         timerLabel.Foreground = brush;
                     }
-                    catch (Exception myerror)
+                    catch
                     {
                     }
                 }
@@ -95,7 +93,7 @@ namespace OSAE.UI.Controls
                     {
                         timerLabel.FontSize = Convert.ToDouble(iFontSize);
                     }
-                    catch (Exception myerror)
+                    catch
                     {
                     }
                 }
@@ -105,7 +103,6 @@ namespace OSAE.UI.Controls
             {
                 timerLabel.Content = "";
             }
-
             timer.Interval = 1000;
             timer.Enabled = true;
             timer.Elapsed += new ElapsedEventHandler(timer_tick);
@@ -122,13 +119,15 @@ namespace OSAE.UI.Controls
                 TimeSpan ts = DateTime.Now - LastUpdated;
                 TimeInState = (int)ts.TotalSeconds;
                 if (os.Value == "OFF")
-                    sValue = "OFF";
+                {
+                    sValue = os.StateLabel;
+                    timerLabel.Content = sValue;
+                }
                 else
                 {
                     span = TimeSpan.FromSeconds(OffTimer - TimeInState); //Or TimeSpan.FromSeconds(seconds); (see Jakob C´s answer)
                     sValue = span.ToString(@"mm\:ss");
                 }
-                timerLabel.Content = sValue;
             }));
         }
 

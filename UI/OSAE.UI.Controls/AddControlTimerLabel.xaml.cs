@@ -16,6 +16,7 @@
     {
         private string currentScreen;
         string sOriginalName = "";
+        string sOriginalObject = "";
         string sMode = "";
 
         public AddControlTimerLabel(string screen, string controlName = "")
@@ -39,8 +40,7 @@
                     LoadCurrentScreenObject(controlName);
                 }
             }
-
-            if (controlName == "")
+            else   
             {
                 sMode = "Add";
             }
@@ -79,9 +79,7 @@
             foreColorComboBox.Text = "Black";
             backColorComboBox.Text = "White";
             txtFont.Text = "Arial";
-           // txtFont.FontFamily = new  System.Windows.Media.FontFamily("Arial");
             txtSize.Text = "8.5";
-
         }
 
         private void txtFont_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -91,7 +89,6 @@
                 System.Windows.Forms.FontDialog dlgFont = null;
                 dlgFont = new System.Windows.Forms.FontDialog();
 
-
                 if (dlgFont.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     txtFont.Text = dlgFont.Font.FontFamily.Name;
@@ -99,9 +96,8 @@
                     txtSize.Text = dlgFont.Font.Size.ToString();
                 }
             }
-            catch (Exception ex)
+            catch
             {
-
             }
         }
 
@@ -134,8 +130,10 @@
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
-
-            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
+            if ((sOriginalObject != objectComboBox.Text) && (sOriginalName != sName))
+            {
+                OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, objectComboBox.Text, sName);
+            }
             NotifyParentFinished();
         }
 
@@ -171,8 +169,11 @@
         private void LoadCurrentScreenObject(string controlName)
         {
             objectComboBox.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Object Name").Value;
+            sOriginalObject = objectComboBox.Text;
             txtFont.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Font Name").Value;
             txtSize.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Font Size").Value;
+            foreColorComboBox.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Fore Color").Value;
+            backColorComboBox.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Back Color").Value;
             txtX.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "X").Value;
             txtY.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Y").Value;
         }
@@ -187,14 +188,14 @@
                 btnDelete.IsEnabled = false;
             }
             //Now we handle Updates with no name changes
-            if (sMode == "Update" && sOriginalName == objectComboBox.Text)
+            if (sMode == "Update" && sOriginalObject == objectComboBox.Text)
             {
                 btnAdd.IsEnabled = false;
                 btnUpdate.IsEnabled = true;
                 btnDelete.IsEnabled = true;
             }
             //Now we handle Updates WITH name changes
-            if (sMode == "Update" && sOriginalName != objectComboBox.Text)
+            if (sMode == "Update" && sOriginalObject != objectComboBox.Text)
             {
                 btnAdd.IsEnabled = true;
                 btnUpdate.IsEnabled = true;
