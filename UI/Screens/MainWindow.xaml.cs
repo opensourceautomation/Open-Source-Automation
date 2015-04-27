@@ -106,12 +106,11 @@
         {
             try
             {
+                loadingScreen = true;
                 while (updatingScreen)
                 {
                     System.Threading.Thread.Sleep(100);
                 }
-                loadingScreen = true;
-                //this.Log.Debug("Loading screen: " + sScreen);
 
                 stateImages.Clear();
                 propLabels.Clear();
@@ -127,9 +126,6 @@
                 string imgID = OSAEObjectPropertyManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
                 OSAE.OSAEImage img = imgMgr.GetImage(imgID);
 
-                //sPath = OSAEApi.APIpath + OSAEApi.GetObjectPropertyValue(sScreen, "Background Image").Value;
-                //byte[] byteArray = File.ReadAllBytes(sPath);
-
                 if (img.Data != null)
                 {
                     var imageStream = new MemoryStream(img.Data);
@@ -143,13 +139,8 @@
                     canGUI.Width = bitmapImage.Width;
                 }
 
-                //Thread threadLoad = new Thread(() => Load_Objects(sScreen));
-                //threadLoad.Start();
-
                 Load_Objects(sScreen);
                 loadingScreen = false;
-
-                //this.Log.Debug("Loading screen complete: " + sScreen);
             }
             catch (Exception ex)
             {
@@ -165,16 +156,10 @@
             {
                 LoadControl(obj);
             }
-
-            //Thread threadUpdate = new Thread(() => Update_Objects());
-            //threadUpdate.Start();
         }
 
         private void Update_Objects()
         {
-         //   try
-         //   {
-                 
                  while (!closing)
                 {
                     while (loadingScreen)
@@ -183,12 +168,10 @@
                     }
                     updatingScreen = true;
                     bool oldCtrl = false;
-                    //Log.Debug("Entering Update_Objects");
                     List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
 
                     foreach (OSAE.OSAEScreenControl newCtrl in controls)
                     {
-                        if (loadingScreen) return;
                         oldCtrl = false;
 
                         #region CONTROL STATE IMAGE
@@ -196,28 +179,24 @@
                         {
                             foreach (StateImage sImage in stateImages)
                             {
-                                if (loadingScreen) return;
                                 if (newCtrl.ControlName == sImage.screenObject.Name)
                                 {
                                     if (newCtrl.LastUpdated != sImage.LastUpdated)
                                     {
-                                        this.Log.Debug("Updating:  " + newCtrl.ControlName);
                                         sImage.LastUpdated = newCtrl.LastUpdated;
                                         try
                                         {
                                             sImage.Update();
                                         }
-                                        catch (Exception ex)
-                                        {
-
-                                        }
+                                        catch
+                                        {}
                                         this.Dispatcher.Invoke((Action)(() =>
                                         {
                                             Canvas.SetLeft(sImage, sImage.Location.X);
                                             Canvas.SetTop(sImage, sImage.Location.Y);
                                             sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
                                         }));
-                                        this.Log.Debug("Complete:  " + newCtrl.ControlName);
+                                        this.Log.Debug("Updated:  " + newCtrl.ControlName);
                                     }
                                     oldCtrl = true;
                                 }
@@ -228,19 +207,15 @@
                         #region CONTROL PROPERTY LABEL
                         else if (newCtrl.ControlType == "CONTROL PROPERTY LABEL")
                         {
-                            if (loadingScreen) return;
                             foreach (PropertyLabel pl in propLabels)
                             {
-                                if (loadingScreen) return;
                                 if (newCtrl.ControlName == pl.screenObject.Name)
                                 {
                                     if (newCtrl.LastUpdated != pl.LastUpdated)
                                     {
-                                        this.Log.Debug("Updating:  " + newCtrl.ControlName);
                                         pl.LastUpdated = newCtrl.LastUpdated;
                                         pl.Update();
-                                        this.Log.Debug("Complete:  " + newCtrl.ControlName);
-                                        if (loadingScreen) return;
+                                        this.Log.Debug("Updated:  " + newCtrl.ControlName);
                                     }
                                     oldCtrl = true;
                                 }
@@ -253,15 +228,13 @@
                         {
                             foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
                             {
-                                if (loadingScreen) return;
                                 if (newCtrl.ControlName == tl.screenObject.Name)
                                 {
                                     if (newCtrl.LastUpdated != tl.LastUpdated)
                                     {
-                                        this.Log.Debug("Updating:  " + newCtrl.ControlName);
                                         tl.LastUpdated = newCtrl.LastUpdated;
                                         tl.Update();
-                                        this.Log.Debug("Complete:  " + newCtrl.ControlName);
+                                        this.Log.Debug("Updated:  " + newCtrl.ControlName);
                                     }
                                     oldCtrl = true;
                                 }
@@ -274,10 +247,7 @@
                         {
                             foreach (OSAE.UI.Controls.StaticLabel sl in staticLabels)
                             {
-                                if (newCtrl.ControlName == sl.screenObject.Name)
-                                {
-                                    oldCtrl = true;
-                                }
+                                if (newCtrl.ControlName == sl.screenObject.Name) oldCtrl = true;
                             }
                         }
                         #endregion
@@ -287,10 +257,7 @@
                         {
                             foreach (OSAE.UI.Controls.NavigationImage nav in navImages)
                             {
-                                if (newCtrl.ControlName == nav.screenObject.Name)
-                                {
-                                    oldCtrl = true;
-                                }
+                                if (newCtrl.ControlName == nav.screenObject.Name) oldCtrl = true;
                             }
                         }
                         #endregion
@@ -300,10 +267,7 @@
                         {
                             foreach (OSAE.UI.Controls.ClickImage method in clickImages)
                             {
-                                if (newCtrl.ControlName == method.screenObject.Name)
-                                {
-                                    oldCtrl = true;
-                                }
+                                if (newCtrl.ControlName == method.screenObject.Name) oldCtrl = true;
                             }
                         }
                         #endregion
@@ -313,10 +277,7 @@
                         {
                             foreach (OSAE.UI.Controls.VideoStreamViewer vsv in cameraViewers)
                             {
-                                if (newCtrl.ControlName == vsv.screenObject.Name)
-                                {
-                                    oldCtrl = true;
-                                }
+                                if (newCtrl.ControlName == vsv.screenObject.Name) oldCtrl = true;
                             }
                         }
                         #endregion
@@ -326,10 +287,7 @@
                         {
                             foreach (dynamic obj in userControls)
                             {
-                                if (newCtrl.ControlName == obj.screenObject.Name)
-                                {
-                                    oldCtrl = true;
-                                }
+                                if (newCtrl.ControlName == obj.screenObject.Name) oldCtrl = true;
                             }
                         }
                         #endregion
@@ -376,12 +334,6 @@
                     updatingScreen = false;
                     System.Threading.Thread.Sleep(500);
                 }
-               
-        //    }
-      //      catch (Exception ex)
-       //     {
-       //         System.Threading.Thread.Sleep(100);
-       //     }
         }
 
         private void LoadControl(OSAE.OSAEObject obj)
