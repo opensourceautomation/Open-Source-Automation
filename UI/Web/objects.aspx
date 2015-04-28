@@ -67,19 +67,19 @@
         <div class="span8">
             <div ID="ObjPanel">
                 <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px;" onscroll="SetDivPosition()">
-                    <asp:GridView runat="server" ID="gvObjects"
+                    <asp:GridView runat="server" ID="gvObjects" AllowSorting="True" OnSorting="gvObjects_OnSorting"
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid"  
                         AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="true">
                         <AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>  
                         <Columns>  
-                            <asp:BoundField DataField="container_name" HeaderText="Container" />  
-                            <asp:BoundField DataField="object_name" HeaderText="Object" />  
-                            <asp:BoundField DataField="object_type" HeaderText="Type" />  
-                            <asp:BoundField DataField="state_label" HeaderText="State" />  
-                            <asp:BoundField DataField="last_updated" HeaderText="Updated" ItemStyle-Width="10em" />  
-                            <asp:BoundField DataField="address" HeaderText="Address" />  
+                            <asp:BoundField DataField="container_name" HeaderText="Container" SortExpression="container_name"/>  
+                            <asp:BoundField DataField="object_name" HeaderText="Object" SortExpression="object_name" />  
+                            <asp:BoundField DataField="object_type" HeaderText="Type" SortExpression="object_type" />  
+                            <asp:BoundField DataField="state_label" HeaderText="State" SortExpression="state_label" />  
+                            <asp:BoundField DataField="last_updated" HeaderText="Updated" ItemStyle-Width="10em" SortExpression="last_updated" />  
+                            <asp:BoundField DataField="address" HeaderText="Address" SortExpression="address" />  
                         </Columns>  
                     </asp:GridView>
                 </div>
@@ -286,6 +286,7 @@
     </div>
     
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
+    <asp:Label runat="server" ID="hdnLastRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>

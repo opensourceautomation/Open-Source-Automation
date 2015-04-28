@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Data;
 
 using OSAE;
 
@@ -59,10 +60,27 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        loadObjectTypes();
+       // loadObjectTypes();
 
-        gvObjectTypes.DataSource = OSAESql.RunSQL("SELECT base_type, object_type, object_type_description FROM osae_v_object_type ORDER BY base_type, object_type");
+        if (!IsPostBack)
+        {
+            ViewState["sortOrder"] = "";
+            bindGridView("", "");
+        }  
+    }
+
+    public void bindGridView(string sortExp, string sortDir)
+    {
+        DataSet myDataSet = OSAESql.RunSQL("SELECT base_type, object_type, object_type_description FROM osae_v_object_type ORDER BY base_type, object_type");
+        DataView myDataView = new DataView();
+        myDataView = myDataSet.Tables[0].DefaultView;
+
+        if (sortExp != string.Empty)
+            myDataView.Sort = string.Format("{0} {1}", sortExp, sortDir);
+
+        gvObjectTypes.DataSource = myDataView;
         gvObjectTypes.DataBind();
+        if (!this.IsPostBack) loadDDLs();
 
         if (hdnSelectedPropRow.Text != "") loadProperties();
         if (hdnSelectedStateRow.Text != "") loadStates();
@@ -458,4 +476,27 @@ public partial class objtypes : System.Web.UI.Page
         hdnEditingPropOptions.Value = "1";
         loadPropertyOptions();
     }
+
+    protected void gvObjectTypes_OnSorting(object sender, GridViewSortEventArgs e)
+    {
+        bindGridView(e.SortExpression, sortOrder);
+    }
+
+    public string sortOrder
+    {
+        get
+        {
+            if (ViewState["sortOrder"].ToString() == "desc")
+                ViewState["sortOrder"] = "asc";
+            else
+                ViewState["sortOrder"] = "desc";
+
+            return ViewState["sortOrder"].ToString();
+        }
+        set
+        {
+            ViewState["sortOrder"] = value;
+        }
+    } 
+
 }
