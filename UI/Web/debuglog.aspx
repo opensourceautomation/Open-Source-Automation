@@ -7,7 +7,7 @@
         <div class="span10">
             <asp:GridView ID="debugLogGridView" AutoGenerateColumns="false" runat="server" GridLines="None" CssClass="mGrid" AlternatingRowStyle-CssClass="alt" EmptyDataText="No Entries Found">
                 <Columns>
-                    <asp:BoundField DataField="log_time" HeaderText="Time" ItemStyle-Width="10em" />
+                    <asp:BoundField DataField="log_time" HeaderText="Time"  ItemStyle-Width="10em" DataFormatString="{0:MM-dd HH:mm:ss.ff}" />
                     <asp:BoundField DataField="entry" HeaderText="Entry" />
                     <asp:BoundField DataField="debug_trace" HeaderText="Debug Trace" />
                 </Columns>

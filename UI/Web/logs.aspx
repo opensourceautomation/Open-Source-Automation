@@ -21,12 +21,13 @@
             ERROR: <asp:CheckBox ID="chkError" runat="server" Checked="true" OnCheckedChanged="CheckedChanged" AutoPostBack="true" />
             <br />
             <asp:GridView ID="gvLog" runat="server"
-                AutoGenerateColumns="false"
+                AutoGenerateColumns="False"
                 GridLines="None"
                 CssClass="mGrid"
                 AlternatingRowStyle-CssClass="alt" >
+<AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
                 <Columns>
-                    <asp:BoundField HeaderText="Time" DataField="log_time" ItemStyle-Width="12em"/>
+                    <asp:BoundField HeaderText="Time" DataField="log_time" ItemStyle-Width="10em" DataFormatString="{0:MM-dd HH:mm:ss.ff}" />
                     <asp:BoundField HeaderText="Level" DataField="Level"/>
                     <asp:TemplateField>
                         <HeaderTemplate>
