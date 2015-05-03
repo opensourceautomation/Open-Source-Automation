@@ -11,6 +11,7 @@ namespace OSAE.Jabber
         bool shuttingDown = false;
         Boolean gDebug = false;
         private OSAE.General.OSAELog Log = new General.OSAELog();
+        private agsXMPP.protocol.client.Message oldMmsg;
 
         public override void RunInterface(string pluginName)
         {
@@ -114,6 +115,10 @@ namespace OSAE.Jabber
             if (msg.Body == null) return;
 
             if (msg.Type == agsXMPP.protocol.client.MessageType.error) return;
+
+            if (oldMmsg == msg) return;
+
+            oldMmsg = msg;
 
             if (gDebug) Log.Debug(String.Format("OnMessage from: {0} type: {1}", msg.From.Bare, msg.Type.ToString()));
             if (gDebug) Log.Debug("INPUT: " + msg.Body);
