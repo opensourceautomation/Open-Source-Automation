@@ -163,12 +163,12 @@ namespace VR2
                 if (temp == "FALSE")
                 {
                     gVRMuted = false;
-                    lblStatus.Content = "I am awake";
+                    lblStatus.Content = "I am awake.";
                 }
                 else
                 {
                     gVRMuted = true;
-                    lblStatus.Content = "I am asleep";
+                    lblStatus.Content = "I am sleeping.  Zzzz";
                 }
                 AddToLog("--  VR Muted: " + gVRMuted);
 
@@ -437,7 +437,6 @@ namespace VR2
             }
         }
 
-
         private void oRecognizer_SpeechRecognized(object sender, System.Speech.Recognition.SpeechRecognizedEventArgs e)
         {
             ProcessInput(e.Result.Text);
@@ -453,14 +452,14 @@ namespace VR2
                 if (wakeList.Contains(sInput) && gVRMuted == true)
                 {
                     gVRMuted = false;
-                    lblStatus.Content = "I am awake";
+                    lblStatus.Content = "I am awake.";
                 }
                 else if (sleepList.Contains(sInput) && gVRMuted == false)
                 {
                     gVRMuted = true;
-                    lblStatus.Content = "I am sleeping";
+                    lblStatus.Content = "I am sleeping. Zzzz";
                 }
-                else if ((sInput.ToUpper() == gSleepPattern.ToUpper()) & (gVRMuted == true))
+                else if (sleepList.Contains(sInput) && gVRMuted == true)
                 {
                     return;
                 }
@@ -469,26 +468,15 @@ namespace VR2
                 // gSpeechPlugin;
                 String temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gSpeechPlugin, "Speaking").Value.ToString().ToLower();
 
-                if (temp.ToLower() == "true")
-                {
-                    try
-                    {
-                        if (chkShowIgnored.IsChecked == true)
-                        AddToLog("Ignored Speech because TTS was talking.");
-                    }
-                    catch (Exception ex)
-                    {
-                    }
-                }
-                else
+                if (temp.ToLower() == "false")
                 {
                     if ((gVRMuted == false) || (sleepList.Contains(sInput)))
                     {
                         try
                         {
                             string sLogEntry = "Heard: " + sInput;
-                            //string sText = OSAE.Common.MatchPattern(sInput);
-                            string sText = MatchPattern(sInput);
+                            string sText = OSAE.Common.MatchPattern(sInput);
+                            //string sText = MatchPattern(sInput);
                             if (sText.Length > 0)
                             {
                                 sLogEntry += ".  Ran: " + sText;
@@ -510,18 +498,41 @@ namespace VR2
 
         private void oRecognizer_StateChanged(object sender, System.Speech.Recognition.AudioStateChangedEventArgs e)
         {
-            System.Speech.Recognition.AudioState state = oRecognizer.AudioState;
-            lblAudioState.Content = "I hear " + state.ToString();
+            //System.Speech.Recognition.AudioState state = oRecognizer.AudioState;
             try
             {
                 if (oRecognizer.AudioState == 0)
+                {
                     oRecognizer.RecognizeAsync();
+                }
             }
             catch (Exception ex)
             {
                 AddToLog("Error trying to Restart Recognition!");
                 AddToLog("Errord: " + ex.Message);
             }
+
+            switch (oRecognizer.AudioState.ToString())
+            {
+                
+                case "Stopped":  
+                    lblAudioState.Content = "I hear silence.";
+                    break;
+                case "Speech":
+                    // gSpeechPlugin;
+                    String temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gSpeechPlugin, "Speaking").Value.ToString().ToLower();
+
+                    if (temp.ToLower() == "true")
+                        lblAudioState.Content = "I hear myself.";
+                    else
+                        lblAudioState.Content = "I hear talking.";
+                    break;
+                case "Silence":
+                    lblAudioState.Content = "I hear silence.";
+                    break;
+            }
+            
+
         }
 
         private void btnSubmit_Click(object sender, RoutedEventArgs e)
@@ -530,6 +541,8 @@ namespace VR2
         }
 
 
+
+        /*
        // WARNING the follow code is only used for testing.   Matching is done in the API!!!!!!!!!!!!!!!!!!!!!!!!!!
        // When working on the API Matching, copy the code here, change the call above to point to this code for debugging
         public static string MatchPattern(string str)
@@ -653,7 +666,7 @@ namespace VR2
             }
 
         }
-        
+        */
 
 
 

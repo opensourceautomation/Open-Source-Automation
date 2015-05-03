@@ -193,6 +193,8 @@
             try
             {
                 str = str.TrimEnd('?', '.', '!');
+                str = str.Replace(" 'S", "'S");
+                str = str.Replace(" 's", "'s");
                 DataSet dataset = new DataSet();
                 //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                 //command.Parameters.AddWithValue("@Name", str);
@@ -218,7 +220,7 @@
                     DataSet dsObjects = new DataSet();
                     foreach (String word in words)
                     {
-                        dsObjects = OSAE.Common.ObjectNamesStartingWith(word);
+                        dsObjects = OSAE.Common.ObjectNamesStartingWith(word.Replace("'S",""));
                         foreach (DataRow dr in dsObjects.Tables[0].Rows)
                         {
                             if (str.IndexOf(dr["object_name"].ToString().ToUpper()) > -1)
@@ -231,7 +233,7 @@
                                 }
                                 ScriptParameter += dr["object_name"].ToString();
                                 //Determine if the Object is Possessive, which would be followed by a Property
-                                if (str.IndexOf("[OBJECT] 'S") > -1)
+                                if (str.ToUpper().IndexOf("[OBJECT]'S") > -1)
                                 {
                                     //Here We have found our Possessive Object, so we need to look for an appropriate property afterwards
                                     //So we are going to retrieve a property list and compare it to the start of theremainder of the string
@@ -241,11 +243,11 @@
                                     foreach (DataRow drProperty in dsProperties.Tables[0].Rows)
                                     {
                                         //Here we need to break the string into words to avoid partial matches
-                                        int objectStartLoc = str.IndexOf("[OBJECT]'s");
-                                        string strNewSearch = str.Substring(objectStartLoc + 15);
-                                        if (strNewSearch.IndexOf(drProperty["property_name"].ToString().ToUpper()) > -1)
+                                        int objectStartLoc = str.ToUpper().IndexOf("[OBJECT]'S");
+                                        string strNewSearch = str.Substring(objectStartLoc + 11);
+                                        if (strNewSearch.ToUpper().IndexOf(drProperty["property_name"].ToString().ToUpper()) > -1)
                                         {
-                                            str = str.Replace("[OBJECT] 'S " + drProperty["property_name"].ToString().ToUpper(), "[OBJECT] 'S [PROPERTY]");
+                                            str = str.Replace("[OBJECT]'S " + drProperty["property_name"].ToString().ToUpper(), "[OBJECT]'S [PROPERTY]");
                                             //str = str.Replace(drState["state_label"].ToString().ToUpper(), "[STATE]");
                                             ScriptParameter += "," + drProperty["property_name"].ToString();
                                         }
