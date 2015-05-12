@@ -84,7 +84,7 @@
 
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "SELECT method_queue_id, object_name, address, method_name, method_label, parameter_1, parameter_2, object_owner FROM osae_v_method_queue ORDER BY entry_time";
+                command.CommandText = "SELECT method_queue_id, object_name, address, method_name, method_label, parameter_1, parameter_2, object_owner FROM osae_v_method_queue WHERE object_owner != 'SYSTEM' ORDER BY entry_time";
                 DataSet dataset = OSAESql.RunQuery(command);
 
                 foreach (DataRow row in dataset.Tables[0].Rows)

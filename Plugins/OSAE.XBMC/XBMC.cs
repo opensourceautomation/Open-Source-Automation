@@ -13,17 +13,15 @@ namespace OSAE.XBMC
     public class XBMC : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("XBMC");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
         private List<XBMCSystem> Systems = new List<XBMCSystem>();
-        private string pName;
+        private string gAppName;
+        Boolean gDebug = false;
         private System.Timers.Timer Clock;
-
-
-
 
         public override void ProcessCommand(OSAEMethod method)
         {
-            this.Log.Debug("Found Command: " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2);
+            Log.Info("Running Command: " + method.ObjectName + " " + method.MethodName + " | param1: " + method.Parameter1 + " | param2: " + method.Parameter2);
 
             XBMCSystem s = getXBMCSystem(method.ObjectName);
             if (s != null)
@@ -44,17 +42,32 @@ namespace OSAE.XBMC
                         break;
                 }
             }
-
         }
 
         public override void RunInterface(string pluginName)
         {
-            this.Log.Debug("Running interface");
-            pName = pluginName;
-            OSAEObjectTypeManager.ObjectTypeUpdate("XBMC SYSTEM", "XBMC SYSTEM", "XBMC System", pluginName, "XBMC SYSTEM", 0, 0, 0, 1);
+            Log.Info("Running interface");
+            gAppName = pluginName;
+            if (OSAEObjectManager.ObjectExists(gAppName))
+                Log.Info("Found the XBMC plugin's Object (" + gAppName + ")");
+            else
+                Log.Info("Could Not Find the XBMC plugin's Object!!! (" + gAppName + ")");
+
+            try
+            {
+                gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
+            }
+            catch
+            {
+                Log.Info("The XBMC Object Type seems to be missing the Debug Property!");
+            }
+            Log.Info("Debug Mode Set to " + gDebug);
+
+
+            OwnTypes();
+            //OSAEObjectTypeManager.ObjectTypeUpdate("XBMC SYSTEM", "XBMC SYSTEM", "XBMC System", pluginName, "XBMC SYSTEM", 0, 0, 0, 1);
 
             OSAEObjectCollection XBMCInstances = OSAEObjectManager.GetObjectsByType("XBMC System");
-
             foreach (OSAEObject obj in XBMCInstances)
             {
                 string ip = "", username = "", password = "";
@@ -78,29 +91,66 @@ namespace OSAE.XBMC
                             break;
                     }
                 }
-                this.Log.Debug("Creating new XBMC System connection: " + obj.Name + " - " + ip);
+                Log.Info("Creating new XBMC System connection: " + obj.Name + " (" + ip + ":" + port + ", user=" + username + ")");
                 try
                 {
                     XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
                     if (system.Connect())
+                    {
                         Systems.Add(system);
+                        Log.Info("XBMC System connection Successfull for: " + obj.Name);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    this.Log.Error("Error connecting to XBMC system: " + ex.Message + " - " + ex.InnerException.Message);
+                    Log.Error("Error connecting to XBMC system",ex);
                 }
             }
 
-            Clock = new System.Timers.Timer();
-            Clock.Interval = 5000;
-            
-            Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
-            Clock.Start();
+            try
+            {
+                Clock = new System.Timers.Timer();
+                Clock.Interval = 10000;
+
+                Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
+                Clock.Start();
+                if (gDebug) Log.Debug("Timers Started");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error starting timers ", ex);
+            }
         }
 
         public override void Shutdown()
         {
             
+        }
+
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("XBMC");
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("XBMC Plugin took ownership of the XBMC Object Type.");
+            }
+            else
+            {
+                Log.Info("XBMC Plugin correctly owns the XBMC Object Type.");
+            }
+
+            oType = OSAEObjectTypeManager.ObjectTypeLoad("XBMC SYSTEM");
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("XBMC Plugin took ownership of the XBMC SYSTEM Object Type.");
+            }
+            else
+            {
+                Log.Info("XBMC Plugin correctly owns the XBMC SYSTEM Object Type.");
+            }
         }
 
         public XBMCSystem getXBMCSystem(string name)
@@ -115,17 +165,16 @@ namespace OSAE.XBMC
 
         public void Timer_Tick(object sender, EventArgs eArgs)
         {
-            
             try
             {
                 foreach (XBMCSystem r in Systems)
                 {
-                    this.Log.Debug("Checking " + r.Name + " - pinging: " + r.Pinging.ToString());
+                    if (gDebug) Log.Debug("Checking " + r.Name + " - OnLine: " + r.Pinging.ToString());
                     if (!r.Pinging)
                     {
                         if (!r.Connected)
                         {
-                            this.Log.Info("Removing system from list");
+                            Log.Info("Removing " + r.Name + " from list");
                             Systems.Remove(r);
                         }
                     }
@@ -163,24 +212,22 @@ namespace OSAE.XBMC
                                 break;
                         }
                     }
-                    this.Log.Debug("Creating new XBMC System connection: " + obj.Name + " - " + ip);
+                    if (gDebug) Log.Debug("Creating new XBMC System connection: " + obj.Name + " - " + ip);
                     XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
                     if (system.Connect())
                         Systems.Add(system);
                 }
-            
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error on timer tick", ex);
+                Log.Error("Error on timer tick", ex);
             }
-
         }
     }
 
     public class XBMCSystem
     {
-        private System.Timers.Timer Clock;
+       // private System.Timers.Timer Clock;
         private string _name;
         private string _username;
         private string _password;
@@ -189,9 +236,9 @@ namespace OSAE.XBMC
         private bool _connected;
         private bool _playing;
         private bool _pinging;
+        private bool _Debug = false;
         private Client _xbmcSystem;
-        //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("XBMC");
+        private OSAE.General.OSAELog Log = new General.OSAELog();
 
         public string Name
         {
@@ -218,6 +265,7 @@ namespace OSAE.XBMC
             get { return _port; }
             set { _port = value; }
         }
+
         public bool Connected
         {
             get 
@@ -228,17 +276,16 @@ namespace OSAE.XBMC
                     string ping = "";
                     if (_xbmcSystem != null)
                     {
-                        this.Log.Debug("Pinging client: " + _name);
                         var task = Task.Run(async () =>
                         {
                             return await _xbmcSystem.JSONRPC.Ping();
                         });
                         ping = task.Result;
-                        this.Log.Debug(_name + " status: " + ping);
+                        Log.Debug(_name + " status: " + ping);
                     }
                     if (ping == "pong")
                     {
-                        _pinging = false;
+                        _pinging = true;
                         return true;
                     }
                     else
@@ -249,7 +296,7 @@ namespace OSAE.XBMC
                 }
                 catch (Exception ex)
                 {
-                    this.Log.Error("Ping failed", ex);
+                    Log.Error("Ping failed", ex);
                     return false;
                 }
             }
@@ -282,7 +329,7 @@ namespace OSAE.XBMC
 
         public bool Connect()
         {
-            this.Log.Debug("Attempting connection: " + Name);
+            Log.Info("Attempting connection: " + Name + " (" + _ip + ":" + _port + ", user=" + _username + ")");
             try
             {
                 _pinging = true;
@@ -293,14 +340,24 @@ namespace OSAE.XBMC
                 });
                 if (task.Result == "pong")
                 {
-                    this.Log.Debug("Client connected");
+                    Log.Info("Client connected");
+
+                    try
+                    {
+                        _Debug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(Name, "Debug").Value);
+                    }
+                    catch
+                    {
+                        Log.Info("The XBMC Object Type seems to be missing the Debug Property!");
+                    }
+                    Log.Info("Debug Mode Set to " + _Debug);
 
                     _xbmcSystem.Player.OnPlay += Player_OnPlay;
                     _xbmcSystem.Player.OnStop += Player_OnStop;
                     _xbmcSystem.Player.OnPause += Player_OnPause;
 
                     _xbmcSystem.StartNotificationListener();
-                    this.Log.Debug("Events wired up");
+                    if (_Debug) Log.Debug("Events wired up");
                     _pinging = false;
                     return true;
                 }
@@ -312,7 +369,7 @@ namespace OSAE.XBMC
             }
             catch(Exception ex)
             {
-                this.Log.Error("Error connecting to XBMC system", ex);
+                Log.Error("Error connecting to XBMC system" + Name + " (" + _ip + ":" + _port + ", user=" + _username + ")", ex);
                 _pinging = false;
                 return false;
             }
@@ -404,24 +461,24 @@ namespace OSAE.XBMC
             else
                 _playing = false;
 
-            this.Log.Debug(" --- " + _playing.ToString());
+            if (_Debug) Log.Debug(" --- " + _playing.ToString());
         }
 
         void Player_OnPlay(string sender = null, XBMCRPC.Player.Notifications.Data data = null)
         {
-            this.Log.Debug(Name + " started playing");
+            Log.Info(Name + " started playing");
             OSAEObjectStateManager.ObjectStateSet(Name, "Playing", "XBMC");
         }
 
         void Player_OnStop(string sender = null, Player.OnStopdataType data = null)
         {
-            this.Log.Debug(Name + " stopped playing");
+            Log.Info(Name + " stopped playing");
             OSAEObjectStateManager.ObjectStateSet(Name, "Stopped", "XBMC");
         }
 
         void Player_OnPause(string sender = null, XBMCRPC.Player.Notifications.Data data = null)
         {
-            this.Log.Debug(Name + " paused");
+            Log.Info(Name + " paused");
             OSAEObjectStateManager.ObjectStateSet(Name, "Stopped", "XBMC");
         }
     }

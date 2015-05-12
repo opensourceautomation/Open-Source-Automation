@@ -58,6 +58,7 @@ public partial class patterns : System.Web.UI.Page
             pnlMatchForm.Visible = true;
             pnlScriptForm.Visible = true;
             txtPattern.Text = hdnSelectedPatternName.Text;
+            lblExportPattern.Text = OSAEScriptManager.PatternExport(hdnSelectedPatternName.Text);
         }
         if (hdnSelectedMatchRow.Text != "")
         {
@@ -71,6 +72,7 @@ public partial class patterns : System.Web.UI.Page
             gvScripts.Rows[Int32.Parse(hdnSelectedScriptRow.Text)].Attributes.Remove("onmouseout");
             gvScripts.Rows[Int32.Parse(hdnSelectedScriptRow.Text)].Style.Add("background", "lightblue");
         }
+           
     }
 
     protected void gvPatterns_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -122,13 +124,13 @@ public partial class patterns : System.Web.UI.Page
 
     private void loadMatches()
     {
-        gvMatches.DataSource = OSAESql.RunSQL("SELECT `match`, match_id FROM osae_v_pattern WHERE pattern = '" + hdnSelectedPatternName.Text + "' ORDER BY `match`");
+        gvMatches.DataSource = OSAESql.RunSQL("SELECT `match`, match_id FROM osae_v_pattern_match WHERE pattern = '" + hdnSelectedPatternName.Text.Replace("'", "''") + "' ORDER BY `match`");
         gvMatches.DataBind();
     }
 
     private void loadScripts()
     {
-        gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, os.script_id, script_sequence, pattern_script_id FROM osae_script os INNER JOIN osae_pattern_script s ON s.script_id = os.script_id INNER JOIN osae_pattern p ON p.pattern_id = s.pattern_id WHERE pattern = '" + hdnSelectedPatternName.Text + "' ORDER BY script_sequence ASC");
+        gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, os.script_id, script_sequence, pattern_script_id FROM osae_script os INNER JOIN osae_pattern_script s ON s.script_id = os.script_id INNER JOIN osae_pattern p ON p.pattern_id = s.pattern_id WHERE pattern = '" + hdnSelectedPatternName.Text.Replace("'", "''") + "' ORDER BY script_sequence ASC");
         gvScripts.DataBind();
     }
 
@@ -149,7 +151,7 @@ public partial class patterns : System.Web.UI.Page
     }
     protected void btnScriptAdd_Click(object sender, EventArgs e)
     {
-        OSAEScriptManager.PatternScriptAdd(hdnSelectedPatternName.Text, Int32.Parse(ddlScript.SelectedValue));
+        OSAEScriptManager.PatternScriptAdd(hdnSelectedPatternName.Text, ddlScript.SelectedItem.ToString());
         loadScripts();
     }
     protected void btnMatchDelete_Click(object sender, EventArgs e)

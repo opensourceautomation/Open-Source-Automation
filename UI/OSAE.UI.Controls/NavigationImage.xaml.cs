@@ -38,7 +38,7 @@ namespace OSAE.UI.Controls
             string imgName = screenObject.Property("Image").Value;
             OSAEImage img = imgMgr.GetImage(imgName);
 
-            if (img.Data != null)
+            if (img != null)
             {
                 var imageStream = new MemoryStream(img.Data);
                 var bitmapImage = new BitmapImage();

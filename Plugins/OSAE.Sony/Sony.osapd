@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>Sony</plugin-name>
+<plugin-id>416a93ca-6ecf-474c-8846-a7e8880eaba0</plugin-id>
+<plugin-version>0.1.0</plugin-version>
+<plugin-state>beta</plugin-state>
+<short-description>
+Connect and Control Sony Smart Devices with a LAN port.</short-description>
+<author>Kirk Herron</author>
+<destination-folder>C:\Program Files\OSA\Plugins\Sony</destination-folder>
+<main-file>OSAE.Sony.dll</main-file>
+<wiki-url></wiki-url>
+<additional-assemblies>
+<name>cerDevice.dll</name>
+<name>ManagedUPnP.dll</name>
+</additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
+</plugin-description>

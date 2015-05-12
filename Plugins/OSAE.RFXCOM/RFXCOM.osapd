@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>RFXCOM</plugin-name>
 <plugin-id>e9c99fff-1da0-4e02-b116-c12a35445df1</plugin-id>
-<plugin-version>0.3.1</plugin-version>
+<plugin-version>0.4.0</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Plugin to support RFXCOM tranceivers</short-description>
 <author>Brian</author>

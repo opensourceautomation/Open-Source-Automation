@@ -2,8 +2,8 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>SSH</plugin-name>
 <plugin-id>dc97a0a1-4ba0-49fd-a539-ef01578856ff</plugin-id>
-<plugin-version>0.4.0</plugin-version>
-<plugin-state>alpha</plugin-state>
+<plugin-version>1.0.0</plugin-version>
+<plugin-state>stable</plugin-state>
 <short-description>Send a comand to an SSH server</short-description>
 <author>Brian</author>
 <destination-folder>SSH</destination-folder>

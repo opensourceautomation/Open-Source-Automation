@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace GUI2
+namespace Screens
 {
     /// <summary>
     /// Interaction logic for AddControl.xaml
@@ -21,7 +21,6 @@ namespace GUI2
         public AddControl()
         {
             InitializeComponent();
-
         }
     }
 }

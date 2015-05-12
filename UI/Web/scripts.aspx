@@ -105,7 +105,7 @@
                 <div class="span3" style="text-align:left;">
                     <br />
                     <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Linkage</a>
-                    <a href="#myModal" role="button" class="btn" data-toggle="modal" onclick="copyScript();">Copy</a>
+                    <a href="#myModal" role="button" class="btn" data-toggle="modal" >Copy</a>
                     <asp:TextBox ID="txtTestParameter" runat="server"></asp:TextBox>
                     <asp:Button runat="server" ID="btnTest" class="btn" OnClick="btnTest_Click" Text="Test" /> 
                 </div>
@@ -247,13 +247,13 @@
     </div>
     
     <!-- Modal -->
-    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Copy Script</h3>
+        <h3 id="H2">Copy Script</h3>
       </div>
       <div ID="dvmodalbody" class="modal-body">
-        
+          <asp:TextBox ID="lblExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>

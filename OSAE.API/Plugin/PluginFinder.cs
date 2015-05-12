@@ -62,19 +62,17 @@
 
             foreach (var file in Directory.GetFiles(Common.ApiPath + "\\" + PluginPath, "*.dll", SearchOption.AllDirectories))
             {
-                this.Log.Debug("DLL Found while loading Plugins:" + file);
-
+                //this.Log.Debug("DLL Found while loading Plugins: " + file);
+                this.Log.Info("DLL found:  " + file);
                 try
                 {
                     var assembly = Assembly.LoadFrom(file);
 
                     foreach (var type in assembly.GetExportedTypes())
                     {
-                        this.Log.Info("Exposed Type: " + type);
-
-                        if (!type.Equals(_pluginBaseType) &&
-                            _pluginBaseType.IsAssignableFrom(type))
+                        if (!type.Equals(_pluginBaseType) && _pluginBaseType.IsAssignableFrom(type))
                         {
+                            this.Log.Debug(type.FullName + ":  Exposed Assembly (" + assembly.FullName + ")");
                             result.Add(new TypeLocator(assembly.FullName, type.FullName, file));
                         }
                     }
@@ -82,10 +80,9 @@
                 catch (Exception ex)
                 {
                     // This method is called in its own App Domain so will not have access to the calling logger
-                    this.Log.Error("An assembly was not found for file:" + file, ex);
+                    this.Log.Error("An assembly was not found for file!  (" + file + ")");
                 }
             }
-
             return result;
         }
     }    

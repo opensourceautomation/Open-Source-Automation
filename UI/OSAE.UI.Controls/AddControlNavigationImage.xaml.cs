@@ -16,13 +16,96 @@ namespace OSAE.UI.Controls
     {
         private string currentScreen;
         OSAEImage img = new OSAEImage();
+        string sOriginalName = "";
+        string sWorkingName = "";
+        string sMode = "";
 
-        public AddControlNavigationImage(string screen)
+        public AddControlNavigationImage(string screen, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
             LoadScreens();
+            //Check if controlName was passed in, if so, goto edit mode
+            if (controlName != "")
+            {
+                //Let's validate the controlName and then call a Pre-Load of its properties
+                DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + controlName + "'");
+                if (dsScreenControl.Tables[0].Rows[0][0].ToString() == "1")
+                {
+                    // We have a hit, this is an Update call, se call the preload
+                    sMode = "Update";
+                    sOriginalName = controlName;
+                    txtName.Text = controlName;
+                    LoadCurrentScreenObject(controlName);
+                }
+            }
+
+            if (controlName == "")
+            {
+                //Let's create a new name
+                sWorkingName = currentScreen + " - Nav - New Nav Image";
+                DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
+                int iCount = 0;
+
+                while (dsScreenControl.Tables[0].Rows[0][0].ToString() == "1")
+                {
+                    // We have a duplicate name, we must get a unique name
+                    iCount += 1;
+                    sWorkingName = currentScreen + " - Nav - New Nav Image " + iCount;
+                    dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
+                }
+                sMode = "Add";
+                controlName = sWorkingName;
+                txtName.Text = controlName;
+                LoadCurrentScreenObject(controlName);
+            }
+            Enable_Buttons();
         }
+
+        private void Enable_Buttons()
+        {
+            //First Senerio is a New Control, not a rename or update.
+            if (sMode == "Add")
+            {
+                btnAdd.IsEnabled = true;
+                btnUpdate.IsEnabled = false;
+                btnDelete.IsEnabled = false;
+            }
+            //Now we handle Updates with no name changes
+            if (sMode == "Update" && sOriginalName == txtName.Text)
+            {
+                btnAdd.IsEnabled = false;
+                btnUpdate.IsEnabled = true;
+                btnDelete.IsEnabled = true;
+            }
+            //Now we handle Updates WITH name changes
+            if (sMode == "Update" && sOriginalName != txtName.Text)
+            {
+                btnAdd.IsEnabled = true;
+                btnUpdate.IsEnabled = true;
+                btnDelete.IsEnabled = true;
+            }
+        }
+
+
+        private void LoadCurrentScreenObject(string controlName)
+        {
+            cboScreens.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Screen").Value;
+            txtX.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "X").Value;
+            txtY.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Y").Value;
+
+            OSAEImageManager imgMgr = new OSAEImageManager();
+            try
+            {
+                img = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Image").Value);
+                imgScreen.Source = LoadImage(img.Data);
+                Validate_Initial_Coordinates();
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
 
         /// <summary>
         /// Load the screens from the DB into the combo box
@@ -30,7 +113,7 @@ namespace OSAE.UI.Controls
         private void LoadScreens()
         {
             DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object where object_type = 'SCREEN' order by object_name");
-            screenComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
+            cboScreens.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
         private void btnOpen_Click(object sender, RoutedEventArgs e)
@@ -63,23 +146,69 @@ namespace OSAE.UI.Controls
                 return;
             }
 
-            if (string.IsNullOrEmpty(screenComboBox.Text))
+            if (string.IsNullOrEmpty(cboScreens.Text))
             {
                 MessageBox.Show("Please specify a target for the control");
                 return;
             }
 
 
-            string sName = "Screen - Nav - " + txtName.Text;
+            string sName = txtName.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", screenComboBox.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
 
-            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, screenComboBox.Text, sName);
+            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboScreens.Text, sName);
 
+            NotifyParentFinished();
+        }
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (string.IsNullOrEmpty(txtName.Text))
+            {
+                MessageBox.Show("Please specify a name for the control");
+                return;
+            }
+
+            if (img == null)
+            {
+                MessageBox.Show("Please specify an image for the control");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(cboScreens.Text))
+            {
+                MessageBox.Show("Please specify a target for the control");
+                return;
+            }
+
+            sWorkingName = txtName.Text;
+            OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
+            //We call an object update here in case the Name was changed, then perform the updates against the New name
+            OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
+
+
+            string sName = txtName.Text;
+            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
+
+            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboScreens.Text, sName);
+
+            NotifyParentFinished();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            OSAEObjectManager.ObjectDelete(sOriginalName);
             NotifyParentFinished();
         }
 
@@ -102,6 +231,7 @@ namespace OSAE.UI.Controls
 
             img = imgMgr.GetImage((int)sender);
             imgScreen.Source = LoadImage(img.Data);
+            Validate_Initial_Coordinates();
         }
 
         private static BitmapImage LoadImage(byte[] imageData)
@@ -120,6 +250,23 @@ namespace OSAE.UI.Controls
             }
             image.Freeze();
             return image;
+        }
+
+        private void Validate_Initial_Coordinates()
+        {
+            //If there is an image, make sure X & Y are not blank
+            if (img != null)
+            {
+                if (txtX.Text == "")
+                    txtX.Text = "100";
+                if (txtY.Text == "")
+                    txtY.Text = "100";
+            }
+        }
+
+        private void txtName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Enable_Buttons();
         }
 
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Data;
 
 using OSAE;
 
@@ -59,32 +60,33 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        loadObjectTypes();
+       // loadObjectTypes();
 
-        gvObjectTypes.DataSource = OSAESql.RunSQL("SELECT base_type, object_type, object_type_description FROM osae_v_object_type ORDER BY base_type, object_type");
+        if (!IsPostBack)
+        {
+            ViewState["sortOrder"] = "";
+            bindGridView("", "");
+        }  
+    }
+
+    public void bindGridView(string sortExp, string sortDir)
+    {
+        DataSet myDataSet = OSAESql.RunSQL("SELECT base_type, object_type, object_type_description FROM osae_v_object_type ORDER BY base_type, object_type");
+        DataView myDataView = new DataView();
+        myDataView = myDataSet.Tables[0].DefaultView;
+
+        if (sortExp != string.Empty)
+            myDataView.Sort = string.Format("{0} {1}", sortExp, sortDir);
+
+        gvObjectTypes.DataSource = myDataView;
         gvObjectTypes.DataBind();
+        if (!this.IsPostBack) loadDDLs();
 
-        if (hdnSelectedPropRow.Text != "")
-        {
-            loadProperties();
-        }
-        if (hdnSelectedStateRow.Text != "")
-        {
-            loadStates();
-        }
-        if (hdnSelectedMethodRow.Text != "")
-        {
-            loadMethods();
-        }
-        if (hdnSelectedEventRow.Text != "")
-        {
-            loadEvents();
-        }
-        if (!this.IsPostBack)
-        {
-            loadDDLs();
-        }
-
+        if (hdnSelectedPropRow.Text != "") loadProperties();
+        if (hdnSelectedStateRow.Text != "") loadStates();
+        if (hdnSelectedMethodRow.Text != "") loadMethods();
+        if (hdnSelectedEventRow.Text != "") loadEvents();
+        if (!this.IsPostBack) loadDDLs();
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
@@ -130,11 +132,10 @@ public partial class objtypes : System.Web.UI.Page
         }
         
         if (hdnSelectedObjectName.Text != "")
-        {
             lblExportScript.Text = OSAEObjectTypeManager.ObjectTypeExport(hdnSelectedObjectName.Text);
-           // lblExportScript.Text = OSAEObjectTypeManager.ObjectTypeExport(hdnSelectedObjectName.Text).Replace(";",";" + Environment.NewLine);
-           // lblExportScript.Text = "Line 1 " + Environment.NewLine + "Line 2";
-        }
+
+        // lblExportScript.Text = OSAEObjectTypeManager.ObjectTypeExport(hdnSelectedObjectName.Text).Replace(";",";" + Environment.NewLine);
+        // lblExportScript.Text = "Line 1 " + Environment.NewLine + "Line 2";
         //if (gvMethods.Rows.Count == 0)
         //    divMethods.Visible = false;
         //else
@@ -165,9 +166,9 @@ public partial class objtypes : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvObjectTypes_" + e.Row.RowIndex.ToString()));
         }
-
     }
 
     protected void gvProperties_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -179,9 +180,9 @@ public partial class objtypes : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvProperties_" + e.Row.RowIndex.ToString()));
         }
-
     }
 
     protected void gvStates_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -193,9 +194,9 @@ public partial class objtypes : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvStates_" + e.Row.RowIndex.ToString()));
         }
-
     }
 
     protected void gvMethods_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -207,9 +208,9 @@ public partial class objtypes : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvMethods_" + e.Row.RowIndex.ToString()));
         }
-
     }
 
     protected void gvEvents_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -221,9 +222,9 @@ public partial class objtypes : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(../images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvEvents_" + e.Row.RowIndex.ToString()));
         }
-
     }
 
     protected void gvPropOptions_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -235,9 +236,9 @@ public partial class objtypes : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", "selectPropOptionsItem('" + gvPropOptions.DataKeys[e.Row.RowIndex]["option_name"].ToString() + "', this);");
         }
-
     }
 
     private void loadDDLs()
@@ -248,6 +249,7 @@ public partial class objtypes : System.Web.UI.Page
             ddlBaseType.Visible = false;
         else
             ddlBaseType.Visible = true;
+
         ddlBaseType.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
         ddlOwnedBy.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_name as Value FROM osae_v_object where object_type_owner = 1 ORDER BY object_name"); ;
@@ -256,8 +258,8 @@ public partial class objtypes : System.Web.UI.Page
             ddlOwnedBy.Visible = false;
         else
             ddlOwnedBy.Visible = true;
-        ddlOwnedBy.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
+        ddlOwnedBy.Items.Insert(0, new ListItem(String.Empty, String.Empty));
     }
 
     private void loadObjectTypes()
@@ -265,6 +267,7 @@ public partial class objtypes : System.Web.UI.Page
         gvObjectTypes.DataSource = OSAESql.RunSQL("SELECT base_type, object_type, object_type_description FROM osae_v_object_type ORDER BY base_type, object_type");
         gvObjectTypes.DataBind();
     }
+
     private void loadProperties()
     {
         gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_datatype, property_default, track_history, property_id FROM osae_v_object_type_property where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY property_name");
@@ -294,7 +297,12 @@ public partial class objtypes : System.Web.UI.Page
         OSAEObjectType type = OSAEObjectTypeManager.ObjectTypeLoad(gvObjectTypes.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["object_type"].ToString());
         txtName.Text = type.Name;
         txtDescr.Text = type.Description;
-        ddlOwnedBy.SelectedValue = type.OwnedBy;
+        try
+        {
+            ddlOwnedBy.SelectedValue = type.OwnedBy;
+        }
+        catch
+        { }
         ddlBaseType.SelectedValue = type.BaseType;
         chkContainer.Checked = type.Container;
         chkHideEvents.Checked = type.HideRedundant;
@@ -334,9 +342,7 @@ public partial class objtypes : System.Web.UI.Page
         hdnSelectedPropName.Text = txtPropName.Text;
         loadProperties();
     }
-
-
-
+    
     protected void btnMethodSave_Click(object sender, EventArgs e)
     {
         OSAEObjectTypeManager.ObjectTypeMethodUpdate(hdnSelectedMethodName.Text, txtMethodName.Text, txtMethodLabel.Text, hdnSelectedObjectName.Text, txtParam1Label.Text, txtParam2Label.Text, txtParam1Default.Text, txtParam2Default.Text);
@@ -355,8 +361,6 @@ public partial class objtypes : System.Web.UI.Page
     {
         OSAEObjectTypeManager.ObjectTypePropertyAdd(txtPropName.Text, ddlPropType.SelectedValue, txtPropDefault.Text, hdnSelectedObjectName.Text, chkTrackChanges.Checked);
     }
-
-
 
     protected void btnMethodAdd_Click(object sender, EventArgs e)
     {
@@ -415,17 +419,7 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnAdd_Click(object sender, EventArgs e)
     {
-        int owner = 0, container = 0, systype = 0, hideevents = 0;
-        if (chkOwner.Checked)
-            owner = 1;
-        if (chkContainer.Checked)
-            container = 1;
-        if (chkSysType.Checked)
-            systype = 1;
-        if (chkHideEvents.Checked)
-            hideevents = 1;
-
-        OSAEObjectTypeManager.ObjectTypeAdd(txtName.Text, txtDescr.Text, ddlOwnedBy.SelectedValue, ddlBaseType.SelectedValue, owner, systype, container, hideevents);
+        OSAEObjectTypeManager.ObjectTypeAdd(txtName.Text, txtDescr.Text, ddlOwnedBy.SelectedValue, ddlBaseType.SelectedValue, chkOwner.Checked, chkSysType.Checked, chkContainer.Checked, chkHideEvents.Checked);
         txtName.Text = "";
         txtDescr.Text = "";
         chkOwner.Checked = false;
@@ -436,6 +430,7 @@ public partial class objtypes : System.Web.UI.Page
         ddlBaseType.SelectedValue = "";
         loadObjectTypes();
     }
+
     protected void btnDelete_Click(object sender, EventArgs e)
     {
         OSAEObjectTypeManager.ObjectTypeDelete(hdnSelectedObjectName.Text);
@@ -454,19 +449,10 @@ public partial class objtypes : System.Web.UI.Page
         else
             hdnSelectedRow.Text = selectedRow.ToString();
     }
+
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
-        int owner = 0, container = 0, systype = 0, hideevents = 0;
-        if (chkOwner.Checked)
-            owner = 1;
-        if (chkContainer.Checked)
-            container = 1;
-        if (chkSysType.Checked)
-            systype = 1;
-        if (chkHideEvents.Checked)
-            hideevents = 1;
-
-        OSAEObjectTypeManager.ObjectTypeUpdate(hdnSelectedObjectName.Text, txtName.Text, txtDescr.Text, ddlOwnedBy.SelectedValue, ddlBaseType.SelectedValue, owner, systype, container, hideevents);
+        OSAEObjectTypeManager.ObjectTypeUpdate(hdnSelectedObjectName.Text, txtName.Text, txtDescr.Text, ddlOwnedBy.SelectedValue, ddlBaseType.SelectedValue, chkOwner.Checked, chkSysType.Checked, chkContainer.Checked, chkHideEvents.Checked);
         hdnSelectedObjectName.Text = txtName.Text;
         loadObjectTypes();
     }
@@ -490,4 +476,27 @@ public partial class objtypes : System.Web.UI.Page
         hdnEditingPropOptions.Value = "1";
         loadPropertyOptions();
     }
+
+    protected void gvObjectTypes_OnSorting(object sender, GridViewSortEventArgs e)
+    {
+        bindGridView(e.SortExpression, sortOrder);
+    }
+
+    public string sortOrder
+    {
+        get
+        {
+            if (ViewState["sortOrder"].ToString() == "desc")
+                ViewState["sortOrder"] = "asc";
+            else
+                ViewState["sortOrder"] = "desc";
+
+            return ViewState["sortOrder"].ToString();
+        }
+        set
+        {
+            ViewState["sortOrder"] = value;
+        }
+    } 
+
 }

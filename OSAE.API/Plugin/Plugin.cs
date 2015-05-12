@@ -141,7 +141,7 @@
         {
             try
             {
-                this.Log.Info("Activating Plugin: " + PluginName);
+                this.Log.Info(PluginName + ":  Activating Plugin...");
                 _plugin = (OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
                 _plugin.InitializeLifetimeService();
 
@@ -166,7 +166,7 @@
         {
             try
             {
-                this.Log.Info("Shutting down " + PluginName);
+                this.Log.Info(PluginName + ":  Shutting down...");
                 _plugin.Shutdown();
                 AppDomain.Unload(_domain);
                 return true;
@@ -189,7 +189,6 @@
             {
                 this.Log.Error(PluginName + " - Run Interface Error", ex);
             }
-
             this.Log.Debug(PluginName + " - Moving on...");
         }
 

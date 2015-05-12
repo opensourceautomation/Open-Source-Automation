@@ -34,10 +34,22 @@ public partial class controls_ctrlPropertyLabel : System.Web.UI.UserControl
         string sPrefix = screenObject.Property("Prefix").Value;
         string sSuffix = screenObject.Property("Suffix").Value;
         string iFontSize = screenObject.Property("Font Size").Value;
-
+        string sFontName = screenObject.Property("Font Name").Value;
         PropertyLabel.Text = sPrefix + sPropertyValue + sSuffix;
-        PropertyLabel.Attributes.Add("Style", "position:absolute;top:" + (Int32.Parse(screenObject.Property("Y").Value) + 50).ToString() + "px;left:" + (Int32.Parse(screenObject.Property("X").Value) + 10).ToString() + "px;z-index:" + (Int32.Parse(screenObject.Property("ZOrder").Value) + 10).ToString() + ";");
-        
+        PropertyLabel.Attributes.Add("Style", "position:absolute;top:" + (Int32.Parse(screenObject.Property("Y").Value) + 60).ToString() + "px;left:" + (Int32.Parse(screenObject.Property("X").Value) + 10).ToString() + "px;z-index:" + (Int32.Parse(screenObject.Property("ZOrder").Value) + 10).ToString() + ";");
+
+
+        if (sFontName != "")
+        {
+            try
+            {
+                PropertyLabel.Font.Name = sFontName;
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         if (sBackColor != "")
         {
             try

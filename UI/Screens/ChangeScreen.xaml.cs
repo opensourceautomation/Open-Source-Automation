@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace GUI2
+namespace Screens
 {
     
 
@@ -33,7 +33,7 @@ namespace GUI2
 
         protected void Load_Screen(object sender, EventArgs e)
         {
-            m_mainwindow.Load_Screen((string)sender);
+           m_mainwindow.Load_Screen((string)sender);
         }
     }
 }

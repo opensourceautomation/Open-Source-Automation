@@ -9,7 +9,34 @@
     /// </summary>
     public class OSAEObjectTypeManager
     {
-        /// <summary>
+
+        public static bool ObjectTypeExists(string name)
+        {
+            MySqlCommand command = new MySqlCommand();
+            DataSet dataset = new DataSet();
+            try
+            {
+                command.CommandText = "SELECT object_type FROM osae_v_object_type WHERE UPPER(object_type)=UPPER(@Name)";
+                command.Parameters.AddWithValue("@Name", name);
+                dataset = OSAESql.RunQuery(command);
+
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - GetObjectTypeExists (" + name + ")error: " + ex.Message, true);
+                return false;
+            }
+        }
+
+       /// <summary>
         /// Loads the requested object Type
         /// </summary>
         /// <param name="name">The name of the object type to load</param>
@@ -18,7 +45,6 @@
         {
             MySqlCommand command = new MySqlCommand();
             DataSet dataset = new DataSet();
-
             try
             {
                 command.CommandText = "SELECT object_type, object_type_description, object_type_owner, container, hide_redundant_events, base_type, object_name, system_hidden FROM osae_v_object_type WHERE object_type=@Name";
@@ -32,26 +58,14 @@
                     type.Description = dataset.Tables[0].Rows[0]["object_type_description"].ToString();
                     type.Name = dataset.Tables[0].Rows[0]["object_type"].ToString();
                     type.OwnedBy = dataset.Tables[0].Rows[0]["object_name"].ToString();
-                    if(dataset.Tables[0].Rows[0]["object_type_owner"].ToString() == "1")
-                        type.Owner = true;
-                    else
-                        type.Owner = false;
-
-                    if (dataset.Tables[0].Rows[0]["system_hidden"].ToString() == "1")
-                        type.SysType = true;
-                    else
-                        type.SysType = false;
-
-                    if (dataset.Tables[0].Rows[0]["container"].ToString() == "1")
-                        type.Container = true;
-                    else
-                        type.Container = false;
-
-                    if (dataset.Tables[0].Rows[0]["hide_redundant_events"].ToString() == "1")
-                        type.HideRedundant = true;
-                    else
-                        type.HideRedundant = false;
-
+                    type.Owner = false;
+                    if (dataset.Tables[0].Rows[0]["object_type_owner"].ToString() == "1") type.Owner = true;
+                    type.SysType = false;
+                    if (dataset.Tables[0].Rows[0]["system_hidden"].ToString() == "1") type.SysType = true;
+                    type.Container = false;
+                    if (dataset.Tables[0].Rows[0]["container"].ToString() == "1") type.Container = true;
+                    type.HideRedundant = false;
+                    if (dataset.Tables[0].Rows[0]["hide_redundant_events"].ToString() == "1") type.HideRedundant = true;
                     return type;
                 }
                 else
@@ -76,8 +90,14 @@
         /// <param name="TypeOwner"></param>
         /// <param name="System"></param>
         /// <param name="Container">The container for the new object type</param>
-        public static void ObjectTypeAdd(string Name, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
+        public static void ObjectTypeAdd(string Name, string Description, string OwnedBy, string BaseType, bool TypeOwner, bool SystemType, bool Container, bool HideRedundantEvents)
         {
+            int iTypeOwner = 0, iSystemType = 0, iContainer = 0, iHideRedundantEvents = 0;
+            if (TypeOwner) iTypeOwner = 1;
+            if (SystemType) iSystemType = 1;
+            if (Container) iContainer = 1;
+            if (HideRedundantEvents) iHideRedundantEvents = 1;
+
             using (MySqlCommand command = new MySqlCommand())
             {
                 command.CommandText = "CALL osae_sp_object_type_add (@Name, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents)";
@@ -85,10 +105,10 @@
                 command.Parameters.AddWithValue("@Description", Description);
                 command.Parameters.AddWithValue("@OwnedBy", OwnedBy);
                 command.Parameters.AddWithValue("@BaseType", BaseType);
-                command.Parameters.AddWithValue("@TypeOwner", TypeOwner);
-                command.Parameters.AddWithValue("@System", System);
-                command.Parameters.AddWithValue("@Container", Container);
-                command.Parameters.AddWithValue("@HideRedundantEvents", HideRedundantEvents);
+                command.Parameters.AddWithValue("@TypeOwner", iTypeOwner);
+                command.Parameters.AddWithValue("@System", iSystemType);
+                command.Parameters.AddWithValue("@Container", iContainer);
+                command.Parameters.AddWithValue("@HideRedundantEvents", iHideRedundantEvents);
 
                 try
                 {
@@ -133,8 +153,13 @@
         /// <param name="TypeOwner"></param>
         /// <param name="System"></param>
         /// <param name="Container">The container for the object type</param>
-        public static void ObjectTypeUpdate(string oldName, string newName, string Description, string OwnedBy, string BaseType, int TypeOwner, int System, int Container, int HideRedundantEvents)
+        public static void ObjectTypeUpdate(string oldName, string newName, string Description, string OwnedBy, string BaseType, bool TypeOwner, bool SystemType, bool Container, bool HideRedundantEvents)
         {
+            int iTypeOwner = 0, iSystemType = 0, iContainer = 0, iHideRedundantEvents = 0;
+            if (TypeOwner) iTypeOwner = 1;
+            if (SystemType) iSystemType = 1;
+            if (Container) iContainer = 1;
+            if (HideRedundantEvents) iHideRedundantEvents = 1;
             using (MySqlCommand command = new MySqlCommand())
             {
                 command.CommandText = "CALL osae_sp_object_type_update (@oldName, @newName, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents)";
@@ -143,10 +168,10 @@
                 command.Parameters.AddWithValue("@Description", Description);
                 command.Parameters.AddWithValue("@OwnedBy", OwnedBy);
                 command.Parameters.AddWithValue("@BaseType", BaseType);
-                command.Parameters.AddWithValue("@TypeOwner", TypeOwner);
-                command.Parameters.AddWithValue("@System", System);
-                command.Parameters.AddWithValue("@Container", Container);
-                command.Parameters.AddWithValue("@HideRedundantEvents", HideRedundantEvents);
+                command.Parameters.AddWithValue("@TypeOwner", iTypeOwner);
+                command.Parameters.AddWithValue("@System", iSystemType);
+                command.Parameters.AddWithValue("@Container", iContainer);
+                command.Parameters.AddWithValue("@HideRedundantEvents", iHideRedundantEvents);
 
                 try
                 {

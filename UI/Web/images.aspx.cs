@@ -92,7 +92,7 @@ public partial class images : System.Web.UI.Page
                 }
                 else
                 {
-                    if (fileUpload.PostedFile.ContentLength < 102400)
+                    if (fileUpload.PostedFile.ContentLength < 202400)
                     {
                         
                         OSAEImage img = new OSAEImage();

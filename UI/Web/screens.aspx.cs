@@ -42,7 +42,7 @@ public partial class screens : System.Web.UI.Page
             else if (sc.ControlType == "CONTROL METHOD IMAGE")
             {
                 // Create instance of the UserControl SimpleControl
-                ASP.ctrlMethodImage ctrl = (ASP.ctrlMethodImage)LoadControl("~/controls/ctrlMethodImage.ascx");
+                ASP.ctrlClickImage ctrl = (ASP.ctrlClickImage)LoadControl("~/controls/ctrlClickImage.ascx");
                 // Set the Public Properties
                 ctrl.screenObject = OSAEObjectManager.GetObjectByName(sc.ControlName);
                 StaticPlaceholder.Controls.Add(ctrl);

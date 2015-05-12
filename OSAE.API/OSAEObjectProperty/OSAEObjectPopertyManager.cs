@@ -126,6 +126,27 @@
             }
         }
 
+        public static DataSet ObjectPropertyListGet(string objectName)
+        {
+            DataSet ds = new DataSet();
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "SELECT property_name FROM osae_v_object_property WHERE object_name = '" + objectName + "' ORDER BY property_name asc";
+                try
+                {
+                    ds = OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectPropertyListGet error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+            return ds;
+        }
+
+
+
+
         /// <summary>
         /// propertyLabel is usually left null
         /// </summary>

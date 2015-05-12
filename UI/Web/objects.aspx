@@ -67,19 +67,19 @@
         <div class="span8">
             <div ID="ObjPanel">
                 <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px;" onscroll="SetDivPosition()">
-                    <asp:GridView runat="server" ID="gvObjects"
+                    <asp:GridView runat="server" ID="gvObjects" AllowSorting="True" OnSorting="gvObjects_OnSorting"
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid"  
                         AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="true">
                         <AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>  
                         <Columns>  
-                            <asp:BoundField DataField="container_name" HeaderText="Container" />  
-                            <asp:BoundField DataField="object_name" HeaderText="Object" />  
-                            <asp:BoundField DataField="object_type" HeaderText="Type" />  
-                            <asp:BoundField DataField="state_label" HeaderText="State" />  
-                            <asp:BoundField DataField="last_updated" HeaderText="Updated" />  
-                            <asp:BoundField DataField="address" HeaderText="Address" />  
+                            <asp:BoundField DataField="container_name" HeaderText="Container" SortExpression="container_name"/>  
+                            <asp:BoundField DataField="object_name" HeaderText="Object" SortExpression="object_name" />  
+                            <asp:BoundField DataField="object_type" HeaderText="Type" SortExpression="object_type" />  
+                            <asp:BoundField DataField="state_label" HeaderText="State" SortExpression="state_label" />  
+                            <asp:BoundField DataField="last_updated" HeaderText="Updated" ItemStyle-Width="10em" SortExpression="last_updated" />  
+                            <asp:BoundField DataField="address" HeaderText="Address" SortExpression="address" />  
                         </Columns>  
                     </asp:GridView>
                 </div>
@@ -136,7 +136,7 @@
                     </div>
                     <div class="span5" style="text-align:right;" >
                         <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
-                        <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp
+                        <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" Visible="false"/>&nbsp
                         <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object?');" />
                         <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
                     </div>
@@ -275,17 +275,18 @@
     <div id="linkModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="H1">Object Export Script</h3>
+            <h3 id="H1">Object Export</h3>
         </div>
         <div id="exportModalBody" class="modal-body">
             <asp:TextBox ID="txtExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
         </div>
-    </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>
+    </div>
     
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
+    <asp:Label runat="server" ID="hdnLastRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>

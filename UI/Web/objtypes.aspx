@@ -87,15 +87,15 @@
         <div class="span6">
             <div ID="ObjPanel">
                 <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px; " onscroll="SetDivPosition()">
-                    <asp:GridView runat="server" ID="gvObjectTypes"
+                    <asp:GridView runat="server" ID="gvObjectTypes" AllowSorting="True" OnSorting="gvObjectTypes_OnSorting"
                         AutoGenerateColumns="False"  
                         GridLines="None"  
                         CssClass="mGrid"  
                         AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjectTypes_RowDataBound" DataKeyNames="object_type">  
                         <Columns>  
-                            <asp:BoundField DataField="base_type" HeaderText="Base Type" /> 
-                            <asp:BoundField DataField="object_type" HeaderText="Object Type" />   
-                            <asp:BoundField DataField="object_type_description" HeaderText="Description" />  
+                            <asp:BoundField DataField="base_type" HeaderText="Base Type" SortExpression="base_type"/>  
+                            <asp:BoundField DataField="object_type" HeaderText="Object Type" SortExpression="object_type"/>  
+                            <asp:BoundField DataField="object_type_description" HeaderText="Description" SortExpression="object_type_description"/>  
                         </Columns>  
                     </asp:GridView>
                 </div>

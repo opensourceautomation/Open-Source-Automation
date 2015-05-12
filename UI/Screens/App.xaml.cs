@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace GUI2
+namespace Screens
 {
     /// <summary>
     /// Interaction logic for App.xaml

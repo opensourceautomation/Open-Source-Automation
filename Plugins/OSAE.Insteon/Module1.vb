@@ -50,6 +50,7 @@
         If Len(Hx) < 2 Then Hx = "0" & Hx
         GetHex = Hx
     End Function
+
     Public Function InsteonDeviceType(ByVal DevCat As Byte, ByVal subcat As Byte) As String
         Dim DeviceType As String
         'MsgBox("InsteonDeviceType: DevCat = " & DevCat & "  SubCat = " & subcat & "  DeviceType = " & DeviceType)

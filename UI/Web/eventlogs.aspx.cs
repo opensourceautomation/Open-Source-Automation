@@ -8,22 +8,18 @@ using OSAE;
 
 public partial class eventlogs : System.Web.UI.Page
 {
-    //OSAELog
     private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!IsPostBack)
-        {
-            BindData();
-        }
+        if (!IsPostBack) BindData();
     }
 
     private void BindData()
     {
         try
         {
-            eventLogGridView.DataSource = OSAESql.RunSQL("SELECT log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY log_time DESC LIMIT 500");
+            eventLogGridView.DataSource = OSAESql.RunSQL("SELECT log_time,object_name,event_label,parameter_1,parameter_2,from_object_name FROM osae_v_event_log ORDER BY osae_v_event_log.log_time DESC LIMIT 500");
             eventLogGridView.DataBind();
         }
         catch (Exception ex)

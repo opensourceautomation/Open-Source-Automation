@@ -3,20 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Height="148" Width="446" Margin="20">
+             mc:Ignorable="d" Height="221" Width="446" Margin="20">
     <Grid>
-        <Button Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="10,113,0,0" VerticalAlignment="Top" Width="75" Click="btnAdd_Click"/>
-        <Button Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="361,113,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"/>
-        <Label Content="Object" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="objectComboBox" HorizontalAlignment="Left" Margin="81,8,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False"/>
-        <TextBox x:Name="txtFont" HorizontalAlignment="Left" Height="23" Margin="82,39,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" PreviewMouseDown="txtFont_MouseLeftButtonUp"/>
-        <Label Content="Font" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtSize" HorizontalAlignment="Left" Height="23" Margin="275,40,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" MouseLeftButtonUp="txtFont_MouseLeftButtonUp" PreviewMouseDown="txtFont_MouseLeftButtonUp"/>
-        <Label Content="Size" HorizontalAlignment="Left" Margin="231,39,0,0" VerticalAlignment="Top"/>
-        <Label Content="Back Color" HorizontalAlignment="Left" Margin="231,72,0,0" VerticalAlignment="Top"/>
-        <Label Content="Fore Color" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="foreColorComboBox" HorizontalAlignment="Left" Margin="81,72,0,0" VerticalAlignment="Top" Width="115"/>
-        <ComboBox x:Name="backColorComboBox" HorizontalAlignment="Left" Margin="304,74,0,0" VerticalAlignment="Top" Width="114"/>
-            
+        <Button Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="10,188,0,0" VerticalAlignment="Top" Width="75" Click="btnAdd_Click"/>
+        <Button Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="361,188,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"/>
+        <Label Content="Object" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
+        <ComboBox Name="objectComboBox" HorizontalAlignment="Left" Margin="81,43,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="objectComboBox_SelectionChanged"/>
+        <TextBox x:Name="txtFont" HorizontalAlignment="Left" Height="23" Margin="82,74,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" PreviewMouseDown="txtFont_MouseLeftButtonUp"/>
+        <Label Content="Font" HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtSize" HorizontalAlignment="Left" Height="23" Margin="275,75,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" MouseLeftButtonUp="txtFont_MouseLeftButtonUp" PreviewMouseDown="txtFont_MouseLeftButtonUp"/>
+        <Label Content="Size" HorizontalAlignment="Left" Margin="231,74,0,0" VerticalAlignment="Top"/>
+        <Label Content="Back Color" HorizontalAlignment="Left" Margin="231,107,0,0" VerticalAlignment="Top"/>
+        <Label Content="Fore Color" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="foreColorComboBox" HorizontalAlignment="Left" Margin="81,107,0,0" VerticalAlignment="Top" Width="115"/>
+        <ComboBox x:Name="backColorComboBox" HorizontalAlignment="Left" Margin="304,109,0,0" VerticalAlignment="Top" Width="114"/>
+        <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="97,188,0,0" VerticalAlignment="Top" Width="75" Click="btnUpdate_Click"/>
+        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="187,188,0,0" VerticalAlignment="Top" Width="75" Click="btnDelete_Click"/>
+        <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="26" Margin="172,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Text="100"/>
+        <TextBox x:Name="txtY" HorizontalAlignment="Left" Height="26" Margin="247,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100"/>
+        <Label Content="Y" HorizontalAlignment="Left" Margin="230,148,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
+        <Label Content="X" HorizontalAlignment="Left" Margin="155,148,0,0" VerticalAlignment="Top"/>
+        <Label Content="Name" Height="28" HorizontalAlignment="Left" Margin="10,9,0,0" x:Name="label3_Copy" VerticalAlignment="Top" Width="53" />
+        <Label x:Name="lblName" Content="" HorizontalAlignment="Left" Margin="82,11,0,0" VerticalAlignment="Top" Width="336"/>
+
     </Grid>
 </UserControl>

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using System.Data;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Data;
@@ -18,10 +19,50 @@
     public partial class AddControlBrowser : UserControl
     {
         private string currentScreen;
-        public AddControlBrowser(string screen)
+        string sOriginalName = "";
+        string sWorkingName = "";
+        string sMode = "";
+
+        public AddControlBrowser(string screen, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
+
+            //Check if controlName was passed in, if so, goto edit mode
+            if (controlName != "")
+            {
+                //Let's validate the controlName and then call a Pre-Load of its properties
+                DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + controlName + "'");
+                if (dsScreenControl.Tables[0].Rows[0][0].ToString() == "1")
+                {
+                    // We have a hit, this is an Update call, se call the preload
+                    sMode = "Update";
+                    sOriginalName = controlName;
+                    txtName.Text = controlName;
+                    LoadCurrentScreenObject(controlName);
+                }
+            }
+
+            if (controlName == "")
+            {
+                //Let's create a new name
+                sWorkingName = currentScreen + " - New Browser";
+                DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
+                int iCount = 0;
+
+                while (dsScreenControl.Tables[0].Rows[0][0].ToString() == "1")
+                {
+                    // We have a duplicate name, we must get a unique name
+                    iCount += 1;
+                    sWorkingName = currentScreen + " - New Object " + iCount;
+                    dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
+                }
+                sMode = "Add";
+                controlName = sWorkingName;
+                txtName.Text = controlName;
+                LoadCurrentScreenObject(controlName);
+            }
+
             txtName.Text = currentScreen + " - Browser";
         }
 
@@ -58,5 +99,18 @@
             Window parentWindow = Window.GetWindow(this);
             parentWindow.Close();
         }
+
+        private void LoadCurrentScreenObject(string controlName)
+        {
+            txtURI.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "URI").Value;
+            txtX.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "X").Value;
+            txtY.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Y").Value;
+            txtHeight.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Height").Value;
+            txtWidth.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Width").Value;
+        }
+
+
+
+
     }
 }

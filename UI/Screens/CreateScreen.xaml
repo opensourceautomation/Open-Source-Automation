@@ -1,9 +1,0 @@
-﻿<Window x:Class="GUI2.CreateScreen"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:Child="clr-namespace:OSAE.UI.Controls;assembly=OSAE.UI.Controls"
-        Title="Create Screen" Height="436" Width="476" Icon="icon.png">
-    <Grid>
-        <Child:CreateScreen Name="uc_Child" />
-    </Grid>
-</Window>

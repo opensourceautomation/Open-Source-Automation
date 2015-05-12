@@ -5,15 +5,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" Height="308" Width="294" Margin="20">
     <Grid>
-        <Button Name="btnOpen" Content="Select" HorizontalAlignment="Left" Margin="83,44,0,0" VerticalAlignment="Top" Width="67" Click="btnOpen_Click" RenderTransformOrigin="2.833,1.273"/>
-        <Label Content="Image" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtName" HorizontalAlignment="Left" Height="23" Margin="83,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="204"/>
+        <Button Name="btnOpen" Content="Select Image" HorizontalAlignment="Left" Margin="8,74,0,0" VerticalAlignment="Top" Width="86" Click="btnOpen_Click" RenderTransformOrigin="2.833,1.273"/>
+        <TextBox x:Name="txtName" HorizontalAlignment="Left" Height="23" Margin="57,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="230" TextChanged="txtName_TextChanged"/>
         <Label Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-        <Image Name="imgScreen" HorizontalAlignment="Left" Height="166" Margin="10,104,0,0" VerticalAlignment="Top" Width="277"/>
-        <Button Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="10,275,0,0" VerticalAlignment="Top" Width="75" Click="btnAdd_Click"/>
-        <Button Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="212,275,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"/>
-        <Label Content="Target" HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="screenComboBox" HorizontalAlignment="Left" Margin="83,75,0,0" VerticalAlignment="Top" Width="204" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False"/>
+        <Image Name="imgScreen" HorizontalAlignment="Left" Height="166" Margin="5,104,0,0" VerticalAlignment="Top" Width="277"/>
+        <Button Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="10,276,0,0" VerticalAlignment="Top" Width="56" Click="btnAdd_Click"/>
+        <Button Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="209,276,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"/>
+        <Label Content="Target" HorizontalAlignment="Left" Margin="8,36,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="cboScreens" HorizontalAlignment="Left" Margin="57,40,0,0" VerticalAlignment="Top" Width="225" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False"/>
+        <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="26" Margin="127,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58" Text="100" RenderTransformOrigin="0.414,-5.192"/>
+        <TextBox x:Name="txtY" HorizontalAlignment="Left" Height="26" Margin="212,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58" RenderTransformOrigin="0.534,2.077" Text="100"/>
+        <Label Content="Y" HorizontalAlignment="Left" Margin="190,73,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
+        <Label Content="X" HorizontalAlignment="Left" Margin="105,73,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="71,276,0,0" VerticalAlignment="Top" Width="61" Click="btnUpdate_Click" RenderTransformOrigin="1.56,0.364"/>
+        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="137,276,0,0" VerticalAlignment="Top" Width="61" Click="btnDelete_Click" RenderTransformOrigin="1.56,0.364"/>
 
     </Grid>
 </UserControl>

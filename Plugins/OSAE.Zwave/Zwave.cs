@@ -11,7 +11,7 @@ namespace OSAE.Zwave
     public class Zwave : OSAEPluginBase
     {
         //OSAELog
-        private static OSAE.General.OSAELog Log = new General.OSAELog("ZWave");
+        private static OSAE.General.OSAELog Log = new General.OSAELog();
         static private ManagedControllerStateChangedHandler m_controllerStateChangedHandler = new ManagedControllerStateChangedHandler(Zwave.MyControllerStateChangedHandler);
         static private ZWManager m_manager = null;
         ZWOptions m_options = null;
@@ -136,17 +136,14 @@ namespace OSAE.Zwave
                                 }
                                 else if (value.Type == ZWValueID.ValueType.Button)
                                 {
-                                    if (value.Label == method.MethodName)
-                                    {
-                                        m_manager.PressButton(value.ValueID);
-                                        m_manager.ReleaseButton(value.ValueID);
-                                    }
+                                    m_manager.PressButton(value.ValueID);
+                                    m_manager.ReleaseButton(value.ValueID);
                                 }
                             }
                             else
                             {
                                 String[] split;
-                                split = method.MethodName.Split('-');
+                                split = method.MethodLabel.Split('-');
                                 if (value.Label.ToUpper() == split[0].Trim().ToUpper())
                                 {
                                     if (value.Type == ZWValueID.ValueType.List)
@@ -289,7 +286,6 @@ namespace OSAE.Zwave
         {
             Node node2 = GetNode(m_notification.GetHomeId(), m_notification.GetNodeId());
 
-            Log.Info(" --- ");
             Log.Info("Notification: " + m_notification.GetType().ToString() + " | Node: " + node2.ID.ToString());
             switch (m_notification.GetType())
             {
@@ -371,8 +367,11 @@ namespace OSAE.Zwave
                                         {
                                             String[] options;
                                             if (m_manager.GetValueListItems(value.ValueID, out options))
+                                            {
                                                 foreach (string option in options)
                                                     OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label + " - " + option, value.Label + " - " + option, objType, "", "", "", "");
+                                                OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, "String", "", objType, false);
+                                            }
                                         }
                                     }
                                 }
@@ -437,7 +436,10 @@ namespace OSAE.Zwave
                                     else if (value.Label == "Alarm Level")
                                     {
                                         if (value.Val == "255")
-                                            logging.EventLogAdd(nodeObject.Name, "ALARM");
+                                            OSAEObjectManager.EventTrigger(nodeObject.Name, "ALARM", source: "ZWave");
+
+                                        OSAEObjectPropertyManager.ObjectPropertySet(nodeObject.Name, value.Label, value.Val, "ZWave");
+                                        Log.Debug("Set property " + value.Label + " of " + nodeObject.Name + " to: " + value.Val.ToString());
                                     }
                                     else
                                     {
@@ -578,7 +580,7 @@ namespace OSAE.Zwave
                                         }
                                 }
 
-                                OSAEObjectTypeManager.ObjectTypeAdd(node.Product, node.Label, pName, baseType,  0, 0, 0, 1);
+                                OSAEObjectTypeManager.ObjectTypeAdd(node.Product, node.Label, pName, baseType,  false, false, false, true);
                                 OSAEObjectTypeManager.ObjectTypeMethodAdd("NODE NEIGHBOR UPDATE", "Node Neighbor Update", node.Product, "", "", "", "");
                                 OSAEObjectTypeManager.ObjectTypePropertyAdd("Home ID", "String", "", node.Product, false);
                                 OSAEObjectTypeManager.ObjectTypePropertyAdd("Poll", "Boolean", "", node.Product, false);
@@ -781,7 +783,6 @@ namespace OSAE.Zwave
                     }
                 #endregion
             }
-            Log.Info(" --- ");
         }
 
         public static void MyControllerStateChangedHandler(ZWControllerState state)
@@ -860,52 +861,87 @@ namespace OSAE.Zwave
             try
             {
                 Node n = GetNode(m_homeId, nid);
-                List<ZWValueID> zv = new List<ZWValueID>();
+                ZWValueID zv = null;
                 switch (n.Label)
                 {
+                    case "Toggle Switch":
+                    case "Binary Toggle Switch":
                     case "Binary Switch":
                     case "Binary Power Switch":
+                    case "Binary Scene Switch":
+                    case "Binary Toggle Remote Switch":
                         foreach (Value v in n.Values)
                         {
                             if (v.Label == "Switch")
-                                zv.Add(v.ValueID);
+                                zv = v.ValueID;
                         }
                         break;
+                    case "Multilevel Toggle Remote Switch":
+                    case "Multilevel Remote Switch":
+                    case "Multilevel Toggle Switch":
                     case "Multilevel Switch":
                     case "Multilevel Power Switch":
+                    case "Multilevel Scene Switch":
+                    case "Multiposition Motor":
+                    case "Motor Control Class A":
+                    case "Motor Control Class B":
+                    case "Motor Control Class C":
                         foreach (Value v in n.Values)
                         {
-                            if ((v.Genre == ZWValueID.ValueGenre.User && v.Label == "Level") || v.Label == "Power")
-                                zv.Add(v.ValueID);
+                            if (v.Genre == ZWValueID.ValueGenre.User && v.Label == "Level")
+                                zv = v.ValueID;
                         }
                         break;
                     case "General Thermostat V2":
+                    case "Heating Thermostat":
+                    case "General Thermostat":
+                    case "Setback Schedule Thermostat":
+                    case "Setpoint Thermostat":
+                    case "Setback Thermostat":
                         foreach (Value v in n.Values)
                         {
                             if (v.Label == "Temperature")
-                                zv.Add(v.ValueID);
-                            if (v.Label == "Operating State")
-                                zv.Add(v.ValueID);
+                                zv = v.ValueID;
                         }
                         break;
-                    case "Routing Multilevel Sensor":
-                        if (m_manager.GetNodeProductName(m_homeId, n.ID) == "Smart Energy Switch")
+                    case "Static PC Controller":
+                    case "Static Controller":
+                    case "Portable Remote Controller":
+                    case "Portable Installer Tool":
+                    case "Static Scene Controller":
+                    case "Static Installer Tool":
+                        break;
+                    case "Secure Keypad Door Lock":
+                    case "Advanced Door Lock":
+                    case "Door Lock":
+                    case "Entry Control":
+                        foreach (Value v in n.Values)
                         {
-                            foreach (Value v in n.Values)
-                            {
-                                if (v.Label == "Power")
-                                    zv.Add(v.ValueID);
-                            }
+                            if (v.Genre == ZWValueID.ValueGenre.User && v.Label == "Basic")
+                                zv = v.ValueID;
+                        }
+                        break;
+                    case "Alarm Sensor":
+                    case "Basic Routing Alarm Sensor":
+                    case "Routing Alarm Sensor":
+                    case "Basic Zensor Alarm Sensor":
+                    case "Zensor Alarm Sensor":
+                    case "Advanced Zensor Alarm Sensor":
+                    case "Basic Routing Smoke Sensor":
+                    case "Routing Smoke Sensor":
+                    case "Basic Zensor Smoke Sensor":
+                    case "Zensor Smoke Sensor":
+                    case "Advanced Zensor Smoke Sensor":
+                    case "Routing Binary Sensor":
+                        foreach (Value v in n.Values)
+                        {
+                            if (v.Genre == ZWValueID.ValueGenre.User && v.Label == "Basic")
+                                zv = v.ValueID;
                         }
                         break;
                 }
-                foreach (ZWValueID zwv in zv)
-                {
-                    if (m_manager.EnablePoll(zwv))
-                        Log.Info("Enable Polling Succeeded");
-                    else
-                        Log.Info("Enable Polling Failed");
-                }
+                if (zv != null)
+                    m_manager.EnablePoll(zv);
             }
             catch (Exception ex)
             {
@@ -945,7 +981,7 @@ namespace OSAE.Zwave
                         poll = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value);
                     {
                         Log.Info("Setting poll interval: " + poll.ToString());
-                        m_manager.SetPollInterval(poll, true);
+                        m_manager.SetPollInterval(poll * 1000, true);
                     }
 
                     Log.Info(Common.ApiPath + @"\Plugins\ZWave\Config");

@@ -10,10 +10,7 @@ public partial class logs : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!IsPostBack)
-        {
-            GetLogs();
-        }
+        if (!IsPostBack) GetLogs();
     }
 
 
@@ -25,15 +22,12 @@ public partial class logs : System.Web.UI.Page
             DropDownList ddlSource = (DropDownList)gvLog.HeaderRow.FindControl("ddlSource");
             source = ddlSource.SelectedValue;
         }
-        catch (Exception ex)
-        {
-            
+        catch
+        {         
         }
 
         gvLog.DataSource = OSAE.General.OSAELog.Load(chkInfo.Checked, chkDebug.Checked, chkError.Checked, source);
         gvLog.DataBind();
-
-        
         
         DataSet ds = OSAE.General.OSAELog.LoadSources();
         if (ds.Tables[0].Rows.Count > 0)

@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace GUI2
+namespace Screens
 {
     class DragAdorner : Adorner
     {

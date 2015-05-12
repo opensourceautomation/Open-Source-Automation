@@ -13,7 +13,7 @@ namespace OSAE.NetworkMonitor
 
         System.Timers.Timer Clock = new System.Timers.Timer();
         Thread updateThread;
-        string pName;
+        string gAppName;
 
         #region OSAEPlugin Members
 
@@ -24,10 +24,13 @@ namespace OSAE.NetworkMonitor
 
         public override void RunInterface(string pluginName)
         {
-            pName = pluginName;
+            gAppName = pluginName;
+            if (OSAEObjectManager.ObjectExists(gAppName))
+                Log.Info("Found the Network Monitor plugin's Object (" + gAppName + ")");
+
             this.Log.Info("Running Interface!");
             int interval;
-            bool isNum = int.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Poll Interval").Value, out interval);
+            bool isNum = int.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Poll Interval").Value, out interval);
             Clock = new System.Timers.Timer();
             if(isNum)
                 Clock.Interval = interval * 1000;
@@ -72,11 +75,11 @@ namespace OSAE.NetworkMonitor
                     this.Log.Debug("Pinging: " + obj.Address);
                     if (CanPing(obj.Address.ToString()))
                     {
-                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", gAppName);
                     }
                     else
                     {
-                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", gAppName);
                     }
                 }
 
@@ -88,11 +91,11 @@ namespace OSAE.NetworkMonitor
                     this.Log.Debug("Pinging: " + obj.Address);
                     if (CanPing(obj.Address))
                     {
-                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", pName);
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", gAppName);
                     }
                     else
                     {
-                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", pName);
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", gAppName);
                     }
                 }
 

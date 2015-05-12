@@ -11,6 +11,7 @@ using System.Reflection;
 using log4net.Config;
 using log4net;
 using MySql.Data.MySqlClient;
+using OSAE;
 
 namespace OSAE.General
 {
@@ -20,7 +21,8 @@ namespace OSAE.General
     {
         private static ILog Log;
         private Type logSource;
-
+        private Boolean bDebug = false;
+        private Boolean bPrune = false;
         public OSAELog()
         {
             StackFrame frame = new StackFrame(1);
@@ -28,8 +30,8 @@ namespace OSAE.General
             logSource = method.DeclaringType;
             Log = LogManager.GetLogger(logSource);
 
-
-
+            bPrune = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value);
+            bDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value);
             var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;
             var attachable = root as log4net.Core.IAppenderAttachable;
 
@@ -66,7 +68,7 @@ namespace OSAE.General
 
         public void Debug(string log)
         {
-            Log.Debug(log);
+            if (bDebug) Log.Debug(log);
         }
 
         public void Error(string log)
@@ -152,6 +154,32 @@ namespace OSAE.General
                     throw ex;
                 }
             }
+        }
+
+        public void PruneLogs()
+        {
+            if(bPrune)
+            {
+                if(GetTableSize("osae_log") > 10)
+                {
+                    Clear();
+                }
+                if (GetTableSize("osae_event_log") > 10 || GetTableSize("osae_debug_log") > 10 || GetTableSize("osae_method_log") > 10)
+                {
+                    EventLogClear();
+                }
+            }
+        }
+        private decimal GetTableSize(string tableName)
+        {
+            decimal size = 0;
+            string sql;
+            DataSet d;
+
+            sql = "SELECT SUM( data_length + index_length) / 1024 / 1024 AS size FROM information_schema.TABLES WHERE table_schema = 'OSAE' AND TABLE_NAME = '" + tableName + "';";
+            d = OSAESql.RunSQL(sql);
+            size = (decimal)d.Tables[0].Rows[0]["size"];
+            return size;
         }
 
         public void DebugLogAdd(string entry)

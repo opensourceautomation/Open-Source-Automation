@@ -21,14 +21,15 @@
             ERROR: <asp:CheckBox ID="chkError" runat="server" Checked="true" OnCheckedChanged="CheckedChanged" AutoPostBack="true" />
             <br />
             <asp:GridView ID="gvLog" runat="server"
-                AutoGenerateColumns="false"
+                AutoGenerateColumns="False"
                 GridLines="None"
                 CssClass="mGrid"
                 AlternatingRowStyle-CssClass="alt" >
+<AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
                 <Columns>
-                    <asp:BoundField HeaderText="Time" DataField="Date" ItemStyle-Width="20%"/>
-                    <asp:BoundField HeaderText="Level" DataField="Level" ItemStyle-Width="10%"/>
-                    <asp:TemplateField ItemStyle-Width="10%">
+                    <asp:BoundField HeaderText="Time" DataField="log_time" ItemStyle-Width="10em" DataFormatString="{0:MM-dd HH:mm:ss.ff}" />
+                    <asp:BoundField HeaderText="Level" DataField="Level"/>
+                    <asp:TemplateField>
                         <HeaderTemplate>
                             Source:
                             <asp:DropDownList ID="ddlSource" runat="server"
@@ -41,8 +42,8 @@
                             <%# Eval("Logger") %>
                         </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:BoundField HeaderText="Message" DataField="Message" ItemStyle-Width="30%"/>
-                    <asp:BoundField HeaderText="Exception" DataField="Exception" ItemStyle-Width="30%" />
+                    <asp:BoundField HeaderText="Message" DataField="Message"/>
+                    <asp:BoundField HeaderText="Exception" DataField="Exception"/>
                 </Columns>
             </asp:GridView>
             
