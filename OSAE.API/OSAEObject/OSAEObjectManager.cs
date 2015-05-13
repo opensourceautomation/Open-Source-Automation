@@ -76,6 +76,44 @@
         }
 
         /// <summary>
+        /// Returns true or false whether the object with the specified address exists
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public static bool ObjectExistsInContainer(string pObject,string pContainer)
+        {
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    DataSet dataset = new DataSet();
+                    command.CommandText = "CALL osae_sp_object_container_check (@Object,@Container)";
+                    command.Parameters.AddWithValue("@Object", pObject);
+                    command.Parameters.AddWithValue("@Container", pContainer);
+                    dataset = OSAESql.RunQuery(command);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        if (dataset.Tables[0].Rows[0][0].ToString()=="1")
+                        { return true;}
+                        else
+                        {return false;}
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - ObjectExists Error: " + ex.Message, true);
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Returns an OSAEObject with the specified name
         /// </summary>
         /// <param name="name"></param>

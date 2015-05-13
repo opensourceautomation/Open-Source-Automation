@@ -301,8 +301,7 @@ Public Class ScriptProcessor
                         ' This section will only process IF statements, so we can trim off the IF & THEN
                         sNesting(iNestingLevel) = "PASS"
                         sWorking = scriptArray(iLoop).Replace("ELSEIF ", "")
-                        sWorking = sWorking.Replace("IF ", "")
-                        sWorking = sWorking.Replace(" THEN", "")
+                        sWorking = sWorking.Replace("IF ", "").Replace(" THEN", "")
                         iObjectPos = sWorking.IndexOf(".")
                         If iObjectPos > 0 Then
                             sObject = sWorking.Substring(0, iObjectPos)
@@ -316,7 +315,7 @@ Public Class ScriptProcessor
                             iOperatorPos = sWorking.IndexOf(" ")
 
                             sOperator = sWorking.Substring(0, iOperatorPos).Trim
-                            sValue = sWorking.Replace(sOperator, "").Trim
+                            sValue = sWorking.Replace(sOperator, "").Replace("""", "").Trim
                             If sOperator = "=" Then
                                 Try
                                     If sOption.ToUpper = "STATE" Then
@@ -324,8 +323,18 @@ Public Class ScriptProcessor
                                         sStateLabel = OSAEObjectStateManager.GetObjectStateValue(sObject).StateLabel
                                         If sState.ToUpper <> sValue.ToUpper And sStateLabel.ToUpper <> sValue.ToUpper Then sNesting(iNestingLevel) = "FAIL"
                                     ElseIf sOption.ToUpper = "CONTAINER" Then
-                                        oObject = OSAEObjectManager.GetObjectByName(sObject)
-                                        If oObject.Container.ToUpper <> sValue.ToUpper Then sNesting(iNestingLevel) = "FAIL"
+
+                                        'oObject = OSAEObjectManager.GetObjectByName(sObject)
+                                        ' If oObject.Container.ToUpper() <> sValue.ToUpper() Then
+                                        'Log.Debug("CONTAINER=" & oObject.Container & " VALUE=" & sValue)
+                                        ' sNesting(iNestingLevel) = "FAIL"
+                                        'End If
+                                        Dim bResults As Boolean
+                                        bResults = OSAE.OSAEObjectManager.ObjectExistsInContainer(sObject, sValue)
+                                        If bResults = False Then
+                                            sNesting(iNestingLevel) = "FAIL"
+                                        End If
+
                                     Else
                                         pProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sOption)
                                         If pProperty.DataType = "String" Then pProperty.Value = pProperty.Value.ToUpper

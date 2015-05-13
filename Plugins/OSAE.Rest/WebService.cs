@@ -134,7 +134,7 @@
 
         public Boolean SendPattern(string match)
         {
-            string patternName = Common.MatchPattern(match);
+            string patternName = Common.MatchPattern(match,"");
             if (patternName != "")
             {
                 OSAEScriptManager.RunPatternScript(patternName, "", "REST Service");
