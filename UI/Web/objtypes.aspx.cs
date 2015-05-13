@@ -419,7 +419,13 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectTypeManager.ObjectTypeAdd(txtName.Text, txtDescr.Text, ddlOwnedBy.SelectedValue, ddlBaseType.SelectedValue, chkOwner.Checked, chkSysType.Checked, chkContainer.Checked, chkHideEvents.Checked);
+        //string sExport = OSAEObjectTypeManager.ObjectTypeExport(hdnSelectedObjectName.Text);
+       // sExport.Replace(hdnSelectedObjectName.Text, txtName.Text);
+        //string[] args = sExport.Split(';');
+        
+       // OSAESql.RunSQL(sExport);
+       // OSAEObjectTypeManager.ObjectTypeAdd(txtName.Text, txtDescr.Text, ddlOwnedBy.SelectedValue, ddlBaseType.SelectedValue, chkOwner.Checked, chkSysType.Checked, chkContainer.Checked, chkHideEvents.Checked);
+        OSAEObjectTypeManager.ObjectTypeClone(txtName.Text,hdnSelectedObjectName.Text);
         txtName.Text = "";
         txtDescr.Text = "";
         chkOwner.Checked = false;

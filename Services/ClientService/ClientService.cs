@@ -38,7 +38,7 @@ namespace OSAE.ClientService
         {
             if (args.Length > 0)
             {
-                string pattern = Common.MatchPattern(args[0]);
+                string pattern = Common.MatchPattern(args[0],"");
                 //this.Log.Info("Processing command: " + args[0] + ", Named Script: " + pattern);
                 if (pattern != string.Empty)
                 {

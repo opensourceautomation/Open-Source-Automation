@@ -204,6 +204,21 @@
         }
 
         /// <summary>
+        /// Object type Clone
+        /// </summary>
+        /// <param name="object_type_name">The name of the object type</param>
+        public static void ObjectTypeClone(string NewObjectTypeName, string BaseObjectTypeName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                //command.Parameters.Add(new MySqlParameter("@pexport_script", MySqlDbType.Text));
+                //command.Parameters["@pexport_script"].Direction = System.Data.ParameterDirection.Output;
+                OSAESql.RunSQL("CALL osae_sp_object_type_clone ('" + NewObjectTypeName.Replace("'", "''") + "','" + BaseObjectTypeName.Replace("'", "''") + "')");
+ 
+            }
+        }
+
+        /// <summary>
         /// Add an event top an existing object type
         /// </summary>
         /// <param name="Name"></param>
