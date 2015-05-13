@@ -28,13 +28,15 @@ namespace VR2
         
         SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
         String gAppName = "";
-        Boolean gVRMuted = true;
-        Boolean gVREnabled = false;
+        Boolean gVRMuted = false;
+        Boolean gVREnabled = true;
         String gWakePattern = "VR Wake";
         List<string> wakeList = new List<string>();
         String gSleepPattern = "Thanks";
         List<string> sleepList = new List<string>();
+        List<string> userList = new List<string>();
         String gSpeechPlugin = "";
+        String gUser = "";
         Boolean gAppClosing = false;
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
 
@@ -56,7 +58,10 @@ namespace VR2
             {
                 oRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(oRecognizer_SpeechRecognized);
                 oRecognizer.AudioStateChanged += new EventHandler<AudioStateChangedEventArgs>(oRecognizer_StateChanged);
-                AudioState state = oRecognizer.AudioState;  // This shows AudioState.Stopped
+
+                //oUserRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(oUserRecognizer_SpeechRecognized);
+                //oUserRecognizer.AudioStateChanged += new EventHandler<AudioStateChangedEventArgs>(oUserRecognizer_StateChanged);
+                //AudioState state = oRecognizer.AudioState;  // This shows AudioState.Stopped
             }
             catch (Exception ex)
             {
@@ -65,21 +70,14 @@ namespace VR2
             }
            
             Load_Settings();
-            Load_Grammer();
-            Load_Grammer_With_Substitutions();
+            
+            Load_User_Grammer();
+
+
             try
             {
-                oRecognizer.SetInputToDefaultAudioDevice();
-                AddToLog("Recognizer Settings: "); 
-                AddToLog("--  Level: " + oRecognizer.AudioLevel.ToString());
-                AddToLog("--  End Silence Timeout: " + oRecognizer.EndSilenceTimeout);
-                AddToLog("--  Recognition Babble Timeout: " + oRecognizer.BabbleTimeout); 
-                AddToLog("Audio Format Settings: "); 
-                AddToLog("--  EncodingFormat: " + oRecognizer.AudioFormat.EncodingFormat);
-                AddToLog("--  Channel Count: " + oRecognizer.AudioFormat.ChannelCount);
-                AddToLog("--  Bits Per Sample: " + oRecognizer.AudioFormat.BitsPerSample);
-                AddToLog("--  Samples Per Second: " + oRecognizer.AudioFormat.SamplesPerSecond);
-                AddToLog("--  Average Bytes Per Second: " + oRecognizer.AudioFormat.AverageBytesPerSecond);
+                // oRecognizer.SetInputToDefaultAudioDevice();
+
                 gSpeechPlugin = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Can Hear this Plugin").Value.ToString();
                 if (gSpeechPlugin == "")
                 {
@@ -87,9 +85,24 @@ namespace VR2
                     OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Can Hear this Plugin", "Speech","VR Client");
                 }
                 AddToLog("--  I will ignore speech from: " + gSpeechPlugin);
+
+                AddToLog("Finished Loading...");
+                AddToLog("_______________________________________________");
+                AddToLog("Who are you?");
+
                 Thread t1 = new Thread(delegate()
                 {
                     oRecognizer.SetInputToDefaultAudioDevice();
+                    AddToLog("Recognizer Settings: ");
+                    AddToLog("--  Level: " + oRecognizer.AudioLevel.ToString());
+                    AddToLog("--  End Silence Timeout: " + oRecognizer.EndSilenceTimeout);
+                    AddToLog("--  Recognition Babble Timeout: " + oRecognizer.BabbleTimeout);
+                    AddToLog("Audio Format Settings: ");
+                    AddToLog("--  EncodingFormat: " + oRecognizer.AudioFormat.EncodingFormat);
+                    AddToLog("--  Channel Count: " + oRecognizer.AudioFormat.ChannelCount);
+                    AddToLog("--  Bits Per Sample: " + oRecognizer.AudioFormat.BitsPerSample);
+                    AddToLog("--  Samples Per Second: " + oRecognizer.AudioFormat.SamplesPerSecond);
+                    AddToLog("--  Average Bytes Per Second: " + oRecognizer.AudioFormat.AverageBytesPerSecond);
                     oRecognizer.RecognizeAsync();
                     while (!gAppClosing)
                     {
@@ -98,15 +111,14 @@ namespace VR2
                 });
                 t1.Start();
 
-                //oRecognizer.RecognizeAsync();
 
-               AddToLog("Finished Loading, Recognition Started...");
             }
             catch (Exception ex)
             {
                     AddToLog("Unable to set Default Audio Device.  Check Sound Card.");
                     AddToLog("Error: " + ex.Message);
             }
+
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -224,6 +236,8 @@ namespace VR2
             {
                 AddToLog("Error in Load Settings: " + ex.Message);
             }
+
+            
         }
 
         private void Load_Grammer()
@@ -271,10 +285,13 @@ namespace VR2
             List<string> objectList = new List<string>();
             List<string> stateList = new List<string>();
             List<string> propertyList = new List<string>();
+
             DataSet dsResults = new DataSet();
+
+            #region Build a List of all Objects
             try
             {
-                //Build a List of all Objects to use for substitutions
+                
                 dsResults = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN','PLUGIN') ORDER BY object_name");
                 for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
                 {
@@ -292,10 +309,11 @@ namespace VR2
                 AddToLog("Error: " + ex.Message);
             }
             Choices objectChoices = new Choices(objectList.ToArray());
+            #endregion
 
+            #region Build a List of all States
             try
             {
-                //Build a List of all States to use for substitutions
                 dsResults = OSAESql.RunSQL("SELECT DISTINCT(state_label) FROM osae_v_object_state ORDER BY state_label");
                 for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
                 {
@@ -313,10 +331,12 @@ namespace VR2
                 AddToLog("Error: " + ex.Message);
             }
             Choices stateChoices = new Choices(stateList.ToArray());
+            #endregion
 
+            #region Build a List of all Properties
             try
             {
-                //Build a List of all Properties to use for substitutions
+                
                 dsResults = OSAESql.RunSQL("SELECT DISTINCT(property_name) FROM osae_v_object_property ORDER BY property_name");
                 for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
                 {
@@ -334,11 +354,28 @@ namespace VR2
                 AddToLog("Error: " + ex.Message);
             }
             Choices propertyChoices = new Choices(propertyList.ToArray());
+            #endregion
 
+            #region Load User List
+            try
+            {
+                //Load all users
+                dsResults = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE base_type='PERSON' ORDER BY object_name");
+                for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
+                {
+                    userList.Add(dsResults.Tables[0].Rows[i][0].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                AddToLog("Error Loading User Grammer!");
+                AddToLog("Error: " + ex.Message);
+            }
+            Choices userChoices = new Choices(userList.ToArray());
+            #endregion
 
             //Each Place Holder Pattern must be build my hand right now, but it should be able to be done progammatically
-
-            //Is [Object] [State]
+            #region Is [Object] [State]
             try
             {
                 GrammarBuilder builder = new GrammarBuilder("Is");
@@ -346,16 +383,34 @@ namespace VR2
                 builder.Append(stateChoices);
                 Grammar gram = new Grammar(builder);
                 oRecognizer.LoadGrammar(gram);
-                AddToLog("Grammer 'is [OBJECT] [STATE]' Load Completed (" + objectList.Count + " items with place-holders)");
+                AddToLog("Grammer 'is [OBJECT] [STATE]' Load Completed.");
             }
-            catch (Exception ex)
+            catch (Exception ex) {AddToLog("Error: " + ex.Message);}
+
+            //Are you [State]
+            try
             {
-                AddToLog("I could Not build the 'Is [OBJECT] [STATE]' Grammer set!");
-                AddToLog("Error: " + ex.Message);
+                GrammarBuilder builder = new GrammarBuilder("Are you");
+                builder.Append(stateChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'Are you [STATE]' Load Completed.");
             }
+            catch (Exception ex) {AddToLog("Error: " + ex.Message);}
 
+            //Am I [State]
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("Am I");
+                builder.Append(stateChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'Am I [STATE]' Load Completed.");
+            }
+            catch (Exception ex) {AddToLog("Error: " + ex.Message); }
+            #endregion
 
-            //[Object] is [State]
+            #region [Object] is [State]
             try
             {
                 GrammarBuilder builder = new GrammarBuilder(objectChoices);
@@ -363,15 +418,32 @@ namespace VR2
                 builder.Append(stateChoices);
                 Grammar gram = new Grammar(builder);
                 oRecognizer.LoadGrammar(gram);
-                AddToLog("Grammer '[OBJECT] is [STATE]' Load Completed (" + objectList.Count + " items with place-holders)");
+                AddToLog("Grammer '[OBJECT] is [STATE]' Load Completed.");
             }
-            catch (Exception ex)
-            {
-                AddToLog("I could Not build the '[OBJECT] is [STATE]' Grammer set!");
-                AddToLog("Error: " + ex.Message);
-            }
+            catch (Exception ex) {AddToLog("Error: " + ex.Message); }
 
-            //[OBJECT] is in the [OBJECT]
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("I am");
+                builder.Append(stateChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'I am [STATE]' Load Completed.");
+            }
+            catch (Exception ex) { AddToLog("Error: " + ex.Message); }
+
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("You are");
+                builder.Append(stateChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'You are [STATE]' Load Completed.");
+            }
+            catch (Exception ex) { AddToLog("Error: " + ex.Message); }
+            #endregion
+
+            #region [OBJECT] is in the [OBJECT]
             try
             {
                 GrammarBuilder builder = new GrammarBuilder(objectChoices);
@@ -379,15 +451,32 @@ namespace VR2
                 builder.Append(objectChoices);
                 Grammar gram = new Grammar(builder);
                 oRecognizer.LoadGrammar(gram);
-                AddToLog("Grammer '[OBJECT] is in the [OBJECT]' Load Completed (" + objectList.Count + " items with place-holders)");
+                AddToLog("Grammer '[OBJECT] is in the [OBJECT]' Load Completed.");
             }
-            catch (Exception ex)
-            {
-                AddToLog("I could Not build the '[OBJECT] is in the [OBJECT]' Grammer set!");
-                AddToLog("Error: " + ex.Message);
-            }
+            catch (Exception ex) {AddToLog("Error: " + ex.Message); }
 
-            //is [OBJECT] is in the [OBJECT]
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("I am in the");
+                builder.Append(objectChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'I am in the [OBJECT]' Load Completed.");
+            }
+            catch (Exception ex) { AddToLog("Error: " + ex.Message); }
+
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("You are in the");
+                builder.Append(objectChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'You are in the [OBJECT]' Load Completed.");
+            }
+            catch (Exception ex) { AddToLog("Error: " + ex.Message); }
+            #endregion
+            
+            #region is [OBJECT] is in the [OBJECT]
             try
             {
                 GrammarBuilder builder = new GrammarBuilder("is");
@@ -396,30 +485,44 @@ namespace VR2
                 builder.Append(objectChoices);
                 Grammar gram = new Grammar(builder);
                 oRecognizer.LoadGrammar(gram);
-                AddToLog("Grammer 'is [OBJECT] is in the [OBJECT]' Load Completed (" + objectList.Count + " items with place-holders)");
+                AddToLog("Grammer 'is [OBJECT] is in the [OBJECT]'.");
             }
-            catch (Exception ex)
-            {
-                AddToLog("I could Not build the 'is [OBJECT] is in the [OBJECT]' Grammer set!");
-                AddToLog("Error: " + ex.Message);
-            }
+            catch (Exception ex) {AddToLog("Error: " + ex.Message); }
 
-            //Where is [OBJECT]
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("Am I in the");
+                builder.Append(objectChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'Am I in the [OBJECT]'.");
+            }
+            catch (Exception ex) { AddToLog("Error: " + ex.Message); }
+
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("Are you in the");
+                builder.Append(objectChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'Are you in the [OBJECT]'.");
+            }
+            catch (Exception ex) { AddToLog("Error: " + ex.Message); }
+            #endregion
+
+            #region Where is [OBJECT]
             try
             {
                 GrammarBuilder builder = new GrammarBuilder("Where is");
                 builder.Append(objectChoices);
                 Grammar gram = new Grammar(builder);
                 oRecognizer.LoadGrammar(gram);
-                AddToLog("Grammer 'Where is' Load Completed (" + objectList.Count + " items with place-holders)");
+                AddToLog("Grammer 'Where is' Load Completed.");
             }
-            catch (Exception ex)
-            {
-                AddToLog("I could Not build the 'Where is' Grammer set!");
-                AddToLog("Error: " + ex.Message);
-            }
+            catch (Exception ex) {AddToLog("Error: " + ex.Message);}
+            #endregion
 
-            //What is [OBJECT]'s [PROPERTY]
+            #region What is [OBJECT]'s [PROPERTY]
             try
             {
                 GrammarBuilder builder = new GrammarBuilder("What is");
@@ -428,11 +531,81 @@ namespace VR2
                 builder.Append(propertyChoices);
                 Grammar gram = new Grammar(builder);
                 oRecognizer.LoadGrammar(gram);
-                AddToLog("Grammer 'What is' Load Completed (" + objectList.Count + " items with place-holders)");
+                AddToLog("Grammer 'What is' Load Completed.");
+            }
+            catch (Exception ex) {AddToLog("Error: " + ex.Message);}
+
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("What is your");
+                builder.Append(propertyChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'What is your' Load Completed.");
+            }
+            catch (Exception ex) { AddToLog("Error: " + ex.Message); }
+
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("What is my");
+                builder.Append(propertyChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'What is your' Load Completed.");
+            }
+            catch (Exception ex) { AddToLog("Error: " + ex.Message); }
+            #endregion
+        }
+
+
+        private void Load_User_Grammer()
+        {
+            //User
+
+            DataSet dsResults = new DataSet();
+            try
+            {
+                //Load all users
+                dsResults = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE base_type='PERSON' ORDER BY object_name");
+                for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
+                {
+                    userList.Add(dsResults.Tables[0].Rows[i][0].ToString());
+                }
+
             }
             catch (Exception ex)
             {
-                AddToLog("I could Not build the 'What is' Grammer set!");
+                AddToLog("Error Loading User Grammer!");
+                AddToLog("Error: " + ex.Message);
+            }
+
+            Choices userChoices = new Choices(userList.ToArray());
+
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("This is");
+                builder.Append(userChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("User Grammer 'This is User' Load Completed (" + userList.Count + " items with place-holders)");
+            }
+            catch (Exception ex)
+            {
+                AddToLog("I could Not build the 'This is User' Grammer set!");
+                AddToLog("Error: " + ex.Message);
+            }
+
+            try
+            {
+                GrammarBuilder builder = new GrammarBuilder("I am");
+                builder.Append(userChoices);
+                Grammar gram = new Grammar(builder);
+                oRecognizer.LoadGrammar(gram);
+                AddToLog("Grammer 'I am User' Load Completed (" + userList.Count + " items with place-holders)");
+            }
+            catch (Exception ex)
+            {
+                AddToLog("I could Not build the 'I am User' Grammer set!");
                 AddToLog("Error: " + ex.Message);
             }
         }
@@ -445,7 +618,6 @@ namespace VR2
         private void ProcessInput(string sInput)
         {
             DataSet dsResults = new DataSet();
-            String sPattern = "";
             try
             {
                // if ((sInput.ToUpper() == gWakePattern.ToUpper()) & (gVRMuted == true))
@@ -463,8 +635,24 @@ namespace VR2
                 {
                     return;
                 }
-                
-                
+
+                if (sInput.StartsWith("I am ") || sInput.StartsWith("This is "))
+                {                
+                    AddToLog("Heard: " + sInput);
+                    string sTemp = sInput.Replace("I am ", "").Replace("This is ", "");
+                    if (userList.Contains(sTemp))
+                    {
+                        if (gUser == "")
+                        {
+                            Load_Grammer();
+                            Load_Grammer_With_Substitutions();
+                        }
+                        gUser = sTemp;
+                        AddToLog("I am talking to " + gUser);
+                        lblObjectTalking.Content = "I am talking to " + gUser;
+                    }
+                }
+
                 // gSpeechPlugin;
                 String temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gSpeechPlugin, "Speaking").Value.ToString().ToLower();
 
@@ -475,7 +663,7 @@ namespace VR2
                         try
                         {
                             string sLogEntry = "Heard: " + sInput;
-                            string sText = OSAE.Common.MatchPattern(sInput);
+                            string sText = OSAE.Common.MatchPattern(sInput,gUser);
                             //string sText = MatchPattern(sInput);
                             if (sText.Length > 0)
                             {
@@ -494,7 +682,6 @@ namespace VR2
                 AddToLog("Error in _SpeechRecognized: " + ex.Message);
             }
         }
-
 
         private void oRecognizer_StateChanged(object sender, System.Speech.Recognition.AudioStateChangedEventArgs e)
         {
@@ -531,17 +718,14 @@ namespace VR2
                     lblAudioState.Content = "I hear silence.";
                     break;
             }
-            
-
         }
+
 
         private void btnSubmit_Click(object sender, RoutedEventArgs e)
         {
             ProcessInput(txtInput.Text);
         }
-
-
-
+        
         /*
        // WARNING the follow code is only used for testing.   Matching is done in the API!!!!!!!!!!!!!!!!!!!!!!!!!!
        // When working on the API Matching, copy the code here, change the call above to point to this code for debugging
@@ -667,14 +851,6 @@ namespace VR2
 
         }
         */
-
-
-
-
-
-
-
+        
     }
-
-
 }
