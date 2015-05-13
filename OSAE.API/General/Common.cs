@@ -187,24 +187,33 @@
             }
         }
 
-        public static string MatchPattern(string str)
+        public static string MatchPattern(string str, string sUser)
         {
             string ScriptParameter = "";
+            sUser = sUser.ToUpper();
             try
             {
-                str = str.TrimEnd('?', '.', '!');
+                str = str.ToUpper();
+                str = str.TrimEnd('?', '.', '!') + " ";
                 str = str.Replace(" 'S", "'S");
-                str = str.Replace(" 's", "'s");
+                str = str.Replace("YOUR ", "SYSTEM'S ");
+                str = str.Replace("YOU ARE ", "SYSTEM IS ");
+                str = str.Replace("ARE YOU ", "IS SYSTEM ");
+                str = str.Replace("MY ", sUser + "'S ");
+                str = str.Replace(" ME ", " " + sUser + " ");
+                str = str.Replace("AM I ", "IS " + sUser + " ");
+                str = str.Replace("I AM ",sUser +  " IS ");
+
                 DataSet dataset = new DataSet();
                 //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                 //command.Parameters.AddWithValue("@Name", str);
-                dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern_match WHERE `match`='" + str.Replace("'", "''") + "'");
+                dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern_match WHERE UPPER(`match`)='" + str.Replace("'", "''") + "'");
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
 
                     //Since we have a match, lets execute the scripts
-                    OSAEScriptManager.RunPatternScript(dataset.Tables[0].Rows[0]["pattern"].ToString(), "", "Jabber");
+                    OSAEScriptManager.RunPatternScript(dataset.Tables[0].Rows[0]["pattern"].ToString(), "", "SYSTEM");
                     return dataset.Tables[0].Rows[0]["pattern"].ToString();
                 }
                 else
@@ -213,7 +222,7 @@
                     //example  "Please turn the main light on" becomes "Please turn the [OBJECT] [STATE]"
 
                     //Step 1: Break the Input into an Array to Query the Words for DB matches
-                    str = str.ToUpper();
+                    
 
                     string[] words = str.Split(' ');
 
