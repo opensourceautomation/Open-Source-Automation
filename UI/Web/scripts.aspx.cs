@@ -122,8 +122,6 @@ public partial class scripts : System.Web.UI.Page
     {
         gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, script_id, s.script_processor_id, script_processor_name FROM osae_script s INNER JOIN osae_script_processors sp ON sp.script_processor_id = s.script_processor_id ORDER BY script_name");
         gvScripts.DataBind();
-
-        
     }
 
     private void loadEventScripts()

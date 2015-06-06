@@ -385,13 +385,14 @@
         /// <param name="Name"></param>
         /// <param name="ParameterType"></param>
         /// <param name="ObjectType"></param>
-        public static void ObjectTypePropertyAdd(string Name, string ParameterType, string ParameterDefault, string ObjectType, bool TrackHistory)
+        public static void ObjectTypePropertyAdd(string Name, string ParameterType, string ParameterObjectType, string ParameterDefault, string ObjectType, bool TrackHistory)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_property_add (@Name, @ParameterType, @ParameterDefault, @ObjectType, @TrackHistory)";
+                command.CommandText = "CALL osae_sp_object_type_property_add (@Name, @ParameterType, @ParameterObjectType, @ParameterDefault, @ObjectType, @TrackHistory)";
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@ParameterType", ParameterType);
+                command.Parameters.AddWithValue("@ParameterObjectType", ParameterObjectType);
                 command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
@@ -436,14 +437,15 @@
         /// <param name="newName"></param>
         /// <param name="ParameterType"></param>
         /// <param name="objectType"></param>
-        public static void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterDefault, string objectType, bool TrackHistory)
+        public static void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterObjectType, string ParameterDefault, string objectType, bool TrackHistory)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_property_update (@OldName, @NewName, @ParameterType, @ParameterDefault, @ObjectType, @TrackHistory)";
+                command.CommandText = "CALL osae_sp_object_type_property_update (@OldName, @NewName, @ParameterType, @ParameterObjectType, @ParameterDefault, @ObjectType, @TrackHistory)";
                 command.Parameters.AddWithValue("@OldName", oldName);
                 command.Parameters.AddWithValue("@NewName", newName);
                 command.Parameters.AddWithValue("@ParameterType", ParameterType);
+                command.Parameters.AddWithValue("@ParameterObjectType", ParameterObjectType);
                 command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
                 command.Parameters.AddWithValue("@ObjectType", objectType);
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);

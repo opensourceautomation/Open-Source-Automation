@@ -62,6 +62,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Speech" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -74,6 +75,7 @@
     <Compile Include="General\DBConnectionStatus.cs" />
     <Compile Include="General\OSAELog.cs" />
     <Compile Include="General\OSAESql.cs" />
+    <Compile Include="OSAEGrammar\OSAEGrammar.cs" />
     <Compile Include="OSAEImage\OSAEImageManager.cs" />
     <Compile Include="OSAEImage\OSAEImage.cs" />
     <Compile Include="General\Logging.cs">
@@ -126,6 +128,7 @@
       <DependentUpon>OSAEServiceController.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -262,6 +262,33 @@
                                         }
                                     }
                                 }
+                                string replacementString = "";
+                                //Here We have found our Object, so we need to look for an appropriate Object Type afterwards
+                                //So we are going to retrieve a object type list and compare it to the remainder of the string
+                                DataSet dsObjectTypes = OSAESql.RunSQL("SELECT object_type FROM osae_v_object_type WHERE base_type NOT IN ('CONTROL','SCREEN') ORDER BY object_type");
+                                foreach (DataRow drObjectTypes in dsObjectTypes.Tables[0].Rows)
+                                {
+                                    //Here we need to break the string into words to avoid partial matches
+
+                                    string[] wordArray = str.Split(new Char[] { ' ' });
+                                    foreach (string w in wordArray)
+                                    {
+                                        if (replacementString.Length > 1)
+                                        {
+                                            replacementString = replacementString + " ";
+                                        }
+                                        if (drObjectTypes["object_type"].ToString().ToUpper() == w)
+                                        {
+                                            replacementString = replacementString + "[OBJECT TYPE]";
+                                            //str = str.Replace(drState["state_label"].ToString().ToUpper(), "[STATE]");
+                                            ScriptParameter += "," + drObjectTypes["object_type"].ToString();
+                                        }
+                                        else
+                                        {
+                                            replacementString = replacementString + w;
+                                        }
+                                    }
+                                }
 
                                 //Here We have found our Object, so we need to look for an appropriate state afterwards
                                 //So we are going to retrieve a state list and compare it to the remainder of the string
@@ -270,7 +297,6 @@
                                 foreach (DataRow drState in dsStates.Tables[0].Rows)
                                 {
                                     //Here we need to break the string into words to avoid partial matches
-                                    string replacementString = "";
                                     string[] wordArray = str.Split(new Char[] { ' ' });
                                     foreach (string w in wordArray)
                                     {
@@ -289,7 +315,7 @@
                                             replacementString = replacementString + w;
                                         }
                                     }
-                                    //Now that we have replaced the Object and State, Lets check for a match again
+                                    //Now that we have replaced the Object,Object Type, and State, Lets check for a match again
                                     //DataSet dataset = new DataSet();
                                     //command.CommandText = "SELECT pattern FROM osae_v_pattern WHERE `match`=@Name";
                                     //command.Parameters.AddWithValue("@Name", str);
@@ -320,8 +346,6 @@
 
         }
 
-
-
         /// <summary>
         /// Get all object names that start with a single word
         /// </summary>
@@ -343,8 +367,6 @@
                     return dataset;
                 }
         }
-
-
 
         public static void InitialiseLogFolder()
         {

@@ -316,7 +316,7 @@ namespace OSAE.ClientService
         {
             string[] items = message.Split('|');
 
-            OSAEMethod method = new OSAEMethod(items[2].Trim(), "", items[0].Trim(), items[3].Trim(), items[4].Trim(), items[5].Trim(), items[1].Trim());
+            OSAEMethod method = new OSAEMethod(items[2].Trim(), "", items[0].Trim(), items[3].Trim(), items[4].Trim(), items[5].Trim(), items[1].Trim(), items[6].Trim());
 
             if (method.ObjectName == "SERVICE-" + Common.ComputerName)
             {

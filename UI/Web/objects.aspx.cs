@@ -36,6 +36,9 @@ public partial class home : System.Web.UI.Page
             panelPropForm.Visible = true;
             hdnSelectedPropName.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_name"].ToString();
             lblPropName.Text = hdnSelectedPropName.Text;
+            lblSourceName.Text = "Source: " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["source_name"].ToString();
+            lblTrustLevel.Text = "Trust Level: " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["trust_level"].ToString();
+            lblInterestLevel.Text = "Interest Level: " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["interest_level"].ToString();
             lblPropLastUpd.Text = "Last Updated: " + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["last_updated"].ToString();
             hdnSelectedPropType.Text = gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString();
             lblPropType.Text = "Data type: " + hdnSelectedPropType.Text;
@@ -46,6 +49,9 @@ public partial class home : System.Web.UI.Page
                 txtPropValue.Visible = false;
                 btnPropSave.Visible = false;
                 lblPropName.Visible = false;
+                lblSourceName.Visible = false;
+                lblTrustLevel.Visible = false;
+                lblInterestLevel.Visible = false;
                 btnEditPropList.Visible = true;
                 ddlPropValue.Visible = false;
             }
@@ -60,6 +66,45 @@ public partial class home : System.Web.UI.Page
                 txtPropValue.Visible = false;
                 btnPropSave.Visible = true;
                 lblPropName.Visible = true;
+                lblSourceName.Visible = true;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = true;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = true;
+            }
+            else if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "Object")
+            {
+                ddlPropValue.Items.Clear();
+                DataSet options = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_type NOT IN ('CONTROL','SCREEN') ORDER BY object_name");
+                foreach (DataRow dr in options.Tables[0].Rows)
+                {
+                    ddlPropValue.Items.Add(new ListItem(dr["object_name"].ToString()));
+                }
+
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = true;
+                lblPropName.Visible = true;
+                lblSourceName.Visible = true;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = true;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = true;
+            }
+            else if (gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_datatype"].ToString() == "Object Type")
+            {
+                ddlPropValue.Items.Clear();
+                DataSet options = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_type ='" + gvProperties.DataKeys[Int32.Parse(hdnSelectedPropRow.Text)]["property_object_type"].ToString() + "' ORDER BY object_name");
+                foreach (DataRow dr in options.Tables[0].Rows)
+                {
+                    ddlPropValue.Items.Add(new ListItem(dr["object_name"].ToString()));
+                }
+
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = true;
+                lblPropName.Visible = true;
+                lblSourceName.Visible = true;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = true;
                 btnEditPropList.Visible = false;
                 ddlPropValue.Visible = true;
             }
@@ -98,7 +143,7 @@ public partial class home : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)  
-        {  
+        {
             ViewState["sortOrder"] = "";  
             bindGridView("","");  
         }  
@@ -123,7 +168,12 @@ public partial class home : System.Web.UI.Page
     protected void Page_PreRender(object sender, EventArgs e)
     {
         if (hdnLastRow.Text != "")
-            gvObjects.Rows[Int32.Parse(hdnLastRow.Text)].Attributes.Add("onmouseout", "this.style.background='none';");
+        {
+            if (gvObjects.Rows[Int32.Parse(hdnLastRow.Text)].RowState == DataControlRowState.Alternate)
+                gvObjects.Rows[Int32.Parse(hdnLastRow.Text)].Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
+            else
+                gvObjects.Rows[Int32.Parse(hdnLastRow.Text)].Attributes.Add("onmouseout", "this.style.background='none';");
+        }
         
         if (hdnSelectedRow.Text != "")
             gvObjects.Rows[Int32.Parse(hdnSelectedRow.Text)].Attributes.Remove("onmouseout");
@@ -307,7 +357,7 @@ public partial class home : System.Web.UI.Page
 
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text.Replace("'", "''") + "' ORDER BY property_name");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated,source_name, trust_level,interest_level,property_object_type FROM osae_v_object_property where object_name='" + hdnSelectedObjectName.Text.Replace("'", "''") + "' ORDER BY property_name");
         gvProperties.DataBind();
     }
 
@@ -350,7 +400,7 @@ public partial class home : System.Web.UI.Page
                 value = txtPropValue.Text;
         }
 
-        OSAEObjectPropertyManager.ObjectPropertySet(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, value, "Web UI");
+        OSAEObjectPropertyManager.ObjectPropertySet(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, value, Session["Username"].ToString());
         loadProperties();
     }
 

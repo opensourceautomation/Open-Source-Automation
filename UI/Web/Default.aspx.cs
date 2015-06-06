@@ -33,7 +33,7 @@ public partial class _Default : System.Web.UI.Page
                 FormsAuthenticationTicket ticket1 = new FormsAuthenticationTicket(this.txtUserName.Text.Trim(),true,cto);
                 HttpCookie cookie1 = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket1));
                 Response.Cookies.Add(cookie1);
-
+                Session["UserName"] = OSAEObjectManager.GetObjectByName(this.txtUserName.Text.Trim()).Name;
                 // 4. Do the redirect. 
                 String returnUrl1;
                 // the login is successful

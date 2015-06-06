@@ -277,6 +277,94 @@
             }
         }
 
+        /// <summary>
+        /// propertyLabel is usually left null
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="propertyValue"></param>
+        /// <param name="propertyLabel"></param>
+        public static void ObjectPropertyScraperAdd(string objectName, string propertyName, string URL, string Prefix, int PrefixOffset, string Suffix, string UpdateInterval)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_property_scraper_add (@ObjectName, @PropertyName, @URL, @Prefix, @PrefixOffset, @Suffix, @UpdateInterval)";
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@PropertyName", propertyName);
+                command.Parameters.AddWithValue("@URL", URL);
+                command.Parameters.AddWithValue("@Prefix", Prefix);
+                command.Parameters.AddWithValue("@PrefixOffset", PrefixOffset);
+                command.Parameters.AddWithValue("@Suffix", Suffix);
+                command.Parameters.AddWithValue("@UpdateInterval", UpdateInterval);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// propertyLabel is usually left null
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="propertyValue"></param>
+        /// <param name="propertyLabel"></param>
+        public static void ObjectPropertyScraperUpdate(int scraperid, string objectName, string propertyName, string URL, string Prefix, int PrefixOffset, string Suffix, string UpdateInterval)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_property_scraper_update (@ScraperID,@ObjectName, @PropertyName, @URL, @Prefix, @PrefixOffset, @Suffix, @UpdateInterval)";
+                command.Parameters.AddWithValue("@ScraperID", scraperid);
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@PropertyName", propertyName);
+                command.Parameters.AddWithValue("@URL", URL);
+                command.Parameters.AddWithValue("@Prefix", Prefix);
+                command.Parameters.AddWithValue("@PrefixOffset", PrefixOffset);
+                command.Parameters.AddWithValue("@Suffix", Suffix);
+                command.Parameters.AddWithValue("@UpdateInterval", UpdateInterval);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectPropertyScraperID error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// propertyLabel is usually left null
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="propertyValue"></param>
+        /// <param name="propertyLabel"></param>
+        public static void ObjectPropertyScraperDelete(int scraperid)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_property_scraper_delete (@ScraperID)";
+                command.Parameters.AddWithValue("@ScraperID", scraperid);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
         public static DataSet ObjectPropertyHistoryGet(string objectName, string propertyName, string from, string to)
         {
             DataSet ds = new DataSet();

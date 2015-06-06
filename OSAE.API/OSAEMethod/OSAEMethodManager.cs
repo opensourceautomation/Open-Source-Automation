@@ -23,16 +23,16 @@
                 command.Parameters.AddWithValue("@Method", method);
                 command.Parameters.AddWithValue("@Param1", param1);
                 command.Parameters.AddWithValue("@Param2", param2);
-                command.Parameters.AddWithValue("@FromObject", PluginManager.GetPluginName(plugin, Common.ComputerName));
+                // command.Parameters.AddWithValue("@FromObject", PluginManager.GetPluginName(plugin, Common.ComputerName));
+                // maybe we let people own the method?   
+                command.Parameters.AddWithValue("@FromObject", plugin);
                 command.Parameters.AddWithValue("@DebugInfo", null);
                 try
                 {
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - MethodQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - MethodQueueAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -52,9 +52,7 @@
                 }
             }
             catch (Exception ex)
-            {
-                Logging.GetLogger().AddToLog("Error clearing method queue details: \r\n" + ex.Message, true);
-            }            
+            { Logging.GetLogger().AddToLog("Error clearing method queue details: \r\n" + ex.Message, true); }            
         }
 
         /// <summary>
@@ -72,9 +70,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - MethodQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - MethodQueueDelete error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }  
      
@@ -84,7 +80,7 @@
 
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "SELECT method_queue_id, object_name, address, method_name, method_label, parameter_1, parameter_2, object_owner FROM osae_v_method_queue WHERE object_owner != 'SYSTEM' ORDER BY entry_time";
+                command.CommandText = "SELECT method_queue_id, object_name, address, method_name, method_label, parameter_1, parameter_2, object_owner, from_object FROM osae_v_method_queue WHERE object_owner != 'SYSTEM' ORDER BY entry_time";
                 DataSet dataset = OSAESql.RunQuery(command);
 
                 foreach (DataRow row in dataset.Tables[0].Rows)
@@ -97,7 +93,8 @@
                     object parameter2 = row["parameter_2"];
                     object address = row["address"];
                     object owner = row["object_owner"];
-                                        
+                    object fromObject = row["from_object"];
+                    
                     OSAEMethod method = new OSAEMethod();
 
                     // These parameters should never be null so we won't check them
@@ -105,32 +102,16 @@
                     method.MethodName = methodName.ToString();
                     method.MethodLabel = methodLabel.ToString();
                     method.ObjectName = objectName.ToString();
+                    method.FromObject = fromObject.ToString();
                     
                     // These parameters could be null
-                    if (parameter1 != null)
-                    {
-                        method.Parameter1 = parameter1.ToString();
-                    }
-
-                    if (parameter2 != null)
-                    {
-                        method.Parameter2 = parameter2.ToString();
-                    }
-
-                    if (address != null)
-                    {
-                        method.Address = address.ToString();
-                    }
-
-                    if (owner != null)
-                    {
-                        method.Owner = owner.ToString();
-                    }
-
+                    if (parameter1 != null) method.Parameter1 = parameter1.ToString();
+                    if (parameter2 != null) method.Parameter2 = parameter2.ToString();
+                    if (address != null) method.Address = address.ToString();
+                    if (owner != null) method.Owner = owner.ToString();
                     methods.Add(method);                    
                 }
             }
-            
             return methods;
         }
     }

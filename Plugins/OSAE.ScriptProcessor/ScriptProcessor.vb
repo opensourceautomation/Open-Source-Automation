@@ -1,6 +1,10 @@
 ﻿Option Strict Off
 Option Explicit On
 Imports System.Text.RegularExpressions
+Imports System.IO
+Imports System.Net
+Imports System.Text
+Imports System.Data
 
 Public Class ScriptProcessor
     Inherits OSAEPluginBase
@@ -10,19 +14,22 @@ Public Class ScriptProcessor
     Private gDebug As Boolean = False
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
-        Dim sScript As String = "", sScriptName As String = ""
+        Dim sScript As String = "", sScriptName As String = "", sScriptFrom As String = ""
 
         If method.MethodName = "RUN SCRIPT" Then
             Try
                 Dim dsResults As DataSet = OSAESql.RunSQL("SELECT script,script_name FROM osae_script WHERE script_id=" & method.Parameter1)
                 sScript = Convert.ToString(dsResults.Tables(0).Rows(0)("script"))
                 sScriptName = Convert.ToString(dsResults.Tables(0).Rows(0)("script_name"))
+                sScriptFrom = method.FromObject
                 Log.Info("Found Script: " & sScriptName)
-                RunScript(sScript, method.Parameter2)
+                RunScript(sScript, method.Parameter2, sScriptFrom)
                 Log.Info("Executed Script")
             Catch ex As Exception
                 Log.Error("Error ProcessCommand - " & ex.Message)
             End Try
+        ElseIf method.MethodName = "RUN READERS" Then
+            RunReaders()
         End If
     End Sub
 
@@ -59,7 +66,7 @@ Public Class ScriptProcessor
         End If
     End Sub
 
-    Private Sub RunScript(ByVal scriptText As String, ByVal sScriptParameter As String)
+    Private Sub RunScript(ByVal scriptText As String, ByVal sScriptParameter As String, ByVal sFromObject As String)
         Dim sType As String = ""
         Dim iLoop As Integer
         Dim sObject As String = "", sOption As String = "", sMethod As String = "", sParam1 As String = "", sParam2 As String = ""
@@ -81,6 +88,7 @@ Public Class ScriptProcessor
         sScript = scriptText
         Dim iEmbeddedScriptStart As Integer = 0
         Dim iEmbeddedScriptEnd As Integer = 0
+        Log.Info("Script From: " & sFromObject)
         Try
             iEmbeddedScriptStart = sScript.IndexOf("Script:", iEmbeddedScriptStart)
             Do While iEmbeddedScriptStart > 0
@@ -105,7 +113,8 @@ Public Class ScriptProcessor
             iCounter += 1
             sScript = sScript.Replace("PARAM" & iCounter.ToString(), tempparam)
         Next
-
+        sScript = sScript.Replace("FROMOBJECT", sFromObject)
+        'If gDebug Then Log.Debug("Found " + iCounter + " parameters")
 
         Dim scriptArray() = sScript.Split(vbCrLf)
 
@@ -172,7 +181,6 @@ Public Class ScriptProcessor
                                     If sOption.ToUpper = "SET PROPERTY" Then
                                         sMethod = sWorking.Substring(0, iMethodPos)
                                     Else
-
                                         iMethodPos = sWorking.IndexOf(".")
                                         If iMethodPos = -1 Then
                                             sMethod = sWorking
@@ -182,7 +190,7 @@ Public Class ScriptProcessor
                                             sWorking = sWorking.Substring(iMethodPos + 1, sWorking.Length - (iMethodPos + 1))
                                         End If
                                     End If
-
+                                    If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " !!!!!!!!!!!!: " & sObject & "." & sMethod)
                                     ' Find First parameter based on a pair of "" or a Comma
                                     sParam1 = ""
                                     sParam2 = ""
@@ -334,7 +342,12 @@ Public Class ScriptProcessor
                                         If bResults = False Then
                                             sNesting(iNestingLevel) = "FAIL"
                                         End If
-
+                                    ElseIf sOption.ToUpper = "OBJECT TYPE" Then
+                                        Dim oTemp As OSAEObject
+                                        oTemp = OSAE.OSAEObjectManager.GetObjectByName(sObject)
+                                        If oTemp.Type <> sValue Then
+                                            sNesting(iNestingLevel) = "FAIL"
+                                        End If
                                     Else
                                         pProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sOption)
                                         If pProperty.DataType = "String" Then pProperty.Value = pProperty.Value.ToUpper
@@ -449,6 +462,51 @@ Public Class ScriptProcessor
             End Try
         Next iLoop
     End Sub
+
+    Private Sub RunReaders()
+        Dim dataset As New DataSet()
+        Dim dataset2 As New DataSet()
+        Dim req As HttpWebRequest
+        Dim sb As System.Text.StringBuilder
+        Dim strLine As String
+        Dim sOutput As String
+        Dim iPrefix As Integer
+        Dim iSuffix As Integer
+        dataset = OSAESql.RunSQL("SELECT object_property_scraper_id,URL,search_prefix,search_prefix_offset,search_suffix,object_name,property_name FROM osae_v_object_property_scraper_ready")
+        For Each dr As DataRow In dataset.Tables(0).Rows
+            req = HttpWebRequest.Create(dr("URL").ToString())
+            Try
+                sb = New System.Text.StringBuilder()
+                Using reader As StreamReader = New StreamReader(req.GetResponse().GetResponseStream())
+                    strLine = reader.ReadLine
+
+                    ' Loop over each line in file, While list is Not Nothing.
+                    Do While (Not strLine Is Nothing)
+                        ' Add this line to list.
+                        sb.Append(strLine)
+                        strLine = reader.ReadLine
+                    Loop
+                End Using
+
+                iPrefix = sb.ToString().IndexOf(dr("search_prefix").ToString())
+                If iPrefix > 0 Then
+                    sOutput = sb.ToString().Substring(iPrefix + dr("search_prefix").ToString().Length + Convert.ToInt16(dr("search_prefix_offset").ToString()))
+                    iSuffix = sOutput.IndexOf(dr("search_suffix").ToString())
+                    If isuffix > 0 Then
+                        sOutput = sOutput.Substring(0, iSuffix)
+                        OSAEObjectPropertyManager.ObjectPropertySet(dr("object_name").ToString(), dr("property_name").ToString(), sOutput, "SYSTEM")
+                        If gDebug Then Log.Debug("Read " & dr("object_name").ToString() & " " & dr("property_name").ToString() & " as " & sOutput)
+                        dataset2 = OSAESql.RunSQL("UPDATE osae_object_property_scraper SET last_updated = NOW() WHERE object_property_scraper_id=" & dr("object_property_scraper_id").ToString())
+                        'txtRaw.Text += dr["object_name"].ToString() + " " + dr["property_name"].ToString() + " " + sOutput + Environment.NewLine;
+                    End If
+                End If
+            Catch ex As Exception
+                Log.Error("Error running Scraper " & dr("URL").ToString() & "  " & ex.Message)
+            End Try
+        Next
+
+    End Sub
+
 
     Private Function ReturnSeconds(ByVal strTime As String) As Integer
         Dim strHours As String

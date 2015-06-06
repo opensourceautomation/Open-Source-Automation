@@ -198,14 +198,19 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_value, property_datatype, object_property_id, last_updated" ShowHeaderWhenEmpty="true">  
-                                <Columns>  
-                                    <asp:BoundField DataField="property_name" HeaderText="Property" /> 
-                                    <asp:BoundField DataField="property_value" HeaderText="Value" /> 
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name,property_value,property_datatype,object_property_id,property_object_type,last_updated,source_name,trust_level,interest_level" ShowHeaderWhenEmpty="True">  
+                                <AlternatingRowStyle CssClass="alt" />
+                                <Columns>
+                                    <asp:BoundField DataField="property_name" HeaderText="Property" />
+                                    <asp:BoundField DataField="property_value" HeaderText="Value" />
                                     <asp:BoundField DataField="property_datatype" Visible="false" />
-                                    <asp:BoundField DataField="object_property_id" Visible="false" /> 
-                                    <asp:BoundField DataField="last_updated" Visible="false" /> 
-                                </Columns>  
+                                    <asp:BoundField DataField="object_property_id" Visible="false" />
+                                    <asp:BoundField DataField="property_object_type" Visible="false" />
+                                    <asp:BoundField DataField="last_updated" Visible="false" />
+                                    <asp:BoundField DataField="source_name" Visible="false" />
+                                    <asp:BoundField DataField="trust_level" Visible="false" />
+                                    <asp:BoundField DataField="interest_level" Visible="false" />
+                                </Columns>
 
                             </asp:GridView>
                         </div>
@@ -217,9 +222,15 @@
                         <div class="span10">
                         <asp:Panel runat="server" ID="panelPropForm" Visible ="false">
                             <form class="form-inline">
-                                <asp:Label  runat="server" ID="lblPropType"></asp:Label><br />
-                                <asp:Label  runat="server" ID="lblPropLastUpd"></asp:Label><br />
-                                <strong><asp:Label  runat="server" ID="lblPropName"></asp:Label></strong><br />
+                                <asp:Label  runat="server" ID="lblPropType"></asp:Label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <asp:Label ID="lblTrustLevel" runat="server"></asp:Label>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<asp:Label ID="lblInterestLevel" runat="server"></asp:Label>
+                                <br />
+                                <asp:Label ID="lblPropLastUpd" runat="server"></asp:Label>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <asp:Label ID="lblSourceName" runat="server"></asp:Label>
+                                <br />
+                                <strong><asp:Label ID="lblPropName" runat="server"></asp:Label>&nbsp;<br /> </strong>
                                 <asp:Textbox class="input-xlarge" runat="server" ID="txtPropValue"></asp:Textbox>
                                 <asp:DropDownList runat="server" ID="ddlPropValue">
                                 </asp:DropDownList>

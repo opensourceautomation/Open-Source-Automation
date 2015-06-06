@@ -268,10 +268,11 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_default, track_history, property_id" ShowHeaderWhenEmpty="true">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_object_type, property_default, track_history, property_id" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="property_name" HeaderText="Property" /> 
                                     <asp:BoundField DataField="property_datatype" HeaderText="Type" /> 
+                                    <asp:BoundField DataField="property_object_type" visible="false" />
                                     <asp:BoundField DataField="property_default" visible="false" />
                                     <asp:BoundField DataField="track_history" visible="false" />
                                 </Columns>  
@@ -283,15 +284,22 @@
                                 
                                 Name: <asp:TextBox  runat="server" ID="txtPropName" style="width:225px;"></asp:TextBox>
                                 <br />
-                                Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;">
+                                Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;"  AutoPostBack="true" OnSelectedIndexChanged="ddlPropType_SelectedIndexChanged">
                                         <asp:ListItem Selected = "True" Text = "String" Value = "String"></asp:ListItem>
                                         <asp:ListItem Text = "Boolean" Value = "Boolean"></asp:ListItem>
-                                        <asp:ListItem Text = "Integer" Value = "Integer"></asp:ListItem>
-                                        <asp:ListItem Text = "Float" Value = "Float"></asp:ListItem>
-                                        <asp:ListItem Text = "List" Value = "List"></asp:ListItem>
-                                        <asp:ListItem Text = "Password" Value = "Password"></asp:ListItem>
-                                        <asp:ListItem Text = "File" Value = "File"></asp:ListItem>
                                         <asp:ListItem Text = "DateTime" Value = "DateTime"></asp:ListItem>
+                                        <asp:ListItem Text = "File" Value = "File"></asp:ListItem>
+                                        <asp:ListItem Text = "Float" Value = "Float"></asp:ListItem>
+                                        <asp:ListItem Text = "Integer" Value = "Integer"></asp:ListItem>
+                                        <asp:ListItem Text = "List" Value = "List"></asp:ListItem>
+                                        <asp:ListItem Text = "Object" Value = "Object"></asp:ListItem>
+                                        <asp:ListItem Text = "Object Type" Value = "Object Type"></asp:ListItem>
+                                        <asp:ListItem Text = "Password" Value = "Password"></asp:ListItem>
+                                </asp:DropDownList>
+                                <br />
+                                <asp:Label runat="server" ID="lblPropObjectType" Text="Object Type: "></asp:Label>
+                                <asp:DropDownList runat="server" ID="ddlBaseType2" datatextfield="Text" datavaluefield="Value" style="width:200px;">
+                                    <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                                 </asp:DropDownList>
                                 <br />
                                 Default: <asp:TextBox  runat="server" ID="txtPropDefault" style="width:215px;"></asp:TextBox>
@@ -349,9 +357,12 @@
       </div>
 
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
+    <asp:Label runat="server" ID="hdnLastRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>
+    <asp:Label runat="server" ID="hdnSelectedPropLastRow" Visible="false"></asp:Label>
+    <asp:Label runat="server" ID="hdnSelectedPropDataType" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedStateRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedStateName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedMethodName" Visible="false"></asp:Label>
