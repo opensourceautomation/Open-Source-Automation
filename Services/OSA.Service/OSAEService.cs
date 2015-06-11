@@ -57,12 +57,12 @@ namespace OSAE.Service
         {
             if (args.Length > 0)
             {
-                string pattern = Common.MatchPattern(args[0],"");
+               // string pattern = Common.MatchPattern(args[0],"");
                 //this.Log.Info("Processing command: " + args[0] + ", Named Script: " + pattern);
-                if (pattern != string.Empty)
-                {
-                    OSAEScriptManager.RunPatternScript(pattern, "", "OSACL");
-                }
+             //   if (pattern != string.Empty)
+             //   {
+                //    OSAEScriptManager.RunPatternScript(pattern, "", "OSACL");
+              //  }
             }
             else
             {

@@ -20,7 +20,7 @@
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
 
-            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
             try
             {
                 if (plugin.ActivatePlugin())
@@ -42,7 +42,7 @@
             this.Log.Info(p.PluginName + ":  Disabling Plugin...");
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
-            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
+            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 0);
             try
             {
                 p.Shutdown();
@@ -149,7 +149,7 @@
 
                                 if (obj == null)
                                 {
-                                    OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName + " plugin's Object", plugin.PluginType, "", "", true);
+                                    OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName + " plugin's Object", plugin.PluginType, "", "", true);
                                     obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
                                 }
 
@@ -197,7 +197,7 @@
                                 }
 
                                 this.Log.Info(plugin.PluginName + ":  Plugin object does not exist in DB!");
-                                OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
+                                OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
                                 OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
                                 this.Log.Info(plugin.PluginName + ":  Plugin added to DB.");
                                 UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));

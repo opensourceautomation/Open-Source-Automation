@@ -67,7 +67,7 @@
                 <asp:BoundField DataField="update_interval" Visible="False" />
             </Columns>  
         </asp:GridView>
-    
+    </asp:Panel>
     <asp:Panel ID="pnlDropDowns" runat="server" Height="55px" Width="775px">
         <asp:Label ID="Label5" runat="server" Text="Object  "></asp:Label>
         <asp:DropDownList runat="server" ID="ddlObjects" datatextfield="object_name" datavaluefield="object_id" style="width:280px;" OnSelectedIndexChanged="ddlObjects_SelectedIndexChanged" AutoPostBack="true">
@@ -102,8 +102,6 @@
          <asp:Button runat="server" ID="btnReaderDelete" class="btn" OnClick="btnReaderDelete_Click" Text="Delete"/>
          <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
      </asp:Panel>
-     </asp:Panel>
-
     <br />
 
     <!-- Modal -->

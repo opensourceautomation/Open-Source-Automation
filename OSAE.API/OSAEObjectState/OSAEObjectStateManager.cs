@@ -47,7 +47,7 @@
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    command.CommandText = "SELECT state_name,state_label,coalesce(time_in_state, 0) as time_in_state,COALESCE(last_state_change,NOW()) as last_state_change FROM osae_v_object WHERE object_name=@ObjectName";
+                    command.CommandText = "SELECT state_name,state_label,coalesce(time_in_state, 0) as time_in_state,COALESCE(last_state_change,NOW()) as last_state_change FROM osae_v_object WHERE UPPER(object_name)=UPPER(@ObjectName) OR UPPER(object_alias)=UPPER(@ObjectName)";
                     command.Parameters.AddWithValue("@ObjectName", ObjectName);
                     dataset = OSAESql.RunQuery(command);
                 }
@@ -82,7 +82,7 @@
             DataSet ds = new DataSet();
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "SELECT history_timestamp, object_name, state_label FROM osae_v_object_state_change_history WHERE object_name = '" + objectName + "' AND history_timestamp BETWEEN '" + from + "' AND '" + to + "' ORDER BY history_timestamp asc";
+                command.CommandText = "SELECT history_timestamp, object_name, state_label FROM osae_v_object_state_change_history WHERE (UPPER(object_name) = UPPER('" + objectName + "') OR UPPER(object_alias) = UPPER('" + objectName + "')) AND history_timestamp BETWEEN '" + from + "' AND '" + to + "' ORDER BY history_timestamp asc";
                 try
                 {
                     ds = OSAESql.RunQuery(command);
@@ -100,7 +100,7 @@
             DataSet ds = new DataSet();
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "SELECT state_name,state_label FROM osae_v_object_state WHERE object_name = '" + objectName + "' ORDER BY state_label asc";
+                command.CommandText = "SELECT state_name,state_label FROM osae_v_object_state WHERE UPPER(object_name) = UPPER('" + objectName + "') OR UPPER(object_alias) = UPPER('" + objectName + "') ORDER BY state_label asc";
                 try
                 {
                     ds = OSAESql.RunQuery(command);

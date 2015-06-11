@@ -635,7 +635,7 @@
             if (gAppName == "")
             {
                 gAppName = "GUI CLIENT-" + Common.ComputerName;
-                OSAEObjectManager.ObjectAdd(gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
+                OSAEObjectManager.ObjectAdd(gAppName, gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, "GUI");
             }
         }

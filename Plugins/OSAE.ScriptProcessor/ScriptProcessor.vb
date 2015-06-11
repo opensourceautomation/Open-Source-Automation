@@ -71,7 +71,7 @@ Public Class ScriptProcessor
         Dim iLoop As Integer
         Dim sObject As String = "", sOption As String = "", sMethod As String = "", sParam1 As String = "", sParam2 As String = ""
         Dim iObjectPos As Integer, iOptionPos As Integer, iMethodPos As Integer
-        Dim oObject As OSAEObject
+        'Dim oObject As OSAEObject
         Dim iParam1Pos As Integer ', iParam2Pos As Integer
         Dim iQuotePos As Integer, iCommaPos As Integer
         Dim sOperator As String, iOperatorPos As Integer, lSeconds As ULong
@@ -240,7 +240,7 @@ Public Class ScriptProcessor
                                         OSAEObjectStateManager.ObjectStateSet(sObject, sMethod, gAppName)
                                         If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set State: " & sObject & "." & sMethod)
                                     ElseIf sOption.ToUpper = "SET CONTAINER" Then
-                                        OSAEObjectManager.ObjectUpdate(oCurrentObject.Name, oCurrentObject.Name, oCurrentObject.Description, oCurrentObject.Type, oCurrentObject.Address, sMethod, oCurrentObject.Enabled)
+                                        OSAEObjectManager.ObjectUpdate(oCurrentObject.Name, oCurrentObject.Name, oCurrentObject.Alias, oCurrentObject.Description, oCurrentObject.Type, oCurrentObject.Address, sMethod, oCurrentObject.Enabled)
                                         If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Container: " & sObject & "." & sMethod)
                                     ElseIf sOption.ToUpper = "SET PROPERTY" Then
                                         iOptionPos = sWorking.IndexOf("+=")

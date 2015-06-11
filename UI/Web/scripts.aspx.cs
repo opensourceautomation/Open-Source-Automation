@@ -240,7 +240,7 @@ public partial class scripts : System.Web.UI.Page
     {
         OSAEScriptManager.ScriptDelete("Test Script");
         OSAEScriptManager.ScriptAdd("Test Script", ddlScriptProcessor.SelectedValue, hdnScript.Value);
-        OSAEScriptManager.RunScript("Test Script",txtTestParameter.Text, "WebUI");
+        OSAEScriptManager.RunScript("Test Script", txtTestParameter.Text, Session["Username"].ToString());
     }
 
 

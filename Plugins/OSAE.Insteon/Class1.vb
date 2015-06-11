@@ -546,7 +546,7 @@
                             If gDebug Then Log.Debug("Looking up object for address: " & X10Address)
                             Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(X10Address)
                             If IsNothing(oObject) Then
-                                OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", True)
+                                OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", True)
                                 Log.Info("Added new Object for X10 Address: " & X10Address)
                             ElseIf oObject.Name <> "" Then
                                 ' Handle incoming event
@@ -1215,7 +1215,7 @@ PLMerror:
             Try 'Update the Object's State to match
                 oObject = OSAEObjectManager.GetObjectByAddress(houseCode & device)
                 If oObject.Name <> "" Then
-                    OSAE.OSAEObjectStateManager.ObjectStateSet(oObject.Name, Command, gAppName)
+                    OSAE.OSAEObjectStateManager.ObjectStateSet(oObject.Name, method.MethodName.ToUpper, gAppName)
                     If gDebug Then Log.Debug("Object: " & oObject.Name & " State set to: " & method.MethodName.ToUpper)
                 Else
                     If gDebug Then Log.Debug("Could not retrieve X10 Device Status")

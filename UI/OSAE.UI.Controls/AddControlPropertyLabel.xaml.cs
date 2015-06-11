@@ -186,7 +186,7 @@ namespace OSAE.UI.Controls
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             string sName = txtControlName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, "GUI");

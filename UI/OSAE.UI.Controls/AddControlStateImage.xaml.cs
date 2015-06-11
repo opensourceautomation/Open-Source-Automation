@@ -392,7 +392,7 @@ namespace OSAE.UI.Controls
         {
 
             string sName = currentScreen + " - " + cboObject.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.Text, "GUI");
             if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, "GUI");
@@ -435,7 +435,7 @@ namespace OSAE.UI.Controls
         {
 
             string sName = txtControlName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.Text, "GUI");
             if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, "GUI");

@@ -24,7 +24,7 @@
                 {
                     DataSet dataset = new DataSet();
 
-                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@OSAEObjectProperty";
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE (UPPER(object_name) = UPPER('" + ObjectName + "') OR UPPER(object_alias) = UPPER('" + ObjectName + "')) AND property_name=@OSAEObjectProperty";
                     command.Parameters.AddWithValue("@ObjectName", ObjectName);
                     command.Parameters.AddWithValue("@OSAEObjectProperty", ObjectProperty);
                     dataset = OSAESql.RunQuery(command);
@@ -101,7 +101,7 @@
                 {
                     DataSet dataset = new DataSet();
 
-                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE object_name=@ObjectName ORDER BY property_name";
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE UPPER(object_name) = UPPER('" + ObjectName + "') OR UPPER(object_alias) = UPPER('" + ObjectName + "') ORDER BY property_name";
                     command.Parameters.AddWithValue("@ObjectName", ObjectName);
                     dataset = OSAESql.RunQuery(command);
 
@@ -131,7 +131,7 @@
             DataSet ds = new DataSet();
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "SELECT property_name FROM osae_v_object_property WHERE object_name = '" + objectName + "' ORDER BY property_name asc";
+                command.CommandText = "SELECT property_name FROM osae_v_object_property WHERE (UPPER(object_name) = UPPER('" + objectName + "') OR UPPER(object_alias) = UPPER('" + objectName + "')) ORDER BY property_name asc";
                 try
                 {
                     ds = OSAESql.RunQuery(command);
@@ -370,7 +370,7 @@
             DataSet ds = new DataSet();
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "SELECT history_timestamp, CASE property_datatype WHEN 'Boolean' THEN IF(property_value='TRUE', 1, 0) ELSE property_value END AS property_value FROM osae_v_object_property_history WHERE object_name = '" + objectName + "' and property_name = '" + propertyName + "' AND history_timestamp BETWEEN '" + from + "' AND '" + to + "' ORDER BY history_timestamp asc";
+                command.CommandText = "SELECT history_timestamp, CASE property_datatype WHEN 'Boolean' THEN IF(property_value='TRUE', 1, 0) ELSE property_value END AS property_value FROM osae_v_object_property_history WHERE (UPPER(object_name) = UPPER('" + objectName + "') OR UPPER(object_alias) = UPPER('" + objectName + "')) and property_name = '" + propertyName + "' AND history_timestamp BETWEEN '" + from + "' AND '" + to + "' ORDER BY history_timestamp asc";
                 try
                 {
                     ds = OSAESql.RunQuery(command);

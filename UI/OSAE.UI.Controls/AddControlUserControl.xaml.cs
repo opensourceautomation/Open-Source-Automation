@@ -29,7 +29,7 @@ namespace OSAE.UI.Controls
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
             string sName = "Screen - " + currentScreen + " - " + txtName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, "USER CONTROL", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "USER CONTROL", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", typesComboBox.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");

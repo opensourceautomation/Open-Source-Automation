@@ -270,7 +270,7 @@
                         if (bObjectTypeExists)
                         {
                             this.Log.Info(desc.Type + ":  Valid Object Type found.  Attempting to create Object...");
-                            OSAEObjectManager.ObjectAdd(desc.Type, desc.Type + " plugin's Object", desc.Type, "", "SYSTEM", false);
+                            OSAEObjectManager.ObjectAdd(desc.Type, desc.Type, desc.Type + " plugin's Object", desc.Type, "", "SYSTEM", false);
                             OSAEObject obj = OSAEObjectManager.GetObjectByName(desc.Type);
                             if (obj != null)
                             {
@@ -462,7 +462,7 @@
 
                     this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=True");
                     OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
-                    OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+                    OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
 
                     //NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|True");
 
@@ -493,7 +493,7 @@
 
                 this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=False");
                 OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
-                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);   
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 0);   
 
              //   NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|False");
              //   this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False");

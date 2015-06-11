@@ -25,14 +25,14 @@
         Boolean ExecuteMethod(string name, string method, string param1, string param2);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/add?name={name}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/add?name={name}&alias={alias&desc}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean AddObject(string name, string description, string type, string address, string container, string enabled);
+        Boolean AddObject(string name, string alias, string description, string type, string address, string container, string enabled);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/update?oldName={oldName}&newName={newName}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/update?oldName={oldName}&newName={newName}&alias={alias&desc}={description}&type={type}&address={address}&container={container}&enabled={enabled}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean UpdateObject(string oldName, string newName, string description, string type, string address, string container, string enabled);
+        Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, string enabled);
 
         [OperationContract]
         [WebGet(UriTemplate = "objects/type/{type}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -134,27 +134,31 @@
 
         public Boolean SendPattern(string match)
         {
-            string patternName = Common.MatchPattern(match,"");
-            if (patternName != "")
-            {
-                OSAEScriptManager.RunPatternScript(patternName, "", "REST Service");
-                return true;
-            }
-            else
+            //REPLACE WITH GRAMMAR
+
+
+
+           // string patternName = Common.MatchPattern(match,"");
+           // if (patternName != "")
+          //  {
+           //     OSAEScriptManager.RunPatternScript(patternName, "", "REST Service");
+           //     return true;
+          //  }
+          //  else
                 return false;
         }
 
-        public Boolean AddObject(string name, string description, string type, string address, string container, string enabled)
+        public Boolean AddObject(string name, string alias, string description, string type, string address, string container, string enabled)
         {
 
-            OSAEObjectManager.ObjectAdd(name, description, type, address, container, StringToBoolean(enabled));
+            OSAEObjectManager.ObjectAdd(name, alias, description, type, address, container, StringToBoolean(enabled));
 
             return true;
         }
 
-        public Boolean UpdateObject(string oldName, string newName, string description, string type, string address, string container, string enabled)
+        public Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, string enabled)
         {
-            OSAEObjectManager.ObjectUpdate(oldName, newName, description, type, address, container, Convert.ToInt32(StringToBoolean(enabled)));
+            OSAEObjectManager.ObjectUpdate(oldName, newName, alias, description, type, address, container, Convert.ToInt32(StringToBoolean(enabled)));
 
             return true;
         }

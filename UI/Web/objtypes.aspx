@@ -80,18 +80,28 @@
             }
         });
     </script> 
-    <style>
+    <style type="text/css">
+        #gvObjectTypes tr.rowHover:hover {background-color: Yellow;}
+        #gvObjectTypes tr.rowHover {background-color: none;}
+        #gvObjectTypes tr.rowHoverAlt:hover {background-color: Yellow;}
+        #gvObjectTypes tr.rowHoverAlt {background-color: #f4f4f4;}
 
+        #gvProperties tr.rowHover1:hover {background-color: Yellow;}
+        #gvProperties tr.rowHover1 {background-color: none;}
+        #gvProperties tr.rowHoverAlt1:hover {background-color: Yellow;}
+        #gvProperties tr.rowHoverAlt1 {background-color: #f4f4f4;}
     </style>
+
     <div class="row-fluid">
         <div class="span6">
             <div ID="ObjPanel">
                 <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px; " onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvObjectTypes" AllowSorting="True" OnSorting="gvObjectTypes_OnSorting"
-                        AutoGenerateColumns="False"  
-                        GridLines="None"  
-                        CssClass="mGrid"  
-                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjectTypes_RowDataBound" DataKeyNames="object_type">  
+                        AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static" OnRowDataBound="gvObjectTypes_RowDataBound" 
+                        DataKeyNames="object_type">
+                        <RowStyle CssClass="rowHover"></RowStyle>
+                        <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
+                        <AlternatingRowStyle CssClass="rowHoverAlt"></AlternatingRowStyle>
                         <Columns>  
                             <asp:BoundField DataField="base_type" HeaderText="Base Type" SortExpression="base_type"/>  
                             <asp:BoundField DataField="object_type" HeaderText="Object Type" SortExpression="object_type"/>  
@@ -263,12 +273,13 @@
                     <div class="row-fluid">
                         <h3 style="float:right; margin-right:10px;">Properties</h3>
                         <br />
-                        <div class="span5" id="propGrid" style="overflow: auto; max-height:300px;"  onscroll="SetPropDivPosition()">
+                        <div class="span5" id="propGrid" style="overflow: auto; max-height:300px;" onscroll="SetPropDivPosition()">
                             <asp:GridView runat="server" ID="gvProperties"
-                                AutoGenerateColumns="False"  
-                                GridLines="None"  
-                                CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_object_type, property_default, track_history, property_id" ShowHeaderWhenEmpty="true">  
+                                AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static"  
+                                OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_object_type, property_default, track_history, property_id" ShowHeaderWhenEmpty="true"> 
+                                <RowStyle CssClass="rowHover1"></RowStyle>
+                                <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
+                                <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle> 
                                 <Columns>  
                                     <asp:BoundField DataField="property_name" HeaderText="Property" /> 
                                     <asp:BoundField DataField="property_datatype" HeaderText="Type" /> 
@@ -356,12 +367,7 @@
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>
 
-    <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
-    <asp:Label runat="server" ID="hdnLastRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
-    <asp:Label runat="server" ID="hdnSelectedPropRow" Visible="false"></asp:Label>
-    <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>
-    <asp:Label runat="server" ID="hdnSelectedPropLastRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropDataType" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedStateRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedStateName" Visible="false"></asp:Label>

@@ -176,7 +176,7 @@ namespace OSAE.Jabber
                 DataSet dsResults = new DataSet();  //Build a List of all Users to identify who is sending the message.
                 dsResults = OSAESql.RunSQL("SELECT DISTINCT(object_name) FROM osae_v_object_property WHERE property_name = 'JabberID' and property_value = '" + msg.From.Bare + "' ORDER BY object_name");
                 gCurrentUser = dsResults.Tables[0].Rows[0][0].ToString();
-                OSAEObjectPropertyManager.ObjectPropertySet(gCurrentUser, "Communication Method", gAppName, gCurrentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(gCurrentUser, "Communication Method", "Jabber", gCurrentUser);
                 gCurrentAddress = msg.From.Bare;
 
                 RecognitionResult rr = oRecognizer.EmulateRecognize(msg.Body);
@@ -247,7 +247,7 @@ namespace OSAE.Jabber
 
             if (!found)
             {
-                OSAEObjectManager.ObjectAdd(item.Jid.Bare, "Discovered Jabber contact", "PERSON", "", "Unknown", true);
+                OSAEObjectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "Discovered Jabber contact", "PERSON", "", "Unknown", true);
                 OSAEObjectPropertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
             }
         }
