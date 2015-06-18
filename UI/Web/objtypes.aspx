@@ -143,14 +143,14 @@
                     </div>
                 </div>
                 <div class="row-fluid">
-                    <div class="span8" style="text-align:left;">
+                    <div class="span7" style="text-align:left;">
                         <asp:CheckBox runat="server" ID="chkOwner" /> Object Type Owner &nbsp;
                         <asp:CheckBox runat="server" ID="chkContainer" /> Container &nbsp;
                         <br />
-                        <asp:CheckBox runat="server" ID="chkSysType" /> Reserved System Type &nbsp;
+                        <asp:CheckBox runat="server" ID="chkSysType" /> Required Type &nbsp;
                         <asp:CheckBox runat="server" ID="chkHideEvents" /> Hide Redundant Events &nbsp;
                     </div>
-                    <div class="span4" style="text-align:right;" >
+                    <div class="span5" style="text-align:center;" >
                         <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
                         <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp
                         <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object type?');"/>
@@ -363,9 +363,6 @@
             <asp:TextBox ID="lblExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
         </div>
     </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-      </div>
 
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropDataType" Visible="false"></asp:Label>

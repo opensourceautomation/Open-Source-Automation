@@ -8,7 +8,7 @@
         <Button x:Name="btnLoadS1I1" Content="Image 1" HorizontalAlignment="Left" Margin="76,104,0,0" VerticalAlignment="Top" Width="75" Click="btnLoadS1I1_Click" RenderTransformOrigin="0.411,0.455" ToolTip="First and possibly only frame of this animation"/>
 
         <Label Content="Object" Height="28" HorizontalAlignment="Left" Margin="11,42,0,0" x:Name="label3" VerticalAlignment="Top" Width="53" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="76,42,0,0" x:Name="cboObject" VerticalAlignment="Top" Width="357" ItemsSource="{Binding object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="cboObject_SelectionChanged" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="76,42,0,0" x:Name="cboObject" VerticalAlignment="Top" Width="357" ItemsSource="{Binding object_name}" DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="cboObject_SelectionChanged" />
         <Label Content="State 1" HorizontalAlignment="Left" Margin="11,71,0,0" VerticalAlignment="Top"/>
         <Label Content="State 2" HorizontalAlignment="Left" Margin="11,207,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="10,468,0,0" VerticalAlignment="Top" Width="75" Click="btnAdd_Click"/>

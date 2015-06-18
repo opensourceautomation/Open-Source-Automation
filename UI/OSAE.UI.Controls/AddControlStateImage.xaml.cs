@@ -67,7 +67,7 @@ namespace OSAE.UI.Controls
                 sMode = "Add";
                 controlName = sWorkingName;
                 txtControlName.Text = controlName;
-                LoadCurrentScreenObject(controlName);
+                //LoadCurrentScreenObject(controlName);
             }
             Enable_Buttons();
 
@@ -386,6 +386,7 @@ namespace OSAE.UI.Controls
             DataSet dataSet2 = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_name");
             cboSliderMethod.ItemsSource = dataSet2.Tables[0].DefaultView;
 
+            txtControlName.Text = currentScreen + " - " + cboObject.SelectedValue;
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)

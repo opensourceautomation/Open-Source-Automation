@@ -81,7 +81,7 @@
                     DataSet dataset = new DataSet();
                     OSAEScreenControl ctrl = new OSAEScreenControl();
 
-                    command.CommandText = "SELECT object_name, control_name, control_type, state_name, last_updated, coalesce(time_in_state, 0) as time_in_state FROM osae_v_screen_object WHERE screen_name=@ScreenName AND control_enabled = 1";
+                    command.CommandText = "SELECT object_name, control_name, control_type, state_name, last_updated, coalesce(property_last_updated,NOW()) as property_last_updated, coalesce(time_in_state, 0) as time_in_state FROM osae_v_screen_object WHERE screen_name=@ScreenName AND control_enabled = 1";
                     command.Parameters.AddWithValue("@ScreenName", screenName);
                     dataset = OSAESql.RunQuery(command);
 
@@ -96,6 +96,7 @@
                             ctrl.ControlName = dr["control_name"].ToString();
                             ctrl.ControlType = dr["control_type"].ToString();
                             ctrl.LastUpdated = DateTime.Parse(dr["last_updated"].ToString());
+                            ctrl.PropertyLastUpdated = DateTime.Parse(dr["property_last_updated"].ToString());
                             ctrl.ObjectName = dr["object_name"].ToString();
 
                             controls.Add(ctrl);

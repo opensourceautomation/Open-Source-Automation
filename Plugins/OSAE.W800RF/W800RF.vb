@@ -220,11 +220,11 @@ Public Class W800RF
                         If gDevice.Device_Type = "X10_SECURITY_DS10" Then
                             Log.Info("Adding new DS10A: " & gDevice.Device_Code)
                             If gDebug Then Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,BINARY SENSOR, " & gDevice.Device_Code & ", '' True)")
-                            OSAEObjectManager.ObjectAdd("X10-" & gDevice.Device_Code, "Unknown DS10A found by W800RF", "BINARY SENSOR", gDevice.Device_Code, "", True)
+                            OSAEObjectManager.ObjectAdd("X10-" & gDevice.Device_Code, "", "Unknown DS10A found by W800RF", "BINARY SENSOR", gDevice.Device_Code, "", True)
                         Else
                             Log.Info("Adding new X10: " & gDevice.House_Code & gDevice.Device_Code)
                             If gDebug Then Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,BINARY SENSOR, " & gDevice.Device_Code & ", '', True)")
-                            OSAEObjectManager.ObjectAdd("X10-" & gDevice.House_Code & gDevice.Device_Code, "Unknown X10 found by W800RF", "BINARY SENSOR", gDevice.House_Code & gDevice.Device_Code, "", True)
+                            OSAEObjectManager.ObjectAdd("X10-" & gDevice.House_Code & gDevice.Device_Code, "", "Unknown X10 found by W800RF", "BINARY SENSOR", gDevice.House_Code & gDevice.Device_Code, "", True)
                         End If
                     End If
                 Else

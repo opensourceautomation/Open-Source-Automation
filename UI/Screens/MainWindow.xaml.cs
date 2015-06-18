@@ -211,13 +211,18 @@
                             {
                                 if (newCtrl.ControlName == pl.screenObject.Name)
                                 {
-                                    if (newCtrl.LastUpdated != pl.LastUpdated)
+                                    if (newCtrl.PropertyLastUpdated >= pl.LastUpdated)
                                     {
-                                        pl.LastUpdated = newCtrl.LastUpdated;
-                                        pl.Update();
+                                        pl.LastUpdated = newCtrl.PropertyLastUpdated;
+                                        pl.Update("Full");
                                         this.Log.Debug("Updated:  " + newCtrl.ControlName);
+                                        oldCtrl = true;
                                     }
-                                    oldCtrl = true;
+                                    else
+                                    {
+                                        pl.Update("Refresh");
+                                        oldCtrl = true;
+                                    }
                                 }
                             }
                         }

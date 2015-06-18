@@ -24,9 +24,9 @@
         #region variables
 
         private string filename = string.Empty;
-        private int s = 5;
+        //private int s = 5;
         private PluginDescription desc = new PluginDescription();
-        private Image MyPluginImage = null;
+        //private Image MyPluginImage = null;
         public bool install = false;
 
         #endregion

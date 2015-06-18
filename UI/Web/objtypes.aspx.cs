@@ -28,10 +28,14 @@ public partial class objtypes : System.Web.UI.Page
             loadProperties();
             hdnSelectedPropDataType.Text = "";
             panelPropForm.Visible = true;
-            txtPropName.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString();
-            txtPropDefault.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_default"].ToString();
-            chkTrackChanges.Checked = (bool)gvProperties.DataKeys[gvProperties.SelectedIndex]["track_history"];
-            ddlPropType.SelectedValue = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString();
+            try
+            {
+                txtPropName.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString();
+                txtPropDefault.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_default"].ToString();
+                chkTrackChanges.Checked = (bool)gvProperties.DataKeys[gvProperties.SelectedIndex]["track_history"];
+                ddlPropType.SelectedValue = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString();
+            }
+            catch { }
             loadStates();
             loadMethods();
             loadEvents();

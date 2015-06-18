@@ -9,6 +9,7 @@
         public string ObjectName { get; set; }
         public string ObjectState { get; set; }
         public DateTime LastUpdated { get; set; }
+        public DateTime PropertyLastUpdated { get; set; }
         public string TimeInState { get; set; }
     }
 }
