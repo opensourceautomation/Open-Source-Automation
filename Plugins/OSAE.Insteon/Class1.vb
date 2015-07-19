@@ -1097,7 +1097,7 @@ PLMerror:
         Dim sAddress3 As String = ""
         Dim iParameter As Integer = 0
         Dim iDimLevel As Integer = 0
-        If method.Address.Length > 2 Then
+        If method.Address.Length > 3 Then
             Try
                 sAddress1 = Left(method.Address, 2).ToLower
                 sAddress2 = method.Address.Substring(3, 2).ToLower
@@ -1206,7 +1206,7 @@ PLMerror:
                     x10data(1) = 99  ' 0x063 = Send X10
                     x10data(2) = PLM_X10_House(houseCodeInt) + 3   ' X10 address (house + command)
                     x10data(3) = 128 ' flag = this is house + address
-                    SerialPLM.Write(data, 0, 4)
+                    SerialPLM.Write(x10data, 0, 4)
                     If gDebug Then Log.Debug("SEND: " & x10data(0) & ", " & x10data(1) & ", " & x10data(2) & ", " & x10data(3))
                 Case Else
                     'command = "Unknown"
