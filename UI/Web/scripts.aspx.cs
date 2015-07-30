@@ -61,7 +61,8 @@ public partial class scripts : System.Web.UI.Page
             ddlScriptProcessor.SelectedValue = gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_processor_name"].ToString();
             hdnScript.Value = OSAEScriptManager.GetScript(gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_id"].ToString());
             loadLinkage(gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_id"].ToString());
-            lblExportScript.Text = OSAEScriptManager.GetScriptByName(hdnSelectedScriptName.Text);
+            lblCopyScript.Text = OSAEScriptManager.GetScriptByName(hdnSelectedScriptName.Text);
+            lblExportScript.Text = OSAEScriptManager.ExportScript(hdnSelectedScriptName.Text);
         }
         if (hdnSelectedEventScriptRow.Text != "")
         {
@@ -298,11 +299,7 @@ public partial class scripts : System.Web.UI.Page
             hdnSelectedObjTypeEventScriptRow.Text = selectedRow.ToString();
     }
     
-    protected void btnScriptExport_Click(object sender, EventArgs e)
-    {
-        OSAEScriptManager.GetScriptByName(hdnSelectedObjTypeEventScriptID.Text);
 
-    }
 
     protected void btnAddObjTypeEventScript_Click(object sender, EventArgs e)
     {

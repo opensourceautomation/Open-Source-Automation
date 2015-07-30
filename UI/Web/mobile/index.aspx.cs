@@ -26,7 +26,7 @@ public partial class mobile_index : System.Web.UI.Page
             }
             catch (FormatException)
             {
-                // do nothing and move on
+                // do nothing and move on 
             }
             catch (OverflowException)
             {
@@ -40,4 +40,5 @@ public partial class mobile_index : System.Web.UI.Page
 
         hdnRestPort.Value = restPort.ToString();
     }
+
 }

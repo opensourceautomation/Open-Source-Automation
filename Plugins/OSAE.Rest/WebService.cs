@@ -6,6 +6,8 @@
     using System.ServiceModel;
     using System.ServiceModel.Web;
     using System.Drawing;
+    using System.Speech;
+    using System.Speech.Recognition;
     using OSAE;
     
     [ServiceContract]
@@ -25,18 +27,22 @@
         Boolean ExecuteMethod(string name, string method, string param1, string param2);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/add?name={name}&alias={alias&desc}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/add?name={name}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean AddObject(string name, string alias, string description, string type, string address, string container, string enabled);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/update?oldName={oldName}&newName={newName}&alias={alias&desc}={description}&type={type}&address={address}&container={container}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/update?oldName={oldName}&newName={newName}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, string enabled);
 
         [OperationContract]
         [WebGet(UriTemplate = "objects/type/{type}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         OSAEObjectCollection GetObjectsByType(string type);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "objects/basetype/{type}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        OSAEObjectCollection GetObjectsByBaseType(string type);
 
         [OperationContract]
         [WebGet(UriTemplate = "objects/container/{container}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -86,7 +92,9 @@
     public class api : IRestService
     {
         private Logging logging = Logging.GetLogger("Rest");
-        
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+        SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
+     
         public OSAEObject GetObject(string name)
         {
             // lookup object 
@@ -104,6 +112,18 @@
         public OSAEObjectCollection GetObjectsByType(string type)
         {
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType(type);
+
+            foreach (OSAEObject oObj in objects)
+            {
+                oObj.Properties = getProperties(oObj.Name);
+            }
+
+            return objects;
+        }
+
+        public OSAEObjectCollection GetObjectsByBaseType(string type)
+        {
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByBaseType(type);
 
             foreach (OSAEObject oObj in objects)
             {
@@ -134,6 +154,23 @@
 
         public Boolean SendPattern(string match)
         {
+
+            try
+            {
+                oRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(oRecognizer_SpeechRecognized);
+                //oRecognizer.AudioStateChanged += new EventHandler<AudioStateChangedEventArgs>(oRecognizer_StateChanged);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Unable to configure oRecognizer", ex);
+            }
+
+            oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
+            oRecognizer = OSAEGrammar.Load_OSA_Grammar(oRecognizer);
+
+
+
+
             //REPLACE WITH GRAMMAR
 
 
@@ -255,9 +292,7 @@
                 // otherwise it is probably a "1" or "0" and we will try to convert that to boolean
                 int intvalue;
                 if (Int32.TryParse(passedvalue, out intvalue))
-                {
                     booleanvalue = Convert.ToBoolean(intvalue);
-                }
             }
 
             return booleanvalue;
@@ -300,6 +335,52 @@
             return list;
         }
 
+        private void oRecognizer_SpeechRecognized(object sender, System.Speech.Recognition.SpeechRecognizedEventArgs e)
+        {
+            string gCurrentUser = "Unidentified Person";
+            try
+            {
+                RecognitionResult result = e.Result;
+                SemanticValue semantics = e.Result.Semantics;
+                string scriptParameter = "";
+                if (e.Result.Semantics.ContainsKey("PARAM1"))
+                {
+                    string temp = e.Result.Semantics["PARAM1"].Value.ToString().Replace("'s", "").Replace("'S", "");
+                    if (temp.ToUpper() == "I" || temp.ToUpper() == "ME" || temp.ToUpper() == "MY") temp = gCurrentUser;
+                    if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = "SYSTEM";
+                    scriptParameter = temp;
+                    if (e.Result.Semantics.ContainsKey("PARAM2"))
+                    {
+                        temp = e.Result.Semantics["PARAM2"].Value.ToString().Replace("'s", "").Replace("'S", "");
+                        if (temp.ToUpper() == "I" || temp.ToUpper() == "ME" || temp.ToUpper() == "MY") temp = gCurrentUser;
+                        if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = "SYSTEM";
+                        scriptParameter += "," + temp;
+                        if (e.Result.Semantics.ContainsKey("PARAM3"))
+                        {
+                            temp = e.Result.Semantics["PARAM3"].Value.ToString().Replace("'s", "").Replace("'S", "");
+                            if (temp.ToUpper() == "I" || temp.ToUpper() == "ME" || temp.ToUpper() == "MY") temp = gCurrentUser;
+                            if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = "SYSTEM";
+                            scriptParameter += "," + temp;
+                        }
+                    }
+                }
+                string sResults = "";
+                    if (result.Grammar.Name.ToString() == "Direct Match")
+                    {
+                        Log.Debug("Searching for: " + sResults);
+                        sResults = OSAEGrammar.SearchForMeaning(result.Text, scriptParameter, gCurrentUser);
+                    }
+                    else
+                    {
+                        Log.Debug("Searching for: " + sResults);
+                        sResults = OSAEGrammar.SearchForMeaning(result.Grammar.Name.ToString(), scriptParameter, gCurrentUser);
+                    }
+
+                Log.Info("Search Results: " + sResults);
+            }
+            catch (Exception ex)
+            { Log.Error("Error in _SpeechRecognized!", ex); }
+        }
     }
 
     public class OSAEPropertyHistory

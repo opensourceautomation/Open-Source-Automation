@@ -19,6 +19,7 @@ public partial class home : System.Web.UI.Page
         {
             alert.Visible = false;
             gvObjects.SelectedIndex = Int32.Parse(args[1]);
+            hdnSelectedObjectName.Text = gvObjects.DataKeys[gvProperties.SelectedIndex]["object_name"].ToString();
             panelEditForm.Visible = true;
             btnUpdate.Visible = true;
             panelPropForm.Visible = false;
@@ -171,7 +172,8 @@ public partial class home : System.Web.UI.Page
 
     protected void Page_PreRender(object sender, EventArgs e)
     {
-
+        if (hdnSelectedObjectName.Text != "")
+            txtExportScript.Text = OSAEObjectManager.ObjectExport(hdnSelectedObjectName.Text);
     }
 
     protected void gvObjects_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)

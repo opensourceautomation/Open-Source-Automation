@@ -102,12 +102,13 @@
                 </div>
             </div>
             <div class="row-fluid">
-                <div class="span3" style="text-align:left;">
+                <div class="span4" style="text-align:left;">
                     <br />
                     <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Linkage</a>
-                    <a href="#myModal" role="button" class="btn" data-toggle="modal" >Copy</a>
+                    <a href="#copyModal" role="button" class="btn" data-toggle="modal" >Copy</a>
                     <asp:TextBox ID="txtTestParameter" runat="server"></asp:TextBox>
                     <asp:Button runat="server" ID="btnTest" class="btn" OnClick="btnTest_Click" Text="Test" /> 
+                    <a href="#exportModal" role="button" class="btn" data-toggle="modal" >Export</a>
                 </div>
                 <div class="span6" style="text-align:left;">
                     <div class="alert alert-error" runat="server" id="alert" visible="false"  >Must enter script name and Script Processor</div> &nbsp;
@@ -247,12 +248,26 @@
     </div>
     
     <!-- Modal -->
-    <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="copyModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="H2">Copy Script</h3>
       </div>
-      <div ID="dvmodalbody" class="modal-body">
+      <div ID="dvcopymodalbody" class="modal-body">
+          <asp:TextBox ID="lblCopyScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      </div>
+    </div>
+
+        <!-- Modal -->
+    <div id="exportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="H2">Copy Script</h3>
+      </div>
+      <div ID="dvexportmodalbody" class="modal-body">
           <asp:TextBox ID="lblExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
       </div>
       <div class="modal-footer">

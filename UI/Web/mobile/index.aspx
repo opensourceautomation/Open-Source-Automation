@@ -37,7 +37,7 @@
           $('#propsBtn').removeClass("ui-btn-active");
           $('#callback').html('');
 
-          $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/objects/type/place?callback=?', null, function (data) {
+          $.getJSON('http://' + host + ':<%= hdnRestPort.Value %>/api/objects/basetype/place?callback=?', null, function (data) {
               //$('#callback').html(data);
               $("#callback").append('<ul id="places" data-role="listview" data-theme="g">');
               $.each(data, function (i, obj) {

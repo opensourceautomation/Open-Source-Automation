@@ -314,6 +314,7 @@
       </div>
     </div>
     
+    <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropType" Visible="false"></asp:Label>
     <asp:HiddenField runat="server" ID="hdnEditingPropList"/>

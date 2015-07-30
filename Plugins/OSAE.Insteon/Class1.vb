@@ -576,8 +576,7 @@
                             Log.Info("Unrecognized X10: " & GetHex(x(ms + 2)) & " " & GetHex(x(ms + 3)))
                     End Select
                 End If
-            Case 98 ' 0x062 Send Insteon standard OR extended message
-                ' just echoing command sent, discard: 7 or 21 bytes
+            Case 98 ' 0x062 Send Insteon standard OR extended message just echoing command sent, discard: 7 or 21 bytes
                 MessageEnd = ms + 8
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 8 Then

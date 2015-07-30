@@ -445,6 +445,18 @@
             return script;
         }
 
+        public static string ExportScript(string scriptName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+
+                command.CommandText = "CALL osae_sp_script_export (@ScriptName)";
+                command.Parameters.AddWithValue("@ScriptName", scriptName);
+                DataSet ds = OSAESql.RunQuery(command);
+
+                return ds.Tables[0].Rows[0][0].ToString();
+            }
+        }
 
         public static void RunPatternScript(string pattern, string parameter, string from)
         {

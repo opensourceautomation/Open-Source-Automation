@@ -449,7 +449,7 @@
 
         private void hypGUI_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Common.ApiPath + "\\OSAE.GUI.exe");
+            Process.Start(Common.ApiPath + "\\OSAE.Screens.exe");
         }
 
         void OnChecked(object sender, RoutedEventArgs e)
