@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using agsXMPP;
-using System.Speech;
+using System.Threading;
 using System.Speech.Recognition;
 
 namespace OSAE.Jabber
@@ -48,8 +48,11 @@ namespace OSAE.Jabber
             }
 
             oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
-            oRecognizer = OSAEGrammar.Load_OSA_Grammar(oRecognizer);
-
+            Log.Info("Load_Direct_Grammar completed");
+            oRecognizer = OSAEGrammar.Load_Voice_Grammars(oRecognizer);
+            Log.Info("Load_Voice_Grammars completed");
+            oRecognizer = OSAEGrammar.Load_Text_Only_Grammars(oRecognizer);
+            Log.Info("Load_Text_Only_Grammars completed");
             // Subscribe to Events
             xmppCon.OnLogin += new ObjectHandler(xmppCon_OnLogin);
             xmppCon.OnRosterStart += new ObjectHandler(xmppCon_OnRosterStart);
@@ -134,7 +137,7 @@ namespace OSAE.Jabber
                 //Unload All grammars
                 oRecognizer.UnloadAllGrammars();
                 //Load Answer grammer based on Property Object Type plus Unknown and None
-                oRecognizer = OSAEGrammar.Load_Property_Grammar(oRecognizer, dataset.Tables[0].Rows[0]["property_datatype"].ToString(), dataset.Tables[0].Rows[0]["property_object_type"].ToString());
+                oRecognizer = OSAEGrammar.Load_Answer_Grammar(oRecognizer, dataset.Tables[0].Rows[0]["property_datatype"].ToString(), dataset.Tables[0].Rows[0]["property_object_type"].ToString());
                 //set a AskingQuestionVariables so recognition can run an QuestionedAnswered routine
                 gAnswerObject = dataset.Tables[0].Rows[0]["object_name"].ToString();
                 gAnswerProperty = dataset.Tables[0].Rows[0]["property_name"].ToString();
@@ -146,7 +149,11 @@ namespace OSAE.Jabber
         {
             oRecognizer.UnloadAllGrammars();
             oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
-            oRecognizer = OSAEGrammar.Load_OSA_Grammar(oRecognizer);
+            Log.Info("Load_Direct_Grammar completed");
+            oRecognizer = OSAEGrammar.Load_Voice_Grammars(oRecognizer);
+            Log.Info("Load_Voice_Grammars completed");
+            oRecognizer = OSAEGrammar.Load_Text_Only_Grammars(oRecognizer);
+            Log.Info("Load_Text_Only_Grammars completed");
 
             sendMessage(Common.PatternParse("Setting " + gAnswerObject + "'s " + gAnswerProperty + " to " + answer), gCurrentAddress);
 
@@ -170,12 +177,12 @@ namespace OSAE.Jabber
             {
                 // ignore empty messages (events)
                 if (msg.Body == null || oldMmsg == msg || msg.Type == agsXMPP.protocol.client.MessageType.error) return;
-
                 oldMmsg = msg;
-
+                if (gDebug) Log.Debug("Searching for: " + msg.From.Bare);
                 DataSet dsResults = new DataSet();  //Build a List of all Users to identify who is sending the message.
                 dsResults = OSAESql.RunSQL("SELECT DISTINCT(object_name) FROM osae_v_object_property WHERE property_name = 'JabberID' and property_value = '" + msg.From.Bare + "' ORDER BY object_name");
                 gCurrentUser = dsResults.Tables[0].Rows[0][0].ToString();
+                if (gDebug) Log.Debug("gCurrentUser: " + dsResults.Tables[0].Rows[0][0].ToString());
                 OSAEObjectPropertyManager.ObjectPropertySet(gCurrentUser, "Communication Method", "Jabber", gCurrentUser);
                 gCurrentAddress = msg.From.Bare;
 
@@ -192,14 +199,15 @@ namespace OSAE.Jabber
             Log.Info("OnClose Connection Closed");
             if (!shuttingDown)
             {
-                Log.Info("Connection Closed unexpectedly.  Attempting Reconnect...");
+                Log.Info("Connection Closed unexpectedly. Attempting Reconnect in 5 seconds.");
+                Thread.Sleep(5000);
                 connect();
             }
         }
 
         void xmppCon_OnError(object sender, Exception ex)
         {
-            Log.Error("OnError");
+            Log.Error("OnError", ex);
         }
 
         void xmppCon_OnAuthError(object sender, agsXMPP.Xml.Dom.Element e)
@@ -231,9 +239,7 @@ namespace OSAE.Jabber
         void xmppCon_OnRosterItem(object sender, agsXMPP.protocol.iq.roster.RosterItem item)
         {
             bool found = false;
-            Log.Info(String.Format("Received Contact {0}", item.Jid.Bare));
-
-            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
+                        OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
             foreach (OSAEObject oObj in objects)
             {
@@ -241,12 +247,14 @@ namespace OSAE.Jabber
                 if (OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
                 {
                     found = true;
+                    Log.Info(String.Format("Received contact from {0} ({1})", obj.Name, item.Jid.Bare));
                     break;
                 }
             }
 
             if (!found)
             {
+                Log.Info(String.Format("Received NEW Contact {0}", item.Jid.Bare));
                 OSAEObjectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "Discovered Jabber contact", "PERSON", "", "Unknown", true);
                 OSAEObjectPropertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
             }
@@ -349,8 +357,8 @@ namespace OSAE.Jabber
                         sResults = OSAEGrammar.SearchForMeaning(result.Grammar.Name.ToString(), scriptParameter, gCurrentUser);
                     }
                 }
-                
-                Log.Info("Search Results: " + sResults);
+                Log.Info(gCurrentUser + ": " + e.Result.Text );
+                Log.Info(" meaning = " + sResults);
             }
             catch (Exception ex)
             { Log.Error("Error in _SpeechRecognized!", ex); }

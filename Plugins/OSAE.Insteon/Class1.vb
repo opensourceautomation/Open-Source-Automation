@@ -1101,7 +1101,13 @@ PLMerror:
                 sAddress1 = Left(method.Address, 2).ToLower
                 sAddress2 = method.Address.Substring(3, 2).ToLower
                 sAddress3 = method.Address.Substring(6, 2).ToLower
-                iParameter = CInt(method.Parameter1)
+                If method.Parameter1 = "" Then
+                    iParameter = 100
+                ElseIf IsNumeric(method.Parameter1) Then
+                    iParameter = Convert.ToInt32(method.Parameter1)
+                Else
+                    iParameter = 100
+                End If
 
                 If gDebug Then Log.Debug("SEND: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName & " PARAM: " & iParameter)
             Catch ex As Exception

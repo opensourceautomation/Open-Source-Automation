@@ -40,21 +40,6 @@ namespace OSAE.ClientService
           //  {
                 //REPLACE WITH GRAMMAR
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 //string pattern = Common.MatchPattern(args[0],"");
                 //this.Log.Info("Processing command: " + args[0] + ", Named Script: " + pattern);
                // if (pattern != string.Empty)

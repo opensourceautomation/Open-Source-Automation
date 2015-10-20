@@ -9,7 +9,7 @@
 
     public class OSAEGrammar
     {
-        
+       
         public static SpeechRecognitionEngine Load_User_Grammar(SpeechRecognitionEngine oRecognizer)
         {
             //User
@@ -29,10 +29,10 @@
             {throw new Exception("API.Grammar User Grammar 1: " + ex.Message, ex);}
 
             Choices userChoices = new Choices(userList.ToArray());
-
+            Choices tempChoices = new Choices(new string[] { "this is", "I am" });
             try
             {
-                GrammarBuilder builder = new GrammarBuilder("This is");
+                GrammarBuilder builder = new GrammarBuilder(tempChoices);
                 SemanticResultKey srk = new SemanticResultKey("PARAM1", userChoices);
                 builder.Append(srk);
                 Grammar gram = new Grammar(builder);
@@ -41,18 +41,6 @@
             }
             catch (Exception ex)
             { throw new Exception("API.Grammar User Grammar 2: " + ex.Message, ex); }
-
-            try
-            {
-                GrammarBuilder builder = new GrammarBuilder("I am");
-                SemanticResultKey srk = new SemanticResultKey("PARAM1", userChoices);
-                builder.Append(srk);
-                Grammar gram = new Grammar(builder);
-                gram.Name = "This is [OBJECT]";
-                oRecognizer.LoadGrammar(gram);
-            }
-            catch (Exception ex)
-            { throw new Exception("API.Grammar User Grammar 3: " + ex.Message, ex); }
             return oRecognizer;
         }
 
@@ -93,162 +81,28 @@
             return oRecognizer;
         }
 
-        public static SpeechRecognitionEngine Load_Object_State_Grammar(SpeechRecognitionEngine oRecognizer)
+        public static SpeechRecognitionEngine Load_Voice_Grammars(SpeechRecognitionEngine oRecognizer)
         {
+            Choices nounPrecedentChoices = new Choices(new string[] { "a", "an", "the" });
+            Choices pronounChoices = new Choices(new string[] { "I", "you" });
+            Choices possPronounChoices = new Choices(new string[] { "my", "your" });
+            Choices IsChoices = new Choices(new string[] { "is", "am", "are" });
+            Choices WhatWhoChoices = new Choices(new string[] { "what is", "who is" });
             DataSet dsResults = new DataSet();
 
-            Choices nounPrecedentChoices = new Choices(new string[] { "a", "an", "the" });
-
-            #region Build a List of all Object Types
-            List<string> objectTypeList = new List<string>();
-            dsResults = OSAESql.RunSQL("SELECT DISTINCT(object_type) FROM osae_v_object_list_full ORDER BY object_type");
-            foreach (DataRow dr in dsResults.Tables[0].Rows)
-            {
-                objectTypeList.Add(dr[0].ToString());
-            }
-            Choices objectTypeChoices = new Choices(objectTypeList.ToArray());
-            #endregion
-
-            #region [Object] [State]
-            // 1 Are you STATE
-            // 2 Am I STATE
-            // 3 Is OBJECT STATE?
-            // 4 Is [NP] OBJECT STATE?
-
-            // 5 You are STATE
-            // 6 I am STATE
-            // 7 OBJECT is STATE
-            // 8 [NP] OBJECT is STATE
-            GrammarBuilder gb1 = new GrammarBuilder("Are");
-            GrammarBuilder gb5 = new GrammarBuilder();
-            SemanticResultKey srk = new SemanticResultKey("PARAM1", "you");
-            gb1.Append(srk);
-            gb5.Append(srk);
-
-            GrammarBuilder gb2 = new GrammarBuilder("Am I");
-            GrammarBuilder gb6 = new GrammarBuilder();
-            srk = new SemanticResultKey("PARAM1", "I");
-            gb2.Append(srk);
-            gb6.Append(srk);
-
-            //builder.Append(objectChoices);
-
-            foreach (string ot in objectTypeList)
-            {
-                List<string> stateList = new List<string>();
-                GrammarBuilder gb3 = new GrammarBuilder("Is");
-                GrammarBuilder gb4 = new GrammarBuilder("Is");
-                gb4.Append(nounPrecedentChoices);
-
-                GrammarBuilder gbNPObjectIsState = new GrammarBuilder(nounPrecedentChoices);
-
-                //Get All objects of the current Object Type
-                List<string> objectList = new List<string>();
-                dsResults = OSAESql.RunSQL("SELECT object_name FROM osae_v_object_list_full WHERE object_type='" + ot + "'");
-                foreach (DataRow dr in dsResults.Tables[0].Rows)
-                {
-                    objectList.Add(dr[0].ToString());
-                }
-                if (objectList.Count > 0)  // Only bother with this object type if there are objects using it
-                {
-                    Choices objectChoices = new Choices(objectList.ToArray());
-                    srk = new SemanticResultKey("PARAM1", objectChoices);
-
-                    gb3.Append(srk);
-                    gb4.Append(srk);
-                    GrammarBuilder gbObjectIsState = new GrammarBuilder(srk);
-                    gbNPObjectIsState.Append(srk);
-                    gbObjectIsState.Append("is");
-                    gbNPObjectIsState.Append("is");
-
-                    //Now the the appropriate states                    
-                    dsResults = OSAESql.RunSQL("SELECT state_name FROM osae_v_object_type_state_list_full WHERE object_type='" + ot + "'");
-                    foreach (DataRow dr in dsResults.Tables[0].Rows)
-                    {
-                        stateList.Add(dr[0].ToString());
-                    }
-                    if (stateList.Count > 0)
-                    {
-                        Choices stateChoices = new Choices(stateList.ToArray());
-                        srk = new SemanticResultKey("PARAM2", stateChoices);
-                        if (ot == "PERSON")
-                        {
-                            gb2.Append(srk);
-                            Grammar gAmIState = new Grammar(gb2);
-                            gAmIState.Name = "Is [OBJECT] [STATE]";
-                            oRecognizer.LoadGrammar(gAmIState);
-
-                        }
-                        else if (ot == "SYSTEM")
-                        {
-                            gb1.Append(srk);
-                            Grammar g1 = new Grammar(gb1);
-                            g1.Name = "Is [OBJECT] [STATE]";
-                            oRecognizer.LoadGrammar(g1);
-
-                            gb5.Append(srk);
-                            Grammar g5 = new Grammar(gb5);
-                            g5.Name = "Is [OBJECT] [STATE]";
-                            oRecognizer.LoadGrammar(g5);
-                        }
-
-                        gb3.Append(srk);
-                        Grammar gIsObjectState = new Grammar(gb3);
-                        gIsObjectState.Name = "Is [OBJECT] [STATE]";
-                        oRecognizer.LoadGrammar(gIsObjectState);
-
-                        gb4.Append(srk);
-                        Grammar gIsNPObjectState = new Grammar(gb4);
-                        gIsNPObjectState.Name = "[OBJECT] is [STATE]";
-                        oRecognizer.LoadGrammar(gIsNPObjectState);
-
-                        gbObjectIsState.Append(srk);
-                        Grammar gObjectIsState = new Grammar(gbObjectIsState);
-                        gObjectIsState.Name = "[OBJECT] is [STATE]";
-                        oRecognizer.LoadGrammar(gObjectIsState);
-
-                        gbNPObjectIsState.Append(srk);
-                        Grammar gNPObjectIsState = new Grammar(gbNPObjectIsState);
-                        gNPObjectIsState.Name = "[OBJECT] is [STATE]";
-                        oRecognizer.LoadGrammar(gNPObjectIsState);
-                    }
-                }
-            }
-            #endregion
-            return oRecognizer;
-        }
-
-        public static SpeechRecognitionEngine Load_OSA_Grammar(SpeechRecognitionEngine oRecognizer)
-        {
-            oRecognizer = Load_Object_State_Grammar(oRecognizer);
-
-            Choices nounPrecedentChoices = new Choices(new string[] { "a", "an", "the" });
-            DataSet dsResults = new DataSet();
-
-            #region Build a List of all Objects
-
+            #region Build a List of all Objects AND Possessive Objects
             List<string> objectFullList = new List<string>();
-            //Get All objects
-            dsResults = OSAESql.RunSQL("SELECT object_name FROM osae_v_object_list_full");
-            for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
-            {
-                string grammer = dsResults.Tables[0].Rows[i][0].ToString();
-                if (!string.IsNullOrEmpty(grammer)) objectFullList.Add(grammer);
-            }
-            Choices objectFullChoices = new Choices(objectFullList.ToArray());
-            #endregion
-
-            #region Build a List of all Possessive Objects
-
             List<string> objectPossessiveList = new List<string>();
             //Get All objects
-            dsResults = OSAESql.RunSQL("SELECT CONCAT(object_name,'''s') AS object_name FROM osae_v_object_list_full");
-            //dsResults = OSAESql.RunSQL("SELECT CONCAT(object_name,'''s') as object_name FROM osae_v_object ORDER BY object_name");
+            dsResults = OSAESql.RunSQL("SELECT object_name, CONCAT(object_name,'''s') AS possessive_name FROM osae_v_object_list_full");
             for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
             {
                 string grammer = dsResults.Tables[0].Rows[i][0].ToString();
-                if (!string.IsNullOrEmpty(grammer)) objectPossessiveList.Add(grammer);
+                string possessivegrammer = dsResults.Tables[0].Rows[i][1].ToString();
+                if (!string.IsNullOrEmpty(grammer)) objectFullList.Add(grammer);
+                if (!string.IsNullOrEmpty(possessivegrammer)) objectPossessiveList.Add(possessivegrammer);
             }
+            Choices objectFullChoices = new Choices(objectFullList.ToArray());
             Choices objectPossessiveChoices = new Choices(objectPossessiveList.ToArray());
             #endregion
 
@@ -274,86 +128,55 @@
             Choices objectTypeChoices = new Choices(objectTypeList.ToArray());
             #endregion
 
-           
+            //Choices are done, now write the grammars
+
             #region What is [OBJECT]'s [PROPERTY]
-            //What is OBJECT's PROPERTY
-            //What is NP OBJECT's PROPERTY
-            //What is my PROPERTY
-            //What is your PROPERTY
-
-            GrammarBuilder gbWhatIsMyProperty = new GrammarBuilder("What is");
-            SemanticResultKey srk = new SemanticResultKey("PARAM1", "my");
+            //What/Who is OBJECT's PROPERTY
+            //What/Who is NP OBJECT's PROPERTY
+            //What/Who is my/your PROPERTY
+           
+            GrammarBuilder gbWhatIsMyProperty = new GrammarBuilder(WhatWhoChoices);
+            SemanticResultKey srk = new SemanticResultKey("PARAM1", possPronounChoices);
             gbWhatIsMyProperty.Append(srk);
-            GrammarBuilder gbWhatIsYourProperty = new GrammarBuilder("What is");
-            srk = new SemanticResultKey("PARAM1", "your");
-            gbWhatIsYourProperty.Append(srk);
+            GrammarBuilder gbWhatIsObjectProperty = new GrammarBuilder(WhatWhoChoices);
+            GrammarBuilder gbWhatIsNPObjectProperty = new GrammarBuilder(WhatWhoChoices);
+            gbWhatIsNPObjectProperty.Append(nounPrecedentChoices);
 
-            foreach (string ot in objectTypeList)
-            {
-                GrammarBuilder gbWhatIsObjectProperty = new GrammarBuilder("What is");
-                GrammarBuilder gbWhatIsNPObjectProperty = new GrammarBuilder("What is");
-                gbWhatIsNPObjectProperty.Append(nounPrecedentChoices);
+            List<string> propertyList = new List<string>();
 
-                List<string> objectList = new List<string>();
-                List<string> propertyList = new List<string>();
+            srk = new SemanticResultKey("PARAM1", objectFullChoices);
+            gbWhatIsObjectProperty.Append(srk);
+            gbWhatIsNPObjectProperty.Append(srk);
+                   
+            dsResults = OSAESql.RunSQL("SELECT DISTINCT(property_name) FROM osae_v_object_type_property");
+            foreach (DataRow dr in dsResults.Tables[0].Rows)
+               { propertyList.Add(dr[0].ToString()); }
+            Choices propertyChoices = new Choices(propertyList.ToArray());
 
-                //Get All objects of the current Object Type
-                dsResults = OSAESql.RunSQL("SELECT object_name FROM osae_v_object_list_full WHERE object_type='" + ot + "'");
-                foreach (DataRow dr in dsResults.Tables[0].Rows)
-                {
-                    objectList.Add(dr[0].ToString());
-                }
-                if (objectList.Count > 0)  // Only bother with this object type if there are objects using it
-                {
-                    Choices objectChoices = new Choices(objectList.ToArray());
-                    srk = new SemanticResultKey("PARAM1", objectChoices);
-                    gbWhatIsObjectProperty.Append(srk);
-                    gbWhatIsNPObjectProperty.Append(srk);
+            srk = new SemanticResultKey("PARAM2", propertyChoices);
+            gbWhatIsMyProperty.Append(srk);
+            Grammar gWhatIsMyProperty = new Grammar(gbWhatIsMyProperty);
+            gWhatIsMyProperty.Name = "What is [OBJECT] [PROPERTY]";
+            oRecognizer.LoadGrammar(gWhatIsMyProperty);
+            gbWhatIsObjectProperty.Append(srk);
+            Grammar gWhatIsObjectProperty = new Grammar(gbWhatIsObjectProperty);
+            gWhatIsObjectProperty.Name = "What is [OBJECT] [PROPERTY]";
+            oRecognizer.LoadGrammar(gWhatIsObjectProperty);
 
-                    //Now the the appropriate properties                    
-                    dsResults = OSAESql.RunSQL("SELECT DISTINCT(property_name) FROM osae_v_object_type_property WHERE object_type='" + ot + "' AND (property_datatype != 'Object Type' OR property_object_type != 'PERSON')");
-                    foreach (DataRow dr in dsResults.Tables[0].Rows)
-                    {
-                        propertyList.Add(dr[0].ToString());
-                    }
-                    if (propertyList.Count > 0)
-                    {
-                        Choices propertyChoices = new Choices(propertyList.ToArray());
-                        srk = new SemanticResultKey("PARAM2", propertyChoices);
-                        if (ot == "PERSON")
-                        {
-                            gbWhatIsMyProperty.Append(srk);
-                            Grammar gWhatIsMyProperty = new Grammar(gbWhatIsMyProperty);
-                            gWhatIsMyProperty.Name = "What is [OBJECT] [PROPERTY]";
-                            oRecognizer.LoadGrammar(gWhatIsMyProperty);
-                        }
-                        else if (ot == "SYSTEM")
-                        {
-                            gbWhatIsYourProperty.Append(srk);
-                            Grammar gWhatIsYourProperty = new Grammar(gbWhatIsYourProperty);
-                            gWhatIsYourProperty.Name = "What is [OBJECT] [PROPERTY]";
-                            oRecognizer.LoadGrammar(gWhatIsYourProperty);
-                        }
-                        gbWhatIsObjectProperty.Append(srk);
-                        Grammar gWhatIsObjectProperty = new Grammar(gbWhatIsObjectProperty);
-                        gWhatIsObjectProperty.Name = "What is [OBJECT] [PROPERTY]";
-                        oRecognizer.LoadGrammar(gWhatIsObjectProperty);
-
-                        gbWhatIsNPObjectProperty.Append(srk);
-                        Grammar gWhatIsNPObjectProperty = new Grammar(gbWhatIsNPObjectProperty);
-                        gWhatIsNPObjectProperty.Name = "What is [OBJECT] [PROPERTY]";
-                        oRecognizer.LoadGrammar(gWhatIsNPObjectProperty);
-
-                    }
-                }
-            }
+            gbWhatIsNPObjectProperty.Append(srk);
+            Grammar gWhatIsNPObjectProperty = new Grammar(gbWhatIsNPObjectProperty);
+            gWhatIsNPObjectProperty.Name = "What is [OBJECT] [PROPERTY]";
+            oRecognizer.LoadGrammar(gWhatIsNPObjectProperty);
+       
             #endregion
 
-            #region Who is [OBJECT]'s [PROPERTY]
+            #region OLD Merged with what...Who is [OBJECT]'s [PROPERTY]
             //Who is OBJECT's PROPERTY
             //Who is NP OBJECT's PROPERTY
             //Who is my PROPERTY
             //Who is your PROPERTY
+
+            /*
 
             GrammarBuilder gbWhoIsMyProperty = new GrammarBuilder("Who is");
             srk = new SemanticResultKey("PARAM1", "my");
@@ -421,85 +244,189 @@
                     }
                 }
             }
+            */
             #endregion
 
-            #region [OBJECT]'s [PROPERTY] is [VALUE]
-            //OBJECT's PROPERTY is [VALUE]
+            //Too slow
 
-            foreach (string ot in objectTypeList)
+            #region [Object] [State]
+            /*
+       // 1 Are you STATE
+       // 2 Am I STATE
+       // 3 Is OBJECT STATE?
+       // 4 Is [NP] OBJECT STATE?
+
+       // 5 You are STATE
+       // 6 I am STATE
+       // 7 OBJECT is STATE
+       // 8 [NP] OBJECT is STATE
+       GrammarBuilder gb1 = new GrammarBuilder("Are");
+       GrammarBuilder gb5 = new GrammarBuilder();
+       srk = new SemanticResultKey("PARAM1", "you");
+       gb1.Append(srk);
+       gb5.Append(srk);
+
+       GrammarBuilder gb2 = new GrammarBuilder("Am");
+       GrammarBuilder gb6 = new GrammarBuilder();
+       srk = new SemanticResultKey("PARAM1", "I");
+       gb2.Append(srk);
+       gb6.Append(srk);
+
+       //builder.Append(objectChoices);
+
+       foreach (string ot in objectTypeList)
+       {
+           List<string> stateList = new List<string>();
+           GrammarBuilder gb3 = new GrammarBuilder("Is");
+           GrammarBuilder gb4 = new GrammarBuilder("Is");
+           gb4.Append(nounPrecedentChoices);
+
+           GrammarBuilder gbNPObjectIsState = new GrammarBuilder(nounPrecedentChoices);
+
+           //Get All objects of the current Object Type
+           List<string> objectList = new List<string>();
+           dsResults = OSAESql.RunSQL("SELECT object_name FROM osae_v_object_list_full WHERE object_type='" + ot + "'");
+           foreach (DataRow dr in dsResults.Tables[0].Rows)
+           {
+               objectList.Add(dr[0].ToString());
+           }
+           if (objectList.Count > 0)  // Only bother with this object type if there are objects using it
+           {
+               Choices objectChoices = new Choices(objectList.ToArray());
+               srk = new SemanticResultKey("PARAM1", objectChoices);
+
+               gb3.Append(srk);
+               gb4.Append(srk);
+               GrammarBuilder gbObjectIsState = new GrammarBuilder(srk);
+               gbNPObjectIsState.Append(srk);
+               gbObjectIsState.Append("is");
+               gbNPObjectIsState.Append("is");
+
+               //Now the the appropriate states                    
+               dsResults = OSAESql.RunSQL("SELECT state_label FROM osae_v_object_type_state_list_full WHERE object_type='" + ot + "'");
+               foreach (DataRow dr in dsResults.Tables[0].Rows)
+               {
+                   stateList.Add(dr[0].ToString());
+               }
+               if (stateList.Count > 0)
+               {
+                   Choices stateChoices = new Choices(stateList.ToArray());
+                   srk = new SemanticResultKey("PARAM2", stateChoices);
+                   if (ot == "PERSON")
+                   {
+                       gb2.Append(srk);
+                       Grammar gAmIState = new Grammar(gb2);
+                       gAmIState.Name = "Is [OBJECT] [STATE]";
+                       oRecognizer.LoadGrammar(gAmIState);
+
+                   }
+                   else if (ot == "SYSTEM")
+                   {
+                       gb1.Append(srk);
+                       Grammar g1 = new Grammar(gb1);
+                       g1.Name = "Is [OBJECT] [STATE]";
+                       oRecognizer.LoadGrammar(g1);
+
+                       gb5.Append(srk);
+                       Grammar g5 = new Grammar(gb5);
+                       g5.Name = "Is [OBJECT] [STATE]";
+                       oRecognizer.LoadGrammar(g5);
+                   }
+
+                   gb3.Append(srk);
+                   Grammar gIsObjectState = new Grammar(gb3);
+                   gIsObjectState.Name = "Is [OBJECT] [STATE]";
+                   oRecognizer.LoadGrammar(gIsObjectState);
+
+                   gb4.Append(srk);
+                   Grammar gIsNPObjectState = new Grammar(gb4);
+                   gIsNPObjectState.Name = "[OBJECT] is [STATE]";
+                   oRecognizer.LoadGrammar(gIsNPObjectState);
+
+                   gbObjectIsState.Append(srk);
+                   Grammar gObjectIsState = new Grammar(gbObjectIsState);
+                   gObjectIsState.Name = "[OBJECT] is [STATE]";
+                   oRecognizer.LoadGrammar(gObjectIsState);
+
+                   gbNPObjectIsState.Append(srk);
+                   Grammar gNPObjectIsState = new Grammar(gbNPObjectIsState);
+                   gNPObjectIsState.Name = "[OBJECT] is [STATE]";
+                   oRecognizer.LoadGrammar(gNPObjectIsState);
+               }
+           }
+       }
+       */
+            #endregion
+
+            #region New [Object] [State]
+
+            // 1 [Am I/Are you] STATE
+            // 3 Is OBJECT STATE?
+            // 4 Is [NP] OBJECT STATE?
+
+            // 5 [I am/You are] STATE
+            // 7 OBJECT is STATE
+            // 8 [NP] OBJECT is STATE
+            GrammarBuilder gb1 = new GrammarBuilder(IsChoices);
+            GrammarBuilder gb5 = new GrammarBuilder();
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
+            gb1.Append(srk);
+            gb5.Append(srk);
+
+            List<string> stateList = new List<string>();
+            GrammarBuilder gb3 = new GrammarBuilder("Is");
+            GrammarBuilder gb4 = new GrammarBuilder("Is");
+            gb4.Append(nounPrecedentChoices);
+
+            GrammarBuilder gb8 = new GrammarBuilder(nounPrecedentChoices);
+            srk = new SemanticResultKey("PARAM1", objectFullChoices);
+
+            gb3.Append(srk);
+            gb4.Append(srk);
+            GrammarBuilder gb7 = new GrammarBuilder(srk);
+            gb8.Append(srk);
+            gb7.Append("is");
+            gb8.Append("is");
+
+            //Now the the appropriate states                    
+            dsResults = OSAESql.RunSQL("SELECT DISTINCT state_label FROM osae_v_object_type_state_list_full");
+            foreach (DataRow dr in dsResults.Tables[0].Rows)
             {
-                List<string> objectList = new List<string>();
-
-
-                GrammarBuilder gbObjectPropertyIs = new GrammarBuilder();
-
-                //Get All objects of the current Object Type
-                dsResults = OSAESql.RunSQL("SELECT CONCAT(object_name,'''s') as object_name FROM osae_v_object_list_full WHERE object_type='" + ot + "'");
-                foreach (DataRow dr in dsResults.Tables[0].Rows)
-                {
-                    objectList.Add(dr[0].ToString());
-                }
-                if (objectList.Count > 0)  // Only bother with this object type if there are objects using it
-                {
-                    Choices objectChoices = new Choices(objectList.ToArray());
-                    srk = new SemanticResultKey("PARAM1", objectChoices);
-                    gbObjectPropertyIs.Append(srk);
-
-                    //Now the the appropriate properties                    
-                    DataSet dsPropType = OSAESql.RunSQL("SELECT DISTINCT(property_datatype),property_object_type FROM osae_v_object_type_property WHERE object_type='" + ot + "' ORDER BY property_datatype");
-                    foreach (DataRow drType in dsPropType.Tables[0].Rows)
-                    {
-                        List<string> propertyList = new List<string>();
-                        DataSet dsPropName = OSAESql.RunSQL("SELECT DISTINCT(property_name) FROM osae_v_object_type_property WHERE object_type='" + ot + "' AND property_datatype='" + drType["property_datatype"].ToString() + "' ORDER BY property_datatype");
-                        foreach (DataRow drName in dsPropName.Tables[0].Rows)
-                        {
-                            propertyList.Add(drName["property_name"].ToString());
-                        }
-                        Choices propertyChoices = new Choices(propertyList.ToArray());
-                        if (drType["property_datatype"].ToString().ToUpper() == "STRING")
-                        {
-                            GrammarBuilder dictation = new GrammarBuilder();
-                            dictation.AppendDictation();
-
-                            srk = new SemanticResultKey("PARAM2", propertyChoices);
-                            gbObjectPropertyIs.Append(srk);
-                            gbObjectPropertyIs.Append("is");
-                            gbObjectPropertyIs.Append(new SemanticResultKey("PARAM3", dictation));
-                            Grammar gObjectPropertyIs = new Grammar(gbObjectPropertyIs);
-                            gObjectPropertyIs.Name = "[OBJECT] [PROPERTY] is [VALUE]";
-                            oRecognizer.LoadGrammar(gObjectPropertyIs);
-                        }
-                        else if (drType["property_datatype"].ToString().ToUpper() == "OBJECT")
-                        {
-                            srk = new SemanticResultKey("PARAM2", propertyChoices);
-                            gbObjectPropertyIs.Append(srk);
-                            gbObjectPropertyIs.Append("is");
-                            gbObjectPropertyIs.Append(new SemanticResultKey("PARAM3", objectFullChoices));
-                            Grammar gObjectPropertyIs = new Grammar(gbObjectPropertyIs);
-                            gObjectPropertyIs.Name = "[OBJECT] [PROPERTY] is [VALUE]";
-                            oRecognizer.LoadGrammar(gObjectPropertyIs);
-                        }
-                        else if (drType["property_datatype"].ToString().ToUpper() == "OBJECT TYPE")
-                        {
-                            List<string> propertyOTList = new List<string>();
-                            DataSet dsPropObjectType = OSAESql.RunSQL("SELECT object_name FROM osae_v_object_list_full WHERE object_type='" + drType["property_object_type"].ToString() + "'");
-                            foreach (DataRow drName in dsPropObjectType.Tables[0].Rows)
-                            {
-                                propertyOTList.Add(drName["object_name"].ToString());
-                            }
-                            Choices propertyOTChoices = new Choices(propertyOTList.ToArray());
-                            srk = new SemanticResultKey("PARAM2", propertyChoices);
-                            gbObjectPropertyIs.Append(srk);
-                            gbObjectPropertyIs.Append("is");
-
-                            gbObjectPropertyIs.Append(new SemanticResultKey("PARAM3", propertyOTChoices));
-                            Grammar gObjectPropertyIs = new Grammar(gbObjectPropertyIs);
-                            gObjectPropertyIs.Name = "[OBJECT] [PROPERTY] is [VALUE]";
-                            oRecognizer.LoadGrammar(gObjectPropertyIs);
-                        }
-                    }
-                }
+                stateList.Add(dr[0].ToString());
             }
+
+            Choices stateChoices = new Choices(stateList.ToArray());
+            srk = new SemanticResultKey("PARAM2", stateChoices);
+
+            gb1.Append(srk);
+            Grammar g1 = new Grammar(gb1);
+            g1.Name = "Is [OBJECT] [STATE]";
+            oRecognizer.LoadGrammar(g1);
+
+            gb5.Append(srk);
+            Grammar g5 = new Grammar(gb5);
+            g5.Name = "Is [OBJECT] [STATE]";
+            oRecognizer.LoadGrammar(g5);
+
+            gb3.Append(srk);
+            Grammar gIsObjectState = new Grammar(gb3);
+            gIsObjectState.Name = "Is [OBJECT] [STATE]";
+            oRecognizer.LoadGrammar(gIsObjectState);
+
+            gb4.Append(srk);
+            Grammar gIsNPObjectState = new Grammar(gb4);
+            gIsNPObjectState.Name = "[OBJECT] is [STATE]";
+            oRecognizer.LoadGrammar(gIsNPObjectState);
+
+            gb7.Append(srk);
+            Grammar gObjectIsState = new Grammar(gb7);
+            gObjectIsState.Name = "[OBJECT] is [STATE]";
+            oRecognizer.LoadGrammar(gObjectIsState);
+
+            gb8.Append(srk);
+            Grammar gNPObjectIsState = new Grammar(gb8);
+            gNPObjectIsState.Name = "[OBJECT] is [STATE]";
+            oRecognizer.LoadGrammar(gNPObjectIsState);
             #endregion
 
             #region [OBJECT] [CONTAINER]
@@ -568,22 +495,24 @@
             g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // I am in CONTAINER
+            // [I am/You are] in CONTAINER
             gb_GrammarBuilder = new GrammarBuilder();
-            srk = new SemanticResultKey("PARAM1", "I");
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_GrammarBuilder.Append(srk);
-            gb_GrammarBuilder.Append("am in");
+            gb_GrammarBuilder.Append(IsChoices);
+            gb_GrammarBuilder.Append("in");
             srk = new SemanticResultKey("PARAM2", containerChoices);
             gb_GrammarBuilder.Append(srk);
             g_Grammar = new Grammar(gb_GrammarBuilder);
             g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // I am in np CONTAINER
+            // [I am/You are] am in np CONTAINER
             gb_GrammarBuilder = new GrammarBuilder();
-            srk = new SemanticResultKey("PARAM1", "I");
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_GrammarBuilder.Append(srk);
-            gb_GrammarBuilder.Append("am in");
+            gb_GrammarBuilder.Append(IsChoices);
+            gb_GrammarBuilder.Append("in");
             gb_GrammarBuilder.Append(nounPrecedentChoices);
             srk = new SemanticResultKey("PARAM2", containerChoices);
             gb_GrammarBuilder.Append(srk);
@@ -591,28 +520,7 @@
             g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // You are in CONTAINER
-            gb_GrammarBuilder = new GrammarBuilder();
-            srk = new SemanticResultKey("PARAM1", "you");
-            gb_GrammarBuilder.Append(srk);
-            gb_GrammarBuilder.Append("are in");
-            srk = new SemanticResultKey("PARAM2", containerChoices);
-            gb_GrammarBuilder.Append(srk);
-            g_Grammar = new Grammar(gb_GrammarBuilder);
-            g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
-            oRecognizer.LoadGrammar(g_Grammar);
 
-            // You are in np CONTAINER
-            gb_GrammarBuilder = new GrammarBuilder();
-            srk = new SemanticResultKey("PARAM1", "you");
-            gb_GrammarBuilder.Append(srk);
-            gb_GrammarBuilder.Append("are in");
-            gb_GrammarBuilder.Append(nounPrecedentChoices);
-            srk = new SemanticResultKey("PARAM2", containerChoices);
-            gb_GrammarBuilder.Append(srk);
-            g_Grammar = new Grammar(gb_GrammarBuilder);
-            g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
-            oRecognizer.LoadGrammar(g_Grammar);
 
             // is OBJECT in CONTAINER
             gb_GrammarBuilder = new GrammarBuilder("is");
@@ -662,9 +570,9 @@
             g_Grammar.Name = "Is [OBJECT] in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // am I in CONTAINER
-            gb_GrammarBuilder = new GrammarBuilder("Am");
-            srk = new SemanticResultKey("PARAM1", "I");
+            // [am I/are you] in CONTAINER
+            gb_GrammarBuilder = new GrammarBuilder(IsChoices);
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_GrammarBuilder.Append(srk);
             gb_GrammarBuilder.Append("in");
             srk = new SemanticResultKey("PARAM2", containerChoices);
@@ -673,32 +581,9 @@
             g_Grammar.Name = "Is [OBJECT] in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // am I in NP CONTAINER
-            gb_GrammarBuilder = new GrammarBuilder("Am");
-            srk = new SemanticResultKey("PARAM1", "I");
-            gb_GrammarBuilder.Append(srk);
-            gb_GrammarBuilder.Append("in");
-            gb_GrammarBuilder.Append(nounPrecedentChoices);
-            srk = new SemanticResultKey("PARAM2", containerChoices);
-            gb_GrammarBuilder.Append(srk);
-            g_Grammar = new Grammar(gb_GrammarBuilder);
-            g_Grammar.Name = "Is [OBJECT] in [CONTAINER]";
-            oRecognizer.LoadGrammar(g_Grammar);
-
-            // are you in CONTAINER
-            gb_GrammarBuilder = new GrammarBuilder("Are");
-            srk = new SemanticResultKey("PARAM1", "you");
-            gb_GrammarBuilder.Append(srk);
-            gb_GrammarBuilder.Append("in");
-            srk = new SemanticResultKey("PARAM2", containerChoices);
-            gb_GrammarBuilder.Append(srk);
-            g_Grammar = new Grammar(gb_GrammarBuilder);
-            g_Grammar.Name = "Is [OBJECT] in [CONTAINER]";
-            oRecognizer.LoadGrammar(g_Grammar);
-
-            // are you in np CONTAINER
-            gb_GrammarBuilder = new GrammarBuilder("Are");
-            srk = new SemanticResultKey("PARAM1", "you");
+            // [am I/are you] in NP CONTAINER
+            gb_GrammarBuilder = new GrammarBuilder(IsChoices);
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_GrammarBuilder.Append(srk);
             gb_GrammarBuilder.Append("in");
             gb_GrammarBuilder.Append(nounPrecedentChoices);
@@ -738,20 +623,9 @@
             g_Grammar.Name = "Is [OBJECT] [OBJECT TYPE]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // am I np OBJECT TYPE
-            gb_GrammarBuilder = new GrammarBuilder("am");
-            srk = new SemanticResultKey("PARAM1", "I");
-            gb_GrammarBuilder.Append(srk);
-            gb_GrammarBuilder.Append(nounPrecedentChoices);
-            srk = new SemanticResultKey("PARAM2", objectTypeChoices);
-            gb_GrammarBuilder.Append(srk);
-            g_Grammar = new Grammar(gb_GrammarBuilder);
-            g_Grammar.Name = "Is [OBJECT] [OBJECT TYPE]";
-            oRecognizer.LoadGrammar(g_Grammar);
-
-            // are you np OBJECT TYPE
-            gb_GrammarBuilder = new GrammarBuilder("are");
-            srk = new SemanticResultKey("PARAM1", "you");
+            // [am I/are you] np OBJECT TYPE
+            gb_GrammarBuilder = new GrammarBuilder(IsChoices);
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_GrammarBuilder.Append(srk);
             gb_GrammarBuilder.Append(nounPrecedentChoices);
             srk = new SemanticResultKey("PARAM2", objectTypeChoices);
@@ -764,13 +638,11 @@
             #region Where/What is [OBJECT]
             //Where is OBJECT
             //Where is NP OBJECT
-            //Where am I
-            //Where are You
+            //Where am I/You
 
             //What is OBJECT
             //What is NP OBJECT
-            //What am I
-            //What are You
+            //What am I/You
 
             //Where is OBJECT
             GrammarBuilder gb_Single = new GrammarBuilder("Where is");
@@ -789,22 +661,14 @@
             g_Single.Name = "Where is [OBJECT]";
             oRecognizer.LoadGrammar(g_Single);
 
-            //Where am I
-            gb_Single = new GrammarBuilder("Where am");
-            srk = new SemanticResultKey("PARAM1", "I");
+            //Where am [I/you]
+            gb_Single = new GrammarBuilder("Where");
+            gb_Single.Append(IsChoices);
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_Single.Append(srk);
             g_Single = new Grammar(gb_Single);
             g_Single.Name = "Where is [OBJECT]";
             oRecognizer.LoadGrammar(g_Single);
-
-            //Where are you
-            gb_Single = new GrammarBuilder("Where are");
-            srk = new SemanticResultKey("PARAM1", "you");
-            gb_Single.Append(srk);
-            g_Single = new Grammar(gb_Single);
-            g_Single.Name = "Where is [OBJECT]";
-            oRecognizer.LoadGrammar(g_Single);
-
 
             //What is OBJECT
             gb_Single = new GrammarBuilder("What is");
@@ -814,7 +678,7 @@
             g_Single.Name = "What is [OBJECT]";
             oRecognizer.LoadGrammar(g_Single);
 
-            //What is NP OBJECT
+            // What is NP OBJECT
             gb_Single = new GrammarBuilder("What is");
             gb_Single.Append(nounPrecedentChoices);
             srk = new SemanticResultKey("PARAM1", objectFullChoices);
@@ -823,48 +687,148 @@
             g_Single.Name = "What is [OBJECT]";
             oRecognizer.LoadGrammar(g_Single);
 
-            //What am I
-            gb_Single = new GrammarBuilder("What am");
-            srk = new SemanticResultKey("PARAM1", "I");
+            // What am [I/you]
+            gb_Single = new GrammarBuilder("What");
+            gb_Single.Append(IsChoices);
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_Single.Append(srk);
             g_Single = new Grammar(gb_Single);
             g_Single.Name = "What is [OBJECT]";
             oRecognizer.LoadGrammar(g_Single);
 
-            //What are you
-            gb_Single = new GrammarBuilder("What are");
-            srk = new SemanticResultKey("PARAM1", "you");
-            gb_Single.Append(srk);
-            g_Single = new Grammar(gb_Single);
-            g_Single.Name = "What is [OBJECT]";
-            oRecognizer.LoadGrammar(g_Single);
             #endregion
 
             #region Who is [PRONOUN]
-            //Who am I
-            //Who are you
+            //Who [am I/are you]
 
-            //Who am I
-            gb_Single = new GrammarBuilder("Who am");
-            srk = new SemanticResultKey("PARAM1", "I");
-            gb_Single.Append(srk);
-            g_Single = new Grammar(gb_Single);
-            g_Single.Name = "Who is [PERSON]";
-            oRecognizer.LoadGrammar(g_Single);
-
-            //Who are you
-            gb_Single = new GrammarBuilder("Who are");
-            srk = new SemanticResultKey("PARAM1", "you");
+            gb_Single = new GrammarBuilder("Who");
+            gb_Single.Append(IsChoices);
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_Single.Append(srk);
             g_Single = new Grammar(gb_Single);
             g_Single.Name = "Who is [PERSON]";
             oRecognizer.LoadGrammar(g_Single);
             #endregion
-          
+
             return oRecognizer;
         }
+        
+        public static SpeechRecognitionEngine Load_Text_Only_Grammars(SpeechRecognitionEngine oRecognizer)
+        {
+            DataSet dsResults = new DataSet();
 
-        public static SpeechRecognitionEngine Load_Property_Grammar(SpeechRecognitionEngine oRecognizer, string propDatatype, string propObjectType)
+            #region Build a List of all Objects AND Possessive Objects
+            List<string> objectFullList = new List<string>();
+            List<string> objectPossessiveList = new List<string>();
+            //Get All objects
+            dsResults = OSAESql.RunSQL("SELECT object_name, CONCAT(object_name,'''s') AS possessive_name FROM osae_v_object_list_full");
+            for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
+            {
+                string grammer = dsResults.Tables[0].Rows[i][0].ToString();
+                string possessivegrammer = dsResults.Tables[0].Rows[i][1].ToString();
+                if (!string.IsNullOrEmpty(grammer)) objectFullList.Add(grammer);
+                if (!string.IsNullOrEmpty(possessivegrammer)) objectPossessiveList.Add(possessivegrammer);
+            }
+            Choices objectFullChoices = new Choices(objectFullList.ToArray());
+            Choices objectPossessiveChoices = new Choices(objectPossessiveList.ToArray());
+            #endregion
+
+            #region Build a List of all Object Types
+            List<string> objectTypeList = new List<string>();
+            dsResults = OSAESql.RunSQL("SELECT DISTINCT(object_type) FROM osae_v_object_list_full ORDER BY object_type");
+            foreach (DataRow dr in dsResults.Tables[0].Rows)
+            {
+                objectTypeList.Add(dr[0].ToString());
+            }
+            Choices objectTypeChoices = new Choices(objectTypeList.ToArray());
+            #endregion
+
+            #region [OBJECT]'s [PROPERTY] is [VALUE]
+            //OBJECT's PROPERTY is [VALUE]
+
+            foreach (string ot in objectTypeList)
+            {
+                List<string> objectList = new List<string>();
+
+
+                GrammarBuilder gbObjectPropertyIs = new GrammarBuilder();
+
+                //Get All objects of the current Object Type
+                dsResults = OSAESql.RunSQL("SELECT CONCAT(object_name,'''s') as object_name FROM osae_v_object_list_full WHERE object_type='" + ot + "'");
+                foreach (DataRow dr in dsResults.Tables[0].Rows)
+                {
+                    objectList.Add(dr[0].ToString());
+                }
+                if (objectList.Count > 0)  // Only bother with this object type if there are objects using it
+                {
+                    Choices objectChoices = new Choices(objectList.ToArray());
+                    SemanticResultKey srk = new SemanticResultKey("PARAM1", objectChoices);
+                    gbObjectPropertyIs.Append(srk);
+
+                    //Now the the appropriate properties                    
+                    DataSet dsPropType = OSAESql.RunSQL("SELECT DISTINCT(property_datatype),property_object_type FROM osae_v_object_type_property WHERE object_type='" + ot + "' ORDER BY property_datatype");
+                    foreach (DataRow drType in dsPropType.Tables[0].Rows)
+                    {
+                        List<string> propertyList = new List<string>();
+                        DataSet dsPropName = OSAESql.RunSQL("SELECT DISTINCT(property_name) FROM osae_v_object_type_property WHERE object_type='" + ot + "' AND property_datatype='" + drType["property_datatype"].ToString() + "' ORDER BY property_datatype");
+                        foreach (DataRow drName in dsPropName.Tables[0].Rows)
+                        {
+                            propertyList.Add(drName["property_name"].ToString());
+                        }
+                        Choices propertyChoices = new Choices(propertyList.ToArray());
+                        if (drType["property_datatype"].ToString().ToUpper() == "STRING")
+                        {
+                            GrammarBuilder dictation = new GrammarBuilder();
+                            dictation.AppendDictation();
+
+                            srk = new SemanticResultKey("PARAM2", propertyChoices);
+                            gbObjectPropertyIs.Append(srk);
+                            gbObjectPropertyIs.Append("is");
+                            gbObjectPropertyIs.Append(new SemanticResultKey("PARAM3", dictation));
+                            Grammar gObjectPropertyIs = new Grammar(gbObjectPropertyIs);
+                            gObjectPropertyIs.Name = "[OBJECT] [PROPERTY] is [VALUE]";
+                            oRecognizer.LoadGrammar(gObjectPropertyIs);
+                        }
+                        else if (drType["property_datatype"].ToString().ToUpper() == "OBJECT")
+                        {
+                            srk = new SemanticResultKey("PARAM2", propertyChoices);
+                            gbObjectPropertyIs.Append(srk);
+                            gbObjectPropertyIs.Append("is");
+                            gbObjectPropertyIs.Append(new SemanticResultKey("PARAM3", objectFullChoices));
+                            Grammar gObjectPropertyIs = new Grammar(gbObjectPropertyIs);
+                            gObjectPropertyIs.Name = "[OBJECT] [PROPERTY] is [VALUE]";
+                            oRecognizer.LoadGrammar(gObjectPropertyIs);
+                        }
+                        else if (drType["property_datatype"].ToString().ToUpper() == "OBJECT TYPE")
+                        {
+                            List<string> propertyOTList = new List<string>();
+                            DataSet dsPropObjectType = OSAESql.RunSQL("SELECT object_name FROM osae_v_object_list_full WHERE object_type='" + drType["property_object_type"].ToString() + "'");
+                            foreach (DataRow drName in dsPropObjectType.Tables[0].Rows)
+                            {
+                                propertyOTList.Add(drName["object_name"].ToString());
+                            }
+                            Choices propertyOTChoices = new Choices(propertyOTList.ToArray());
+                            srk = new SemanticResultKey("PARAM2", propertyChoices);
+                            gbObjectPropertyIs.Append(srk);
+                            gbObjectPropertyIs.Append("is");
+
+                            gbObjectPropertyIs.Append(new SemanticResultKey("PARAM3", propertyOTChoices));
+                            Grammar gObjectPropertyIs = new Grammar(gbObjectPropertyIs);
+                            gObjectPropertyIs.Name = "[OBJECT] [PROPERTY] is [VALUE]";
+                            oRecognizer.LoadGrammar(gObjectPropertyIs);
+                        }
+                    }
+                }
+                
+            }
+            #endregion
+
+            return oRecognizer;
+
+
+        }
+
+        public static SpeechRecognitionEngine Load_Answer_Grammar(SpeechRecognitionEngine oRecognizer, string propDatatype, string propObjectType)
         {
             #region [OBJECT]'s [PROPERTY]
             //OBJECT's PROPERTY
@@ -886,6 +850,16 @@
             oRecognizer.LoadGrammar(g_Single);
 
             #endregion
+
+
+
+
+
+
+
+
+
+
             return oRecognizer;
         }
 

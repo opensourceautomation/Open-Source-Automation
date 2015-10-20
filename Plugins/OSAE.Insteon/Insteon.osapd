@@ -2,13 +2,15 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Insteon</plugin-name>
 <plugin-id>b3d3163d-dde5-4be8-bd3d-82876becbfa6</plugin-id>
-<plugin-version>0.4.1</plugin-version>
+<plugin-version>0.4.6</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>Insteon PLM Plugin (PLC is not supported)</short-description>
 <author>Vaughn Rupp</author>
 <destination-folder>Insteon</destination-folder>
-<main-file></main-file>
+<main-file>OSAE.Insteon.dll</main-file>
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=Insteon</wiki-url>
 <additional-assemblies>
 </additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
 </plugin-description>

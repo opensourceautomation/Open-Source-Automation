@@ -38,8 +38,7 @@
             filename = Sendfilename;
 
             // Unzip osapp to find plugin description
-            if (!UnzipOSA(filename))
-                this.DialogResult = true;
+            if (!UnzipOSA(filename)) this.DialogResult = true;
 
             // Show Plugin Image
             string exePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -67,10 +66,7 @@
         private bool UnzipOSA(string PluginPackagePath)
         {
             string exePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            if (Directory.Exists(exePath + "/tempDir/"))
-            {
-                Directory.Delete(exePath + "/tempDir/", true);
-            }
+            if (Directory.Exists(exePath + "/tempDir/")) Directory.Delete(exePath + "/tempDir/", true);
 
             string tempfolder = exePath + "/tempDir/";
             string zipFileName = System.IO.Path.GetFullPath(PluginPackagePath);
@@ -99,12 +95,8 @@
                 MessageBox.Show("More than one plugin description file found.");
                 return false;
             }
-            if (osapdFiles.Count == 1)
-            {
 
-                DescPath = osapdFiles[0];
-            }
-
+            if (osapdFiles.Count == 1) DescPath = osapdFiles[0];
 
             if (!string.IsNullOrEmpty(DescPath))
             {

@@ -10,6 +10,7 @@
     using System.Windows.Input;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    using System.Timers;
     using MySql.Data.MySqlClient;
     using OSAE;
     using OSAE.UI.Controls;
@@ -39,6 +40,7 @@
         bool updatingScreen = false;
         bool editMode = false;
         bool closing = false;
+        System.Timers.Timer _timer;
 
         #region drag and drop properties
         private Point _startPoint;
@@ -88,22 +90,31 @@
             canGUI.Width = bitmapImage.Width;
 
             Load_App_Name();
-            gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screenccccc").Value;
+
+            _timer = new System.Timers.Timer(1000);
+            _timer.Elapsed += new ElapsedEventHandler(_timer_Elapsed);
+            _timer.Enabled = true; // Enable it
+
+            gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
             if (gCurrentScreen == "")
             {
                 Set_Default_Screen();
             }
             Load_Screen(gCurrentScreen);
 
-            Thread thread = new Thread(() => Update_Objects());
-            thread.Start();
-
             this.canGUI.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(DragSource_PreviewMouseLeftButtonDown);
             this.canGUI.Drop += new DragEventHandler(DragSource_Drop);
         }
 
+        void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Thread t888 = new Thread(() => Update_Objects());
+            t888.Start();
+        }
+
         public void Load_Screen(string sScreen)
         {
+            _timer.Stop();
             try
             {
                 loadingScreen = true;
@@ -146,6 +157,7 @@
             {
                 this.Log.Error("Failed to load screen: " + sScreen, ex);
             }
+            _timer.Start();
         }
 
         private void Load_Objects(String sScreen)
@@ -160,8 +172,8 @@
 
         private void Update_Objects()
         {
-                 while (!closing)
-                {
+                 //while (!closing)
+                //{
                     while (loadingScreen)
                     {
                         System.Threading.Thread.Sleep(100);
@@ -337,8 +349,8 @@
                         }
                     }
                     updatingScreen = false;
-                    System.Threading.Thread.Sleep(500);
-                }
+                    //System.Threading.Thread.Sleep(500);
+              //  }
         }
 
         private void LoadControl(OSAE.OSAEObject obj)
@@ -952,6 +964,7 @@
 
         private void menuAddPropertyLabel_Click(object sender, RoutedEventArgs e)
         {
+            
             AddControl addControl = new AddControl();
             AddControlPropertyLabel csi = new AddControlPropertyLabel(gCurrentScreen);
             addControl.Width = csi.Width + 80;
@@ -1004,6 +1017,7 @@
 
         private void menuAddWebBrowser_Click(object sender, RoutedEventArgs e)
         {
+           
             AddControl addControl = new AddControl();
 
             AddControlBrowser csi = new AddControlBrowser(gCurrentScreen);

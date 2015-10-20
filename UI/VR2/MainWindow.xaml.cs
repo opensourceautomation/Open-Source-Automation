@@ -1,21 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Speech;
 using System.Speech.Recognition;
-using System.Speech.Recognition.SrgsGrammar;
 using System.Data;
-using System.IO;
 using System.Threading;
 using System.ComponentModel; 
 using OSAE;
@@ -39,7 +26,6 @@ namespace VR2
         String gSpeechPlugin = "";
         String gUser = "";
         Boolean gAppClosing = false;
-        Boolean gRunningManual = false;
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
 
         public MainWindow()
@@ -49,7 +35,7 @@ namespace VR2
             MyNotifyIcon.Icon = Properties.Resources.icon;
             MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
             MyNotifyIcon.Visible = true;
-            MyNotifyIcon.Text = "VR";
+            MyNotifyIcon.Text = "OSAE.Voice";
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -68,7 +54,6 @@ namespace VR2
            
             Load_Settings();
             
-            //Load_User_Grammer(); //So nothing is recognized until we have a user object
             oRecognizer = OSAEGrammar.Load_User_Grammar(oRecognizer);
             try
             {
@@ -79,6 +64,10 @@ namespace VR2
                     OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Can Hear this Plugin", "Speech","VR Client");
                 }
                 AddToLog("--  I will ignore speech from: " + gSpeechPlugin);
+
+                oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
+                oRecognizer = OSAEGrammar.Load_Voice_Grammars(oRecognizer);
+                SaveGrammars();
 
                 AddToLog("Finished Loading...");
                 AddToLog("_______________________________________________");
@@ -117,13 +106,12 @@ namespace VR2
         {
             try
             {
-                txtLog.Text += message;
+                txtLog.Text += DateTime.Now.ToString("hh:mm:ss") + "  " + message;
                 txtLog.Text += Environment.NewLine;
                 txtLog.ScrollToEnd();
             }
             catch 
-            {
-                //AddToLog("Error in AddToLog: " + ex.Message);
+            { //AddToLog("Error in AddToLog: " + ex.Message);
             }
         }
 
@@ -274,23 +262,6 @@ namespace VR2
                 else if (sleepList.Contains(sInput) && gVRMuted == true)
                 { return; }
 
-                if (sInput.StartsWith("This is [OBJECT]"))
-                {
-                    AddToLog("Heard: " + sRaw);
-                    if (scriptParamaters != "")
-                    {
-                        gUser = scriptParamaters;
-                        AddToLog("I am talking to " + gUser);
-                        lblObjectTalking.Content = "I am talking to " + gUser;
-                        
-                        string sText = OSAEGrammar.SearchForMeaning(sInput, scriptParamaters, gUser);
-                        oRecognizer.UnloadAllGrammars();
-                        oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
-                        oRecognizer = OSAEGrammar.Load_OSA_Grammar(oRecognizer);
-                        SaveGrammars();
-                    }
-                }
-                
                 // gSpeechPlugin;
                 String temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gSpeechPlugin, "Speaking").Value.ToString().ToLower();
 
@@ -298,6 +269,25 @@ namespace VR2
                 {
                     if ((gVRMuted == false) || (sleepList.Contains(sInput)))
                     {
+                        if (sInput.StartsWith("This is [OBJECT]"))
+                        {
+                            AddToLog("Heard: " + sRaw);
+                            if (scriptParamaters != "")
+                            {
+                                if (gUser == scriptParamaters) return;
+                                gUser = scriptParamaters;
+                                AddToLog("I am talking to " + gUser);
+                                lblObjectTalking.Content = "I am talking to " + gUser;
+                                string sText = OSAEGrammar.SearchForMeaning(sInput, scriptParamaters, gUser);
+                            }
+                        }
+
+                        if (gUser == "")
+                        {
+                            AddToLog("I must know who I am talking with.");
+                            return;
+                        }
+
                         try
                         {
                             string sLogEntry = "Heard: " + sRaw;
@@ -305,9 +295,11 @@ namespace VR2
                             //string sText = MatchPattern(sInput,gUser);
                             string sText = OSAEGrammar.SearchForMeaning(sInput, scriptParamaters, gUser);
 
-                            if (sText.Length > 0) 
+                            if (sText.Length > 0)
+                            {
                                 sLogEntry += ".  Ran: " + sText;
                                 OSAEObjectPropertyManager.ObjectPropertySet(gUser, "Communication Method", "Speech", gUser);
+                            }
                             AddToLog(sLogEntry);
                         }
                         catch {}
@@ -320,17 +312,16 @@ namespace VR2
 
         private void SaveGrammars()
         {
-            string qualifier;
+           // string qualifier;
             List<Grammar> grammars = new List<Grammar>(oRecognizer.Grammars);
-            foreach (Grammar g in grammars)
-            {
-                qualifier = (g.Enabled) ? "enabled" : "disabled";
-                
-               //foreach (sr r in g)
-                {
-                    AddToLog(String.Format("Grammar {0} is loaded and is {1}.", g.Name, g.RuleName));
-                }
-            }
+            AddToLog(grammars.Count + " Grammas loaded.");
+         //   foreach (Grammar g in grammars)
+         //   {
+         //    qualifier = (g.Enabled) ? "enabled" : "disabled";
+
+            //foreach (sr r in g)
+            //   { AddToLog(String.Format("Grammar {0} is loaded and is {1}.", g.Name, g.RuleName)); }
+            // }
 
         }
 
@@ -370,19 +361,6 @@ namespace VR2
                     lblAudioState.Content = "I hear silence.";
                     break;
             }
-        }
-
-        private void btnSubmit_Click(object sender, RoutedEventArgs e)
-        {
-            gRunningManual = true;
-            oRecognizer.RecognizeAsyncCancel();
-            while (oRecognizer.AudioState != 0)
-            { }
-            RecognitionResult rr = oRecognizer.EmulateRecognize(txtInput.Text);
-
-            txtInput.Text = "";
-            gRunningManual = false;
-            //oRecognizer.RecognizeAsync(RecognizeMode.Multiple);
         }
 
         /*

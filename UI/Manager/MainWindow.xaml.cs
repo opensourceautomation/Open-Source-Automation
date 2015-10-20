@@ -202,10 +202,21 @@
                 setLabel(Brushes.Green, "RUNNING");
                 setButton("Stop", true);
                 starting = false;
+                this.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
+                {
+                    mnuInstall.IsEnabled = true;
+                    mnuInstall.ToolTip = "You are clear to Install Plugins";
+                }));
             }
             else if (svcStatus == "Stopped" && !starting)
             {
                 setLabel(Brushes.Red, "STOPPED");
+                this.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
+                {
+                    mnuInstall.IsEnabled = false;
+                    mnuInstall.ToolTip = "Service Must be Running";
+                }));
+
                 foreach (PluginDescription pd in pluginList)
                 {
                     if (pd.Enabled)

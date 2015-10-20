@@ -224,14 +224,15 @@
         /// <param name="Name"></param>
         /// <param name="Label"></param>
         /// <param name="ObjectType"></param>
-        public static void ObjectTypeEventAdd(string Name, string Label, string ObjectType)
+        public static void ObjectTypeEventAdd(string ObjectType, string Name, string Label)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_event_add (@Name, @Label, @ObjectType)";
+                command.CommandText = "CALL osae_sp_object_type_event_add (@ObjectType, @Name, @Label)";
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@Label", Label);
-                command.Parameters.AddWithValue("@ObjectType", ObjectType);
+
                 try
                 {
                     OSAESql.RunQuery(command);
@@ -299,14 +300,14 @@
         /// <param name="Name"></param>
         /// <param name="Label"></param>
         /// <param name="ObjectType"></param>
-        public static void ObjectTypeMethodAdd(string Name, string Label, string ObjectType, string ParamLabel1, string ParamLabel2, string ParamDefault1, string ParamDefault2)
+        public static void ObjectTypeMethodAdd(string ObjectType, string Name, string Label, string ParamLabel1, string ParamLabel2, string ParamDefault1, string ParamDefault2)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_method_add (@Name, @Label, @ObjectType, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2)";
+                command.CommandText = "CALL osae_sp_object_type_method_add (@ObjectType, @Name, @Label, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2)";
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@Label", Label);
-                command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@ParamLabel1", ParamLabel1);
                 command.Parameters.AddWithValue("@ParamLabel2", ParamLabel2);
                 command.Parameters.AddWithValue("@ParamDefault1", ParamDefault1);
@@ -385,16 +386,16 @@
         /// <param name="Name"></param>
         /// <param name="ParameterType"></param>
         /// <param name="ObjectType"></param>
-        public static void ObjectTypePropertyAdd(string Name, string ParameterType, string ParameterObjectType, string ParameterDefault, string ObjectType, bool TrackHistory)
+        public static void ObjectTypePropertyAdd(string ObjectType, string Name, string ParameterType, string ParameterObjectType, string ParameterDefault, bool TrackHistory)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_property_add (@Name, @ParameterType, @ParameterObjectType, @ParameterDefault, @ObjectType, @TrackHistory)";
+                command.CommandText = "CALL osae_sp_object_type_property_add (@ObjectType, @Name, @ParameterType, @ParameterObjectType, @ParameterDefault, @TrackHistory)";
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@ParameterType", ParameterType);
                 command.Parameters.AddWithValue("@ParameterObjectType", ParameterObjectType);
                 command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
-                command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
                 try
                 {
@@ -524,14 +525,14 @@
         /// <param name="Name"></param>
         /// <param name="Label"></param>
         /// <param name="ObjectType"></param>
-        public static void ObjectTypeStateAdd(string Name, string Label, string ObjectType)
+        public static void ObjectTypeStateAdd(string ObjectType, string Name, string Label)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_state_add (@Name, @Label, @ObjectType)";
+                command.CommandText = "CALL osae_sp_object_type_state_add (@ObjectType, @Name, @Label)";
+                command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@Label", Label);
-                command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
                 {
                     OSAESql.RunQuery(command);

@@ -56,6 +56,9 @@ Public Class W800RF
         gLearning = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Learning Mode").Value
         If gLearning <> "TRUE" And gLearning <> "FALSE" Then gLearning = "FALSE"
         Log.Info("Learning Mode set to: " & gLearning)
+
+        OwnTypes()
+
     End Sub
 
     Public Function OpenPort() As Boolean
@@ -213,32 +216,26 @@ Public Class W800RF
 
         Try
             If gDebug Then Log.Debug("GetObjectByAddress: " & gDevice.House_Code & gDevice.Device_Code)
-            Try
-                oObject = OSAEObjectManager.GetObjectByAddress(gDevice.House_Code & gDevice.Device_Code)
-                If IsNothing(oObject) Then
-                    If gLearning.ToUpper = "TRUE" Then
-                        If gDevice.Device_Type = "X10_SECURITY_DS10" Then
-                            Log.Info("Adding new DS10A: " & gDevice.Device_Code)
-                            If gDebug Then Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,BINARY SENSOR, " & gDevice.Device_Code & ", '' True)")
-                            OSAEObjectManager.ObjectAdd("X10-" & gDevice.Device_Code, "", "Unknown DS10A found by W800RF", "BINARY SENSOR", gDevice.Device_Code, "", True)
-                        Else
-                            Log.Info("Adding new X10: " & gDevice.House_Code & gDevice.Device_Code)
-                            If gDebug Then Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,BINARY SENSOR, " & gDevice.Device_Code & ", '', True)")
-                            OSAEObjectManager.ObjectAdd("X10-" & gDevice.House_Code & gDevice.Device_Code, "", "Unknown X10 found by W800RF", "BINARY SENSOR", gDevice.House_Code & gDevice.Device_Code, "", True)
-                        End If
+            oObject = OSAEObjectManager.GetObjectByAddress(gDevice.House_Code & gDevice.Device_Code)
+            If IsNothing(oObject) Then
+                If gLearning.ToUpper = "TRUE" Then
+                    If gDevice.Device_Type = "X10_SECURITY_DS10" Then
+                        Log.Info("Adding new DS10A: " & gDevice.Device_Code)
+                        If gDebug Then Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown DS10A found by W800RF,BINARY SENSOR, " & gDevice.Device_Code & ", '' True)")
+                        OSAEObjectManager.ObjectAdd("X10-" & gDevice.Device_Code, "", "Unknown DS10A found by W800RF", "BINARY SENSOR", gDevice.Device_Code, "", True)
+                    Else
+                        Log.Info("Adding new X10: " & gDevice.House_Code & gDevice.Device_Code)
+                        If gDebug Then Log.Debug("ObjectAdd: X10-" & gDevice.Device_Code & ",Unknown X10 found by W800RF,BINARY SENSOR, " & gDevice.Device_Code & ", '', True)")
+                        OSAEObjectManager.ObjectAdd("X10-" & gDevice.House_Code & gDevice.Device_Code, "", "Unknown X10 found by W800RF", "BINARY SENSOR", gDevice.House_Code & gDevice.Device_Code, "", True)
                     End If
-                Else
-                    OSAEObjectStateManager.ObjectStateSet(oObject.Name, gDevice.Current_Command, gAppName)
-                    Log.Info("Set: " & oObject.Name & " to " & gDevice.Current_Command & "(" & oObject.Address & " " & gDevice.Current_Command & ")")
                 End If
-            Catch ex As Exception
-                Log.Error("Object Not Found for: " & gDevice.House_Code & gDevice.Device_Code)
-                Log.Error("Error Msg: " & ex.Message)
-                Log.Error("--- Msg: " & ex.InnerException.Message)
-            End Try
+            Else
+                OSAEObjectStateManager.ObjectStateSet(oObject.Name, gDevice.Current_Command, gAppName)
+                Log.Info("Set: " & oObject.Name & " to " & gDevice.Current_Command & "(" & oObject.Address & " " & gDevice.Current_Command & ")")
+            End If
         Catch ex As Exception
-            Log.Error("Error ReadCommPort: " & ex.Message)
-            Log.Error("--- Msg: " & ex.InnerException.Message)
+            Log.Error("Error in ProcessInput:  " & ex.Message)
+
         End Try
 DropOut:
     End Sub
@@ -285,12 +282,27 @@ DropOut:
                 Log.Info("Learning Mode set to: " & gLearning)
             End If
         Catch ex As Exception
-            Log.Error("Error ProcessCommand - " & ex.Message)
+            Log.Error("Error ProcessCommand", ex)
         End Try
     End Sub
 
     Function Version() As String
         Throw New NotImplementedException
     End Function
+
+    Public Sub OwnTypes()
+        Try
+            Dim oType As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("W800RF")
+            If oType.OwnedBy = "" Then
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+                Log.Info("W800RF Plugin took ownership of the W800RF Object Type.")
+            Else
+                Log.Info("W800RF Object Type is correctly owned by: " & oType.OwnedBy)
+            End If
+        Catch ex As Exception
+            Log.Error("Error in Own Types: " & ex.Message)
+        End Try
+    End Sub
+
 
 End Class

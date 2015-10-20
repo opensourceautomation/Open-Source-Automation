@@ -312,9 +312,7 @@ public partial class objtypes : System.Web.UI.Page
         txtName.Text = type.Name;
         txtDescr.Text = type.Description;
         try
-        {
-            ddlOwnedBy.SelectedValue = type.OwnedBy;
-        }
+        { ddlOwnedBy.SelectedValue = type.OwnedBy; }
         catch
         { }
         ddlBaseType.SelectedValue = type.BaseType;
@@ -333,7 +331,7 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnStateAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectTypeManager.ObjectTypeStateAdd(txtStateName.Text, txtStateLabel.Text, hdnSelectedObjectName.Text);
+        OSAEObjectTypeManager.ObjectTypeStateAdd(hdnSelectedObjectName.Text, txtStateName.Text, txtStateLabel.Text);
         loadStates();
     }
 
@@ -372,18 +370,19 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnPropAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectTypeManager.ObjectTypePropertyAdd(txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedItem.ToString(), txtPropDefault.Text, hdnSelectedObjectName.Text, chkTrackChanges.Checked);
+        OSAEObjectTypeManager.ObjectTypePropertyAdd(hdnSelectedObjectName.Text, txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedItem.ToString(), txtPropDefault.Text, chkTrackChanges.Checked);
+        loadProperties();
     }
 
     protected void btnMethodAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectTypeManager.ObjectTypeMethodAdd(txtMethodName.Text, txtMethodLabel.Text, hdnSelectedObjectName.Text, txtParam1Label.Text, txtParam2Label.Text, txtParam1Default.Text, txtParam2Default.Text);
+        OSAEObjectTypeManager.ObjectTypeMethodAdd(hdnSelectedObjectName.Text, txtMethodName.Text, txtMethodLabel.Text, txtParam1Label.Text, txtParam2Label.Text, txtParam1Default.Text, txtParam2Default.Text);
         loadMethods();
     }
 
     protected void btnEventAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectTypeManager.ObjectTypeEventAdd(txtEventName.Text, txtEventLabel.Text, hdnSelectedObjectName.Text);
+        OSAEObjectTypeManager.ObjectTypeEventAdd(hdnSelectedObjectName.Text, txtEventName.Text, txtEventLabel.Text);
         loadEvents();
     }
 
