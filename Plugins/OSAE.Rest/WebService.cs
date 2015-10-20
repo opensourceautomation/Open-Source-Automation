@@ -166,23 +166,22 @@
             }
 
             oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
-            oRecognizer = OSAEGrammar.Load_OSA_Grammar(oRecognizer);
-
-
-
+            oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
+            oRecognizer = OSAEGrammar.Load_Voice_Grammars(oRecognizer);
+            oRecognizer = OSAEGrammar.Load_Text_Only_Grammars(oRecognizer);
 
             //REPLACE WITH GRAMMAR
 
 
 
-           // string patternName = Common.MatchPattern(match,"");
-           // if (patternName != "")
-          //  {
-           //     OSAEScriptManager.RunPatternScript(patternName, "", "REST Service");
-           //     return true;
-          //  }
-          //  else
-                return false;
+            // string patternName = Common.MatchPattern(match,"");
+            // if (patternName != "")
+            //  {
+            //     OSAEScriptManager.RunPatternScript(patternName, "", "REST Service");
+            //     return true;
+            //  }
+            //  else
+            return false;
         }
 
         public Boolean AddObject(string name, string alias, string description, string type, string address, string container, string enabled)

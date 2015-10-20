@@ -53,7 +53,7 @@
             oObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
             If IsNothing(oObject) Then
                 Log.Info("Adding new RFID Tag: " & e.Tag)
-                OSAEObjectManager.ObjectAdd("RFID-" & e.Tag, "Unknown RFID Tag", "PHIDGET RFID TAG", e.Tag, "", True)
+                OSAEObjectManager.ObjectAdd("RFID-" & e.Tag, "RFID-" & e.Tag, "Unknown RFID Tag", "PHIDGET RFID TAG", e.Tag, "", True)
             End If
             oObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
             OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
