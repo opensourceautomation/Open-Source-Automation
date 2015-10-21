@@ -954,37 +954,43 @@
 
         private void menuAddStateImage_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlStateImage csi = new AddControlStateImage(gCurrentScreen);
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuAddPropertyLabel_Click(object sender, RoutedEventArgs e)
         {
-            
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlPropertyLabel csi = new AddControlPropertyLabel(gCurrentScreen);
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuAddNavImage_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlNavigationImage cni = new AddControlNavigationImage(gCurrentScreen);
             addControl.Content = cni;
             addControl.Width = cni.Width + 80;
             addControl.Height = cni.Height + 80;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuAddClickImage_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlClickImage cmi = new AddControlClickImage(gCurrentScreen);
             addControl.Content = cmi;
@@ -997,6 +1003,7 @@
 
         private void menuAddTimerLabel_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlTimerLabel csi = new AddControlTimerLabel(gCurrentScreen);
             addControl.Width = csi.Width + 80;
@@ -1007,38 +1014,44 @@
 
         private void menuAddCameraViewer_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddNewCameraViewer csi = new AddNewCameraViewer(gCurrentScreen);
             addControl.Width = csi.Width + 40;
             addControl.Height = csi.Height + 40;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
+            
         }
 
         private void menuAddWebBrowser_Click(object sender, RoutedEventArgs e)
         {
-           
+            _timer.Stop();
             AddControl addControl = new AddControl();
-
             AddControlBrowser csi = new AddControlBrowser(gCurrentScreen);
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuAddUserControl_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlUserControl csi = new AddControlUserControl(gCurrentScreen);
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuCreateScreen_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlScreen cscr = new AddControlScreen(gCurrentScreen);
             addControl.Width = cscr.Width + 80;
