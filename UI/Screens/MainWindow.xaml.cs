@@ -1066,6 +1066,7 @@
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
             closing = true;
+            _timer.Stop();
         }
 
         private void menuChangeScreen_Click(object sender, RoutedEventArgs e)

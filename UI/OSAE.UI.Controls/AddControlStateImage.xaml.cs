@@ -410,11 +410,11 @@ namespace OSAE.UI.Controls
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", cboState2.Text, "GUI");
             if (State2Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", "", "GUI");
-            if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img1.Name, "GUI");
+            if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", "GUI");
-            if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img1.Name, "GUI");
+            if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", "GUI");
-            if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img1.Name, "GUI");
+            if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", "GUI");
 
 
