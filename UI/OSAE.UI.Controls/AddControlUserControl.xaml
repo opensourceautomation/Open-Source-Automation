@@ -3,16 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Width="446" Height="164" Margin="20">
-    
-    <Grid Height="164" VerticalAlignment="Top">
-        <Label Content="Select a User Control to Add to the Screen" Height="28" HorizontalAlignment="Left" Margin="10,10,0,0" Name="label3" VerticalAlignment="Top" Width="357" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="10,43,0,0" x:Name="typesComboBox" VerticalAlignment="Top" Width="357" ItemsSource="{Binding Path=object_type}"  DisplayMemberPath="object_type" SelectedValuePath="object_type" IsEditable="False" />
-        <Label Content="Mandatory" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="372,43,0,0" Name="label7" VerticalAlignment="Top" Width="106" />
-        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,131,10,0" Name="cancelbutton" VerticalAlignment="Top" Width="75" Click="cancelbutton_Click" />
-        <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="10,131,0,0" Name="addButton" VerticalAlignment="Top" Width="75" Click="addButton_Click" />
-        <TextBox Name="txtName" HorizontalAlignment="Left" Height="23" Margin="10,97,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="357"/>
-        <Label Content="Mandatory" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="372,98,-32,0" x:Name="label7_Copy" VerticalAlignment="Top" Width="106" />
-        <Label Content="Name" Height="28" HorizontalAlignment="Left" Margin="10,69,0,0" x:Name="label3_Copy" VerticalAlignment="Top" Width="357" />
+             mc:Ignorable="d" Width="500" Margin="20">
+
+    <Grid x:Name="mygrid" VerticalAlignment="Top" Margin="0,0,0,-11">
+        <Label Content="Select an Available User Control to Add to the Screen" Height="28" HorizontalAlignment="Left" Margin="10,0,0,0" Name="label3" VerticalAlignment="Top" Width="357" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="10,28,0,0" x:Name="typesComboBox" VerticalAlignment="Top" Width="357" IsEditable="False" DropDownClosed="typesComboBox_DropDownClosed" />
+        <Label Content="Mandatory" FontSize="11" FontStyle="Italic" Height="23" HorizontalAlignment="Left" Margin="372,28,0,0" Name="label7" VerticalAlignment="Top" Width="106" />
+        <Label Content="Name: " Height="28" HorizontalAlignment="Left" Margin="10,56,0,0" x:Name="label3_Copy" VerticalAlignment="Top" Width="75" />
+        <DockPanel x:Name="CntrlPnl" HorizontalAlignment="Center" LastChildFill="False" Margin="10,196,10,0" VerticalAlignment="Top" Width="480"/>
+        <Label x:Name="PluginName" Content="" HorizontalAlignment="Left" Height="28" Margin="90,58,0,0" VerticalAlignment="Top" Width="277"/>
+        <Label Content="Description: " Height="28" HorizontalAlignment="Left" Margin="10,84,0,0" x:Name="label4" VerticalAlignment="Top" Width="75" />
+        <Label x:Name="PluginDesc" Content="" HorizontalAlignment="Left" Height="28" Margin="90,86,0,0" VerticalAlignment="Top" Width="277"/>
+        <Label Content="Version: " Height="28" HorizontalAlignment="Left" Margin="10,112,0,0" x:Name="label5" VerticalAlignment="Top" Width="75" />
+        <Label x:Name="PluginVersion" Content="" HorizontalAlignment="Left" Height="28" Margin="90,114,0,0" VerticalAlignment="Top" Width="277"/>
+        <Label Content="Author: " Height="28" HorizontalAlignment="Left" Margin="10,140,0,0" x:Name="label6" VerticalAlignment="Top" Width="75" />
+        <Label x:Name="PluginAuthor" Content="" HorizontalAlignment="Left" Height="28" Margin="90,142,0,0" VerticalAlignment="Top" Width="277"/>
+        <Image x:Name="PluginImg" HorizontalAlignment="Left" Height="100" Margin="390,56,0,0" VerticalAlignment="Top" Width="100"/>
     </Grid>
 </UserControl>

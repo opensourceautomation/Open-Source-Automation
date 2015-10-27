@@ -100,6 +100,16 @@
     <Compile Include="OSAEService\OSAEServiceController.Designer.cs">
       <DependentUpon>OSAEServiceController.cs</DependentUpon>
     </Compile>
+    <Compile Include="OSAEUserControl\GlobalUserControls.cs" />
+    <Compile Include="OSAEUserControl\OSAEMainUserCtrl.cs" />
+    <Compile Include="OSAEUserControl\OSAEUserControl.cs" />
+    <Compile Include="OSAEUserControl\OSAEUserControlBase.cs" />
+    <Compile Include="OSAEUserControl\OSAEUserControlCollection.cs" />
+    <Compile Include="OSAEUserControl\OSAEUserControlDescription.cs" />
+    <Compile Include="OSAEUserControl\OSAEUserControlFinder.cs" />
+    <Compile Include="OSAEUserControl\OSAEUserControlManager.cs" />
+    <Compile Include="OSAEUserControl\PluginInterface.cs" />
+    <Compile Include="OSAEUserControl\UserControlInterface.cs" />
     <Compile Include="Plugin\OSAEPluginCollection.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginDescription.cs" />

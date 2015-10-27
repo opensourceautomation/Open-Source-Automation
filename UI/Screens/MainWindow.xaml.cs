@@ -70,6 +70,7 @@
             try
             {
                 InitializeComponent();
+                GlobalUserControls.OSAEUserControls.FindPlugins(OSAE.Common.ApiPath + @"\UserControls");
             }
             catch (Exception ex)
             {
@@ -299,7 +300,7 @@
                         }
                         #endregion
 
-                        #region CONTROL USAER CONTROL
+                        #region CONTROL USER CONTROL
                         else if (newCtrl.ControlType == "USER CONTROL")
                         {
                             foreach (dynamic obj in userControls)
@@ -581,29 +582,31 @@
                 #endregion
 
                 #region USER CONTROL
-                else if (obj.Type == "USER CONTROL")
+                else if (obj.BaseType == "USER CONTROL")
                 {
                     string sUCType = obj.Property("Control Type").Value;
-                    if (sUCType == "USER CONTROL WEATHER")
-                    {
-                        Weather wc = new Weather(obj);
-                        canGUI.Children.Add(wc);
-                        OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.OSAEObjectProperty pX = obj.Property("X");
-                        OSAE.OSAEObjectProperty pY = obj.Property("Y");
-                        Double dX = Convert.ToDouble(pX.Value);
-                        Canvas.SetLeft(wc, dX);
-                        Double dY = Convert.ToDouble(pY.Value);
-                        Canvas.SetTop(wc, dY);
-                        int dZ = Convert.ToInt32(pZOrder.Value);
-                        Canvas.SetZIndex(wc, dZ);
-
-                        wc.Location.X = dX;
-                        wc.Location.Y = dY;
-                        userControls.Add(wc);
-                        controlTypes.Add(typeof(Weather));
-                        wc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
-                    }
+                    sUCType = sUCType.Replace("USER CONTROL ", "");
+                    OSAE.Types.AvailablePlugin selectedPlugin = GlobalUserControls.OSAEUserControls.AvailablePlugins.Find(sUCType);
+                    selectedPlugin.Instance.InitializeMainCtrl(obj);
+                    UserControl ucC = new UserControl();
+                    dynamic uc = new UserControl();
+                    uc = selectedPlugin.Instance.mainCtrl;
+                    uc.MouseRightButtonDown += new MouseButtonEventHandler(UserControl_MouseRightButtonDown);
+                    canGUI.Children.Add(uc);
+                    OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
+                    OSAE.OSAEObjectProperty pX = obj.Property("X");
+                    OSAE.OSAEObjectProperty pY = obj.Property("Y");
+                    Double dX = Convert.ToDouble(pX.Value);
+                    Canvas.SetLeft(uc, dX);
+                    Double dY = Convert.ToDouble(pY.Value);
+                    Canvas.SetTop(uc, dY);
+                    int dZ = Convert.ToInt32(pZOrder.Value);
+                    Canvas.SetZIndex(uc, dZ);
+                    uc.Location.X = dX;
+                    uc.Location.Y = dY;
+                    userControls.Add(uc);
+                    controlTypes.Add(uc.GetType());
+                    uc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
                 #endregion
 
@@ -765,6 +768,22 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+
+        private void UserControl_MouseRightButtonDown(object sender, MouseEventArgs e)
+        {
+            if (editMode == false) return;
+            dynamic item = sender;
+            string sUCType = item._controlname;
+            string screenObject = item.screenObject.Name;
+            OSAE.Types.AvailablePlugin selectedPlugin = GlobalUserControls.OSAEUserControls.AvailablePlugins.Find(sUCType);
+            AddControl addControl = new AddControl();
+            selectedPlugin.Instance.InitializeAddCtrl(gCurrentScreen, selectedPlugin.Instance.Name, screenObject);
+            UserControl cmi = selectedPlugin.Instance.CtrlInterface;
+            addControl.Content = cmi;
+            addControl.ShowDialog();
+            Load_Screen(gCurrentScreen);
+        }
+
 
         #region Drag Events
         void DragSource_Drop(dynamic sender, DragEventArgs e)
@@ -1059,6 +1078,27 @@
             addControl.Content = cscr;
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
+        }
+
+        private void menuInstallUserControl_Click(object sender, RoutedEventArgs e)
+        {
+            // Configure open file dialog box 
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.FileName = string.Empty; // Default file name 
+            dlg.DefaultExt = ".osauc"; // Default file extension 
+            dlg.Filter = "Open Source Automation User Control Pakages (.osauc)|*.osauc"; // Filter files by extension 
+
+            // Show open file dialog box 
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process open file dialog box results 
+            if (result == true)
+            {
+                this.Log.Info("Plugin file selected: " + dlg.FileName + ".  Installing...");
+                // Open Plugin Package
+                GUI.UserControlInstallerHelper pInst = new GUI.UserControlInstallerHelper();
+                pInst.InstallPlugin(dlg.FileName);
+            }
         }
 
         #endregion

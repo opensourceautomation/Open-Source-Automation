@@ -18,6 +18,7 @@
                         <MenuItem Name="menuAddCameraViewer" Header="Camera Viewer" Click="menuAddCameraViewer_Click" />
                         <MenuItem Name="menuAddWebBrowser" Header="Web Browser" Click="menuAddWebBrowser_Click" />
                         <MenuItem Name="menuAddUserControl" Header="User Control" Click="menuAddUserControl_Click" />
+                        <MenuItem Name="menuInstallUserControl" Header="Install User Control" Click="menuInstallUserControl_Click" />
                     </MenuItem>
                     <MenuItem Header="Window">
                         <MenuItem Name="menuFrameShow" Header="Show Frame" IsCheckable="True" IsChecked="True" Checked="menuFrameShow_Click" Unchecked="menuFrameHide_Click" />

@@ -175,6 +175,36 @@
         }
 
         /// <summary>
+        /// propertyLabel is usually left null
+        /// </summary>
+        /// <param name="objectName"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="propertyValue"></param>
+        /// <param name="propertyLabel"></param>
+        public static void ObjectPropertyArrayUpdate(string objectName, string propertyName, string oldPropertyValue, string newPropertyValue, string newPropertyLabel)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_object_property_array_add (@ObjectName, @PropertyName, @OldPropertyValue, @NewPropertyValue, @NewPropertyLabel)";
+                command.Parameters.AddWithValue("@ObjectName", objectName);
+                command.Parameters.AddWithValue("@PropertyName", propertyName);
+                command.Parameters.AddWithValue("@OldPropertyValue", oldPropertyValue);
+                command.Parameters.AddWithValue("@NewPropertyValue", newPropertyValue);
+                command.Parameters.AddWithValue("@PropertyLabel", newPropertyLabel);
+
+                try
+                {
+                    OSAESql.RunQuery(command);
+                }
+                catch (Exception ex)
+                {
+                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Get one random value from a property array
         /// </summary>
         /// <param name="objectName"></param>
