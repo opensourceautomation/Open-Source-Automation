@@ -1098,6 +1098,7 @@
                 // Open Plugin Package
                 GUI.UserControlInstallerHelper pInst = new GUI.UserControlInstallerHelper();
                 pInst.InstallPlugin(dlg.FileName);
+                GlobalUserControls.OSAEUserControls.FindPlugins(OSAE.Common.ApiPath + @"\UserControls");
             }
         }
 
