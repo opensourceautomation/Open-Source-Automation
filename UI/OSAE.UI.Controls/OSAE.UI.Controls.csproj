@@ -126,9 +126,6 @@
     <Compile Include="VideoStreamViewer.xaml.cs">
       <DependentUpon>VideoStreamViewer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Weather.xaml.cs">
-      <DependentUpon>Weather.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="AddBrowserControl.xaml">
@@ -216,10 +213,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="VideoStreamViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Weather.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

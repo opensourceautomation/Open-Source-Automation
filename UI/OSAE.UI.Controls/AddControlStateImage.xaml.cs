@@ -414,7 +414,7 @@ namespace OSAE.UI.Controls
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", "GUI");
             if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", "GUI");
-            if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, "GUI");
+            if (State2Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", "GUI");
 
 

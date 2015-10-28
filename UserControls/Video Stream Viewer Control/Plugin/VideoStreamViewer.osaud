@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>Video Stream Veiwer User Control</plugin-name>
+<plugin-id>ab3b84a6-1476-4e8c-9746-80f5366aa7ec</plugin-id>
+<plugin-version>4.7.1.0</plugin-version>
+<plugin-state>beta</plugin-state>
+<short-description></short-description>
+<author>Kirk Herron</author>
+<destination-folder>VideoStreamViewer Control</destination-folder>
+<main-file>VideoStreamViewer.dll</main-file>
+<wiki-url></wiki-url>
+<additional-assemblies>
+</additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
+</plugin-description>

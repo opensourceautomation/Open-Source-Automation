@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="OSAE.Weather_Control.AddNewControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+              mc:Ignorable="d" Width="500" Height="317">
+    <Grid Height="317" VerticalAlignment="Top">
+        <Label Content="Object" Height="28" HorizontalAlignment="Left" Margin="2,235,0,0" Name="label3" VerticalAlignment="Top" Width="73" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="52,235,0,0" x:Name="objectsComboBox" VerticalAlignment="Top" Width="357" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" />
+        <Label Content="Mandatory" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="414,235,0,0" Name="label7" VerticalAlignment="Top" Width="76" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,276,73,0" Name="cancelbutton" VerticalAlignment="Top" Width="75" Click="cancelbutton_Click" />
+        <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="70,276,0,0" Name="addButton" VerticalAlignment="Top" Width="75" Click="addButton_Click" />
+        <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="166,277,0,0" VerticalAlignment="Top" Width="61" Click="btnUpdate_Click" RenderTransformOrigin="1.56,0.364"/>
+        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="257,277,0,0" VerticalAlignment="Top" Width="61" Click="btnDelete_Click" RenderTransformOrigin="1.56,0.364"/>
+        <Label Content="Control Name:" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,397,0" Width="93"/>
+        <Label Content="X" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="109,39,0,0" Width="23" RenderTransformOrigin="0.505,1.962"/>
+        <Label Content="Y" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="213,39,0,0" Width="23"/>
+        <TextBox x:Name="cntrlName" HorizontalAlignment="Left" Height="26" Margin="105,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="364"/>
+        <TextBox x:Name="cntrlX" HorizontalAlignment="Left" Height="26" Margin="137,39,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="61"/>
+        <TextBox x:Name="cntrlY" HorizontalAlignment="Left" Height="26" Margin="241,39,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="61"/>
+        <Label Content="ZOrder" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="316,41,0,0" Width="51" RenderTransformOrigin="0.505,1.962"/>
+        <TextBox x:Name="cntrlZOrder" HorizontalAlignment="Left" Height="26" Margin="372,41,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="69" RenderTransformOrigin="0.377,1.577"/>
+        <Label x:Name="AssocObj" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="52,209,0,0" Width="417"/>
+        <Label Content="Parameters:" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,72,396,0" Width="93" RenderTransformOrigin="0.505,0.423" FontWeight="Bold"/>
+        <Label Content="Value:" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,146,297,0" Width="46" RenderTransformOrigin="0.505,0.423"/>
+        <TextBox x:Name="paramValue" HorizontalAlignment="Left" Height="26" Margin="109,168,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="168"/>
+        <ListBox x:Name="paramList" HorizontalAlignment="Left" Height="79" VerticalAlignment="Top" Width="252" Margin="109,72,0,0" SelectionChanged="paramList_SelectionChanged"/>
+        <Button Content="Save" Height="23" HorizontalAlignment="Left" Margin="286,171,0,0" x:Name="addParam" VerticalAlignment="Top" Width="75" Click="saveParmValue_Click" />
+    </Grid>
+</UserControl>
