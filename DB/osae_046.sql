@@ -3617,34 +3617,6 @@ $$
 
 DELIMITER ;
 
--- 
--- Dumping data for table osae_debug_log
---
-INSERT INTO osae_debug_log VALUES
-(0000031966, '2015-07-28 03:02:00.73', 'Event_Trigger is running for 0000000043 0000000074', 'osae_sp_system_count_occupants -> osae_sp_object_property_set -> osae_sp_event_log_add -> tr_osae_event_log_after_insert'),
-(0000031967, '2015-07-28 03:02:36.77', 'Event_Trigger is running for 0000000043 0000000074', 'osae_sp_system_count_occupants -> osae_sp_object_property_set -> osae_sp_event_log_add -> tr_osae_event_log_after_insert'),
-(0000031968, '2015-07-28 03:03:49.86', 'Event_Trigger is running for 0000000043 0000000158', 'osae_sp_system_count_plugins -> osae_sp_object_property_set -> osae_sp_event_log_add -> tr_osae_event_log_after_insert'),
-(0000031969, '2015-07-28 03:05:59.95', 'SYSTEM handling Unknown OFF', 'osae_sp_process_system_methods'),
-(0000031970, '2015-07-28 03:05:59.98', 'Event_Trigger is running for 0000001198 0000000008', 'osae_sp_process_system_methods -> osae_sp_object_state_set -> osae_sp_event_log_add -> tr_osae_event_log_after_insert'),
-(0000031971, '2015-07-28 03:06:00', 'Event_Trigger is running for 0000000043 0000000080', 'osae_sp_system_count_occupants -> osae_sp_object_property_set -> osae_sp_event_log_add -> tr_osae_event_log_after_insert'),
-(0000031972, '2015-07-28 03:11:16.25', 'SYSTEM handling Garage OFF', 'osae_sp_process_system_methods'),
-(0000031973, '2015-07-28 03:11:16.27', 'Event_Trigger is running for 0000002803 0000000189', 'osae_sp_process_system_methods -> osae_sp_object_state_set -> osae_sp_event_log_add -> tr_osae_event_log_after_insert'),
-(0000031974, '2015-07-28 03:11:24.26', 'SYSTEM handling Bedroom OFF', 'osae_sp_process_system_methods'),
-(0000031975, '2015-07-28 03:11:24.28', 'Event_Trigger is running for 0000002777 0000000189', 'osae_sp_process_system_methods -> osae_sp_object_state_set -> osae_sp_event_log_add -> tr_osae_event_log_after_insert'),
-(0000031976, '2015-07-28 08:30:17.66', 'Found Schedule to run:31  Object=USO   ScriptID=0', 'osae_sp_run_scheduled_methods'),
-(0000031977, '2015-07-28 08:30:17.66', 'Adding method to queue: Object=USO   Method=ON', 'osae_sp_run_scheduled_methods'),
-(0000031978, '2015-07-28 08:30:18.66', 'SYSTEM handling USO ON', 'osae_sp_process_system_methods'),
-(0000031979, '2015-07-28 08:30:18.69', 'Event_Trigger is running for 0000002852 0000000215', 'osae_sp_process_system_methods -> osae_sp_object_state_set -> osae_sp_event_log_add -> tr_osae_event_log_after_insert'),
-(0000031980, '2015-07-28 09:00:17.82', 'Found Schedule to run:32  Object=Script Processor   ScriptID=0', 'osae_sp_run_scheduled_methods'),
-(0000031981, '2015-07-28 09:00:17.83', 'Adding method to queue: Object=Script Processor   Method=RUN READERS', 'osae_sp_run_scheduled_methods'),
-(0000031982, '2015-07-28 13:00:17.7', 'Found Schedule to run:33  Object=Script Processor   ScriptID=0', 'osae_sp_run_scheduled_methods'),
-(0000031983, '2015-07-28 13:00:17.71', 'Adding method to queue: Object=Script Processor   Method=RUN READERS', 'osae_sp_run_scheduled_methods'),
-(0000031984, '2015-07-28 16:00:17.45', 'Found Schedule to run:34  Object=Script Processor   ScriptID=0', 'osae_sp_run_scheduled_methods'),
-(0000031985, '2015-07-28 16:00:17.46', 'Adding method to queue: Object=Script Processor   Method=RUN READERS', 'osae_sp_run_scheduled_methods'),
-(0000031986, '2015-07-28 16:30:17.29', 'Found Schedule to run:35  Object=USO   ScriptID=0', 'osae_sp_run_scheduled_methods'),
-(0000031987, '2015-07-28 16:30:17.29', 'Adding method to queue: Object=USO   Method=OFF', 'osae_sp_run_scheduled_methods'),
-(0000031988, '2015-07-28 16:30:18.3', 'SYSTEM handling USO OFF', 'osae_sp_process_system_methods'),
-(0000031989, '2015-07-28 16:30:18.32', 'Event_Trigger is running for 0000002852 0000000216', 'osae_sp_process_system_methods -> osae_sp_object_state_set -> osae_sp_event_log_add -> tr_osae_event_log_after_insert');
 
 -- 
 -- Dumping data for table osae_images
@@ -75296,7 +75268,7 @@ INSERT INTO osae_object_property VALUES
 (0000006679, 0000002810, 0000001045, '2,120''', '2015-05-22 21:05:50', NULL, 50, NULL, 0),
 (0000006680, 0000002812, 0000001046, 'Topeka', '2015-05-22 21:16:38', NULL, 50, NULL, 0),
 (0000006681, 0000002812, 0000001047, '37° N to 40° N', '2015-05-22 21:17:51', NULL, 50, NULL, 0),
-(0000006682, 0000002812, 0000001048, '94° 35′ W to 102° 3′ W', '2015-05-22 21:18:05', NULL, 50, NULL, 0),
+(0000006682, 0000002812, 0000001048, '94° 35 W to 102° 3 W', '2015-05-22 21:18:05', NULL, 50, NULL, 0),
 (0000006683, 0000002812, 0000001049, '$50,177', '2015-05-22 21:17:35', NULL, 50, NULL, 0),
 (0000006688, 0000000043, 0000001054, '50', NULL, NULL, 50, NULL, 0),
 (0000006761, 0000002852, 0000001065, '16.69', '2015-07-20 16:00:18', NULL, 50, 'SYSTEM', 0),
