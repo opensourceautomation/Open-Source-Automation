@@ -134,7 +134,7 @@ namespace VideoStreamViewer
             if (ValidateForm())
             {
                 string sName = cntrlName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, osaeControlType, "", currentScreen, true);
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, osaeControlType + " " + _pluginName, "", currentScreen, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType +" " + _pluginName , "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
@@ -165,7 +165,7 @@ namespace VideoStreamViewer
                 //We call an object update here in case the Name was changed, then perform the updates against the New name
                 OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
                 string sName = cntrlName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, osaeControlType, "", currentScreen, true);
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, osaeControlType + " " + _pluginName, "", currentScreen, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType + " " + _pluginName, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", cntrlX.Text, "GUI");
