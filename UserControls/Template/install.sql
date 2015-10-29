@@ -10,11 +10,12 @@
 --
 
 CALL osae_sp_object_type_add ('USER CONTROL CHANGE THIS','Custom User Control','SYSTEM','USER CONTROL',0,1,0,1);
-CALL osae_sp_object_type_property_add('Control Type','String','String','','USER CONTROL CHANGE THIS',0);
-CALL osae_sp_object_type_property_add('Object Name','String','String','','USER CONTROL CHANGE THIS',0);
-CALL osae_sp_object_type_property_add('X','Integer','String','','USER CONTROL CHANGE THIS',0);
-CALL osae_sp_object_type_property_add('Y','Integer','String','','USER CONTROL CHANGE THIS',0);
-CALL osae_sp_object_type_property_add('ZOrder','Integer','String','','USER CONTROL CHANGE THIS',0);
+CALL osae_sp_object_type_property_add('USER CONTROL CHANGE THIS','Control Type','String','','',0);
+CALL osae_sp_object_type_property_add('USER CONTROL CHANGE THIS','Object Name','String','','',0);
+CALL osae_sp_object_type_property_add('USER CONTROL CHANGE THIS','X','Integer','','',0);
+CALL osae_sp_object_type_property_add('USER CONTROL CHANGE THIS','Y','Integer','','',0);
+CALL osae_sp_object_type_property_add('USER CONTROL CHANGE THIS','ZOrder','Integer','','',0);
+
 
 
 --
