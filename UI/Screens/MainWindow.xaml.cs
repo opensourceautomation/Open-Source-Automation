@@ -301,7 +301,7 @@
                         #endregion
 
                         #region CONTROL USER CONTROL
-                        else if (newCtrl.ControlType == "USER CONTROL")
+                        else if (newCtrl.ControlType.Contains("USER CONTROL"))
                         {
                             foreach (dynamic obj in userControls)
                             {
