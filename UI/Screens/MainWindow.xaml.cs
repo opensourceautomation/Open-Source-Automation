@@ -131,7 +131,8 @@
                 cameraViewers.Clear();
                 canGUI.Children.Clear();
                 browserFrames.Clear();
-                
+                controlTypes.Clear();
+
                 gCurrentScreen = sScreen;
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
                 OSAE.OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
@@ -305,7 +306,18 @@
                         {
                             foreach (dynamic obj in userControls)
                             {
-                                if (newCtrl.ControlName == obj.screenObject.Name) oldCtrl = true;
+                                if (newCtrl.ControlName == obj.screenObject.Name)
+                                {
+                                    if (newCtrl.LastUpdated != obj.LastUpdated)
+                                    {
+                                        this.Dispatcher.Invoke((Action)(() =>
+                                        {
+                                            obj.LastUpdated = newCtrl.LastUpdated;
+                                            obj.Update();
+                                        }));
+                                    }
+                                    oldCtrl = true;
+                                }
                             }
                         }
                         #endregion
@@ -605,7 +617,8 @@
                     uc.Location.X = dX;
                     uc.Location.Y = dY;
                     userControls.Add(uc);
-                    controlTypes.Add(uc.GetType());
+                    //controlTypes.Add(uc.GetType());
+                    controlTypes.Add(typeof(UserControl));
                     uc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
                 #endregion

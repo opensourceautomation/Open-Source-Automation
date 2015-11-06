@@ -41,7 +41,7 @@ namespace UserControlTemplate
         // Set the Default Dropdown Caption
         string defaultCaption = "Choose an IP Camera Object below";
 
-        #region DO NOT CHANGE THIS CODE
+        #region DO NOT CHANGE THIS CODE UNLESS YOU REVISED THE CONTROL
         Boolean hasParams = false;
         List<objParams> oParams = new List<objParams>();
         string osaeControlType = "USER CONTROL";
@@ -142,7 +142,7 @@ namespace UserControlTemplate
 
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ValidateForm())
+            if (ValidateForm("Add"))
             {
                 string sName = cntrlName.Text;
                 OSAEObjectManager.ObjectAdd(sName, sName, sName, osaeControlType + " " + _pluginName, "", currentScreen, true);
@@ -169,14 +169,13 @@ namespace UserControlTemplate
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (ValidateForm())
+            if (ValidateForm("Update"))
             {
                 sWorkingName = cntrlName.Text;
                 OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
                 //We call an object update here in case the Name was changed, then perform the updates against the New name
                 OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
                 string sName = cntrlName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, osaeControlType + " " + _pluginName, "", currentScreen, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType + " " + _pluginName, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", cntrlX.Text, "GUI");
@@ -189,7 +188,7 @@ namespace UserControlTemplate
                         OSAEObjectPropertyManager.ObjectPropertySet(sName, op.Name, op.Value, "GUI");
                     }
                 }
-                OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
+                OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, objectsComboBox.Text, sName);
                 NotifyParentFinished();
             }
             else
@@ -198,48 +197,61 @@ namespace UserControlTemplate
             }
         }
 
-        private bool ValidateForm()
+        private bool ValidateForm(string mthd)
         {
-            bool mandatoryFieldsCompleted = true;
-
+            bool validate = true;
+            // Does this object already exist
+            if (mthd == "Add" || sOriginalName != cntrlName.Text)
+            {
+                try
+                {
+                    OSAEObject oExist = OSAEObjectManager.GetObjectByName(cntrlName.Text);
+                    if (oExist != null)
+                    {
+                        MessageBox.Show("Control name already exist. Please Change!");
+                        validate = false;
+                    }
+                }
+                catch { }
+            }
             if (string.IsNullOrEmpty(cntrlName.Text))
             {
                 MessageBox.Show("Please specify a name for the control");
-                mandatoryFieldsCompleted = false;
+                validate = false;
             }
             if (objectsComboBox.SelectedIndex == -1)
             {
                 MessageBox.Show("Please Choose a Object to Associate");
-                mandatoryFieldsCompleted = false;
+                validate = false;
             }
             if (string.IsNullOrEmpty(cntrlX.Text))
             {
                 MessageBox.Show("X Can not be empty");
-                mandatoryFieldsCompleted = false;
+                validate = false;
             }
             if (string.IsNullOrEmpty(cntrlY.Text))
             {
                 MessageBox.Show("Y Can not be empty");
-                mandatoryFieldsCompleted = false;
+                validate = false;
             }
             if (string.IsNullOrEmpty(cntrlZOrder.Text))
             {
                 MessageBox.Show("ZOrder can not be empty");
-                mandatoryFieldsCompleted = false;
+                validate = false;
             }
             if (hasParams == true)
             {
                 foreach (objParams op in oParams)
                 {
-                    if (op.Value == null)
+                    if (string.IsNullOrEmpty(op.Value))
                     {
                         MessageBox.Show("An additioanl Parameter is empty");
-                        mandatoryFieldsCompleted = false;
+                        validate = false;
                     }
                 }
             }
 
-            return mandatoryFieldsCompleted;
+            return validate;
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -274,7 +286,7 @@ namespace UserControlTemplate
             {
                 addButton.IsEnabled = true;
                 btnUpdate.IsEnabled = true;
-                btnDelete.IsEnabled = true;
+                btnDelete.IsEnabled = false;
             }
             if (hasParams == true)
             {

@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.Jabber", "Plugins\OSAE.Jabber\OSAE.Jabber.csproj", "{589EDA2C-421D-40F1-9682-D4360E02897A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.API", "OSAE.API\OSAE.API.csproj", "{022F45F1-C988-41A1-A203-39E97BE928B6}"
@@ -64,6 +64,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.PowerShell", "Plugins\OSAE.PowerShellProcessor\OSAE.PowerShell.csproj", "{5BAEF1F3-5BE7-4D0B-BBBA-7459B3D3F79B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.WebServer", "Plugins\OSAE.WebServer\OSAE.WebServer.csproj", "{35DEF1F9-4FFE-494F-AE8D-0AF15B278C22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserControlDescriptionEditor", "UI\UserControlDescriptionEditor\UserControlDescriptionEditor.csproj", "{394D2B41-4B78-4701-8D36-BF04EB42EAA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -271,6 +273,16 @@ Global
 		{35DEF1F9-4FFE-494F-AE8D-0AF15B278C22}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{35DEF1F9-4FFE-494F-AE8D-0AF15B278C22}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{35DEF1F9-4FFE-494F-AE8D-0AF15B278C22}.Release|x86.ActiveCfg = Release|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -294,5 +306,6 @@ Global
 		{B1ECF3AD-57BE-4F79-9AEA-0DB153117AEB} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 		{503092C1-23FE-4AD8-B855-CF1D24D632A9} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 		{E730B38F-5144-4AA2-9369-5287A3667CB0} = {2A452081-FFE5-43C4-82D1-7202917BC509}
+		{394D2B41-4B78-4701-8D36-BF04EB42EAA4} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 	EndGlobalSection
 EndGlobal

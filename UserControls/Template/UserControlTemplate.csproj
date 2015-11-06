@@ -35,9 +35,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\OSA\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="MjpegProcessor">
-      <HintPath>C:\Program Files\OSA\MjpegProcessor.dll</HintPath>
-    </Reference>
     <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\OSA\OSAE.API.dll</HintPath>
