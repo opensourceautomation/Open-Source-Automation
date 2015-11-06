@@ -28,6 +28,11 @@ namespace OSAE.Weather_Control
         public Point Location;
         public string _controlname;
         public OSAEObject screenObject = new OSAEObject();
+        public string CurState;
+        public string CurStateLabel;
+        public DateTime LastUpdated;
+        public DateTime LastStateChange;
+        public string objName;
         string sMode = "Max";
 
         public CustomUserControl(OSAEObject sObj, string ControlName)
@@ -191,6 +196,20 @@ namespace OSAE.Weather_Control
                 sMode = "Max";
                 this.Width = 475;
                 lblLastUpd.Visibility = System.Windows.Visibility.Visible;
+            }
+        }
+
+        public void Update()
+        {
+            bool stateChanged = false;
+            OSAEObjectState stateCurrent = OSAEObjectStateManager.GetObjectStateValue(objName);
+            if (this.CurState != stateCurrent.Value) stateChanged = true;
+            this.CurState = stateCurrent.Value;
+            this.CurStateLabel = stateCurrent.StateLabel;
+            this.LastStateChange = stateCurrent.LastStateChange;
+            if (stateChanged)
+            {
+                // add update code here!
             }
         }
     }

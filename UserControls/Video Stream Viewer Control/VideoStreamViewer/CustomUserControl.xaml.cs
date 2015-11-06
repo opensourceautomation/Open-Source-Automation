@@ -39,6 +39,11 @@ namespace VideoStreamViewer
         double imgWidth = 400;
         double imgHeight = 300;
         string streamURI;
+        public string CurState;
+        public string CurStateLabel;
+        public DateTime LastUpdated;
+        public DateTime LastStateChange;
+        public string objName;
 
         // Code to Initialize your custom User Control
         public CustomUserControl(OSAEObject sObj, string ControlName)
@@ -46,6 +51,9 @@ namespace VideoStreamViewer
             InitializeComponent();
             _controlname = ControlName;
             screenObject = sObj;
+            objName = sObj.Property("Object Name").Value;
+            CurState = OSAEObjectStateManager.GetObjectStateValue(objName).Value;
+            LastStateChange = OSAEObjectStateManager.GetObjectStateValue(objName).LastStateChange;
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
             _mjpeg.Error += _mjpeg_Error;
@@ -112,6 +120,20 @@ namespace VideoStreamViewer
         {
             _mjpeg.StopStream();
             this.Log.Info("Stopping stream:" + streamURI);
+        }
+
+        public void Update()
+        {
+            bool stateChanged = false;
+            OSAEObjectState stateCurrent = OSAEObjectStateManager.GetObjectStateValue(objName);
+            if (this.CurState != stateCurrent.Value) stateChanged = true;
+            this.CurState = stateCurrent.Value;
+            this.CurStateLabel = stateCurrent.StateLabel;
+            this.LastStateChange = stateCurrent.LastStateChange;
+            if (stateChanged)
+            {
+                // insert update code here
+            }
         }
 
     }
