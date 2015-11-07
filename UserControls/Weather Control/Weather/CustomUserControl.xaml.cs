@@ -40,6 +40,7 @@ namespace OSAE.Weather_Control
             InitializeComponent();
             _controlname = ControlName;
             screenObject = sObj;
+            objName = sObj.Property("Object Name").Value;
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(timMain_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 30, 0);
