@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>PubNub</plugin-name>
+<plugin-id>885c557b-131b-4279-960a-0e4467e63c43</plugin-id>
+<plugin-version>0.4.7</plugin-version>
+<plugin-state>beta</plugin-state>
+<short-description>C# PubNub Client</short-description>
+<author>Vaughn Rupp</author>
+<destination-folder>PubNub</destination-folder>
+<main-file>OSAE.PubNub.dll</main-file>
+<wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=PubNub</wiki-url>
+<additional-assemblies>
+<name>Newtonsoft.Json.dll</name>
+</additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
+</plugin-description>
