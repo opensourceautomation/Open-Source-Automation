@@ -6,7 +6,6 @@
     using System.Configuration.Install;
     using System.Management.Automation;
     using System.Management.Automation.Runspaces;
-    using System.Management;
     using System.Text;
 
     /// <summary>

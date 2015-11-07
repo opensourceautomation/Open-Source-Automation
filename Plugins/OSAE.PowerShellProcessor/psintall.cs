@@ -3,10 +3,10 @@
 /// </summary>
 /// 
 
-namespace OSAPS
+namespace OSAE.PowerShellProcessor
 {
-    using System.Management.Automation;
     using System.ComponentModel;  // Windows PowerShell assembly
+    using System.Management.Automation;
 
     [RunInstaller(true)]
     public class GetProcPSSnapIn01 : PSSnapIn

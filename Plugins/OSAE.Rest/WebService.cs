@@ -91,7 +91,7 @@
 
     public class api : IRestService
     {
-        private Logging logging = Logging.GetLogger("Rest");
+       // private Logging logging = Logging.GetLogger("Rest");
         private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
         SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
      
