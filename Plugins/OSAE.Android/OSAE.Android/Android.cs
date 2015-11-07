@@ -8,17 +8,18 @@ namespace OSAE.Android
     [AddIn("Android", Version = "0.0.1")]
     public class Android : OSAEPluginBase
     {
-        private Logging logging = Logging.GetLogger("Android");
+        //OSAELog
+        private static OSAE.General.OSAELog Log = new General.OSAELog();
 
         string pName;
         List<AndroidDevice> mdevices = new List<AndroidDevice>();
 
         public override void RunInterface(string pluginName)
         {
-            log("Running interface", true);
+            Log.Info("Starting Android plugin");
             pName = pluginName;
 
-            OSAEObjectTypeManager.ObjectTypeUpdate("Android Device", "Android Device", "Android Device", pluginName, "Android Device", 0, 0, 0, 1);
+            OSAEObjectTypeManager.ObjectTypeUpdate("Android Device", "Android Device", "Android Device", pluginName, "Android Device", false, false, false, true);
 
             //connect to devices
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("Android Device");
@@ -28,7 +29,7 @@ namespace OSAE.Android
                 createdevice(obj);
             }
 
-            log("Run Interface Complete", true);
+            Log.Debug("Run Interface Complete");
         }
 
 
@@ -50,7 +51,7 @@ namespace OSAE.Android
             String parameter_1 = method.Parameter1;
             String parameter_2 = method.Parameter2;
 
-            log("Found Command: " + method_name + " | param1: " + parameter_1 + " | param2: " + parameter_2, true);
+            Log.Debug("Found Command: " + method_name + " | param1: " + parameter_1 + " | param2: " + parameter_2);
 
             if (object_name == pName)
             {
@@ -59,26 +60,26 @@ namespace OSAE.Android
                 {
 
                     case "NOTIFYALL":
-                        log("NOTIFYALL event triggered", false);
+                        Log.Debug("NOTIFYALL event triggered");
 
-                        log("NOTIFYALL devices to loop:"+mdevices.Count, false);
+                        Log.Debug("NOTIFYALL devices to loop:" + mdevices.Count);
 
                         foreach (AndroidDevice d in mdevices)
                         {
-                            log("NOTIFYALL loop for device:"+d.Name, false);
+                            Log.Debug("NOTIFYALL loop for device:" + d.Name);
                             d.ProcessCommand("NOTIFY", parameter_1, parameter_2);
                         }
 
                         break;
 
                     case "EXECUTEALL":
-                        log("EXECUTEALL event triggered", false);
+                        Log.Debug("EXECUTEALL event triggered");
 
-                        log("EXECUTEALL devices to loop:" + mdevices.Count, false);
+                        Log.Debug("EXECUTEALL devices to loop:" + mdevices.Count);
 
                         foreach (AndroidDevice d in mdevices)
                         {
-                            log("EXECUTEALL loop for device:" + d.Name, false);
+                            Log.Debug("EXECUTEALL loop for device:" + d.Name);
                             d.ProcessCommand("EXECUTE", parameter_1, parameter_2);
                         }
 
@@ -106,21 +107,6 @@ namespace OSAE.Android
         }
 
 
-
-        public void log(String message, bool alwaysLog)
-        {
-            try
-            {
-                //logging.AddToLog(message, alwaysLog);
-                logging.AddToLog(message, true);
-            }
-            catch (IOException ex)
-            {
-                        //do nothing
-            }
-
-        }
-
         public void createdevice(OSAEObject obj)
         {
             AndroidDevice d = new AndroidDevice(obj.Name, pName);
@@ -141,7 +127,7 @@ namespace OSAE.Android
             }
 
             mdevices.Add(d);
-            log("Added AndroidDevice to list: " + d.Name, false);
+            Log.Info("Added AndroidDevice to list: " + d.Name);
 
         }
 

@@ -11,8 +11,9 @@ namespace OSAE.Android
         private string _name;
         private string _owner;
         private string _gcmid;
-    
-        private Logging logging = Logging.GetLogger("Android");
+
+        //OSAELog
+        private static OSAE.General.OSAELog Log = new General.OSAELog();
                 
         private GCMSender gcmsender = new GCMSender(null,"AIzaSyAXrHDNsYhU-nQowJzLB-YeMyOG74jjjVs");
 
@@ -43,21 +44,6 @@ namespace OSAE.Android
 
         }
 
-        private void log(String message, bool alwaysLog)
-        {
-            try
-            {
-                logging.AddToLog(message, alwaysLog);
-            }
-            catch (IOException ex)
-            {
-                        //do nothing
-            }
-
-
-        }
-
-
         public void ProcessCommand(String method_name, String parameter_1, String parameter_2)
         {
 
@@ -86,8 +72,8 @@ namespace OSAE.Android
             {
                 case "NOTIFY":
 
-                    log("NOTIFY event triggered (" + _name + "), parameter_1=" + parameter_1 + ", parameter_2=" + parameter_2, false);
-                    log("address = " + _gcmid, false);
+                    Log.Info("NOTIFY event triggered (" + _name + "), parameter_1=" + parameter_1 + ", parameter_2=" + parameter_2);
+                    Log.Debug("address = " + _gcmid);
 
                     category = "default";
                     level = "5";
@@ -105,14 +91,14 @@ namespace OSAE.Android
                     payload = "\"type\" : \"notification\" \"message\" : \"" + parameter_1 + "\" \"category\" : \"" + category + "\" \"level\" : \"" + level + "\" \"osaid\" : \"" + osaid + "\" \"messagedate\" : \"" + messagedate + "\" ";
 
                     strResponse = gcmsender.Send(payload);
-                    log("GCM response new version = " + strResponse, false);
+                    Log.Debug("GCM response new version = " + strResponse);
 
                     break;
 
                 case "EXECUTE":
 
-                    log("EXECUTE event triggered (" + _name + "), parameter_1=" + parameter_1 + ", parameter_2=" + parameter_2, false);
-                    log("address = " + _gcmid, false);
+                    Log.Info("EXECUTE event triggered (" + _name + "), parameter_1=" + parameter_1 + ", parameter_2=" + parameter_2);
+                    Log.Debug("address = " + _gcmid);
 
                     category = "#taskertask#";
                     level = "5";
@@ -121,7 +107,7 @@ namespace OSAE.Android
                     payload = "\"type\" : \"taskertask\" \"message\" : \"" + parameter_1 + "\" \"category\" : \"" + category + "\" \"level\" : \"" + level + "\" \"osaid\" : \"" + osaid + "\" \"messagedate\" : \"" + messagedate + "\" ";
                     
                     strResponse = gcmsender.Send(payload);
-                    log("GCM response new version = " + strResponse, false);
+                    Log.Debug("GCM response new version = " + strResponse);
 
                     break;
             }

@@ -18,7 +18,8 @@ namespace OSAE.MediaCenter
         private int _CommandPort = 0;
         private int _StatusPort = 0;
 
-        private Logging logging = Logging.GetLogger("MediaCenter");
+        //OSAELog
+        private static OSAE.General.OSAELog Log = new General.OSAELog();
 
         String mycommand;
 
@@ -74,33 +75,6 @@ namespace OSAE.MediaCenter
             pName = pluginname;
         }
 
-        private void log(String message, bool alwaysLog)
-        {
-            try
-            {
-                logging.AddToLog(message, alwaysLog);
-            }
-            catch (IOException ex)
-            {
-                if (ex.Message != "") //failed because another thread was already writting to log, wqe will try again
-                {
-                    try
-                    {
-                        logging.AddToLog("second chance log -" + message, alwaysLog);
-                    }
-                    catch (IOException ex2)
-                    {
-                        //do nothing
-                    }
-                }
-            }
-            finally
-            {
-                //do nothing... we tried writting twice so we will skip this message
-                //eventually I may have a log queue to re log old missed messages or even to have one other thread do all the logging from the queue
-            }
-
-        }
 
         public void EstablishInitialConnections()
         {
@@ -128,14 +102,14 @@ namespace OSAE.MediaCenter
             }
             catch (Exception ex)
             {
-                log("Error closing old command connections to MediaCenter device (" + _name + "): " + ex.Message, false);
+                Log.Error("Error closing old command connections to MediaCenter device (" + _name + "): " + ex.Message);
             }
 
             try
             {
                 if (_ip != "" && _CommandPort != 0)
                 {
-                    if (initialconnection) log("Creating Command TCP Client (" + _name + "): ip-" + _ip + " commandport-" + _CommandPort, false);
+                    if (initialconnection) Log.Debug("Creating Command TCP Client (" + _name + "): ip-" + _ip + " commandport-" + _CommandPort);
 
                     commandTcpClient = new TcpClient(_ip, _CommandPort);
 
@@ -154,12 +128,12 @@ namespace OSAE.MediaCenter
                 }
                 else
                 {
-                    if (initialconnection) log(_name + " - Properties not set correctly: ip-" + _ip + " networkport-" + _CommandPort + " statusport-" + _StatusPort, true);
+                    if (initialconnection) Log.Info(_name + " - Properties not set correctly: ip-" + _ip + " networkport-" + _CommandPort + " statusport-" + _StatusPort);
                 }
             }
             catch (Exception ex)
             {
-                if (initialconnection) log("Error creating command connection to MediaCenter device (" + _name + "): " + ex.Message, true);
+                if (initialconnection) Log.Error("Error creating command connection to MediaCenter device (" + _name + "): " + ex.Message);
                 OSAEObjectStateManager.ObjectStateSet(_name, "OFF", pName);
             }
         }
@@ -185,14 +159,14 @@ namespace OSAE.MediaCenter
             }
             catch (Exception ex)
             {
-                log("Error closing old status connections to MediaCenter device (" + _name + "): " + ex.Message, false);
+                Log.Error("Error closing old status connections to MediaCenter device (" + _name + "): " + ex.Message);
             }
 
             try
             {
                 if (_ip != "" && _StatusPort != 0)
                 {
-                    if (initialconnection) log("Creating Status TCP Client (" + _name + "): ip-" + _ip + " statusport-" + _StatusPort, false);
+                    if (initialconnection) Log.Debug("Creating Status TCP Client (" + _name + "): ip-" + _ip + " statusport-" + _StatusPort);
                     statusTcpClient = new TcpClient(_ip, _StatusPort);
 
                     //get a network stream from server
@@ -210,12 +184,12 @@ namespace OSAE.MediaCenter
                 }
                 else
                 {
-                    if (initialconnection) log(_name + " - Properties not set correctly: ip-" + _ip + " networkport-" + _CommandPort + " statusport-" + _StatusPort, true);
+                    if (initialconnection) Log.Info(_name + " - Properties not set correctly: ip-" + _ip + " networkport-" + _CommandPort + " statusport-" + _StatusPort);
                 }
             }
             catch (Exception ex)
             {
-                if (initialconnection) log("Error creating connection to MediaCenter device (" + _name + "): " + ex.Message, true);
+                if (initialconnection) Log.Error("Error creating connection to MediaCenter device (" + _name + "): " + ex.Message);
                 OSAEObjectStateManager.ObjectStateSet(_name, "OFF", pName);
             }
         }
@@ -274,43 +248,43 @@ namespace OSAE.MediaCenter
             switch (method_name)
             {
                 case "PLAY":
-                    log("PLAY event triggered (" + _name + ")", false);
+                    Log.Info("PLAY event triggered (" + _name + ")");
                     SendCommand_Network("playrate Play");
                     break;
                 case "STOP":
-                    log("STOP event triggered (" + _name + ")", false);
+                    Log.Info("STOP event triggered (" + _name + ")");
                     SendCommand_Network("playrate Stop");
                     break;
                 case "PAUSE":
-                    log("STOP event triggered (" + _name + ")", false);
+                    Log.Info("STOP event triggered (" + _name + ")");
                     SendCommand_Network("playrate Pause");
                     break;
                 case "MUTE":
-                    log("MUTE event triggered (" + _name + ")", false);
+                    Log.Info("MUTE event triggered (" + _name + ")");
                     SendCommand_Network("volume Mute");
                     break;
                 case "UNMUTE":
-                    log("UNMUTE event triggered (" + _name + ")", false);
+                    Log.Info("UNMUTE event triggered (" + _name + ")");
                     SendCommand_Network("volume UnMute");
                     break;
                 case "SETVOLUME":
                     mycommand = "volume " + parameter_1;
-                    log("SETVOLUME event triggered (" + _name + "), command to send=" + mycommand, false);
+                    Log.Info("SETVOLUME event triggered (" + _name + "), command to send=" + mycommand);
                     SendCommand_Network(mycommand);
                     break;
                 case "NOTIFY":
                     mycommand = @"msgbox ""OSA"" """ + parameter_1 + @""" " + parameter_2;
-                    log("NOTIFY event triggered (" + _name + "), command to send=" + mycommand, false);
+                    Log.Info("NOTIFY event triggered (" + _name + "), command to send=" + mycommand);
                     SendCommand_Network(mycommand);
                     break;
                 case "GOTO":
                     mycommand = "goto " + parameter_1;
-                    log("GOTO event triggered (" + _name + "), command to send=" + mycommand, false);
+                    Log.Info("GOTO event triggered (" + _name + "), command to send=" + mycommand);
                     SendCommand_Network(mycommand);
                     break;
                 case "SEND_COMMAND":
                     mycommand = parameter_1;
-                    log("SEND_COMMAND event triggered (" + _name + "), command to send=" + mycommand, false);
+                    Log.Info("SEND_COMMAND event triggered (" + _name + "), command to send=" + mycommand);
                     SendCommand_Network(mycommand);
                     break;
                 case "TEST_REESTABLISHCONNECTIONS":
@@ -351,13 +325,13 @@ namespace OSAE.MediaCenter
                     //
                     commandStreamWriter.WriteLine(line);
                     commandStreamWriter.Flush();
-                    log("Sent command (" + _name + "): " + line, true);
+                    Log.Info("Sent command (" + _name + "): " + line);
                 }
 
             }
             catch (Exception e)
             {
-                log("Error sending command (" + _name + "): " + e.Message, true);
+                Log.Error("Error sending command (" + _name + "): " + e.Message);
             }
         }
 
@@ -368,12 +342,12 @@ namespace OSAE.MediaCenter
                 try
                 {
                     string curLine = commandStreamReader.ReadLine();
-                    log("Received command data from MCDevice(" + _name + "): " + curLine, false);
+                    Log.Info("Received command data from MCDevice(" + _name + "): " + curLine);
 
                 }
                 catch (Exception ex)
                 {
-                    log("Error reading from command stream (" + _name + "): " + ex.Message, true);
+                    Log.Error("Error reading from command stream (" + _name + "): " + ex.Message);
                 }
             }
         }
@@ -415,21 +389,21 @@ namespace OSAE.MediaCenter
                             {
                                 if (tracktime % 30 == 0 || tracktime == 1)
                                 {
-                                    log("Received status data from MCDevice(" + _name + "): " + curLine, false);
+                                    Log.Debug("Received status data from MCDevice(" + _name + "): " + curLine);
                                 }
 
                                 OSAEObjectPropertyManager.ObjectPropertySet(_name, "Current Position", curLine.Replace("TrackTime=", ""), pName);
                             }
                             else
                             {
-                                log("Error parsing tracktime (" + _name + "): ", false);
+                                Log.Error("Error parsing tracktime (" + _name + "): ");
                             }
 
 
                         }
                         else
                         {
-                            log("Received status data from MCDevice(" + _name + "): " + curLine, false);
+                            Log.Debug("Received status data from MCDevice(" + _name + "): " + curLine);
 
 
                             if (curLine.IndexOf("StartSession=") > -1 || curLine.IndexOf("204 Connected (") > -1)
@@ -606,7 +580,7 @@ namespace OSAE.MediaCenter
                             {
                                 cursessionindex++;
 
-                                log("looping sessions for " + _name + " (" + sessions.Count().ToString() + ")-  active:" + s.active + ", sessionnum:" + s.SessionNumber + ", type:" + s.SessionType + ", lastupdate:" + s.lastupdate + ", medianame:" + s.MediaName + ", play:" + s.Play.ToString() + ", stop:" + s.Stop.ToString(), false);
+                                Log.Debug("looping sessions for " + _name + " (" + sessions.Count().ToString() + ")-  active:" + s.active + ", sessionnum:" + s.SessionNumber + ", type:" + s.SessionType + ", lastupdate:" + s.lastupdate + ", medianame:" + s.MediaName + ", play:" + s.Play.ToString() + ", stop:" + s.Stop.ToString());
 
                                 if (s.active)
                                 {
@@ -669,12 +643,12 @@ namespace OSAE.MediaCenter
                     }
                     else
                     {
-                        log("Current line is blank - curLine>" + curLine + "<", false);
+                        Log.Debug("Current line is blank - curLine>" + curLine + "<");
                     }
                 }
                 catch (Exception ex)
                 {
-                    log("Error reading from status stream (" + _name + "): " + ex.Message, true);
+                    Log.Error("Error reading from status stream (" + _name + "): " + ex.Message);
                 }
             }
         }
