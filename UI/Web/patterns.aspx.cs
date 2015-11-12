@@ -84,6 +84,7 @@ public partial class patterns : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvPatterns_" + e.Row.RowIndex.ToString()));
         }
 

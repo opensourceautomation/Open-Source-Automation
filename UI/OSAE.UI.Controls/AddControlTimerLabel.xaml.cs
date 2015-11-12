@@ -104,7 +104,7 @@
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             string sName = lblName.Content.ToString();
-            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL TIMER LABEL", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL TIMER LABEL", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");
@@ -120,8 +120,9 @@
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
+            OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
             string sName = lblName.Content.ToString();
-            OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, "CONTROL TIMER LABEL", "", currentScreen, 1);
+            OSAEObjectManager.ObjectUpdate(sOriginalName, sName, obj.Alias, "CONTROL TIMER LABEL", "CONTROL TIMER LABEL", "", currentScreen, 1);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");

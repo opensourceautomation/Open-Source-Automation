@@ -16,7 +16,7 @@
                 <MenuItem Header="Exit"/>
             </MenuItem>
             <MenuItem Header="Plugins">
-                <MenuItem Header="Install Plugin" Click="InstallPlugin_Click" />
+                <MenuItem Header="Install Plugin" Name="mnuInstall" Click="InstallPlugin_Click" IsEnabled="False"/>
             </MenuItem>
         </Menu>
         <Grid>

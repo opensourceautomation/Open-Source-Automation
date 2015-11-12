@@ -10,6 +10,7 @@
     using System.Windows.Input;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    using System.Timers;
     using MySql.Data.MySqlClient;
     using OSAE;
     using OSAE.UI.Controls;
@@ -39,6 +40,7 @@
         bool updatingScreen = false;
         bool editMode = false;
         bool closing = false;
+        System.Timers.Timer _timer;
 
         #region drag and drop properties
         private Point _startPoint;
@@ -68,6 +70,7 @@
             try
             {
                 InitializeComponent();
+                GlobalUserControls.OSAEUserControls.FindPlugins(OSAE.Common.ApiPath + @"\UserControls");
             }
             catch (Exception ex)
             {
@@ -88,22 +91,31 @@
             canGUI.Width = bitmapImage.Width;
 
             Load_App_Name();
-            gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screenccccc").Value;
+
+            _timer = new System.Timers.Timer(1000);
+            _timer.Elapsed += new ElapsedEventHandler(_timer_Elapsed);
+            _timer.Enabled = true; // Enable it
+
+            gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
             if (gCurrentScreen == "")
             {
                 Set_Default_Screen();
             }
             Load_Screen(gCurrentScreen);
 
-            Thread thread = new Thread(() => Update_Objects());
-            thread.Start();
-
             this.canGUI.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(DragSource_PreviewMouseLeftButtonDown);
             this.canGUI.Drop += new DragEventHandler(DragSource_Drop);
         }
 
+        void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Thread t888 = new Thread(() => Update_Objects());
+            t888.Start();
+        }
+
         public void Load_Screen(string sScreen)
         {
+            _timer.Stop();
             try
             {
                 loadingScreen = true;
@@ -119,7 +131,8 @@
                 cameraViewers.Clear();
                 canGUI.Children.Clear();
                 browserFrames.Clear();
-                
+                controlTypes.Clear();
+
                 gCurrentScreen = sScreen;
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
                 OSAE.OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
@@ -146,6 +159,7 @@
             {
                 this.Log.Error("Failed to load screen: " + sScreen, ex);
             }
+            _timer.Start();
         }
 
         private void Load_Objects(String sScreen)
@@ -160,8 +174,8 @@
 
         private void Update_Objects()
         {
-                 while (!closing)
-                {
+                 //while (!closing)
+                //{
                     while (loadingScreen)
                     {
                         System.Threading.Thread.Sleep(100);
@@ -211,13 +225,18 @@
                             {
                                 if (newCtrl.ControlName == pl.screenObject.Name)
                                 {
-                                    if (newCtrl.LastUpdated != pl.LastUpdated)
+                                    if (newCtrl.PropertyLastUpdated >= pl.LastUpdated)
                                     {
-                                        pl.LastUpdated = newCtrl.LastUpdated;
-                                        pl.Update();
+                                        pl.LastUpdated = newCtrl.PropertyLastUpdated;
+                                        pl.Update("Full");
                                         this.Log.Debug("Updated:  " + newCtrl.ControlName);
+                                        oldCtrl = true;
                                     }
-                                    oldCtrl = true;
+                                    else
+                                    {
+                                        pl.Update("Refresh");
+                                        oldCtrl = true;
+                                    }
                                 }
                             }
                         }
@@ -282,12 +301,23 @@
                         }
                         #endregion
 
-                        #region CONTROL USAER CONTROL
-                        else if (newCtrl.ControlType == "USER CONTROL")
+                        #region CONTROL USER CONTROL
+                        else if (newCtrl.ControlType.Contains("USER CONTROL"))
                         {
                             foreach (dynamic obj in userControls)
                             {
-                                if (newCtrl.ControlName == obj.screenObject.Name) oldCtrl = true;
+                                if (newCtrl.ControlName == obj.screenObject.Name)
+                                {
+                                    if (newCtrl.LastUpdated != obj.LastUpdated)
+                                    {
+                                        this.Dispatcher.Invoke((Action)(() =>
+                                        {
+                                            obj.LastUpdated = newCtrl.LastUpdated;
+                                            obj.Update();
+                                        }));
+                                    }
+                                    oldCtrl = true;
+                                }
                             }
                         }
                         #endregion
@@ -332,8 +362,8 @@
                         }
                     }
                     updatingScreen = false;
-                    System.Threading.Thread.Sleep(500);
-                }
+                    //System.Threading.Thread.Sleep(500);
+              //  }
         }
 
         private void LoadControl(OSAE.OSAEObject obj)
@@ -564,29 +594,32 @@
                 #endregion
 
                 #region USER CONTROL
-                else if (obj.Type == "USER CONTROL")
+                else if (obj.BaseType == "USER CONTROL")
                 {
                     string sUCType = obj.Property("Control Type").Value;
-                    if (sUCType == "USER CONTROL WEATHER")
-                    {
-                        Weather wc = new Weather(obj);
-                        canGUI.Children.Add(wc);
-                        OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.OSAEObjectProperty pX = obj.Property("X");
-                        OSAE.OSAEObjectProperty pY = obj.Property("Y");
-                        Double dX = Convert.ToDouble(pX.Value);
-                        Canvas.SetLeft(wc, dX);
-                        Double dY = Convert.ToDouble(pY.Value);
-                        Canvas.SetTop(wc, dY);
-                        int dZ = Convert.ToInt32(pZOrder.Value);
-                        Canvas.SetZIndex(wc, dZ);
-
-                        wc.Location.X = dX;
-                        wc.Location.Y = dY;
-                        userControls.Add(wc);
-                        controlTypes.Add(typeof(Weather));
-                        wc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
-                    }
+                    sUCType = sUCType.Replace("USER CONTROL ", "");
+                    OSAE.Types.AvailablePlugin selectedPlugin = GlobalUserControls.OSAEUserControls.AvailablePlugins.Find(sUCType);
+                    selectedPlugin.Instance.InitializeMainCtrl(obj);
+                    UserControl ucC = new UserControl();
+                    dynamic uc = new UserControl();
+                    uc = selectedPlugin.Instance.mainCtrl;
+                    uc.MouseRightButtonDown += new MouseButtonEventHandler(UserControl_MouseRightButtonDown);
+                    canGUI.Children.Add(uc);
+                    OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
+                    OSAE.OSAEObjectProperty pX = obj.Property("X");
+                    OSAE.OSAEObjectProperty pY = obj.Property("Y");
+                    Double dX = Convert.ToDouble(pX.Value);
+                    Canvas.SetLeft(uc, dX);
+                    Double dY = Convert.ToDouble(pY.Value);
+                    Canvas.SetTop(uc, dY);
+                    int dZ = Convert.ToInt32(pZOrder.Value);
+                    Canvas.SetZIndex(uc, dZ);
+                    uc.Location.X = dX;
+                    uc.Location.Y = dY;
+                    userControls.Add(uc);
+                    //controlTypes.Add(uc.GetType());
+                    controlTypes.Add(typeof(UserControl));
+                    uc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
                 #endregion
 
@@ -635,7 +668,7 @@
             if (gAppName == "")
             {
                 gAppName = "GUI CLIENT-" + Common.ComputerName;
-                OSAEObjectManager.ObjectAdd(gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
+                OSAEObjectManager.ObjectAdd(gAppName, gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, "GUI");
             }
         }
@@ -748,6 +781,22 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+
+        private void UserControl_MouseRightButtonDown(object sender, MouseEventArgs e)
+        {
+            if (editMode == false) return;
+            dynamic item = sender;
+            string sUCType = item._controlname;
+            string screenObject = item.screenObject.Name;
+            OSAE.Types.AvailablePlugin selectedPlugin = GlobalUserControls.OSAEUserControls.AvailablePlugins.Find(sUCType);
+            AddControl addControl = new AddControl();
+            selectedPlugin.Instance.InitializeAddCtrl(gCurrentScreen, selectedPlugin.Instance.Name, screenObject);
+            UserControl cmi = selectedPlugin.Instance.CtrlInterface;
+            addControl.Content = cmi;
+            addControl.ShowDialog();
+            Load_Screen(gCurrentScreen);
+        }
+
 
         #region Drag Events
         void DragSource_Drop(dynamic sender, DragEventArgs e)
@@ -937,36 +986,43 @@
 
         private void menuAddStateImage_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlStateImage csi = new AddControlStateImage(gCurrentScreen);
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuAddPropertyLabel_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlPropertyLabel csi = new AddControlPropertyLabel(gCurrentScreen);
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuAddNavImage_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlNavigationImage cni = new AddControlNavigationImage(gCurrentScreen);
             addControl.Content = cni;
             addControl.Width = cni.Width + 80;
             addControl.Height = cni.Height + 80;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuAddClickImage_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlClickImage cmi = new AddControlClickImage(gCurrentScreen);
             addControl.Content = cmi;
@@ -979,6 +1035,7 @@
 
         private void menuAddTimerLabel_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlTimerLabel csi = new AddControlTimerLabel(gCurrentScreen);
             addControl.Width = csi.Width + 80;
@@ -989,37 +1046,44 @@
 
         private void menuAddCameraViewer_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddNewCameraViewer csi = new AddNewCameraViewer(gCurrentScreen);
             addControl.Width = csi.Width + 40;
             addControl.Height = csi.Height + 40;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
+            
         }
 
         private void menuAddWebBrowser_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
-
             AddControlBrowser csi = new AddControlBrowser(gCurrentScreen);
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuAddUserControl_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlUserControl csi = new AddControlUserControl(gCurrentScreen);
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
             addControl.Show();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuCreateScreen_Click(object sender, RoutedEventArgs e)
         {
+            _timer.Stop();
             AddControl addControl = new AddControl();
             AddControlScreen cscr = new AddControlScreen(gCurrentScreen);
             addControl.Width = cscr.Width + 80;
@@ -1029,11 +1093,34 @@
             Load_Screen(gCurrentScreen);
         }
 
+        private void menuInstallUserControl_Click(object sender, RoutedEventArgs e)
+        {
+            // Configure open file dialog box 
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.FileName = string.Empty; // Default file name 
+            dlg.DefaultExt = ".osauc"; // Default file extension 
+            dlg.Filter = "Open Source Automation User Control Pakages (.osauc)|*.osauc"; // Filter files by extension 
+
+            // Show open file dialog box 
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process open file dialog box results 
+            if (result == true)
+            {
+                this.Log.Info("Plugin file selected: " + dlg.FileName + ".  Installing...");
+                // Open Plugin Package
+                GUI.UserControlInstallerHelper pInst = new GUI.UserControlInstallerHelper();
+                pInst.InstallPlugin(dlg.FileName);
+                GlobalUserControls.OSAEUserControls.FindPlugins(OSAE.Common.ApiPath + @"\UserControls");
+            }
+        }
+
         #endregion
 
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
             closing = true;
+            _timer.Stop();
         }
 
         private void menuChangeScreen_Click(object sender, RoutedEventArgs e)

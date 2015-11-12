@@ -202,10 +202,21 @@
                 setLabel(Brushes.Green, "RUNNING");
                 setButton("Stop", true);
                 starting = false;
+                this.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
+                {
+                    mnuInstall.IsEnabled = true;
+                    mnuInstall.ToolTip = "You are clear to Install Plugins";
+                }));
             }
             else if (svcStatus == "Stopped" && !starting)
             {
                 setLabel(Brushes.Red, "STOPPED");
+                this.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
+                {
+                    mnuInstall.IsEnabled = false;
+                    mnuInstall.ToolTip = "Service Must be Running";
+                }));
+
                 foreach (PluginDescription pd in pluginList)
                 {
                     if (pd.Enabled)
@@ -270,7 +281,7 @@
                         if (bObjectTypeExists)
                         {
                             this.Log.Info(desc.Type + ":  Valid Object Type found.  Attempting to create Object...");
-                            OSAEObjectManager.ObjectAdd(desc.Type, desc.Type + " plugin's Object", desc.Type, "", "SYSTEM", false);
+                            OSAEObjectManager.ObjectAdd(desc.Type, desc.Type, desc.Type + " plugin's Object", desc.Type, "", "SYSTEM", false);
                             OSAEObject obj = OSAEObjectManager.GetObjectByName(desc.Type);
                             if (obj != null)
                             {
@@ -449,7 +460,7 @@
 
         private void hypGUI_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Common.ApiPath + "\\OSAE.GUI.exe");
+            Process.Start(Common.ApiPath + "\\OSAE.Screens.exe");
         }
 
         void OnChecked(object sender, RoutedEventArgs e)
@@ -462,7 +473,7 @@
 
                     this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=True");
                     OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
-                    OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+                    OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
 
                     //NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|True");
 
@@ -493,7 +504,7 @@
 
                 this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=False");
                 OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
-                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 0);   
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 0);   
 
              //   NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|False");
              //   this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False");

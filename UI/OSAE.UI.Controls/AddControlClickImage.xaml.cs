@@ -135,7 +135,7 @@ namespace OSAE.UI.Controls
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             sWorkingName = txtControlName.Text;
-            OSAEObjectManager.ObjectAdd(sWorkingName, sWorkingName, "CONTROL CLICK IMAGE", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sWorkingName, sWorkingName, sWorkingName, "CONTROL CLICK IMAGE", "", currentScreen, true);
             if (imgNormalRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", "", "GUI");
             if (imgPressedRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, "GUI");
@@ -173,7 +173,7 @@ namespace OSAE.UI.Controls
             sWorkingName = txtControlName.Text;
             OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
             //We call an object update here in case the Name was changed, then perform the updates against the New name
-            OSAEObjectManager.ObjectUpdate(sOriginalName,sWorkingName,obj.Description,obj.Type,obj.Address,obj.Container,obj.Enabled);
+            OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
 
             if (imgNormalRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", "", "GUI");

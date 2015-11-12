@@ -17,6 +17,8 @@
         
         private string ObjectName;
         private string PropertyName;
+        private string LastState;
+        private DateTime LastStateChange;
 
         public PropertyLabel(OSAEObject sObj)
         {
@@ -28,7 +30,11 @@
             string sPropertyValue;
             if (string.Equals(PropertyName, "STATE", StringComparison.CurrentCultureIgnoreCase))
             {
-                sPropertyValue = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
+                sPropertyValue = OSAEObjectStateManager.GetObjectStateValue(ObjectName).StateLabel;
+                LastState = sPropertyValue;
+                LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
+                TimeSpan newSpan = (DateTime.Now - LastStateChange);
+                sPropertyValue += " (" + newSpan.ToString(@"dd\ hh\:mm\:ss") + ")";
             }
             else
             {
@@ -52,8 +58,7 @@
                         propLabel.Background = brush;
                     }
                     catch (Exception)
-                    {
-                    }
+                    {}
                 }
                 if (sForeColor != "")
                 {
@@ -64,8 +69,7 @@
                         propLabel.Foreground = brush;
                     }
                     catch (Exception)
-                    {
-                    }
+                    {}
                 }
                 if (iFontSize != "")
                 {
@@ -74,8 +78,7 @@
                         propLabel.FontSize = Convert.ToDouble(iFontSize);
                     }
                     catch (Exception)
-                    {
-                    }
+                    {}
                 }
                 if (sFontName != "")
                 {
@@ -84,36 +87,61 @@
                         propLabel.FontFamily = new FontFamily(sFontName);
                     }
                     catch (Exception)
-                    {
-                    }
+                    {}
                 }
                 propLabel.Content = sPrefix + sPropertyValue + sSuffix;
             }
             else
-            {
                 propLabel.Content = "";
-            }
-
         }
 
-        public void Update()
+        public void Update(string type)
         {
-            this.Dispatcher.Invoke((Action)(() =>
-            {
-                string sPropertyValue;
-                if (string.Equals(PropertyName, "STATE", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    sPropertyValue = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
-                }
-                else
-                {
-                    sPropertyValue = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, PropertyName).Value;
-                }
-                string sPrefix = screenObject.Property("Prefix").Value;
-                string sSuffix = screenObject.Property("Suffix").Value;
-                propLabel.Content = sPrefix + sPropertyValue + sSuffix;
-            }));
-        }
 
+                string sPropertyValue;
+                if (type == "Full")
+                {
+                    if (string.Equals(PropertyName, "STATE", StringComparison.CurrentCultureIgnoreCase))
+                     {
+                        sPropertyValue = OSAEObjectStateManager.GetObjectStateValue(ObjectName).StateLabel;
+                        LastState = sPropertyValue;
+                        LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
+                        TimeSpan newSpan = (DateTime.Now - LastStateChange);
+                        sPropertyValue += " (" + newSpan.ToString(@"dd\ hh\:mm\:ss") + ")";
+                        string sPrefix = screenObject.Property("Prefix").Value;
+                        string sSuffix = screenObject.Property("Suffix").Value;
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                             propLabel.Content = sPrefix + sPropertyValue + sSuffix;
+                        }));
+                    }
+                    else
+                    {
+                        sPropertyValue = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, PropertyName).Value;
+                        string sPrefix = screenObject.Property("Prefix").Value;
+                        string sSuffix = screenObject.Property("Suffix").Value;
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            propLabel.Content = sPrefix + sPropertyValue + sSuffix;
+                        }));
+                    }
+                }
+                else if (type == "Refresh")
+                {
+                    if (string.Equals(PropertyName, "STATE", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        sPropertyValue = LastState;
+                        TimeSpan newSpan = (DateTime.Now - LastStateChange);
+                        sPropertyValue += " (" + newSpan.ToString(@"dd\ hh\:mm\:ss") + ")";
+                        string sPrefix = screenObject.Property("Prefix").Value;
+                        string sSuffix = screenObject.Property("Suffix").Value;
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            propLabel.Content = sPrefix + sPropertyValue + sSuffix;
+                        }));
+                    }
+                }
+           
+        }
     }
 }

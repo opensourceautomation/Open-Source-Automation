@@ -67,7 +67,7 @@ namespace OSAE.UI.Controls
                 sMode = "Add";
                 controlName = sWorkingName;
                 txtControlName.Text = controlName;
-                LoadCurrentScreenObject(controlName);
+                //LoadCurrentScreenObject(controlName);
             }
             Enable_Buttons();
 
@@ -386,13 +386,14 @@ namespace OSAE.UI.Controls
             DataSet dataSet2 = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_name");
             cboSliderMethod.ItemsSource = dataSet2.Tables[0].DefaultView;
 
+            txtControlName.Text = currentScreen + " - " + cboObject.SelectedValue;
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
 
             string sName = currentScreen + " - " + cboObject.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.Text, "GUI");
             if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, "GUI");
@@ -409,11 +410,11 @@ namespace OSAE.UI.Controls
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", cboState2.Text, "GUI");
             if (State2Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", "", "GUI");
-            if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img1.Name, "GUI");
+            if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", "GUI");
-            if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img1.Name, "GUI");
+            if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", "GUI");
-            if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img1.Name, "GUI");
+            if (State2Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, "GUI");
             else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", "GUI");
 
 
@@ -435,7 +436,7 @@ namespace OSAE.UI.Controls
         {
 
             string sName = txtControlName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.Text, "GUI");
             if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, "GUI");

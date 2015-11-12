@@ -12,9 +12,9 @@
         <Button Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="9,239,0,0" VerticalAlignment="Top" Width="75" Click="btnAdd_Click"/>
         <Button Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="360,239,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"/>
         <Label Content="Object" HorizontalAlignment="Left" Margin="9,37,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cboObject" HorizontalAlignment="Left" Margin="82,39,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="objectComboBox_SelectionChanged"/>
+        <ComboBox x:Name="cboObject" HorizontalAlignment="Left" Margin="82,39,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="cboObject_SelectionChanged"/>
         <Label Content="Suffix" HorizontalAlignment="Left" Margin="230,99,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cboProperty" HorizontalAlignment="Left" Margin="80,68,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=property_name}"  DisplayMemberPath="property_name" SelectedValuePath="property_name" IsEditable="False"/>
+        <ComboBox x:Name="cboProperty" HorizontalAlignment="Left" Margin="80,68,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=property_name}"  DisplayMemberPath="property_name" SelectedValuePath="property_name" IsEditable="False" SelectionChanged="cboProperty_SelectionChanged"/>
         <TextBox x:Name="txtFont" HorizontalAlignment="Left" Height="23" Margin="81,130,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" PreviewMouseDown="txtFont_MouseLeftButtonUp"/>
         <Label Content="Font" HorizontalAlignment="Left" Margin="9,127,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="txtSize" HorizontalAlignment="Left" Height="23" Margin="274,131,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" MouseLeftButtonUp="txtFont_MouseLeftButtonUp" PreviewMouseDown="txtFont_MouseLeftButtonUp"/>

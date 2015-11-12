@@ -2,9 +2,9 @@
 {
     using System;  // Windows PowerShell assembly.
     using System.Collections.ObjectModel;
+    using System.Text;
     using System.Management.Automation;
     using System.Management.Automation.Runspaces;
-    using System.Text;    
 
     [Cmdlet(VerbsCommon.Set, "OSA")]
     public class OSAPSSet : Cmdlet

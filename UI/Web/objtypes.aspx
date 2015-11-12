@@ -80,18 +80,28 @@
             }
         });
     </script> 
-    <style>
+    <style type="text/css">
+        #gvObjectTypes tr.rowHover:hover {background-color: Yellow;}
+        #gvObjectTypes tr.rowHover {background-color: none;}
+        #gvObjectTypes tr.rowHoverAlt:hover {background-color: Yellow;}
+        #gvObjectTypes tr.rowHoverAlt {background-color: #f4f4f4;}
 
+        #gvProperties tr.rowHover1:hover {background-color: Yellow;}
+        #gvProperties tr.rowHover1 {background-color: none;}
+        #gvProperties tr.rowHoverAlt1:hover {background-color: Yellow;}
+        #gvProperties tr.rowHoverAlt1 {background-color: #f4f4f4;}
     </style>
+
     <div class="row-fluid">
         <div class="span6">
             <div ID="ObjPanel">
                 <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px; " onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvObjectTypes" AllowSorting="True" OnSorting="gvObjectTypes_OnSorting"
-                        AutoGenerateColumns="False"  
-                        GridLines="None"  
-                        CssClass="mGrid"  
-                        AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvObjectTypes_RowDataBound" DataKeyNames="object_type">  
+                        AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static" OnRowDataBound="gvObjectTypes_RowDataBound" 
+                        DataKeyNames="object_type">
+                        <RowStyle CssClass="rowHover"></RowStyle>
+                        <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
+                        <AlternatingRowStyle CssClass="rowHoverAlt"></AlternatingRowStyle>
                         <Columns>  
                             <asp:BoundField DataField="base_type" HeaderText="Base Type" SortExpression="base_type"/>  
                             <asp:BoundField DataField="object_type" HeaderText="Object Type" SortExpression="object_type"/>  
@@ -133,14 +143,14 @@
                     </div>
                 </div>
                 <div class="row-fluid">
-                    <div class="span8" style="text-align:left;">
+                    <div class="span7" style="text-align:left;">
                         <asp:CheckBox runat="server" ID="chkOwner" /> Object Type Owner &nbsp;
                         <asp:CheckBox runat="server" ID="chkContainer" /> Container &nbsp;
                         <br />
-                        <asp:CheckBox runat="server" ID="chkSysType" /> Reserved System Type &nbsp;
+                        <asp:CheckBox runat="server" ID="chkSysType" /> Required Type &nbsp;
                         <asp:CheckBox runat="server" ID="chkHideEvents" /> Hide Redundant Events &nbsp;
                     </div>
-                    <div class="span4" style="text-align:right;" >
+                    <div class="span5" style="text-align:center;" >
                         <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
                         <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp
                         <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object type?');"/>
@@ -263,15 +273,17 @@
                     <div class="row-fluid">
                         <h3 style="float:right; margin-right:10px;">Properties</h3>
                         <br />
-                        <div class="span5" id="propGrid" style="overflow: auto; max-height:300px;"  onscroll="SetPropDivPosition()">
+                        <div class="span5" id="propGrid" style="overflow: auto; max-height:300px;" onscroll="SetPropDivPosition()">
                             <asp:GridView runat="server" ID="gvProperties"
-                                AutoGenerateColumns="False"  
-                                GridLines="None"  
-                                CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_default, track_history, property_id" ShowHeaderWhenEmpty="true">  
+                                AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static"  
+                                OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_object_type, property_default, track_history, property_id" ShowHeaderWhenEmpty="true"> 
+                                <RowStyle CssClass="rowHover1"></RowStyle>
+                                <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
+                                <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle> 
                                 <Columns>  
                                     <asp:BoundField DataField="property_name" HeaderText="Property" /> 
                                     <asp:BoundField DataField="property_datatype" HeaderText="Type" /> 
+                                    <asp:BoundField DataField="property_object_type" visible="false" />
                                     <asp:BoundField DataField="property_default" visible="false" />
                                     <asp:BoundField DataField="track_history" visible="false" />
                                 </Columns>  
@@ -283,15 +295,22 @@
                                 
                                 Name: <asp:TextBox  runat="server" ID="txtPropName" style="width:225px;"></asp:TextBox>
                                 <br />
-                                Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;">
+                                Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;"  AutoPostBack="true" OnSelectedIndexChanged="ddlPropType_SelectedIndexChanged">
                                         <asp:ListItem Selected = "True" Text = "String" Value = "String"></asp:ListItem>
                                         <asp:ListItem Text = "Boolean" Value = "Boolean"></asp:ListItem>
-                                        <asp:ListItem Text = "Integer" Value = "Integer"></asp:ListItem>
-                                        <asp:ListItem Text = "Float" Value = "Float"></asp:ListItem>
-                                        <asp:ListItem Text = "List" Value = "List"></asp:ListItem>
-                                        <asp:ListItem Text = "Password" Value = "Password"></asp:ListItem>
-                                        <asp:ListItem Text = "File" Value = "File"></asp:ListItem>
                                         <asp:ListItem Text = "DateTime" Value = "DateTime"></asp:ListItem>
+                                        <asp:ListItem Text = "File" Value = "File"></asp:ListItem>
+                                        <asp:ListItem Text = "Float" Value = "Float"></asp:ListItem>
+                                        <asp:ListItem Text = "Integer" Value = "Integer"></asp:ListItem>
+                                        <asp:ListItem Text = "List" Value = "List"></asp:ListItem>
+                                        <asp:ListItem Text = "Object" Value = "Object"></asp:ListItem>
+                                        <asp:ListItem Text = "Object Type" Value = "Object Type"></asp:ListItem>
+                                        <asp:ListItem Text = "Password" Value = "Password"></asp:ListItem>
+                                </asp:DropDownList>
+                                <br />
+                                <asp:Label runat="server" ID="lblPropObjectType" Text="Object Type: "></asp:Label>
+                                <asp:DropDownList runat="server" ID="ddlBaseType2" datatextfield="Text" datavaluefield="Value" style="width:200px;">
+                                    <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                                 </asp:DropDownList>
                                 <br />
                                 Default: <asp:TextBox  runat="server" ID="txtPropDefault" style="width:215px;"></asp:TextBox>
@@ -344,14 +363,9 @@
             <asp:TextBox ID="lblExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
         </div>
     </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-      </div>
 
-    <asp:Label runat="server" ID="hdnSelectedRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedObjectName" Visible="false"></asp:Label>
-    <asp:Label runat="server" ID="hdnSelectedPropRow" Visible="false"></asp:Label>
-    <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>
+    <asp:Label runat="server" ID="hdnSelectedPropDataType" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedStateRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedStateName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedMethodName" Visible="false"></asp:Label>

@@ -15,8 +15,9 @@ namespace OSAE.Android
     {
         private const string GCM_URI = "https://android.googleapis.com/gcm/send";
 
-        private Logging logging = Logging.GetLogger("Android");
-
+        //OSAELog
+        //private static OSAE.General.OSAELog Log = new General.OSAELog();
+              
         #region Properties
         public string DeviceToken { get; set; }
         public string APIKey { get; set; }
@@ -109,19 +110,7 @@ namespace OSAE.Android
             return payload;
         }
 
-        private void log(String message, bool alwaysLog)
-        {
-            try
-            {
-                logging.AddToLog(message, alwaysLog);
-            }
-            catch (IOException ex)
-            {
-                //do nothing
-            }
-
-
-        }
+        
     }
 
 }

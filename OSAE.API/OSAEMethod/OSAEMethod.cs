@@ -45,12 +45,15 @@
         [DataMember]
         public string Owner { get; set; }
 
+        [DataMember]
+        public string FromObject { get; set; }
+
         public OSAEMethod()
         {
 
         }
        
-        public OSAEMethod(string methodName, string methodLabel, string objName, string param1, string param2, string address, string owner)
+        public OSAEMethod(string methodName, string methodLabel, string objName, string param1, string param2, string address, string owner, string fromObject)
         {
             MethodName = methodName;
             MethodLabel = methodLabel;
@@ -59,9 +62,10 @@
             Parameter2 = param2;
             Address = address;
             Owner = owner;
+            FromObject = fromObject;
         }
 
-        public OSAEMethod(int id, string methodName, string methodLabel, string objName, string param1, string param2, string address, string owner)
+        public OSAEMethod(int id, string methodName, string methodLabel, string objName, string param1, string param2, string address, string owner, string fromObject)
         {
             Id = id;
             MethodName = methodName;
@@ -71,6 +75,7 @@
             Parameter2 = param2;
             Address = address;
             Owner = owner;
+            FromObject = fromObject;
         }
 
         public void Run()
@@ -90,7 +95,7 @@
                 this.ObjectName = GetObjectNameFromMethodId(Id);
             }
 
-            OSAEMethodManager.MethodQueueAdd(this.ObjectName, this.MethodName, this.Parameter1, this.Parameter2, "API");                
+            OSAEMethodManager.MethodQueueAdd(this.ObjectName, this.MethodName, this.Parameter1, this.Parameter2, this.FromObject);                
         }
 
         private string GetObjectNameFromMethodId(int methodId)

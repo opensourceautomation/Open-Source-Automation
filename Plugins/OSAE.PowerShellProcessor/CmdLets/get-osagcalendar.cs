@@ -1,12 +1,14 @@
 ﻿namespace OSAE.PowerShellProcessor.CmdLets
 {
-    using System.Management.Automation;
+    
     using Google.GData.Client;
     using Google.GData.Calendar;
     using System;
     using System.Collections.Generic;
     using Google.GData.Extensions;
-    
+
+    using System.Management.Automation;
+
     [Cmdlet(VerbsCommon.Get, "OSAGCalendar")]
     public class OSAGetGCalendar : Cmdlet
     {

@@ -546,7 +546,7 @@
                             If gDebug Then Log.Debug("Looking up object for address: " & X10Address)
                             Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(X10Address)
                             If IsNothing(oObject) Then
-                                OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", True)
+                                OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", True)
                                 Log.Info("Added new Object for X10 Address: " & X10Address)
                             ElseIf oObject.Name <> "" Then
                                 ' Handle incoming event
@@ -576,8 +576,7 @@
                             Log.Info("Unrecognized X10: " & GetHex(x(ms + 2)) & " " & GetHex(x(ms + 3)))
                     End Select
                 End If
-            Case 98 ' 0x062 Send Insteon standard OR extended message
-                ' just echoing command sent, discard: 7 or 21 bytes
+            Case 98 ' 0x062 Send Insteon standard OR extended message just echoing command sent, discard: 7 or 21 bytes
                 MessageEnd = ms + 8
                 If MessageEnd > 1000 Then MessageEnd = MessageEnd - 1000
                 If DataAvailable >= 8 Then
@@ -1097,12 +1096,18 @@ PLMerror:
         Dim sAddress3 As String = ""
         Dim iParameter As Integer = 0
         Dim iDimLevel As Integer = 0
-        If method.Address.Length > 2 Then
+        If method.Address.Length > 3 Then
             Try
                 sAddress1 = Left(method.Address, 2).ToLower
                 sAddress2 = method.Address.Substring(3, 2).ToLower
                 sAddress3 = method.Address.Substring(6, 2).ToLower
-                iParameter = CInt(method.Parameter1)
+                If method.Parameter1 = "" Then
+                    iParameter = 100
+                ElseIf IsNumeric(method.Parameter1) Then
+                    iParameter = Convert.ToInt32(method.Parameter1)
+                Else
+                    iParameter = 100
+                End If
 
                 If gDebug Then Log.Debug("SEND: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName & " PARAM: " & iParameter)
             Catch ex As Exception
@@ -1206,7 +1211,7 @@ PLMerror:
                     x10data(1) = 99  ' 0x063 = Send X10
                     x10data(2) = PLM_X10_House(houseCodeInt) + 3   ' X10 address (house + command)
                     x10data(3) = 128 ' flag = this is house + address
-                    SerialPLM.Write(data, 0, 4)
+                    SerialPLM.Write(x10data, 0, 4)
                     If gDebug Then Log.Debug("SEND: " & x10data(0) & ", " & x10data(1) & ", " & x10data(2) & ", " & x10data(3))
                 Case Else
                     'command = "Unknown"
@@ -1215,7 +1220,7 @@ PLMerror:
             Try 'Update the Object's State to match
                 oObject = OSAEObjectManager.GetObjectByAddress(houseCode & device)
                 If oObject.Name <> "" Then
-                    OSAE.OSAEObjectStateManager.ObjectStateSet(oObject.Name, Command, gAppName)
+                    OSAE.OSAEObjectStateManager.ObjectStateSet(oObject.Name, method.MethodName.ToUpper, gAppName)
                     If gDebug Then Log.Debug("Object: " & oObject.Name & " State set to: " & method.MethodName.ToUpper)
                 Else
                     If gDebug Then Log.Debug("Could not retrieve X10 Device Status")

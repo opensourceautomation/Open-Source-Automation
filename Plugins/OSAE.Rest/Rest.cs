@@ -52,35 +52,25 @@
                     try
                     {
                         restPort = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "REST Port").Value);
+                        this.Log.Info("Rest Port read in as: " + restPort);
                     }
                     catch (FormatException ex)
-                    {
-                        this.Log.Error("Error pulling REST port from property (not a valid number)", ex);
-                    }
+                    { this.Log.Error("Error pulling REST port from property (not a valid number)", ex); }
                     catch (OverflowException ex)
-                    {
-                        this.Log.Error("Error pulling REST port from property (too large)", ex);
-                    }
+                    { this.Log.Error("Error pulling REST port from property (too large)", ex); }
                     catch (ArgumentNullException ex)
-                    {
-                        this.Log.Error("Error pulling REST port from property (null)", ex);
-                    }
+                    { this.Log.Error("Error pulling REST port from property (null)", ex); }
                 }
 
                 String restUrl = "http://localhost:"+restPort.ToString()+"/api";
                 serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri(restUrl));
                 WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None); 
                 binding.CrossDomainScriptAccessEnabled = true;
-
                 var endpoint = serviceHost.AddServiceEndpoint(typeof(IRestService), binding, "");
 
                 ServiceDebugBehavior sdb = serviceHost.Description.Behaviors.Find<ServiceDebugBehavior>();
                 sdb.HttpHelpPageEnabled = false;
-
-                if (showHelp)
-                {
-                    serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
-                }
+                if (showHelp) serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
 
                 this.Log.Info("Starting Rest Interface");
                 serviceHost.Open();                                

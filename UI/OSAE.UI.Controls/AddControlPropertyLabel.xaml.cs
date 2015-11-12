@@ -45,7 +45,7 @@ namespace OSAE.UI.Controls
             if (controlName == "")
             {
                 //Let's create a new name
-                sWorkingName = currentScreen + " - New State Image";
+                sWorkingName = currentScreen + " - New Property Label";
                 DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
                 int iCount = 0;
 
@@ -53,14 +53,14 @@ namespace OSAE.UI.Controls
                 {
                     // We have a duplicate name, we must get a unique name
                     iCount += 1;
-                    sWorkingName = currentScreen + " - New State Image" + iCount;
+                    sWorkingName = currentScreen + " - New Property Label" + iCount;
                     dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
                 }
                 sMode = "Add";
                 controlName = sWorkingName;
                 txtControlName.Text = controlName;
 
-                LoadCurrentScreenObject(controlName);
+               // LoadCurrentScreenObject(controlName);
             }
             Enable_Buttons();
 
@@ -156,10 +156,15 @@ namespace OSAE.UI.Controls
 
         }
 
-        private void objectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void cboObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DataSet dataSet = OSAESql.RunSQL("select property_name from osae_v_object_property where object_name='" + (sender as ComboBox).SelectedValue.ToString() + "' Union select 'State' order by property_name");
             cboProperty.ItemsSource = dataSet.Tables[0].DefaultView;
+        }
+
+        private void cboProperty_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            txtControlName.Text = currentScreen + " - " + cboObject.Text + " " + cboProperty.SelectedValue;
         }
 
         private void txtFont_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -177,16 +182,14 @@ namespace OSAE.UI.Controls
                     txtSize.Text = dlgFont.Font.Size.ToString();
                 }
             }
-            catch (Exception ex)
-            {
-                
-            }
+            catch
+            { }
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             string sName = txtControlName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, "GUI");

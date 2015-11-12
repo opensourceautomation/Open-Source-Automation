@@ -35,7 +35,7 @@ namespace OSAE.UI.Controls
             if (ValidateForm())
             {
                 string sName = currentScreen + " - " + objectsComboBox.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");

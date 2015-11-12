@@ -339,7 +339,7 @@ namespace OSAE.Zwave
                                         else
                                             propType = "String";
 
-                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, propType, "", objType, false);
+                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, propType,"", "", objType, false);
                                         OSAEObjectTypeManager.ObjectTypeEventAdd(value.Label, value.Label, objType);
                                     }
                                 }
@@ -360,7 +360,6 @@ namespace OSAE.Zwave
                                         if (value.Label == "Level")
                                         {
                                             OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "Level", "", "", "");
-                                            OSAEObjectTypeManager.ObjectTypePropertyAdd("Level", "Integer", "", objType, false);
                                         }
                                         else
                                             OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "", "", "", "");
@@ -373,7 +372,6 @@ namespace OSAE.Zwave
                                             Log.Debug("Adding method: " + value.Label);
                                             OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, "Set " + value.Label, objType, "Value", "", "", "");
                                             Log.Debug("Adding property: " + value.Label);
-                                            OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, "Integer", "", objType, false);
                                         }
                                         else if (value.Type == ZWValueID.ValueType.Button)
                                         {
@@ -386,7 +384,7 @@ namespace OSAE.Zwave
                                             {
                                                 foreach (string option in options)
                                                     OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label + " - " + option, value.Label + " - " + option, objType, "", "", "", "");
-                                                OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, "String", "", objType, false);
+                                                OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, "String", "", "", objType, false);
                                             }
                                         }
                                     }
@@ -594,8 +592,8 @@ namespace OSAE.Zwave
 
                                 OSAEObjectTypeManager.ObjectTypeAdd(node.Product, node.Label, pName, baseType,  false, false, false, true);
                                 OSAEObjectTypeManager.ObjectTypeMethodAdd("NODE NEIGHBOR UPDATE", "Node Neighbor Update", node.Product, "", "", "", "");
-                                OSAEObjectTypeManager.ObjectTypePropertyAdd("Home ID", "String", "", node.Product, false);
-                                OSAEObjectTypeManager.ObjectTypePropertyAdd("Poll", "Boolean", "", node.Product, false);
+                                OSAEObjectTypeManager.ObjectTypePropertyAdd("Home ID", "String", "", "", node.Product, false);
+                                OSAEObjectTypeManager.ObjectTypePropertyAdd("Poll", "Boolean", "", "", node.Product, false);
 
                                 string propType;
                                 foreach (Value v in node.Values)
@@ -609,7 +607,7 @@ namespace OSAE.Zwave
                                         else
                                             propType = "String";
 
-                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(v.Label, propType, "", node.Product, false);
+                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(v.Label, propType, "", "", node.Product, false);
                                     }
                                     else
                                     {
@@ -640,7 +638,7 @@ namespace OSAE.Zwave
                                 }
 
 
-                                OSAEObjectManager.ObjectAdd(node.Product + " - Z" + node.ID.ToString(), node.Product, node.Product, "Z" + node.ID.ToString(), "", true);
+                                OSAEObjectManager.ObjectAdd(node.Product + " - Z" + node.ID.ToString(),"", node.Product, node.Product, "Z" + node.ID.ToString(), "", true);
                                 OSAEObjectPropertyManager.ObjectPropertySet(node.Product + " - Z" + node.ID.ToString(), "Home ID", m_homeId.ToString(), pName);
                             }
 

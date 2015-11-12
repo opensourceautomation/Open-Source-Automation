@@ -36,17 +36,19 @@ namespace OSAE.ClientService
 
         static void Main(string[] args)
         {
-            if (args.Length > 0)
-            {
-                string pattern = Common.MatchPattern(args[0]);
+          //  if (args.Length > 0)
+          //  {
+                //REPLACE WITH GRAMMAR
+
+                //string pattern = Common.MatchPattern(args[0],"");
                 //this.Log.Info("Processing command: " + args[0] + ", Named Script: " + pattern);
-                if (pattern != string.Empty)
-                {
-                    OSAEScriptManager.RunPatternScript(pattern, "", "OSACL");
-                }
-            }
-            else
-            {
+               // if (pattern != string.Empty)
+             //   {
+             //       OSAEScriptManager.RunPatternScript(pattern, "", "OSACL");
+             //   }
+          //  }
+          //  else
+          //  {
                 //Debugger.Launch();
 #if OSAESERVICECONTROLLER
                 if (Environment.UserInteractive)
@@ -60,7 +62,7 @@ namespace OSAE.ClientService
 #else
                 ServiceBase.Run(new ClientService());
 #endif
-            }
+          //  }
         }
 
         public ClientService()
@@ -116,7 +118,7 @@ namespace OSAE.ClientService
                 OSAEObject svcobj = OSAEObjectManager.GetObjectByName("SERVICE-" + Common.ComputerName);
                 if (svcobj == null)
                 {
-                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "", "SYSTEM", true);
+                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "", "SYSTEM", true);
                 }
                 OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", sourceName);
             }
@@ -236,7 +238,7 @@ namespace OSAE.ClientService
                             plugin.PluginName = plugin.PluginType + "-" + Common.ComputerName;
 
                             this.Log.Info("Plugin object does not exist in DB: " + plugin.PluginName);
-                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
+                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, "Client Service");
 
                             this.Log.Info("Plugin added to DB: " + plugin.PluginName);
@@ -283,7 +285,7 @@ namespace OSAE.ClientService
                         }
                         if (arguments[1] == "True" && !p.Enabled && !isSystemPlugin)
                         {
-                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
                             try
                             {
                                 enablePlugin(p);
@@ -296,7 +298,7 @@ namespace OSAE.ClientService
                         }
                         else if (arguments[1] == "False" && p.Enabled && !isSystemPlugin)
                         {
-                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
+                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 0);
                             try
                             {
                                 disablePlugin(p);
@@ -316,7 +318,7 @@ namespace OSAE.ClientService
         {
             string[] items = message.Split('|');
 
-            OSAEMethod method = new OSAEMethod(items[2].Trim(), "", items[0].Trim(), items[3].Trim(), items[4].Trim(), items[5].Trim(), items[1].Trim());
+            OSAEMethod method = new OSAEMethod(items[2].Trim(), "", items[0].Trim(), items[3].Trim(), items[4].Trim(), items[5].Trim(), items[1].Trim(), items[6].Trim());
 
             if (method.ObjectName == "SERVICE-" + Common.ComputerName)
             {
@@ -353,7 +355,7 @@ namespace OSAE.ClientService
         {
             OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
 
-            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
             try
             {
                 if (plugin.ActivatePlugin())
@@ -373,7 +375,7 @@ namespace OSAE.ClientService
         {
             OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
 
-            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Description, obj.Type, obj.Address, obj.Container, 0);
+            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 0);
             try
             {
                 p.Shutdown();

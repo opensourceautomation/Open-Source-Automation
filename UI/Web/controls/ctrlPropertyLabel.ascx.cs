@@ -23,7 +23,8 @@ public partial class controls_ctrlPropertyLabel : System.Web.UI.UserControl
         string sPropertyValue;
         if (string.Equals(PropertyName, "STATE", StringComparison.CurrentCultureIgnoreCase))
         {
-            sPropertyValue = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
+            sPropertyValue = OSAEObjectStateManager.GetObjectStateValue(ObjectName).StateLabel;
+            sPropertyValue += " (" + TimeSpan.FromSeconds(OSAEObjectStateManager.GetObjectStateValue(ObjectName).TimeInState) + ")";
         }
         else
         {
@@ -37,7 +38,6 @@ public partial class controls_ctrlPropertyLabel : System.Web.UI.UserControl
         string sFontName = screenObject.Property("Font Name").Value;
         PropertyLabel.Text = sPrefix + sPropertyValue + sSuffix;
         PropertyLabel.Attributes.Add("Style", "position:absolute;top:" + (Int32.Parse(screenObject.Property("Y").Value) + 60).ToString() + "px;left:" + (Int32.Parse(screenObject.Property("X").Value) + 10).ToString() + "px;z-index:" + (Int32.Parse(screenObject.Property("ZOrder").Value) + 10).ToString() + ";");
-
 
         if (sFontName != "")
         {

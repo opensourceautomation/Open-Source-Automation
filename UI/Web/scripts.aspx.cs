@@ -61,7 +61,8 @@ public partial class scripts : System.Web.UI.Page
             ddlScriptProcessor.SelectedValue = gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_processor_name"].ToString();
             hdnScript.Value = OSAEScriptManager.GetScript(gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_id"].ToString());
             loadLinkage(gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_id"].ToString());
-            lblExportScript.Text = OSAEScriptManager.GetScriptByName(hdnSelectedScriptName.Text);
+            lblCopyScript.Text = OSAEScriptManager.GetScriptByName(hdnSelectedScriptName.Text);
+            lblExportScript.Text = OSAEScriptManager.ExportScript(hdnSelectedScriptName.Text);
         }
         if (hdnSelectedEventScriptRow.Text != "")
         {
@@ -122,8 +123,6 @@ public partial class scripts : System.Web.UI.Page
     {
         gvScripts.DataSource = OSAESql.RunSQL("SELECT script_name, script_id, s.script_processor_id, script_processor_name FROM osae_script s INNER JOIN osae_script_processors sp ON sp.script_processor_id = s.script_processor_id ORDER BY script_name");
         gvScripts.DataBind();
-
-        
     }
 
     private void loadEventScripts()
@@ -242,7 +241,7 @@ public partial class scripts : System.Web.UI.Page
     {
         OSAEScriptManager.ScriptDelete("Test Script");
         OSAEScriptManager.ScriptAdd("Test Script", ddlScriptProcessor.SelectedValue, hdnScript.Value);
-        OSAEScriptManager.RunScript("Test Script",txtTestParameter.Text, "WebUI");
+        OSAEScriptManager.RunScript("Test Script", txtTestParameter.Text, Session["Username"].ToString());
     }
 
 
@@ -300,11 +299,7 @@ public partial class scripts : System.Web.UI.Page
             hdnSelectedObjTypeEventScriptRow.Text = selectedRow.ToString();
     }
     
-    protected void btnScriptExport_Click(object sender, EventArgs e)
-    {
-        OSAEScriptManager.GetScriptByName(hdnSelectedObjTypeEventScriptID.Text);
 
-    }
 
     protected void btnAddObjTypeEventScript_Click(object sender, EventArgs e)
     {

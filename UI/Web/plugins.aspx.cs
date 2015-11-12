@@ -138,7 +138,7 @@ public partial class plugins : System.Web.UI.Page
             }
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(pluginName);
-            OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+            OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
             loadPlugins();
         }
         catch (Exception ex)

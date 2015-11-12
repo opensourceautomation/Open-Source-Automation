@@ -12,7 +12,7 @@
         string pName;
         //OSAELog
         private OSAE.General.OSAELog Log = new General.OSAELog();
-        Logging logging = Logging.GetLogger("WUnderground");
+       // Logging logging = Logging.GetLogger("WUnderground");
 
         Thread updateConditionsThread, updateForecastThread, updateDayNightThread;
         string pws = "";
@@ -38,7 +38,7 @@
                 OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("WEATHER");
                 if (objects.Count == 0)
                 {
-                    OSAEObjectManager.ObjectAdd("Weather", "Weather Data", "WEATHER", "", "", true);
+                    OSAEObjectManager.ObjectAdd("Weather", "Weather", "Weather Data", "WEATHER", "", "", true);
                     WeatherObjName = "Weather";
                 }
                 else
@@ -53,9 +53,7 @@
                         this.Log.Info("Using metric units");
                     }
                 }
-                catch
-                {
-                }
+                catch {}
 
                 Conditionsupdatetime = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Conditions Interval").Value);
                 if (Conditionsupdatetime > 0)
@@ -92,7 +90,6 @@
 
                     this.updateForecastThread = new Thread(new ThreadStart(updateforecast));
                     this.updateForecastThread.Start();             
-
                 }
 
                 do
@@ -100,6 +97,8 @@
                     Thread.Sleep(5000);
                 } while (FirstForcastRun);
 
+                this.Log.Info("Updated " + WeatherObjName + ", setting Weather object to Updated.");
+                OSAE.OSAEMethodManager.MethodQueueAdd(WeatherObjName, "Updated", "", "", pName);
 
                 DayNightUpdateTimer = new System.Timers.Timer();
                 DayNightUpdateTimer.Interval = DayNightupdatetime;
@@ -174,10 +173,7 @@
             string nodeValue = string.Empty;
             System.Xml.XmlNode node;
             node = xml.SelectSingleNode(xPathQuery);
-            if (node != null)
-            {
-                nodeValue = node.InnerText;
-            }
+            if (node != null) nodeValue = node.InnerText;
             return nodeValue;
         }
 
@@ -187,21 +183,14 @@
             {
                 OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, fieldName, fieldValue, pName);
                 if (fieldName == "Temp")
-                {
                     this.Log.Debug("Found " + fieldName + ": " + fieldValue);
-                }
                 else
-                {
                     this.Log.Debug("Found " + fieldName + ": " + fieldValue);
-                    //System.Diagnostics.Debug.WriteLine("Found " + fieldName + ": " + fieldValue);
-                }
             }
             else
             {
                 if (fieldName != "Windchill" & fieldName != "Visibility" & fieldName != "Conditions")
-                {
                     this.Log.Debug("NOT FOUND " + fieldName);
-                }
             }
         }
 
@@ -213,11 +202,10 @@
 
         public void update()
         {
-            if (Conditionsupdatetime > 0)
-                updateconditions();
-
-            if (Forecastupdatetime > 0)
-                updateforecast();
+            if (Conditionsupdatetime > 0) updateconditions();
+            if (Forecastupdatetime > 0) updateforecast();
+            this.Log.Info("Updated " + WeatherObjName + ", setting Weather object to Updated.");
+            OSAE.OSAEMethodManager.MethodQueueAdd(WeatherObjName, "Updated", "", "", pName);
         }
 
         public void updateconditions()
@@ -487,13 +475,10 @@
                     //GetFieldFromXmlAndReport(xml, "Night7 Image", @"forecast/simpleforecast/forecastday[period=2]/");
                      * */
                     #endregion
-
                 }
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error updating forecasted weather - " + ex.Message);
-            }
+            { this.Log.Error("Error updating forecasted weather - " + ex.Message); }
             FirstForcastRun = false;
         }
 
@@ -526,46 +511,27 @@
                     {
                     DawnPreString = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "DawnPre").Value;
                     if (Int32.TryParse(DawnPreString, out Number))
-                    {
                         DawnPre = Number;
-                    }
                     else
-                    {
                         DawnPre = 0;
-                    }
-
 
                     DawnPostString = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "DawnPost").Value;
                     if (Int32.TryParse(DawnPostString, out Number))
-                    {
                         DawnPost = Number;
-                    }
                     else
-                    {
                         DawnPost = 0;
-                    }
-
 
                     DuskPreString = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "DuskPre").Value;
                     if (Int32.TryParse(DuskPreString, out Number))
-                    {
                         DuskPre = Number;
-                    }
                     else
-                    {
                         DuskPre = 0;
-                    }
-
 
                     DuskPostString = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "DuskPost").Value;
                     if (Int32.TryParse(DuskPostString, out Number))
-                    {
                         DuskPost = Number;
-                    }
                     else
-                    {
                         DuskPost = 0;
-                    }
 
                     DawnStart = Sunrise - TimeSpan.FromMinutes(DawnPre);
                     DawnEnd = Sunrise + TimeSpan.FromMinutes(DawnPost);
@@ -594,10 +560,10 @@
                     if (DayNight != "Day")
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Day", pName);
-                        if (DayNight == "Night" | DayNight == "Dawn")
-                        {
-                            logging.EventLogAdd(WeatherObjName, "Day");
-                        }
+                        //if (DayNight == "Night" | DayNight == "Dawn")
+                       // {
+                        //    logging.EventLogAdd(WeatherObjName, "Day");
+                        //}
                         DayNight = "Day";
                         this.Log.Debug("Day");
                         
@@ -608,10 +574,10 @@
                     if (DayNight != "Night")
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Night",pName);
-                        if (DayNight == "Day" | DayNight == "Dusk")
-                        {
-                            logging.EventLogAdd(WeatherObjName, "Night");
-                        }
+                      //  if (DayNight == "Day" | DayNight == "Dusk")
+                       // {
+                       //     logging.EventLogAdd(WeatherObjName, "Night");
+                       // }
                         DayNight = "Night";
                          this.Log.Info("Night");
                     }
@@ -621,10 +587,10 @@
                     if (DayNight != "Dawn")
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Dawn", pName);
-                        if (DayNight == "Night")
-                        {
-                            logging.EventLogAdd(WeatherObjName, "Dawn");
-                        }
+                     //   if (DayNight == "Night")
+                     //   {
+                     //       logging.EventLogAdd(WeatherObjName, "Dawn");
+                      //  }
                         DayNight = "Dawn";
                         this.Log.Info("Dawn");
                     }
@@ -635,10 +601,10 @@
                     if (DayNight != "Dusk")
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Dusk", pName);
-                        if (DayNight == "Day")
-                        {
-                            logging.EventLogAdd(WeatherObjName, "Dusk");
-                        }
+                     //   if (DayNight == "Day")
+                      //  {
+                      //      logging.EventLogAdd(WeatherObjName, "Dusk");
+                      //  }
                         DayNight = "Dusk";
                         this.Log.Info("Dusk");
                     }
@@ -649,6 +615,35 @@
                 this.Log.Error("Error updating day/night ",ex);
             }
 
+        }
+
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own WUnderground Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("WUNDERGROUND");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("WUnderground Plugin took ownership of the WUNDERGROUND Object Type.");
+            }
+            else
+            {
+                Log.Info("WUnderground Plugin correctly owns the WUNDERGROUND Object Type.");
+            }
+
+            //Added the follow for SYSTEM to automatically own Weather Base types that have no owner.
+            oType = OSAEObjectTypeManager.ObjectTypeLoad("WUNDERGROUND");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, "SYSTEM", oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("SYSTEM took ownership of the WEATHER Object Type.");
+            }
+            else
+            {
+                Log.Info("SYSTEM Plugin correctly owns the WEATHER Object Type.");
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ CALL osae_sp_object_type_event_add ('ON','On','Android Device');
 CALL osae_sp_object_type_event_add ('OFF','Off','Android Device');
 
 CALL osae_sp_object_type_property_add ('Owner','String','','Android Device',0);            
+CALL osae_sp_object_type_property_add ('GCMID','String','','Android Device',0);   
 
 CALL osae_sp_object_type_method_add ('NOTIFY','Notify','Android Device','message','category','','default');
 CALL osae_sp_object_type_method_add ('EXECUTE','Execute','Android Device','task','','','');

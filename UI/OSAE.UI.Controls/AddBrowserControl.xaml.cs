@@ -70,7 +70,7 @@
         {
 
 
-            OSAEObjectManager.ObjectAdd(txtName.Text, txtName.Text, "CONTROL BROWSER", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(txtName.Text, txtName.Text, txtName.Text, "CONTROL BROWSER", "", currentScreen, true);
 
             OSAEObjectPropertyManager.ObjectPropertySet(txtName.Text, "URI", txtURI.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(txtName.Text, "Width", txtWidth.Text, "GUI");

@@ -10,6 +10,7 @@
         #region Properties
            
         private string _name;
+        private string _alias;
         private string _description;
         private string _type;    
         private string _baseType;
@@ -35,7 +36,22 @@
 
             set
             {
-                OSAEObjectManager.ObjectUpdate(_name, value, _description, _type, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, value, _alias, _description, _type, _address, _container, _enabled);
+                _name = value;
+            }
+        }
+
+        [DataMember]
+        public string Alias
+        {
+            get
+            {
+                return _alias;
+            }
+
+            set
+            {
+                OSAEObjectManager.ObjectUpdate(_name,_name, value, _description, _type, _address, _container, _enabled);
                 _name = value;
             }
         }
@@ -51,7 +67,7 @@
             set
             {
                 _description = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, value, _type, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, value, _type, _address, _container, _enabled);
             }
         }
 
@@ -66,7 +82,7 @@
             set
             {
                 _type = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, _description, value, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, value, _address, _container, _enabled);
             }
         }
 
@@ -95,7 +111,7 @@
             set
             {
                 _address = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, _description, _type, value, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, value, _container, _enabled);
             }
         }
 
@@ -110,7 +126,7 @@
             set
             {
                 _container = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, _description, _type, _address, value, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, _address, value, _enabled);
             }
         }
 
@@ -125,7 +141,7 @@
             set
             {
                 _enabled = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, _description, _type, _address, _container, value);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, _address, _container, value);
             }
         }
 
@@ -161,9 +177,10 @@
         
         #endregion
 
-        public OSAEObject(string name, string description, string type, string address, string container, int enabled)
+        public OSAEObject(string name, string alias, string description, string type, string address, string container, int enabled)
         {
             _name = name;
+            _alias = alias;
             _type = type;
             _address = address;
             _container = container;

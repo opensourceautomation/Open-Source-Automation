@@ -79,7 +79,7 @@ namespace OSAE.UI.Controls
 
 
             string tempName = "Screen - " + txtScreenName.Text;
-            OSAEObjectManager.ObjectAdd(tempName, tempName, "SCREEN", "", tempName, true);
+            OSAEObjectManager.ObjectAdd(tempName, tempName, tempName, "SCREEN", "", tempName, true);
             OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, "GUI");
 
             //OnLoadScreen();
@@ -105,7 +105,7 @@ namespace OSAE.UI.Controls
             string tempName = "Screen - " + txtScreenName.Text.Replace("Screen - ","");
             OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
             //We call an object update here in case the Name was changed, then perform the updates against the New name
-            OSAEObjectManager.ObjectUpdate(sOriginalName, tempName, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
+            OSAEObjectManager.ObjectUpdate(sOriginalName, tempName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
             OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, "GUI");
 
             //OnLoadScreen();

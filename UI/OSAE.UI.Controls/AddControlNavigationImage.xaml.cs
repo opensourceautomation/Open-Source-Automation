@@ -154,7 +154,7 @@ namespace OSAE.UI.Controls
 
 
             string sName = txtName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
@@ -190,11 +190,11 @@ namespace OSAE.UI.Controls
             sWorkingName = txtName.Text;
             OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
             //We call an object update here in case the Name was changed, then perform the updates against the New name
-            OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
+            OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
 
 
             string sName = txtName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
+            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");

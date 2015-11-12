@@ -72,7 +72,23 @@
                 this.Log.Debug("Powershell Plugin needs registering");
                 Register(false);
             }
+            OwnTypes();
+        }
 
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("POWERSHELL");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("Powershell Plugin took ownership of the POWERSHELL Object Type.");
+            }
+            else
+            {
+                Log.Info("Powershell Plugin correctly owns the POWERSHELL Object Type.");
+            }
         }
 
         private bool PluginRegistered()

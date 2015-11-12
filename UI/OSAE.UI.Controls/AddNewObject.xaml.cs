@@ -49,6 +49,7 @@
             {
                 OSAEObjectManager.ObjectAdd(
                     nameTextBox.Text,
+                    nameTextBox.Text,
                     descriptionTextBox.Text,
                     objectTypesComboBox.SelectedValue.ToString(),
                     addressTextBox.Text,

@@ -16,7 +16,8 @@ namespace OSAE.MediaCenter
     public class MediaCenter : OSAEPluginBase
     {
 
-        private Logging logging = Logging.GetLogger("MediaCenter");
+        //OSAELog
+        private static OSAE.General.OSAELog Log = new General.OSAELog();
 
         string pName;
         List<MCDevice> mcdevices = new List<MCDevice>();
@@ -26,9 +27,9 @@ namespace OSAE.MediaCenter
 
         public override void RunInterface(string pluginName)
         {
-            log("Running interface", true);
+            Log.Info("Starting MediaCenter Plugin");
             pName = pluginName;
-            OSAEObjectTypeManager.ObjectTypeUpdate("MediaCenter Device", "MediaCenter Device", "MediaCenter Device", pluginName, "MediaCenter Device", 0, 0, 0, 1);
+            OSAEObjectTypeManager.ObjectTypeUpdate("MediaCenter Device", "MediaCenter Device", "MediaCenter Device", pluginName, "MediaCenter Device", false, false, false, true);
 
             //heartbeat to check online devices
             int interval;
@@ -55,7 +56,7 @@ namespace OSAE.MediaCenter
             this.updateThread = new Thread(new ThreadStart(update));
             this.updateThread.Start();
 
-            log("Run Interface Complete", true);
+            Log.Debug("Run Interface Complete");
             
         }
 
@@ -80,7 +81,7 @@ namespace OSAE.MediaCenter
             String parameter_2 = method.Parameter2;
             String mycommand;
 
-            log("Found Command: " + method_name + " | param1: " + parameter_1 + " | param2: " + parameter_2, true);
+            Log.Debug("Found Command: " + method_name + " | param1: " + parameter_1 + " | param2: " + parameter_2);
 
             if (object_name == pName)
             {
@@ -89,11 +90,11 @@ namespace OSAE.MediaCenter
                 {
                     case "SCAN":
                         //will eventaully try to run a network scan to check if any devices are active on port 40400 or 40500
-                        log("Scan event triggered... currently it does nothing ", false);
+                        Log.Info("Scan event triggered... currently it does nothing ");
                         break;
                     case "NOTIFYALL":
                         mycommand = @"msgbox ""OSA"" """ + parameter_1 + @""" " + parameter_2;
-                        log("NOTIFYALL event triggered, command to send=" + mycommand, false);
+                        Log.Info("NOTIFYALL event triggered, command to send=" + mycommand);
 
                         foreach (MCDevice d in mcdevices)
                         {
@@ -140,7 +141,7 @@ namespace OSAE.MediaCenter
                 MCDevice d = getMCDevice(obj.Name);
                 if (d == null)
                 {
-                    log("Poll- device was null so we are creating it-"+obj.Name, false);
+                    Log.Debug("Poll- device was null so we are creating it-" + obj.Name);
                     createdevice(obj);
                 }
             }
@@ -176,36 +177,10 @@ namespace OSAE.MediaCenter
                 }
 
             }
-            log("Poll to check which media center devices are online("+msg+")", false);
+            Log.Debug("Poll to check which media center devices are online(" + msg + ")");
 
         }
 
-        public void log(String message, bool alwaysLog)
-        {
-            try
-            {
-                logging.AddToLog(message, alwaysLog);
-            }
-            catch (IOException ex)
-            {
-                if (ex.Message != "") //failed because another thread was already writting to log, we will try again ... this is probably totally not needed but I was getting some strange failures when writting to log... will investigate more later
-                {
-                    try
-                    {
-                        logging.AddToLog("second chance log -" + message, alwaysLog);
-                    }
-                    catch (IOException ex2)
-                    {
-                        //do nothing
-                    }
-                }
-            }
-            finally
-            {
-                //do nothing... we tried writting twice so we will skip this message
-            }
-
-        }
 
         public void createdevice(OSAEObject obj)
         {
@@ -234,7 +209,7 @@ namespace OSAE.MediaCenter
             }
 
             mcdevices.Add(d);
-            log("Added MCDevice to list: " + d.Name, false);
+            Log.Info("Added MCDevice to list: " + d.Name);
 
             d.EstablishInitialConnections();
         }

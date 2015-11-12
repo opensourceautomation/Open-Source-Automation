@@ -8,7 +8,7 @@
             <asp:GridView ID="methodLogGridView" AutoGenerateColumns="False" runat="server" GridLines="None" CssClass="mGrid" AlternatingRowStyle-CssClass="alt" EmptyDataText="No Entries Found">
 <AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
                 <Columns>
-                    <asp:BoundField DataField="entry_time" HeaderText="Time" ItemStyle-Width="12em" />
+                    <asp:BoundField DataField="entry_time" HeaderText="Time" ItemStyle-Width="10em" DataFormatString="{0:MM-dd HH:mm:ss.ff}" />
                     <asp:BoundField DataField="object_name" HeaderText="Object" />
                     <asp:BoundField DataField="method_name" HeaderText="Method" />
                     <asp:BoundField DataField="parameter_1" HeaderText="Parameter 1" />
