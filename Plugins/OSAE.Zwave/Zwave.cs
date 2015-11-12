@@ -308,10 +308,17 @@ namespace OSAE.Zwave
                         string objType = m_manager.GetNodeProductName(m_homeId, node.ID);
                         string propType;
 
+                        Log.Info("ValueAdded: objType: " + objType + " | node: " + node.ID + " | type: " + value.Type
+                            + " | genre: " + value.Genre + " | cmdClsID:" + value.CommandClassID
+                            + " | index: " + value.Index + " | instance: " + vid.GetInstance().ToString()
+                            + " | readOnly: " + m_manager.IsValueReadOnly(value.ValueID).ToString()
+                            + " | value: " + value.Val + " | label: " + m_manager.GetValueLabel(vid));
+
                         if (!string.IsNullOrEmpty(objType))
                         {
                             if (m_manager.IsValueReadOnly(value.ValueID))
                             {
+                                Log.Debug("Found read only value");
                                 if (value.Genre == ZWValueID.ValueGenre.User)
                                 {
                                     if (value.Label == "Sensor")
@@ -339,7 +346,8 @@ namespace OSAE.Zwave
                             }
                             else
                             {
-                                if (value.Genre == ZWValueID.ValueGenre.User)
+                                Log.Debug("Found writable value");
+                                if (value.Genre == ZWValueID.ValueGenre.User || value.Genre == ZWValueID.ValueGenre.Config)
                                 {
                                     if (value.Label == "Switch" || value.Label == "Level")
                                     {
@@ -349,14 +357,22 @@ namespace OSAE.Zwave
                                         OSAEObjectTypeManager.ObjectTypeEventAdd("OFF", "Off", objType);
                                         OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "", "", "", "");
                                         OSAEObjectTypeManager.ObjectTypeMethodAdd("OFF", "Off", objType, "", "", "", "");
-                                        if(value.Label == "Level")
+                                        if (value.Label == "Level")
+                                        {
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "Level", "", "", "");
                                             OSAEObjectTypeManager.ObjectTypePropertyAdd("Level", "Integer", "", objType, false);
+                                        }
+                                        else
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "", "", "", "");
                                     }
                                     else
                                     {
+                                        Log.Debug("Value is not a Switch or a Level");
                                         if (value.Type == ZWValueID.ValueType.Byte || value.Type == ZWValueID.ValueType.Decimal || value.Type == ZWValueID.ValueType.Int)
                                         {
+                                            Log.Debug("Adding method: " + value.Label);
                                             OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, "Set " + value.Label, objType, "Value", "", "", "");
+                                            Log.Debug("Adding property: " + value.Label);
                                             OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, "Integer", "", objType, false);
                                         }
                                         else if (value.Type == ZWValueID.ValueType.Button)
@@ -378,12 +394,6 @@ namespace OSAE.Zwave
                             }
                         }
                         
-
-                        Log.Info("ValueAdded: node:" + node.ID + " | type: " + value.Type
-                            + " | genre: " + value.Genre + " | cmdClsID:" + value.CommandClassID
-                            + " | index: " + value.Index + " | instance: " + vid.GetInstance().ToString()
-                            + " | readOnly: " + m_manager.IsValueReadOnly(value.ValueID).ToString()
-                            + " | value: " + value.Val + " | label: " + m_manager.GetValueLabel(vid));
                         break;
                     }
                 #endregion
@@ -416,12 +426,13 @@ namespace OSAE.Zwave
                             Log.Debug("ValueChanged start: node:" + node.ID.ToString());
                             ZWValueID vid = m_notification.GetValueID();
                             Value value = node.GetValue(vid);
-                            Log.Debug("value:" + value.Val);
+                            
                             OSAEObject nodeObject = OSAEObjectManager.GetObjectByAddress("Z" + m_notification.GetNodeId());
                             string v;
                             m_manager.GetValueAsString(vid, out v);
                             value.Val = v;
-
+                            
+                            Log.Debug("value:" + value.Val);
                             if (m_manager.IsValueReadOnly(value.ValueID))
                             {
                                 if (value.Genre == ZWValueID.ValueGenre.User)
@@ -450,7 +461,7 @@ namespace OSAE.Zwave
                             }
                             else
                             {
-                                if (value.Genre == ZWValueID.ValueGenre.User)
+                                if (value.Genre == ZWValueID.ValueGenre.User || value.Genre == ZWValueID.ValueGenre.Config)
                                 {
                                     if (value.Label == "Switch")
                                     {
@@ -568,6 +579,7 @@ namespace OSAE.Zwave
                                             break;
                                         }
                                     case "Multilevel Switch":
+                                    case "Multilevel Power Switch":
                                     case "Multilevel Scene Switch":
                                         {
                                             baseType = "MULTILEVEL SWITCH";
@@ -730,7 +742,7 @@ namespace OSAE.Zwave
                 case ZWNotification.Type.NodeQueriesComplete:
                     {
                         Node node = GetNode(m_notification.GetHomeId(), m_notification.GetNodeId());
-
+                        m_manager.AddAssociation(m_homeId, node.ID, 1, m_manager.GetControllerNodeId(m_homeId));
 
                         Log.Info("Node Queries Complete | " + node.ID + " | " + m_manager.GetNodeProductName(m_homeId, node.ID));
                         break;
