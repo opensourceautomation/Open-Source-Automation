@@ -3,12 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Width="580" Height="131">
-    <Grid Height="131" VerticalAlignment="Top">
-        <Label Content="Object" Height="28" HorizontalAlignment="Left" Margin="13,34,0,0" Name="label3" VerticalAlignment="Top" Width="73" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="92,34,0,0" x:Name="objectsComboBox" VerticalAlignment="Top" Width="357" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" />
-        <Label Content="Mandatory" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="462,34,0,0" Name="label7" VerticalAlignment="Top" Width="106" />
-        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,86,213,0" Name="cancelbutton" VerticalAlignment="Top" Width="75" Click="cancelbutton_Click" />
-        <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="211,86,0,0" Name="addButton" VerticalAlignment="Top" Width="75" Click="addButton_Click" />
+             mc:Ignorable="d" Width="556" Height="240">
+    <Grid Height="230" VerticalAlignment="Top" Margin="0,0,10,0">
+        <Label Content="Object" Height="28" HorizontalAlignment="Left" Margin="6,138,0,0" Name="label3" VerticalAlignment="Top" Width="73" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="85,138,0,0" x:Name="objectsComboBox" VerticalAlignment="Top" Width="357" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" />
+        <Label Content="Mandatory" FontSize="11" FontStyle="Italic" Height="28" HorizontalAlignment="Left" Margin="455,138,-12,0" Name="label7" VerticalAlignment="Top" Width="71" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,197,104,0" Name="cancelbutton" VerticalAlignment="Top" Width="75" Click="cancelbutton_Click" />
+        <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="92,197,0,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Click="addButton_Click" />
+        <Label Content="Name" Height="28" HorizontalAlignment="Left" Margin="15,26,0,0" x:Name="label3_Copy" VerticalAlignment="Top" Width="53" />
+        <TextBox x:Name="txtControlName" HorizontalAlignment="Left" Height="23" Margin="85,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="339"/>
+        <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="26" Margin="107,67,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Text="100"/>
+        <TextBox x:Name="txtY" HorizontalAlignment="Left" Height="26" Margin="182,67,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100"/>
+        <Label Content="Y" HorizontalAlignment="Left" Margin="165,63,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
+        <Label Content="X" HorizontalAlignment="Left" Margin="90,67,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtZOrder" HorizontalAlignment="Left" Height="26" Margin="299,67,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="1"/>
+        <Label Content="ZOrder" HorizontalAlignment="Left" Margin="252,67,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846" Width="47"/>
+        <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="182,198,0,0" VerticalAlignment="Top" Width="75" Click="btnUpdate_Click"/>
+        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="275,198,0,0" VerticalAlignment="Top" Width="75" Click="btnDelete_Click"/>
+        <Label Content="Choose an IP Camera Object below to Stream" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,107,0,0" Width="357"/>
     </Grid>
 </UserControl>

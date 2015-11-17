@@ -11,14 +11,52 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class AddNewCameraViewer : UserControl
     {
-        public string currentScreen;
-        private Window parentWindow;
+        private string currentScreen;
+        string sOriginalName = "";
+        string sWorkingName = "";
+        string sMode = "";
 
-        public AddNewCameraViewer(string screen)
+        public AddNewCameraViewer(string screen, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
             LoadObjects();
+
+            if (controlName != "")
+            {
+                //Let's validate the controlName and then call a Pre-Load of its properties
+                DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + controlName + "'");
+                if (dsScreenControl.Tables[0].Rows[0][0].ToString() == "1")
+                {
+                    // We have a hit, this is an Update call, se call the preload
+                    sMode = "Update";
+                    sOriginalName = controlName;
+                    txtControlName.Text = controlName;
+                    LoadCurrentScreenObject(controlName);
+                }
+            }
+
+            if (controlName == "")
+            {
+                //Let's create a new name
+                sWorkingName = currentScreen + " - New Camera Viewer";
+                DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
+                int iCount = 0;
+
+                while (dsScreenControl.Tables[0].Rows[0][0].ToString() == "1")
+                {
+                    // We have a duplicate name, we must get a unique name
+                    iCount += 1;
+                    sWorkingName = currentScreen + " - New Camera Viewer" + iCount;
+                    dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
+                }
+                sMode = "Add";
+                controlName = sWorkingName;
+                txtControlName.Text = controlName;
+
+                // LoadCurrentScreenObject(controlName);
+            }
+            Enable_Buttons();
         }
 
         /// <summary>
@@ -30,20 +68,25 @@ namespace OSAE.UI.Controls
             objectsComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
+        private void LoadCurrentScreenObject(string controlName)
+        {
+            objectsComboBox.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Object Name").Value;
+            txtX.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "X").Value;
+            txtY.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Y").Value;
+            txtZOrder.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "ZOrder").Value;
+        }
+
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ValidateForm())
+            if (validateForm("Add"))
             {
-                string sName = currentScreen + " - " + objectsComboBox.Text;
+                string sName = txtControlName.Text;
                 OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", "1", "GUI");
-
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
-
-
                 NotifyParentFinished();
             }
             else
@@ -52,16 +95,86 @@ namespace OSAE.UI.Controls
             }
         }
 
-        private bool ValidateForm()
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            bool mandatoryFieldsCompleted = true;
-
-            if (objectsComboBox.SelectedIndex == -1)
+            if (validateForm("Update"))
             {
-                mandatoryFieldsCompleted = false;
+                string sName = txtControlName.Text;
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, 1);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+                OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
+                NotifyParentFinished();
+            }
+        }
+
+
+        private void Enable_Buttons()
+        {
+            //First Senerio is a New Control, not a rename or update.
+            if (sMode == "Add")
+            {
+                btnAdd.IsEnabled = true;
+                btnUpdate.IsEnabled = false;
+                btnDelete.IsEnabled = false;
+            }
+            //Now we handle Updates with no name changes
+            if (sMode == "Update" && sOriginalName == txtControlName.Text)
+            {
+                btnAdd.IsEnabled = false;
+                btnUpdate.IsEnabled = true;
+                btnDelete.IsEnabled = true;
+            }
+            //Now we handle Updates WITH name changes
+            if (sMode == "Update" && sOriginalName != txtControlName.Text)
+            {
+                btnAdd.IsEnabled = true;
+                btnUpdate.IsEnabled = true;
+                btnDelete.IsEnabled = false;
+            }
+        }
+
+        private bool validateForm(string mthd)
+        {
+            bool validate = true;
+            // Does this object already exist
+            if (mthd == "Add" || sOriginalName != txtControlName.Text)
+            {
+                try
+                {
+                    OSAEObject oExist = OSAEObjectManager.GetObjectByName(txtControlName.Text);
+                    if (oExist != null)
+                    {
+                        MessageBox.Show("Control name already exist. Please Change!");
+                        validate = false;
+                    }
+                }
+                catch { }
+            }
+            if (string.IsNullOrEmpty(txtControlName.Text))
+            {
+                MessageBox.Show("You must enter a name for this control!");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtX.Text))
+            {
+                MessageBox.Show("X Can not be empty");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtY.Text))
+            {
+                MessageBox.Show("Y Can not be empty");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtZOrder.Text))
+            {
+                MessageBox.Show("ZOrder can not be empty");
+                validate = false;
             }
 
-            return mandatoryFieldsCompleted;
+            return validate;
         }
 
       
@@ -82,6 +195,12 @@ namespace OSAE.UI.Controls
             // Get the window hosting us so we can ask it to close
             Window parentWindow = Window.GetWindow(this);
             parentWindow.Close();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            OSAEObjectManager.ObjectDelete(sOriginalName);
+            NotifyParentFinished();
         }
 
     }

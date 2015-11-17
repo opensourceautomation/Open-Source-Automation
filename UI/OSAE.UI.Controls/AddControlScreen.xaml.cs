@@ -56,68 +56,39 @@ namespace OSAE.UI.Controls
                     dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
                 }
                 sMode = "Add";
-                currentScreen = sWorkingName.Replace("Screen - ","");
-                txtScreenName.Text = currentScreen;
-                LoadCurrentScreenObject(currentScreen);
+                //currentScreen = sWorkingName.Replace("Screen - ","");
+                //txtScreenName.Text = currentScreen;
+                //LoadCurrentScreenObject(currentScreen);
             }
             Enable_Buttons();
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(txtScreenName.Text))
+            if (validateForm("Add"))
             {
-                MessageBox.Show("Please specify a name for the screen");
-                return;
+                string tempName = txtScreenName.Text;
+                OSAEObjectManager.ObjectAdd(tempName, tempName, tempName, "SCREEN", "", tempName, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, "GUI");
+                NotifyParentFinished();
             }
-
-            if (img == null)
-            {
-                MessageBox.Show("Please specify an image for the screen");
-                return;
-            }
-
-
-            string tempName = "Screen - " + txtScreenName.Text;
-            OSAEObjectManager.ObjectAdd(tempName, tempName, tempName, "SCREEN", "", tempName, true);
-            OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, "GUI");
-
-            //OnLoadScreen();
-
-            NotifyParentFinished();
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(txtScreenName.Text))
+            if (validateForm("Update"))
             {
-                MessageBox.Show("Please specify a name for the screen");
-                return;
+                string tempName = txtScreenName.Text;
+                OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
+                //We call an object update here in case the Name was changed, then perform the updates against the New name
+                OSAEObjectManager.ObjectUpdate(sOriginalName, tempName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
+                OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, "GUI");
+                NotifyParentFinished();
             }
-
-            if (img == null)
-            {
-                MessageBox.Show("Please specify an image for the screen");
-                return;
-            }
-
-
-            string tempName = "Screen - " + txtScreenName.Text.Replace("Screen - ","");
-            OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
-            //We call an object update here in case the Name was changed, then perform the updates against the New name
-            OSAEObjectManager.ObjectUpdate(sOriginalName, tempName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
-            OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, "GUI");
-
-            //OnLoadScreen();
-            
-            NotifyParentFinished();
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-
-           // OnLoadScreen();
-
             NotifyParentFinished();
         }
 
@@ -203,7 +174,7 @@ namespace OSAE.UI.Controls
             {
                 btnAdd.IsEnabled = true;
                 btnUpdate.IsEnabled = true;
-                btnDelete.IsEnabled = true;
+                btnDelete.IsEnabled = false;
             }
         }
 
@@ -228,5 +199,36 @@ namespace OSAE.UI.Controls
             {
             }
          }
+
+        private bool validateForm(string mthd)
+        {
+            bool validate = true;
+            // Does this object already exist
+            if (mthd == "Add" || sOriginalName != txtScreenName.Text)
+            {
+                try
+                {
+                    OSAEObject oExist = OSAEObjectManager.GetObjectByName(txtScreenName.Text);
+                    if (oExist != null)
+                    {
+                        MessageBox.Show("Control name already exist. Please Change!");
+                        validate = false;
+                    }
+                }
+                catch { }
+            }
+            if (string.IsNullOrEmpty(txtScreenName.Text))
+            {
+                MessageBox.Show("You must enter a Name for this Control!");
+                validate = false;
+            }
+            if (img == null)
+            {
+                MessageBox.Show("Please specify an image for the screen");
+                validate = false;
+            }
+         
+            return validate;
+        }
     }
 }

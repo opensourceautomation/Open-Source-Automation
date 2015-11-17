@@ -64,8 +64,6 @@ namespace OSAE.UI.Controls
             }
             Enable_Buttons();
 
-
-
         }
 
         /// <summary>
@@ -74,24 +72,17 @@ namespace OSAE.UI.Controls
         private void LoadCurrentScreenObject(string controlName)
         {
             OSAEImageManager imgMgr = new OSAEImageManager();
-
             cboObject.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Object Name").Value;
             cboProperty.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Property Name").Value;
-
             txtFont.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Font Name").Value;
             txtSize.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Font Size").Value;
             cboForeColor.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Fore Color").Value;
             cboBackColor.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Back Color").Value;
             txtPrefix.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Prefix").Value;
             txtSuffix.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Suffix").Value;
-
-
-
             txtX.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "X").Value;
             txtY.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Y").Value;
-
-         //   OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
-        //    OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
+            txtZOrder.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "ZOrder").Value;
         }
 
         private void Enable_Buttons()
@@ -115,7 +106,7 @@ namespace OSAE.UI.Controls
             {
                 btnAdd.IsEnabled = true;
                 btnUpdate.IsEnabled = true;
-                btnDelete.IsEnabled = true;
+                btnDelete.IsEnabled = false;
             }
         }
 
@@ -164,7 +155,7 @@ namespace OSAE.UI.Controls
 
         private void cboProperty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            txtControlName.Text = currentScreen + " - " + cboObject.Text + " " + cboProperty.SelectedValue;
+            //txtControlName.Text = currentScreen + " - " + cboObject.Text + " " + cboProperty.SelectedValue;
         }
 
         private void txtFont_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -188,42 +179,46 @@ namespace OSAE.UI.Controls
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            string sName = txtControlName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", cboBackColor.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", cboProperty.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
-
-            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
-
-
-            NotifyParentFinished();
+            if (validateForm("Add"))
+            {
+                string sName = txtControlName.Text;
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", cboBackColor.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", cboProperty.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, "GUI");
+                OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
+                NotifyParentFinished();
+            }
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            string sName = txtControlName.Text;
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", cboBackColor.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", cboProperty.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
-
-            NotifyParentFinished();
+            if (validateForm("Update"))
+            {
+                string sName = txtControlName.Text;
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, 1);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", cboBackColor.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", cboProperty.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, "GUI");
+                OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, cboObject.Text, sName);
+                NotifyParentFinished();
+            }
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -248,6 +243,57 @@ namespace OSAE.UI.Controls
             // Get the window hosting us so we can ask it to close
             Window parentWindow = Window.GetWindow(this);
             parentWindow.Close();
+        }
+
+        private bool validateForm(string mthd)
+        {
+            bool validate = true;
+            // Does this object already exist
+            if (mthd == "Add" || sOriginalName != txtControlName.Text)
+            {
+                try
+                {
+                    OSAEObject oExist = OSAEObjectManager.GetObjectByName(txtControlName.Text);
+                    if (oExist != null)
+                    {
+                        MessageBox.Show("Control name already exist. Please Change!");
+                        validate = false;
+                    }
+                }
+                catch { }
+            }
+            if (string.IsNullOrEmpty(txtControlName.Text))
+            {
+                MessageBox.Show("You must enter a name for this control!");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(cboObject.Text))
+            {
+                MessageBox.Show("You must choose an associated object!");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(cboProperty.Text))
+            {
+                MessageBox.Show("You must choose a Property!");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtX.Text))
+            {
+                MessageBox.Show("X Can not be empty");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtY.Text))
+            {
+                MessageBox.Show("Y Can not be empty");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtZOrder.Text))
+            {
+                MessageBox.Show("ZOrder can not be empty");
+                validate = false;
+            }
+
+            return validate;
         }
     }
 }

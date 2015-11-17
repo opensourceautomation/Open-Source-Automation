@@ -60,30 +60,49 @@
                 sMode = "Add";
                 controlName = sWorkingName;
                 txtName.Text = controlName;
-                LoadCurrentScreenObject(controlName);
+                //LoadCurrentScreenObject(controlName);
             }
-
-            txtName.Text = currentScreen + " - Browser";
+            Enable_Buttons();
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
+            if (validateForm("Add"))
+            {
+                string sName = txtName.Text;
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL BROWSER", "", currentScreen, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "URI", txtURI.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Height", txtHeight.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+                OSAEScreenControlManager.ScreenObjectAdd(currentScreen, "", txtName.Text);
+                NotifyParentFinished();
+            }
+        }
 
-
-            OSAEObjectManager.ObjectAdd(txtName.Text, txtName.Text, txtName.Text, "CONTROL BROWSER", "", currentScreen, true);
-
-            OSAEObjectPropertyManager.ObjectPropertySet(txtName.Text, "URI", txtURI.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(txtName.Text, "Width", txtWidth.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(txtName.Text, "Height", txtHeight.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(txtName.Text, "ZOrder", "1", "GUI");
-
-            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, "", txtName.Text);
-
-            NotifyParentFinished();
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if (validateForm("Update"))
+            {
+                string sName = txtName.Text;
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL BROWSER", "", currentScreen, 1);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "URI", txtURI.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Height", txtHeight.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+                OSAEScreenControlManager.ScreenObjectAdd(currentScreen, "", txtName.Text);
+                NotifyParentFinished();
+            }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
+            NotifyParentFinished();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            OSAEObjectManager.ObjectDelete(sOriginalName);
             NotifyParentFinished();
         }
 
@@ -105,12 +124,79 @@
             txtURI.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "URI").Value;
             txtX.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "X").Value;
             txtY.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Y").Value;
+            txtZOrder.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "ZOrder").Value;
             txtHeight.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Height").Value;
             txtWidth.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Width").Value;
         }
 
+        private void Enable_Buttons()
+        {
+            //First Senerio is a New Control, not a rename or update.
+            if (sMode == "Add")
+            {
+                btnAdd.IsEnabled = true;
+                btnUpdate.IsEnabled = false;
+                btnDelete.IsEnabled = false;
+            }
+            //Now we handle Updates with no name changes
+            if (sMode == "Update" && sOriginalName == txtName.Text)
+            {
+                btnAdd.IsEnabled = false;
+                btnUpdate.IsEnabled = true;
+                btnDelete.IsEnabled = true;
+            }
+            //Now we handle Updates WITH name changes
+            if (sMode == "Update" && sOriginalName != txtName.Text)
+            {
+                btnAdd.IsEnabled = true;
+                btnUpdate.IsEnabled = true;
+                btnDelete.IsEnabled = false;
+            }
+        }
 
-
-
+        private bool validateForm(string mthd)
+        {
+            bool validate = true;
+            // Does this object already exist
+            if (mthd == "Add" || sOriginalName != txtName.Text)
+            {
+                try
+                {
+                    OSAEObject oExist = OSAEObjectManager.GetObjectByName(txtName.Text);
+                    if (oExist != null)
+                    {
+                        MessageBox.Show("Control name already exist. Please Change!");
+                        validate = false;
+                    }
+                }
+                catch { }
+            }
+            if (string.IsNullOrEmpty(txtName.Text))
+            {
+                MessageBox.Show("You must enter a Name for this control!");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtURI.Text))
+            {
+                MessageBox.Show("You must enter a URI for this Brower!");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtX.Text))
+            {
+                MessageBox.Show("X Can not be empty");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtY.Text))
+            {
+                MessageBox.Show("Y Can not be empty");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtZOrder.Text))
+            {
+                MessageBox.Show("ZOrder Can not be empty");
+                validate = false;
+            }
+            return validate;
+        }
     }
 }

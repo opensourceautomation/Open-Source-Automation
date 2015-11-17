@@ -19,12 +19,14 @@
         <ComboBox x:Name="backColorComboBox" HorizontalAlignment="Left" Margin="304,109,0,0" VerticalAlignment="Top" Width="114"/>
         <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="97,188,0,0" VerticalAlignment="Top" Width="75" Click="btnUpdate_Click"/>
         <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="187,188,0,0" VerticalAlignment="Top" Width="75" Click="btnDelete_Click"/>
-        <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="26" Margin="172,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Text="100"/>
-        <TextBox x:Name="txtY" HorizontalAlignment="Left" Height="26" Margin="247,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100"/>
-        <Label Content="Y" HorizontalAlignment="Left" Margin="230,148,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
-        <Label Content="X" HorizontalAlignment="Left" Margin="155,148,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="26" Margin="130,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Text="100"/>
+        <TextBox x:Name="txtY" HorizontalAlignment="Left" Height="26" Margin="205,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100"/>
+        <Label Content="Y" HorizontalAlignment="Left" Margin="188,145,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
+        <Label Content="X" HorizontalAlignment="Left" Margin="113,145,0,0" VerticalAlignment="Top"/>
         <Label Content="Name" Height="28" HorizontalAlignment="Left" Margin="10,9,0,0" x:Name="label3_Copy" VerticalAlignment="Top" Width="53" />
-        <Label x:Name="lblName" Content="" HorizontalAlignment="Left" Margin="82,11,0,0" VerticalAlignment="Top" Width="336"/>
+        <TextBox x:Name="txtZOrder" HorizontalAlignment="Left" Height="26" Margin="306,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="1"/>
+        <Label Content="ZOrder" HorizontalAlignment="Left" Margin="252,145,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846" Width="54"/>
+        <TextBox x:Name="txtControlName" HorizontalAlignment="Left" Height="23" Margin="76,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="342" TextChanged="txtControlName_TextChanged"/>
 
     </Grid>
 </UserControl>

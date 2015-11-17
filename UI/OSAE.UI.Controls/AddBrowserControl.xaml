@@ -16,11 +16,13 @@
         <TextBox x:Name="txtHeight" HorizontalAlignment="Left" Height="23" Margin="118,91,0,0" TextWrapping="Wrap" Text="300" VerticalAlignment="Top" Width="40"/>
         <TextBox x:Name="txtWidth" HorizontalAlignment="Left" Height="23" Margin="250,92,0,0" TextWrapping="Wrap" Text="500" VerticalAlignment="Top" Width="40"/>
         <Label Content="X" HorizontalAlignment="Left" Margin="96,125,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.824,0.615"/>
-        <Label Content="Y" HorizontalAlignment="Left" Margin="203,126,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.297,0"/>
-        <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="23" Margin="118,128,0,0" TextWrapping="Wrap" Text="300" VerticalAlignment="Top" Width="40"/>
-        <TextBox x:Name="txtY" HorizontalAlignment="Left" Height="23" Margin="250,129,0,0" TextWrapping="Wrap" Text="500" VerticalAlignment="Top" Width="40"/>
-        <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="83,171,0,0" VerticalAlignment="Top" Width="65" Click="btnAdd_Click" RenderTransformOrigin="1.493,0.545"/>
-        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="155,171,0,0" VerticalAlignment="Top" Width="65" Click="btnAdd_Click" RenderTransformOrigin="1.493,0.545"/>
+        <Label Content="Y" HorizontalAlignment="Left" Margin="163,125,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.297,0"/>
+        <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="23" Margin="118,128,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="40"/>
+        <TextBox x:Name="txtY" HorizontalAlignment="Left" Height="23" Margin="185,128,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="40"/>
+        <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="83,171,0,0" VerticalAlignment="Top" Width="65" Click="btnUpdate_Click" RenderTransformOrigin="1.493,0.545"/>
+        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="155,171,0,0" VerticalAlignment="Top" Width="65" Click="btnDelete_Click" RenderTransformOrigin="1.493,0.545"/>
+        <Label Content="Z" HorizontalAlignment="Left" Margin="228,125,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.297,0"/>
+        <TextBox x:Name="txtZOrder" HorizontalAlignment="Left" Height="23" Margin="250,128,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="40"/>
 
     </Grid>
 </UserControl>

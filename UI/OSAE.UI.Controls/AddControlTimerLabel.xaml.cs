@@ -17,6 +17,7 @@
         private string currentScreen;
         string sOriginalName = "";
         string sOriginalObject = "";
+        string sWorkingName = "";
         string sMode = "";
 
         public AddControlTimerLabel(string screen, string controlName = "")
@@ -36,12 +37,25 @@
                     // We have a hit, this is an Update call, se call the preload
                     sMode = "Update";
                     sOriginalName = controlName;
-                    lblName.Content = controlName;
+                    txtControlName.Text = controlName;
                     LoadCurrentScreenObject(controlName);
                 }
             }
-            else   
+            if (controlName == "") 
             {
+                sWorkingName = currentScreen + " - New State Image";
+                DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
+                int iCount = 0;
+
+                while (dsScreenControl.Tables[0].Rows[0][0].ToString() == "1")
+                {
+                    // We have a duplicate name, we must get a unique name
+                    iCount += 1;
+                    sWorkingName = currentScreen + " - New State Image" + iCount;
+                    dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
+                }
+                controlName = sWorkingName;
+                txtControlName.Text = controlName;
                 sMode = "Add";
             }
             Enable_Buttons();
@@ -103,7 +117,7 @@
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            string sName = lblName.Content.ToString();
+            string sName = txtControlName.Text;
             OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL TIMER LABEL", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
@@ -112,16 +126,15 @@
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
-
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
             NotifyParentFinished();
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
+            string sName = txtControlName.Text;
             OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
-            string sName = lblName.Content.ToString();
             OSAEObjectManager.ObjectUpdate(sOriginalName, sName, obj.Alias, "CONTROL TIMER LABEL", "CONTROL TIMER LABEL", "", currentScreen, 1);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
@@ -130,11 +143,8 @@
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
-            if ((sOriginalObject != objectComboBox.Text) && (sOriginalName != sName))
-            {
-                OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, objectComboBox.Text, sName);
-            }
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+            OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, objectComboBox.Text, sName);
             NotifyParentFinished();
         }
 
@@ -146,7 +156,7 @@
 
         private void objectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            lblName.Content = "Screen - " + currentScreen.Replace("Screen - ","") + " - " + (sender as ComboBox).SelectedValue.ToString() + " (Off Timer)";
+            //lblName.Content = "Screen - " + currentScreen.Replace("Screen - ","") + " - " + (sender as ComboBox).SelectedValue.ToString() + " (Off Timer)";
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -200,8 +210,59 @@
             {
                 btnAdd.IsEnabled = true;
                 btnUpdate.IsEnabled = true;
-                btnDelete.IsEnabled = true;
+                btnDelete.IsEnabled = false;
             }
+        }
+
+        private bool validateForm(string mthd)
+        {
+            bool validate = true;
+            // Does this object already exist
+            if (mthd == "Add" || sOriginalName != txtControlName.Text)
+            {
+                try
+                {
+                    OSAEObject oExist = OSAEObjectManager.GetObjectByName(txtControlName.Text);
+                    if (oExist != null)
+                    {
+                        MessageBox.Show("Control name already exist. Please Change!");
+                        validate = false;
+                    }
+                }
+                catch { }
+            }
+            if (string.IsNullOrEmpty(txtControlName.Text))
+            {
+                MessageBox.Show("You must enter a name for this control!");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(objectComboBox.Text))
+            {
+                MessageBox.Show("You must choose an associated object!");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtX.Text))
+            {
+                MessageBox.Show("X Can not be empty");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtY.Text))
+            {
+                MessageBox.Show("Y Can not be empty");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(txtZOrder.Text))
+            {
+                MessageBox.Show("ZOrder can not be empty");
+                validate = false;
+            }
+
+            return validate;
+        }
+
+        private void txtControlName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Enable_Buttons();
         }
     }
 }
