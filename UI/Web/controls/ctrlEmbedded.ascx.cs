@@ -14,9 +14,32 @@ public partial class controls_ctrlEmbedded : System.Web.UI.UserControl
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        OSAEObject obj = OSAEObjectManager.GetObjectByName(screenObject.Property("Object Name").Value);
+        Source = renameingSys(obj.Property("Stream Address").Value);
+        width = screenObject.Property("Width").Value;
+        height = screenObject.Property("Height").Value;
         frame.Attributes.Add("width", width);
         frame.Attributes.Add("height", height);
         frame.Attributes.Add("src", Source);
         frame.Attributes.Add("Style", "position:absolute;top:" + (Int32.Parse(screenObject.Property("Y").Value) + 50).ToString() + "px;left:" + (Int32.Parse(screenObject.Property("X").Value) + 10).ToString() + "px;z-index:" + (Int32.Parse(screenObject.Property("ZOrder").Value) + 10).ToString() + ";");
+    }
+
+    private string renameingSys(string fieldData)
+    {
+        string newData = fieldData.Replace("http://", "");
+        while (newData.IndexOf("[") != -1)
+        {
+            int ss = newData.IndexOf("[");
+            int es = newData.IndexOf("]");
+            string renameProperty = newData.Substring(ss + 1, (es - ss) - 1);
+            string getProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Property("Object Name").Value, renameProperty).Value;
+            // log any errors
+            if (getProperty.Length > 0)
+            {
+                newData = newData.Replace("[" + renameProperty + "]", getProperty);
+            }
+        }
+        newData = @"http://" + newData;
+        return newData;
     }
 }
