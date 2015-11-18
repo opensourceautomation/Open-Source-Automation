@@ -6,6 +6,8 @@
 <%@ Reference Control="~/controls/ctrlTimerLabel.ascx"  %>
 <%@ Reference Control="~/controls/ctrlClickImage.ascx"  %>
 <%@ Reference Control="~/controls/ctrlNavigationImage.ascx"  %>
+<%@ Reference Control="~/controls/ctrlEmbedded.ascx"  %>
+<%@ Register src="~/controls/ctrlUserControl.ascx" TagName = "ctrlUserControl" TagPrefix ="ctrlUserControl"  %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server">
     <style type="text/css">
@@ -66,6 +68,6 @@
 -        <div class="span1"></div>                     
     </div>
 
-    <asp:HiddenField runat="server" ID="hdnRestPort"/>
+    <asp:HiddenField runat="server" ID="hdnRestPort" />
 </asp:Content>
 

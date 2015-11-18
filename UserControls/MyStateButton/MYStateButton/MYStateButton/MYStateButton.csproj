@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8B3F4EF2-87E8-408C-85F6-56475282A661}</ProjectGuid>
+    <ProjectGuid>{C0FD822A-00D2-4209-B714-0B713C1D2FA0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VideoStreamViewer</RootNamespace>
-    <AssemblyName>VideoStreamViewer</AssemblyName>
+    <RootNamespace>MYStateButton</RootNamespace>
+    <AssemblyName>MYStateButton</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -34,9 +34,6 @@
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\OSA\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="MjpegProcessor">
-      <HintPath>C:\Program Files\OSA\MjpegProcessor.dll</HintPath>
     </Reference>
     <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

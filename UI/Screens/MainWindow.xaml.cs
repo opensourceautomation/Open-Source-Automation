@@ -570,6 +570,7 @@
                     {
                         string stream = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
                         VideoStreamViewer vsv = new VideoStreamViewer(stream, obj);
+                        vsv.MouseRightButtonDown += new MouseButtonEventHandler(VideoStreamViewer_MouseRightButtonDown);
                         canGUI.Children.Add(vsv);
                         OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
                         OSAE.OSAEObjectProperty pX = obj.Property("X");
@@ -617,8 +618,8 @@
                     uc.Location.X = dX;
                     uc.Location.Y = dY;
                     userControls.Add(uc);
-                    //controlTypes.Add(uc.GetType());
-                    controlTypes.Add(typeof(UserControl));
+                    controlTypes.Add(uc.GetType());
+                    //controlTypes.Add(typeof(UserControl));
                     uc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
                 #endregion
@@ -722,7 +723,7 @@
         private void Broswer_Control_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false) return;
-            ClickImage bfCtrl = (ClickImage)sender;
+            BrowserFrame bfCtrl = (BrowserFrame)sender;
             AddControl addControl = new AddControl();
             AddControlBrowser cmi = new AddControlBrowser(gCurrentScreen, bfCtrl.screenObject.Name);
             addControl.Content = cmi;
@@ -774,6 +775,20 @@
             TimerLabel tmrLbl = (TimerLabel)sender;
             AddControl addControl = new AddControl();
             AddControlTimerLabel cmi = new AddControlTimerLabel(gCurrentScreen, tmrLbl.screenObject.Name);
+            addControl.Content = cmi;
+            addControl.Width = cmi.Width + 80;
+            addControl.Height = cmi.Height + 80;
+            addControl.Owner = this;
+            addControl.ShowDialog();
+            Load_Screen(gCurrentScreen);
+        }
+
+        private void VideoStreamViewer_MouseRightButtonDown(object sender, MouseEventArgs e)
+        {
+            if (editMode == false) return;
+            VideoStreamViewer vidviewr = (VideoStreamViewer)sender;
+            AddControl addControl = new AddControl();
+            AddNewCameraViewer cmi = new AddNewCameraViewer(gCurrentScreen, vidviewr.screenObject.Name);
             addControl.Content = cmi;
             addControl.Width = cmi.Width + 80;
             addControl.Height = cmi.Height + 80;

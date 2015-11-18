@@ -14,21 +14,32 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using OSAE;
 
-namespace VideoStreamViewer
+namespace MYStateButton
 {
     /// <summary>
     /// Interaction logic for AddNewControl.xaml
     /// </summary>
     public partial class AddNewControl : UserControl
     {
-        
-        string defaultNewName = "New VideoStreamViewer";
-        string defaultAssocObject = "IP CAMERA";
+        // Set the Default name to use when a user adds this to a screen
+        string defaultNewName = "New Custom State Control";
+
+        // Set the Default Object Type to Associate with this Custom UserControl
+        // Example, X-10 RELAY, IP CAMERA, DIMMER, THERMOSTAT
+        // Must be all UPPERCASE!
+        string defaultAssocObject = "X10 RELAY";
+
+        // Set the Default X Coordinate
         string defaultX = "100";
+
+        // Set the Default Y Coordinate
         string defaultY = "100";
+
+        // Set the Default ZOrder
         string defaultZ = "1";
-        string defaultCaption = "Choose an IP Camera Object below";
-        
+
+        // Set the Default Dropdown Caption
+        string defaultCaption = "Choose an X10 RELAY below";
 
         #region DO NOT CHANGE THIS CODE
         Boolean hasParams = false;
@@ -43,7 +54,7 @@ namespace VideoStreamViewer
         string sMode = "";
         string _pluginName;
 
-        public AddNewControl(string screen, string pluginName, string controlName="")
+        public AddNewControl(string screen, string pluginName, string controlName = "")
         {
             InitializeComponent();
             AssocObj.Content = defaultCaption;
@@ -51,7 +62,7 @@ namespace VideoStreamViewer
             LoadObjects();
             _pluginName = pluginName;
 
-            if (controlName != "") 
+            if (controlName != "")
             {
                 //Let's validate the controlName and then call a Pre-Load of its properties
                 DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + controlName + "'");
@@ -64,7 +75,7 @@ namespace VideoStreamViewer
                     LoadCurrentScreenObject(controlName);
                 }
             }
-            
+
             if (controlName == "")
             {
                 // This is a New Custom UserControl.
@@ -125,7 +136,7 @@ namespace VideoStreamViewer
         /// </summary>
         private void LoadObjects()
         {
-            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_Type = '"+ defaultAssocObject + "' ORDER BY object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_Type = '" + defaultAssocObject + "' ORDER BY object_name");
             objectsComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -135,7 +146,7 @@ namespace VideoStreamViewer
             {
                 string sName = cntrlName.Text;
                 OSAEObjectManager.ObjectAdd(sName, sName, sName, osaeControlType + " " + _pluginName, "", currentScreen, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType +" " + _pluginName , "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType + " " + _pluginName, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
@@ -150,16 +161,22 @@ namespace VideoStreamViewer
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
                 NotifyParentFinished();
             }
+            else
+            {
+                // Do not save until feilds are correct
+            }
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (ValidateForm("Update"))
             {
-                string sName = cntrlName.Text;
+                sWorkingName = cntrlName.Text;
                 OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
                 //We call an object update here in case the Name was changed, then perform the updates against the New name
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
+                string sName = cntrlName.Text;
+                OSAEObjectManager.ObjectUpdate(sOriginalName,sName, sName,sName, osaeControlType + " " + _pluginName, "", currentScreen, 1);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType + " " + _pluginName, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", cntrlX.Text, "GUI");
@@ -174,6 +191,10 @@ namespace VideoStreamViewer
                 }
                 OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, objectsComboBox.Text, sName);
                 NotifyParentFinished();
+            }
+            else
+            {
+                // Do not save until feilds are correct
             }
         }
 
@@ -266,7 +287,7 @@ namespace VideoStreamViewer
             {
                 addButton.IsEnabled = true;
                 btnUpdate.IsEnabled = true;
-                btnDelete.IsEnabled = false;
+                btnDelete.IsEnabled = true;
             }
             if (hasParams == true)
             {
@@ -281,7 +302,7 @@ namespace VideoStreamViewer
                 addParam.IsEnabled = false;
             }
         }
-        
+
         private void cancelbutton_Click(object sender, RoutedEventArgs e)
         {
             NotifyParentFinished();
@@ -311,12 +332,13 @@ namespace VideoStreamViewer
         {
             selectedParam.Value = paramValue.Text;
         }
-        
+
     }
+
     public class objParams
     {
         public string Name { get; set; }
         public string Value { get; set; }
     }
-    #endregion
+        #endregion
 }

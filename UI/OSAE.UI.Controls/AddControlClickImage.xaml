@@ -71,14 +71,15 @@
                 </TransformGroup>
             </TextBox.RenderTransform>
         </TextBox>
-        <TextBox x:Name="txtNormalX" HorizontalAlignment="Left" Height="26" Margin="212,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58" Text="100"/>
-        <TextBox x:Name="txtNormalY" HorizontalAlignment="Left" Height="26" Margin="212,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58" RenderTransformOrigin="0.534,2.077" Text="100"/>
-        <Label Content="X" HorizontalAlignment="Left" Margin="190,40,0,0" VerticalAlignment="Top"/>
-        <Label Content="Y" HorizontalAlignment="Left" Margin="190,70,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
-        <Label Content="X" HorizontalAlignment="Left" Margin="190,40,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtNormalX" HorizontalAlignment="Left" Height="24" Margin="227,53,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="43" Text="100"/>
+        <TextBox x:Name="txtNormalY" HorizontalAlignment="Left" Height="24" Margin="227,77,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="43" RenderTransformOrigin="0.534,2.077" Text="100"/>
+        <Label Content="X" HorizontalAlignment="Left" Margin="205,53,0,0" VerticalAlignment="Top"/>
+        <Label Content="Y" HorizontalAlignment="Left" Margin="205,77,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
+        <Label Content="ZOrder" HorizontalAlignment="Left" Margin="179,28,0,0" VerticalAlignment="Top"/>
         <Label Content="Screen Object Name" HorizontalAlignment="Left" Margin="8,1,0,0" VerticalAlignment="Top" Width="121" Height="26"/>
         <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="188,434,0,0" VerticalAlignment="Top" Width="82" Click="btnDelete_Click" Height="22"/>
         <Button x:Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="9,434,0,0" VerticalAlignment="Top" Width="82" Click="btnAdd_Click" Height="22" RenderTransformOrigin="-0.866,0.727"/>
+        <TextBox x:Name="txtZOrder" HorizontalAlignment="Left" Height="24" Margin="227,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="43" Text="1" />
 
 
     </Grid>

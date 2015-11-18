@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using OSAE;
 using PluginInterface;
 
-namespace VideoStreamViewer
+namespace MYStateButton
 {
     public class UserControlInterface : IPlugin
     {
@@ -20,15 +20,15 @@ namespace VideoStreamViewer
 
         //Declarations of all our internal plugin variables
         // Change the following values to match your User Control's Information
-        
-        // Change to match your PLugin Name. MUST be in all Uppercase!
-        string myName = "VIDEO STREAM VIEWER";
+
+        // Change to match your Plugin Name. MUST be in all Uppercase!
+        string myName = "MYSTATEBUTTON";
 
         // Change to a new description for your plugin
-        string myDescription = "Video Stream Viewer Screen Control";
+        string myDescription = "Custom User Control For State Button";
 
         // Change to the correct Author of the plugin
-        string myAuthor = "Kirk - Brian";
+        string myAuthor = "Kirk";
 
         // Change to match your Version of the Plugin. The first 2 digits should Match the OSA version built upon!
         string myVersion = "4.7.1.0";

@@ -72,29 +72,38 @@
             {
                 fastZip.ExtractZip(zipFileName, tempfolder, null);
                 // find all included plugin descriptions and install the plugins
-                List<string> osapdFiles = new List<string>();
+                List<string> osaudFiles = new List<string>();
                 List<string> sqlFiles = new List<string>();
+                List<string> ctrlFiles = new List<string>();
+                List<string> aspcsFiles = new List<string>();
 
                 string[] pluginFile = Directory.GetFiles(tempfolder, "*.osaud", SearchOption.TopDirectoryOnly);
-                osapdFiles.AddRange(pluginFile);
+                osaudFiles.AddRange(pluginFile);
                 string[] sqlFile = Directory.GetFiles(tempfolder, "*.sql", SearchOption.TopDirectoryOnly);
                 sqlFiles.AddRange(sqlFile);
+                string[] ctrlFile = Directory.GetFiles(tempfolder, "*.ascx", SearchOption.TopDirectoryOnly);
+                ctrlFiles.AddRange(ctrlFile);
+                string[] aspcsFile = Directory.GetFiles(tempfolder, "*.ascx.cs", SearchOption.TopDirectoryOnly);
+                aspcsFiles.AddRange(aspcsFile);
 
-                if (osapdFiles.Count == 0)
+                if (osaudFiles.Count == 0)
                 {
                     MessageBox.Show("No plugin description files found.");
                     return false;
                 }
-
-                if (osapdFiles.Count > 1)
+                if (osaudFiles.Count > 1)
                 {
                     MessageBox.Show("More than one plugin description file found.");
                     return false;
                 }
-                if (osapdFiles.Count == 1)
+                if (ctrlFiles.Count == 0 || aspcsFiles.Count == 0)
                 {
-
-                    DescPath = osapdFiles[0];
+                    MessageBox.Show("No WebUI UserControl Files found.");
+                    return false;
+                }
+                if (osaudFiles.Count == 1)
+                {
+                    DescPath = osaudFiles[0];
                 }
 
                 if (!string.IsNullOrEmpty(DescPath))
@@ -122,7 +131,6 @@
                             {
                                 try
                                 {
-
                                     MySql.Data.MySqlClient.MySqlScript script = new MySql.Data.MySqlClient.MySqlScript(connection, File.ReadAllText(s));
                                     script.Execute();
                                 }
@@ -132,7 +140,15 @@
                                 }
                             }
 
-                            System.IO.Directory.Move(tempfolder, exePath + "/UserControls/" + pluginFolder);
+                            string newControlFolder = exePath +"/UserControls/" + pluginFolder;
+                            System.IO.Directory.Move(tempfolder, newControlFolder);
+                            if(ctrlFiles.Count > 0 && aspcsFiles.Count > 0)
+                            {
+                                string newWebUIFolder = exePath + "/Plugins/Web Server/wwwroot/controls/usercontrols/" + pluginFolder;
+                                System.IO.Directory.CreateDirectory(newWebUIFolder);
+                                System.IO.File.Move(newControlFolder + "/ctrlUserControl.ascx",newWebUIFolder + "/ctrlUserControl.ascx");
+                                System.IO.File.Move(newControlFolder + "/ctrlUserControl.ascx.cs", newWebUIFolder + "/ctrlUserControl.ascx.cs");
+                            }
 
                             //Check if we are running a x64 bit architecture (This is a silly way to do it since I am not sure if every 64 bit machine has this directory...)
                             bool is64bit = Environment.Is64BitOperatingSystem;
@@ -184,8 +200,7 @@
                 {
                     deleteFolder(exePath + "/tempDir/");
                 }
-
-                //OSAEMethodManager.MethodQueueAdd("SERVICE-" + Common.ComputerName, "RELOAD PLUGINS", "", "", "UserControl Installer");
+            GlobalUserControls.OSAEUserControls.FindPlugins(OSAE.Common.ApiPath + @"\UserControls");
             return NoError;
         }
 
@@ -197,26 +212,32 @@
         public  bool UninstallPlugin(PluginDescription desc)
         {
             bool returnValue = false;
-
-            string ip = "localhost";
-           
-            if (ip == "localhost")
-                ip = Common.LocalIPAddress();
-            NetworkComms.SendObject("Plugin", ip, 10051, desc.Type + "|False");
-
+            GlobalUserControls.OSAEUserControls.ClosePlugins();
             Thread.Sleep(2000);
-
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
             string pluginFolder = exePath + "/UserControls/" + desc.Path;
+            string webFolder = exePath + "/Plugins/Web Server/wwwroot/controls/usercontrols/" + pluginFolder;
             if (Directory.Exists(pluginFolder))
             {
                 if (deleteFolder(pluginFolder))
                     returnValue = true;
                 else
                     returnValue = false;
-
                 if (Directory.Exists(pluginFolder))
                     returnValue = false;
+                if (Directory.Exists(webFolder))
+                {
+                    if (deleteFolder(webFolder))
+                        returnValue = true;
+                    else
+                        returnValue = false;
+                    if (Directory.Exists(webFolder))
+                        returnValue = false;
+                }
+                else
+                {
+                    returnValue = true;
+                }
             }
             else
                 returnValue = true;
@@ -236,13 +257,10 @@
                 {
                     fi.Delete();
                 }
-
                 foreach (DirectoryInfo di in dir.GetDirectories())
                 {
                     deleteFolder(di.FullName);
-
                 }
-
                 dir.Delete(true);
                 return true;
             }

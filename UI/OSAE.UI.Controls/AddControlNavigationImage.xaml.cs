@@ -57,7 +57,7 @@ namespace OSAE.UI.Controls
                 sMode = "Add";
                 controlName = sWorkingName;
                 txtName.Text = controlName;
-                LoadCurrentScreenObject(controlName);
+                //LoadCurrentScreenObject(controlName);
             }
             Enable_Buttons();
         }
@@ -83,7 +83,7 @@ namespace OSAE.UI.Controls
             {
                 btnAdd.IsEnabled = true;
                 btnUpdate.IsEnabled = true;
-                btnDelete.IsEnabled = true;
+                btnDelete.IsEnabled = false;
             }
         }
 
@@ -93,6 +93,7 @@ namespace OSAE.UI.Controls
             cboScreens.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Screen").Value;
             txtX.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "X").Value;
             txtY.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Y").Value;
+            txtZOrder.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "ZOrder").Value;
 
             OSAEImageManager imgMgr = new OSAEImageManager();
             try
@@ -134,76 +135,38 @@ namespace OSAE.UI.Controls
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(txtName.Text))
+            if (validateForm("Add"))
             {
-                MessageBox.Show("Please specify a name for the control");
-                return;
+                string sName = txtName.Text;
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, "GUI");
+                OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboScreens.Text, sName);
+                NotifyParentFinished();
             }
-
-            if (img == null)
-            {
-                MessageBox.Show("Please specify an image for the control");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(cboScreens.Text))
-            {
-                MessageBox.Show("Please specify a target for the control");
-                return;
-            }
-
-
-            string sName = txtName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
-
-            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboScreens.Text, sName);
-
-            NotifyParentFinished();
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-
-            if (string.IsNullOrEmpty(txtName.Text))
+            if (validateForm("Update"))
             {
-                MessageBox.Show("Please specify a name for the control");
-                return;
+                sWorkingName = txtName.Text;
+                OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
+                //We call an object update here in case the Name was changed, then perform the updates against the New name
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
+                string sName = txtName.Text;
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, "GUI");
+                OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, cboScreens.Text, sName);
+                NotifyParentFinished();
             }
-
-            if (img == null)
-            {
-                MessageBox.Show("Please specify an image for the control");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(cboScreens.Text))
-            {
-                MessageBox.Show("Please specify a target for the control");
-                return;
-            }
-
-            sWorkingName = txtName.Text;
-            OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
-            //We call an object update here in case the Name was changed, then perform the updates against the New name
-            OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
-
-
-            string sName = txtName.Text;
-            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", "1", "GUI");
-
-            OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboScreens.Text, sName);
-
-            NotifyParentFinished();
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -269,5 +232,41 @@ namespace OSAE.UI.Controls
             Enable_Buttons();
         }
 
+        private bool validateForm(string mthd)
+        {
+            bool validate = true;
+            // Does this object already exist
+            if (mthd == "Add" || sOriginalName != txtName.Text)
+            {
+                try
+                {
+                    OSAEObject oExist = OSAEObjectManager.GetObjectByName(txtName.Text);
+                    if (oExist != null)
+                    {
+                        MessageBox.Show("Control name already exist. Please Change!");
+                        validate = false;
+                    }
+                }
+                catch { }
+            }
+            if (string.IsNullOrEmpty(txtName.Text))
+            {
+                MessageBox.Show("Please specify a name for the control");
+                validate = false;
+            }
+            if (img.Data == null)
+            {
+                MessageBox.Show("Please specify an image for the control");
+                validate = false;
+            }
+            if (string.IsNullOrEmpty(cboScreens.Text))
+            {
+                MessageBox.Show("Please specify a target for the control");
+                validate = false;
+            }
+
+            return validate;
+        }
+        
     }
 }

@@ -22,9 +22,6 @@ namespace OSAE.UI.Controls
 
         private void LoadUserControls()
         {
-            //DataSet dataSet = OSAESql.RunSQL("SELECT object_type FROM osae_v_object_type WHERE base_type = 'USER CONTROL' order by object_type");
-            //typesComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
-
             //Call the find User Controls routine, to search in our User Controls Folder
             foreach (Types.AvailablePlugin pluginOn in GlobalUserControls.OSAEUserControls.AvailablePlugins)
             {
@@ -72,25 +69,6 @@ namespace OSAE.UI.Controls
                 CntrlPnl.Children.Add(addcontrol);
             }
         }
-
-        //private void addButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    string sName = "Screen - " + currentScreen + " - " + txtName.Text;
-        //    OSAEObjectManager.ObjectAdd(sName, sName, sName, "USER CONTROL", "", currentScreen, true);
-        //    OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", typesComboBox.Text, "GUI");
-        //    OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-        //    OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-        //    OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", "1", "GUI");
-
-        //    OSAEScreenControlManager.ScreenObjectAdd(currentScreen, currentScreen, sName);
-
-        //    NotifyParentFinished();
-        //}
-
-        //private void cancelbutton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    NotifyParentFinished();
-        //}
 
         /// <summary>
         /// Let the hosting contol know that we are done

@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("User Control Plugin Template")]
-[assembly: AssemblyDescription("OSA UserControl Plugin Screen Control")]
+[assembly: AssemblyTitle("Custom State Button")]
+[assembly: AssemblyDescription("OSA Custom State Button Screen Control")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kirk Herron")]
 [assembly: AssemblyProduct("User Control Plugin Template")]
