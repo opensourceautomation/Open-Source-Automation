@@ -115,7 +115,6 @@ CALL osae_sp_object_type_event_add('WUNDERGROUND','OFF','Stopped');
 CALL osae_sp_object_type_method_add('WUNDERGROUND','ON','Start','','','','');
 CALL osae_sp_object_type_method_add('WUNDERGROUND','OFF','Stop','','','','');
 CALL osae_sp_object_type_method_add('WUNDERGROUND','UPDATE','Update','','','','');
-CALL osae_sp_object_type_property_add('WUNDERGROUND','PWS','String','KMOKANSA61','',0);
 CALL osae_sp_object_type_property_add('WUNDERGROUND','State','String','KS','',0);
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Forecast Interval','Integer','60','',0);
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Metric','Boolean','FALSE','',0);

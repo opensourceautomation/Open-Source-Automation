@@ -12,10 +12,7 @@
         string pName;
         private OSAE.General.OSAELog Log = new General.OSAELog();
         Thread updateConditionsThread, updateForecastThread, updateDayNightThread;
-        string pws = "";
         System.Timers.Timer ConditionsUpdateTimer, ForecastUpdateTimer, DayNightUpdateTimer;
-        //string feedUrl = "";
-        //string ForecastUrl;
         string latitude ="", longitude="";
         int Conditionsupdatetime, Forecastupdatetime, DayNightupdatetime = 60000;
         Boolean FirstUpdateRun;
@@ -245,10 +242,7 @@
             Log.Debug("***  Reading Conditions  ***");
             try
             {
-                pws = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "PWS").Value;
-                if (pws != "")
-                {
-                    feedUrl = "http://api.wunderground.com/weatherstation/WXCurrentObXML.asp?ID=" + pws;
+                    feedUrl = "http://api.wunderground.com/api/" + pKey + "/conditions/q/" + pState + "/" + pCity + ".xml";
                     Log.Debug("Reading Feed: " + feedUrl);
                     sXml = webClient.DownloadString(feedUrl);
                     xml = new XmlDocument();
@@ -256,47 +250,43 @@
                     //update all the weather variables
 
                     #region Current Observation
-                    // Seems to be returned from both pws and airport.
-                    GetFieldFromXmlAndReport(xml, "Wind Speed", "current_observation/wind_mph");
-                    GetFieldFromXmlAndReport(xml, "Wind Directions", "current_observation/wind_dir");
-                    GetFieldFromXmlAndReport(xml, "Humidity", "current_observation/relative_humidity");
-                    GetFieldFromXmlAndReport(xml, "Image", "current_observation/image/url");
-                    GetFieldFromXmlAndReport(xml, "Last Updated", "current_observation/observation_time");
+                    GetFieldFromXmlAndReport(xml, "Wind Speed", "response/current_observation/wind_mph");
+                    GetFieldFromXmlAndReport(xml, "Wind Directions", "response/current_observation/wind_dir");
+                    GetFieldFromXmlAndReport(xml, "Humidity", "response/current_observation/relative_humidity");
+                    GetFieldFromXmlAndReport(xml, "Image", "response/current_observation/image/url");
+                    GetFieldFromXmlAndReport(xml, "Last Updated", "response/current_observation/observation_time");
                     
                     if (!Metric)
                     {
-                        GetFieldFromXmlAndReport(xml, "Temp", "current_observation/temp_f");
-                        GetFieldFromXmlAndReport(xml, "Pressure", "current_observation/pressure_in");
-                        GetFieldFromXmlAndReport(xml, "Dewpoint", "current_observation/dewpoint_f");
-                        GetFieldFromXmlAndReport(xml, "Windchill", "current_observation/windchill_f");
+                        GetFieldFromXmlAndReport(xml, "Temp", "response/current_observation/temp_f");
+                        GetFieldFromXmlAndReport(xml, "Pressure", "response/current_observation/pressure_in");
+                        GetFieldFromXmlAndReport(xml, "Dewpoint", "response/current_observation/dewpoint_f");
+                        GetFieldFromXmlAndReport(xml, "Windchill", "response/current_observation/windchill_f");
                     }
                     else
                     {
-                        GetFieldFromXmlAndReport(xml, "Temp", "current_observation/temp_c"); 
-                        GetFieldFromXmlAndReport(xml, "Pressure", "current_observation/pressure_mb");
-                        GetFieldFromXmlAndReport(xml, "Dewpoint", "current_observation/dewpoint_c");
-                        GetFieldFromXmlAndReport(xml, "Windchill", "current_observation/windchill_c");
+                        GetFieldFromXmlAndReport(xml, "Temp", "response/current_observation/temp_c"); 
+                        GetFieldFromXmlAndReport(xml, "Pressure", "response/current_observation/pressure_mb");
+                        GetFieldFromXmlAndReport(xml, "Dewpoint", "response/current_observation/dewpoint_c");
+                        GetFieldFromXmlAndReport(xml, "Windchill", "response/current_observation/windchill_c");
                     }
                     
                     // Only returned for airports.
-                    GetFieldFromXmlAndReport(xml, "Visibility", "current_observation/visibility_mi");
-                    GetFieldFromXmlAndReport(xml, "Conditions", "current_observation/weather");
+                    GetFieldFromXmlAndReport(xml, "Visibility", "response/current_observation/visibility_mi");
+                    GetFieldFromXmlAndReport(xml, "Conditions", "response/current_observation/weather");
 
                     if (FirstUpdateRun)
                     {
-                        latitude = GetNodeValue(xml,"current_observation/location/latitude");
-                        longitude = GetNodeValue(xml, "current_observation/location/longitude");
+                        latitude = GetNodeValue(xml, "response/current_observation/observation_location/latitude");
+                        longitude = GetNodeValue(xml, "response/current_observation/observation_location/longitude");
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "latitude", latitude, pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "longitude", longitude, pName);
                     }
-                    //ForecastUrl = GetNodeValue(xml, "current_observation/ob_url");
                     #endregion
-                }                                    
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error updating current weather - ", ex);
-            }
+            { this.Log.Error("Error updating current weather - ", ex); }
+
             FirstUpdateRun = false;
         }
 
