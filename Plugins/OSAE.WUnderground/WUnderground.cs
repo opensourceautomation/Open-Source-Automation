@@ -20,9 +20,8 @@
         int Conditionsupdatetime, Forecastupdatetime, DayNightupdatetime = 60000;
         Boolean FirstUpdateRun;
         Boolean FirstForcastRun;
-        String DayNight, WeatherObjName;
+        String DayNight, WeatherObjName, pKey, pCity, pState;
         Boolean Metric;
-        //dev key d50de2112f55424b
 
         public override void RunInterface(string pluginName)
         {
@@ -52,6 +51,40 @@
                     }
                 }
                 catch {}
+
+                try
+                {
+                    pKey = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Key").Value;
+                    if (pKey.Length < 1)
+                        Log.Info("!!! You need an WUnderground Key for full weather feeds !!!");
+                    else
+                        Log.Info("Found WUnderground Key (" + pKey + ")");
+                }
+                catch (Exception ex)
+                { Log.Error("Error reading your Key.", ex); }
+
+                try
+                {
+                    pCity = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "City").Value;
+                    if (pCity.Length < 1)
+                        Log.Info("!!! You need a City for full weather feeds !!!");
+                    else
+                        Log.Info("Found WUnderground City (" + pCity + ")");
+                }
+                catch (Exception ex)
+                { Log.Error("Error reading your City.", ex); }
+
+                try
+                {
+                    pState = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "State").Value;
+                    if (pState.Length < 1)
+                        Log.Info("!!! You need a State for full weather feeds !!!");
+                    else
+                        Log.Info("Found State (" + pState + ")");
+                }
+                catch (Exception ex)
+                { Log.Error("Error reading your State.", ex); }
+
 
                 Conditionsupdatetime = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Conditions Interval").Value);
                 if (Conditionsupdatetime > 0)
@@ -107,15 +140,12 @@
                 this.updateDayNightThread.Start();             
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error initializing the plugin ", ex);
-            }
+            { this.Log.Error("Error initializing the plugin ", ex); }
          }
                 
         public override void ProcessCommand(OSAEMethod method)
         {
-            if (method.MethodName == "UPDATE")
-                update();
+            if (method.MethodName == "UPDATE") update();
         }
         
         public override void Shutdown()
@@ -282,7 +312,7 @@
                 Log.Info("***  Sunrise/Sunset  ***");
                 if (latitude != "" && longitude != "")
                 {
-                    feedUrl = "http://api.wunderground.com/api/d50de2112f55424b/astronomy/q/KS/ellis.xml";
+                    feedUrl = "http://api.wunderground.com/api/" + pKey + "/astronomy/q/" + pState + "/" + pCity + ".xml";
                     Log.Debug("Reading Sunset: " + feedUrl);
                     sXml = webClient.DownloadString(feedUrl);
                     xml = new XmlDocument();
@@ -302,23 +332,17 @@
                 if (latitude != "" && longitude != "")
                 {
                     // Now get the forecast.
-                    // feedUrl = "http://api.wunderground.com/auto/wui/geo/ForecastXML/index.xml?query=" + latitude + "," + longitude;
-                    //  feedUrl = "http://api.wunderground.com/api/d50de2112f55424b/forecast/q/KS/Ellis.xml";
-                    feedUrl = "http://api.wunderground.com/api/d50de2112f55424b/forecast10day/q/KS/Ellis.xml";
+                    feedUrl = "http://api.wunderground.com/api/d50de2112f55424b/forecast10day/q/" + pState + "/" + pCity + ".xml";
                     Log.Debug("Reading Forcast: " + feedUrl);
                     sXml = webClient.DownloadString(feedUrl);
                     xml = new XmlDocument();
                     xml.LoadXml(sXml);
 
-                   // ReportFieldValue("Sunrise", GetNodeValue(xml, "forecast/moon_phase/sunrise/hour") + ":" + GetNodeValue(xml, "forecast/moon_phase/sunrise/minute"));
-                 //   ReportFieldValue("Sunset", GetNodeValue(xml, "forecast/moon_phase/sunset/hour") + ":" + GetNodeValue(xml, "forecast/moon_phase/sunset/minute"));
-
                     // NOTE:
                     // New API has Today + 9 day forcast.   In Simple, it only has Daytime, so 4 Periods. text has 2 periods per day (night)
                     // I could be wrong, but I am mapping it as period 0=today,1=tonight,2=tomorrow,3=tomorrow night
-                    //
 
-                    //We are basing the Period here on Simple. so 1 per day +1 in text will equal the night
+                    //We are basing the Period here on Simple. so 1 per day +1 in txt_ will equal the night
                     #region Period1/0-1
                     //(Today & Tonight)
                     GetFieldFromXmlAndReport(xml, "Today Precip", @"response/forecast/txt_forecast/forecastdays/forecastday[period=0]/pop");
@@ -549,9 +573,7 @@
 
                     DuskStart = Sunset;
                     DuskEnd = Sunset;
-
                 }
-
 
                 if (Now >= DawnEnd & Now < DuskStart)
                 {
@@ -564,7 +586,6 @@
                         //}
                         DayNight = "Day";
                         this.Log.Debug("Day");
-                        
                     }
                 }
                 else if (Now >= DuskEnd | Now < DawnStart)
@@ -585,10 +606,6 @@
                     if (DayNight != "Dawn")
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Dawn", pName);
-                     //   if (DayNight == "Night")
-                     //   {
-                     //       logging.EventLogAdd(WeatherObjName, "Dawn");
-                      //  }
                         DayNight = "Dawn";
                         this.Log.Info("Dawn");
                     }
@@ -599,10 +616,6 @@
                     if (DayNight != "Dusk")
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Dusk", pName);
-                     //   if (DayNight == "Day")
-                      //  {
-                      //      logging.EventLogAdd(WeatherObjName, "Dusk");
-                      //  }
                         DayNight = "Dusk";
                         this.Log.Info("Dusk");
                     }
@@ -612,7 +625,6 @@
             {
                 this.Log.Error("Error updating day/night ",ex);
             }
-
         }
 
         public void OwnTypes()
@@ -626,9 +638,7 @@
                 Log.Info("WUnderground Plugin took ownership of the WUNDERGROUND Object Type.");
             }
             else
-            {
                 Log.Info("WUnderground Plugin correctly owns the WUNDERGROUND Object Type.");
-            }
 
             //Added the follow for SYSTEM to automatically own Weather Base types that have no owner.
             oType = OSAEObjectTypeManager.ObjectTypeLoad("WUNDERGROUND");
@@ -639,9 +649,7 @@
                 Log.Info("SYSTEM took ownership of the WEATHER Object Type.");
             }
             else
-            {
                 Log.Info("SYSTEM Plugin correctly owns the WEATHER Object Type.");
-            }
         }
     }
 }

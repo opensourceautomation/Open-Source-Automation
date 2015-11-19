@@ -2,10 +2,10 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>WUnderground</plugin-name>
 <plugin-id>d0e7ca84-823e-4455-bd7b-3d4220487cae</plugin-id>
-<plugin-version>0.4.4</plugin-version>
+<plugin-version>0.4.7</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>Get current and forcast from Weather Underground</short-description>
-<author>Brian, Automate</author>
+<author>Brian, Automate, Vaughn</author>
 <destination-folder>Wunderground</destination-folder>
 <main-file>WUnderground.dll</main-file>
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=WUnderground</wiki-url>
