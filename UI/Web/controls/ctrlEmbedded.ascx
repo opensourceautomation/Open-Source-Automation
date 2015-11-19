@@ -1,8 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="ctrlEmbedded.ascx.cs" Inherits="controls_ctrlEmbedded" className="ctrlEmbedded"%>
 
-<IFRAME id="frame"  runat="server"  />
-<video width="320" height="240" controls>
-  <source src="movie.mp4" type="video/mp4">
-  <source src="movie.ogg" type="video/ogg">
-Your browser does not support the video tag.
-</video>
+<iframe id="frame" runat="server">
+   Your browser does not support the video tag.
+</iframe>
