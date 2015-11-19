@@ -83,11 +83,11 @@ namespace OSAE.Weather_Control
         }
         private void LoadDayLabels()
         {
-            lblDay1.Tag = weatherObj.Property("Day1 Label").Value;
-            lblDay2.Tag = weatherObj.Property("Day2 Label").Value;
-            lblDay3.Tag = weatherObj.Property("Day3 Label").Value;
-            lblDay4.Tag = weatherObj.Property("Day4 Label").Value;
-            lblDay5.Tag = weatherObj.Property("Day5 Label").Value;
+            lblDay1.Tag = weatherObj.Property("Day1 Forecast").Value;
+            lblDay2.Tag = weatherObj.Property("Day2 Forecast").Value;
+            lblDay3.Tag = weatherObj.Property("Day3 Forecast").Value;
+            lblDay4.Tag = weatherObj.Property("Day4 Forecast").Value;
+            lblDay5.Tag = weatherObj.Property("Day5 Forecast").Value;
         }
         private void LoadHighs()
         {

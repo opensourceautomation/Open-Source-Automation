@@ -160,11 +160,11 @@ public partial class controls_ctrlUserControl : System.Web.UI.UserControl
     #region Load Day Labels
     private void LoadDayLabels()
     {
-        lblDay1.ToolTip = weatherObj.Property("Day1 Label").Value;
-        lblDay2.ToolTip = weatherObj.Property("Day2 Label").Value;
-        lblDay3.ToolTip = weatherObj.Property("Day3 Label").Value;
-        lblDay4.ToolTip = weatherObj.Property("Day4 Label").Value;
-        lblDay5.ToolTip = weatherObj.Property("Day5 Label").Value;
+        lblDay1.ToolTip = weatherObj.Property("Day1 Forecast").Value;
+        lblDay2.ToolTip = weatherObj.Property("Day2 Forecast").Value;
+        lblDay3.ToolTip = weatherObj.Property("Day3 Forecast").Value;
+        lblDay4.ToolTip = weatherObj.Property("Day4 Forecast").Value;
+        lblDay5.ToolTip = weatherObj.Property("Day5 Forecast").Value;
     }
     #endregion
 
