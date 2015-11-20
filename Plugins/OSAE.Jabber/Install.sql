@@ -1,0 +1,12 @@
+CALL osae_sp_object_type_add ('JABBER','Jabber Plugin','','PLUGIN',1,1,0,1);
+CALL osae_sp_object_type_state_add('JABBER','ON','Running');
+CALL osae_sp_object_type_state_add('JABBER','OFF','Stopped');
+CALL osae_sp_object_type_event_add('JABBER','ON','Started');
+CALL osae_sp_object_type_event_add('JABBER','OFF','Stopped');
+CALL osae_sp_object_type_method_add('JABBER','SEND MESSAGE','Send Message','To','Message','','');
+CALL osae_sp_object_type_method_add('JABBER','SEND FROM LIST','Send From List','To','List','','');
+CALL osae_sp_object_type_method_add('JABBER','SEND QUESTION','Send Question','To','','','');
+CALL osae_sp_object_type_property_add('JABBER','Username','String','','',0);
+CALL osae_sp_object_type_property_add('JABBER','Password','String','','',0);
+CALL osae_sp_object_type_property_add('JABBER','System Plugin','Boolean','','TRUE',0);
+CALL osae_sp_object_type_property_add('JABBER','Debug','Boolean','','FALSE',0);

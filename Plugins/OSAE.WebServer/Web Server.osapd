@@ -2,8 +2,8 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Web Server</plugin-name>
 <plugin-id>d8410787-1205-4371-bd2c-b453dcd50bca</plugin-id>
-<plugin-version>0.4.6</plugin-version>
-<plugin-state>alpha</plugin-state>
+<plugin-version>0.4.7</plugin-version>
+<plugin-state>beta</plugin-state>
 <short-description>Add a web server to OSA</short-description>
 <author>Brian Woodworth, Matthew Stebbings</author>
 <destination-folder>Web Server</destination-folder>
@@ -11,4 +11,6 @@
 <wiki-url></wiki-url>
 <additional-assemblies>
 </additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
 </plugin-description>

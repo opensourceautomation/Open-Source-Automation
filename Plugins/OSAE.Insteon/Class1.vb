@@ -103,10 +103,16 @@
                         Dim oObject96 As OSAEObject = OSAEObjectManager.GetObjectByAddress(PLM_Address)
                         If oObject96 IsNot Nothing Then
                             If oObject96.Name <> "" Then
-                                If gDebug Then Log.Debug("Found: " & oObject96.Name & " for PLM Address: " & PLM_Address)
+                                If gDebug Then Log.Info("Found: " & oObject96.Name & " for PLM Address: " & PLM_Address)
                             End If
                         Else
-                            If gDebug Then Log.Debug("PLM Object not found with Address of: " & PLM_Address & ".  Please set the Insteon Object's address")
+                            oObject96 = OSAEObjectManager.GetObjectByName(gAppName)
+                            If oObject96.Name <> "" Then
+                                OSAEObjectManager.ObjectUpdate(oObject96.Name, oObject96.Name, oObject96.Alias, oObject96.Description, oObject96.Type, PLM_Address, oObject96.Container, oObject96.Enabled)
+                                If gDebug Then Log.Info("I set the PLM Address on the plugin to: " & PLM_Address)
+                            Else
+                                If gDebug Then Log.Error("Plugin could not be updated with Address of: " & PLM_Address & ".  Please set the Insteon plugin's address")
+                            End If
                         End If
                     Catch ex As Exception
                         Log.Error("Added Insteon error (96): " & ex.Message)

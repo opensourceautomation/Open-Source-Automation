@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Desktop
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MYStateButton", "MYStateButton\MYStateButton.csproj", "{8B3F4EF2-87E8-408C-85F6-56475282A661}"
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MYStateButton", "MYStateButton\MYStateButton.csproj", "{C0FD822A-00D2-4209-B714-0B713C1D2FA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8B3F4EF2-87E8-408C-85F6-56475282A661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B3F4EF2-87E8-408C-85F6-56475282A661}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B3F4EF2-87E8-408C-85F6-56475282A661}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B3F4EF2-87E8-408C-85F6-56475282A661}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0FD822A-00D2-4209-B714-0B713C1D2FA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0FD822A-00D2-4209-B714-0B713C1D2FA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0FD822A-00D2-4209-B714-0B713C1D2FA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0FD822A-00D2-4209-B714-0B713C1D2FA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

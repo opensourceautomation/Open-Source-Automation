@@ -1,0 +1,16 @@
+CALL osae_sp_object_type_add ('EMAIL','Email Plugin','','PLUGIN',1,0,0,1);
+CALL osae_sp_object_type_state_add('EMAIL','ON','Running');
+CALL osae_sp_object_type_state_add('EMAIL','OFF','Stopped');
+CALL osae_sp_object_type_event_add('EMAIL','ON','Started');
+CALL osae_sp_object_type_event_add('EMAIL','OFF','Stopped');
+CALL osae_sp_object_type_event_add('EMAIL','EMAIL SENT','Email Sent');
+CALL osae_sp_object_type_method_add('EMAIL','ON','Start','','','','');
+CALL osae_sp_object_type_method_add('EMAIL','OFF','Stop','','','','');
+CALL osae_sp_object_type_method_add('EMAIL','SEND EMAIL','Send Email','TO','Message','vaughnrupp@yahoo.com','Test Message');
+CALL osae_sp_object_type_property_add('EMAIL','SMTP Server','String','','',0);
+CALL osae_sp_object_type_property_add('EMAIL','SMTP Port','String','','25',0);
+CALL osae_sp_object_type_property_add('EMAIL','ssl','Boolean','','TRUE',0);
+CALL osae_sp_object_type_property_add('EMAIL','Username','String','','',0);
+CALL osae_sp_object_type_property_add('EMAIL','Password','String','','',0);
+CALL osae_sp_object_type_property_add('EMAIL','From Address','String','','',0);
+CALL osae_sp_object_type_property_add('EMAIL','System Plugin','Boolean','','TRUE',0);
