@@ -117,11 +117,11 @@ namespace OSAE.JWorks
             {
                 if (dir == Direction.Input)
                 {
-                    OSAEObjectManager.ObjectAdd(address, "J-Works input", "JWORKS INPUT", address, "", true);
+                    OSAEObjectManager.ObjectAdd("J-Works-I" + address,"", "J -Works input", "JWORKS INPUT", address, "", true);
                 }
                 else
                 {
-                    OSAEObjectManager.ObjectAdd(address, "J-Works output", "JWORKS OUTPUT", address, "", true);
+                    OSAEObjectManager.ObjectAdd("J-Works-0" + address,"", "J-Works output", "JWORKS OUTPUT", address, "", true);
                 }
                 OSAEObjectPropertyManager.ObjectPropertySet(address, "Serial", serial, pName);
                 OSAEObjectPropertyManager.ObjectPropertySet(address, "Id", Convert.ToString(id),pName);
@@ -260,8 +260,8 @@ namespace OSAE.JWorks
                 pollInterval = UInt32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value);
 
             // point subobject classes at this instance (I think)
-            OSAEObjectTypeManager.ObjectTypeUpdate("JWORKS INPUT", "JWORKS INPUT", "J-Works Input", pName, "JWORKS INPUT", 0, 0, 0, 1);
-            OSAEObjectTypeManager.ObjectTypeUpdate("JWORKS OUTPUT", "JWORKS OUTPUT", "J-Works Output", pName, "JWORKS OUTPUT", 0, 0, 0, 1);
+            OSAEObjectTypeManager.ObjectTypeUpdate("JWORKS INPUT", "JWORKS INPUT", "J-Works Input", pName, "JWORKS INPUT", false, false, false, true);
+            OSAEObjectTypeManager.ObjectTypeUpdate("JWORKS OUTPUT", "JWORKS OUTPUT", "J-Works Output", pName, "JWORKS OUTPUT", false, false, false, true);
 
             // enumerate JSB34x inputs and outputs
             short numDevs = Jsb34xNumberOfModules();

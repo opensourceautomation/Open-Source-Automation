@@ -50,7 +50,7 @@ Public Class GlobalCache
             If GlobalCacheObjects.Count = 0 Then
                 logging.AddToLog("Creating object GC-100", True)
 
-                OSAEObjectManager.ObjectAdd("GC-100", "GC-100", "GC-100", "192.168.1.70", "", True)
+                OSAEObjectManager.ObjectAdd("GC-100", "", "GC-100", "GC-100", "192.168.1.70", "", True)
                 GCDeviceCollection.Add(New GCDevice)
                 GCDeviceCollection(0).IPAddress = "192.168.1.70"
                 GCDeviceCollection(0).Name = "GC-100"

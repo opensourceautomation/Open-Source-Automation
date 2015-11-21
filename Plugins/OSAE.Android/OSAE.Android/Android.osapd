@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Android</plugin-name>
 <plugin-id>f88b71e1-4047-4748-8ccb-e208f522c03c</plugin-id>
-<plugin-version>0.0.2</plugin-version>
+<plugin-version>0.4.7</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Android Extension for OSA</short-description>
 <author>Brian Bridger</author>

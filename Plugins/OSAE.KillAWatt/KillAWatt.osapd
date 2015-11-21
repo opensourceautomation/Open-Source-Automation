@@ -2,8 +2,8 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>KillAWatt</plugin-name>
 <plugin-id>e733a7e3-25e3-40be-b976-f8fba026fd2b</plugin-id>
-<plugin-version>0.4.0</plugin-version>
-<plugin-state>alpha</plugin-state>
+<plugin-version>0.4.7</plugin-version>
+<plugin-state>beta</plugin-state>
 <short-description>Monitor the electricity consumption from your hacked Kill-A-Watt</short-description>
 <author>Brian</author>
 <destination-folder>KillAWatt</destination-folder>
@@ -11,4 +11,6 @@
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=KillAWatt</wiki-url>
 <additional-assemblies>
 </additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
 </plugin-description>

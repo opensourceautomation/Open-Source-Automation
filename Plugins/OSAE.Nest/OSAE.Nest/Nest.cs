@@ -473,7 +473,7 @@
                                 Log.Error("Object with name: " + _nameObject.Name + " exists but it's address doesn't match - objects address: " + _nameObject.Address + ". - device_id from nest:" + structure.structure_id + ".");
                             }
 
-                            OSAEObjectManager.ObjectAdd(structure.name, structure.name, "NEST STRUCTURE", structure.structure_id, "", true);
+                            OSAEObjectManager.ObjectAdd(structure.name,"", structure.name, "NEST STRUCTURE", structure.structure_id, "", true);
   
                         }
 
@@ -543,7 +543,7 @@
                                 Log.Error("Object with name: " + _nameObject.Name + " exists but it's address doesn't match - objects address: " + _nameObject.Address + ". - device_id from nest:" + thermostat.structure_id + ".");
                             }
 
-                            OSAEObjectManager.ObjectAdd(thermostat.name, thermostat.name_long, "NEST THERMOSTAT", thermostat.device_id, "", true);
+                            OSAEObjectManager.ObjectAdd(thermostat.name,"", thermostat.name_long, "NEST THERMOSTAT", thermostat.device_id, "", true);
                         }
 
                         String objectName = OSAEObjectManager.GetObjectByAddress(thermostat.device_id).Name;
@@ -638,7 +638,7 @@
                                 Log.Error("Object with name: " + _nameObject.Name + " exists but it's address doesn't match - objects address: " + _nameObject.Address + ". - device_id from nest:" + smokealarm.structure_id + ".");
                             }
 
-                            OSAEObjectManager.ObjectAdd(smokealarm.name, smokealarm.name_long, "NEST PROTECT", smokealarm.device_id, "", true);
+                            OSAEObjectManager.ObjectAdd(smokealarm.name,"", smokealarm.name_long, "NEST PROTECT", smokealarm.device_id, "", true);
                         }
 
                         String objectName = OSAEObjectManager.GetObjectByAddress(smokealarm.device_id).Name;

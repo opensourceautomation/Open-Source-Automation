@@ -24,7 +24,7 @@
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-            OSAEObjectTypeManager.ObjectTypeUpdate("KILLAWATT MODULE", "KILLAWATT MODULE", "Kill-A-Watt Module", pName, "KILLAWATT MODULE", 0, 0, 0, 1);
+            OSAEObjectTypeManager.ObjectTypeUpdate("KILLAWATT MODULE", "KILLAWATT MODULE", "Kill-A-Watt Module", pName, "KILLAWATT MODULE", false, false, false, true);
 
             xb = new xbee(Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value));
             xb.xbeePacketReceived += new xbee.xbeePacketReceivedEventHandler(xb_xbeePacketReceived);
@@ -175,7 +175,7 @@
             }
             pcList.Add(new PowerCollection(address));
             if(OSAEObjectManager.GetObjectByAddress("KAW" + address.ToString()) == null)
-                OSAEObjectManager.ObjectAdd("KillAWatt - " + address.ToString(), "Kill-A-Watt device", "KILLAWATT MODULE", "KAW" + address.ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("KillAWatt - " + address.ToString(),"", "Kill-A-Watt device", "KILLAWATT MODULE", "KAW" + address.ToString(), "", true);
 
             return GetPowerCollection(address);
         }

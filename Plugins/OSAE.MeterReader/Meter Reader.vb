@@ -141,7 +141,7 @@ Public Class MeterReader
             If Not MeterDict.ContainsKey(Address) Then
                 MeterToUpdate.Name = "M" & Address.ToString
                 logging.AddToLog("Adding new meter: " & MeterToUpdate.Name, True)
-                OSAEObjectManager.ObjectAdd(MeterToUpdate.Name, "Utility Meter", "Utility Meter", Address.ToString, "", True)
+                OSAEObjectManager.ObjectAdd(MeterToUpdate.Name, "", "Utility Meter", "Utility Meter", Address.ToString, "", True)
                 OSAEObjectPropertyManager.ObjectPropertySet(MeterToUpdate.Name, "Type", Type.ToString, pName)
                 MeterToUpdate.LastReceived = ReceiveTime
                 MeterToUpdate.LastChange = ReceiveTime

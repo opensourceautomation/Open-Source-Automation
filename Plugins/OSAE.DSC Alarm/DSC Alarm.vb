@@ -214,7 +214,7 @@ Public Class DSCAlarm
             'Check if alarm partition 1 object exists
             If OSAEObjectManager.GetObjectsByType("DSC ALARM PARTITION").Count = 0 Then
                 logging.AddToLog("Creating DSC Alarm Partion 1", True)
-                OSAEObjectManager.ObjectAdd("DSC Alarm Partition", "DSC Alarm Partion", "DSC ALARM PARTITION", "1", "", True)
+                OSAEObjectManager.ObjectAdd("DSC Alarm Partition", "", "DSC Alarm Partion", "DSC ALARM PARTITION", "1", "", True)
                 If OSAEObjectManager.GetObjectsByType("DSC ALARM PARTITION").Count = 0 Then
                     logging.AddToLog("Problem creating DSC Alarm Partion, most likely you already have an object with address 1", True)
                 End If

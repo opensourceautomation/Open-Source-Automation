@@ -4,11 +4,11 @@ CALL osae_sp_object_type_state_add ('DSC ALARM','OFF','Stopped');
 CALL osae_sp_object_type_event_add ('DSC ALARM','ON','Started');
 CALL osae_sp_object_type_event_add ('DSC ALARM','OFF','Stopped');
 CALL osae_sp_object_type_property_add ('DSC ALARM','Software Version','String','','',0);
-CALL osae_sp_object_type_property_add ('DSC ALARM','Baud','Integer','9600','',0);
-CALL osae_sp_object_type_property_add ('DSC ALARM','Update Time','Integer','60','',0);
-CALL osae_sp_object_type_property_add ('DSC ALARM','Code','Integer','0','',0);
+CALL osae_sp_object_type_property_add ('DSC ALARM','Baud','Integer','','9600',0);
+CALL osae_sp_object_type_property_add ('DSC ALARM','Update Time','Integer','','60',0);
+CALL osae_sp_object_type_property_add ('DSC ALARM','Code','Integer','','0',0);
 CALL osae_sp_object_type_property_add ('DSC ALARM','Password','String','','',0);
-CALL osae_sp_object_type_property_add ('DSC ALARM','Ethernet','Boolean','FALSE','',0);
+CALL osae_sp_object_type_property_add ('DSC ALARM','Ethernet','Boolean','','FALSE',0);
 CALL osae_sp_object_type_property_add ('DSC ALARM','Keybus','String','','',0);
 
 CALL osae_sp_object_type_add ('DSC ALARM PARTITION','DSC Alarm Partition','DSC Alarm','DSC ALARM PARTITION',0,0,0,0);

@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\output\Plugins\OSAE.Nest\</OutputPath>
+    <OutputPath>..\..\..\output\Plugins\OSAE.Nest\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,14 +36,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FirebaseSharp.Portable">
-      <HintPath>A:\Downloads\DotNetWorksWithNest\DotNetWorksWithNest\packages\FirebaseSharp.1.0.0.3\lib\portable-net45+wp80+win\FirebaseSharp.Portable.dll</HintPath>
+      <HintPath>.\FirebaseSharp.Portable.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>A:\Downloads\DotNetWorksWithNest\DotNetWorksWithNest\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\OSAE.PubNub\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="OSAE.API">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\OSA\OSAE.API.dll</HintPath>
+      <HintPath>..\..\..\output\OSAE.API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
