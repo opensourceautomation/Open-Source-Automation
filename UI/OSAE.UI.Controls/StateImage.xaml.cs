@@ -158,24 +158,34 @@ namespace OSAE.UI.Controls
             {
                 case 1:
                     imageStream = ms1;
+                    ms1.Position = 0;
                     break;
                 case 2:
                     imageStream = ms2;
+                    ms2.Position = 0;
                     break;
                 case 3:
                     imageStream = ms3;
+                    ms3.Position = 0;
                     break;
                 case 4:
                     imageStream = ms4;
+                    ms4.Position = 0;
                     break;
             }
 
-            BitmapImage bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.StreamSource = imageStream;
-            bitmapImage.EndInit();
-            Image.Source = bitmapImage;
-            Image.Visibility = System.Windows.Visibility.Visible;
+            try {
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = imageStream;
+                bitmapImage.EndInit();
+                Image.Source = bitmapImage;
+                Image.Visibility = System.Windows.Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         public void Update()

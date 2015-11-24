@@ -1007,7 +1007,7 @@
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
-            addControl.Show();
+            addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
 
@@ -1019,7 +1019,7 @@
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
-            addControl.Show();
+            addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
 
@@ -1031,7 +1031,7 @@
             addControl.Content = cni;
             addControl.Width = cni.Width + 80;
             addControl.Height = cni.Height + 80;
-            addControl.Show();
+            addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
 
@@ -1056,7 +1056,8 @@
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
-            addControl.Show();
+            addControl.ShowDialog();
+            Load_Screen(gCurrentScreen);
         }
 
         private void menuAddCameraViewer_Click(object sender, RoutedEventArgs e)
@@ -1067,7 +1068,7 @@
             addControl.Width = csi.Width + 40;
             addControl.Height = csi.Height + 40;
             addControl.Content = csi;
-            addControl.Show();
+            addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
             
         }
@@ -1080,7 +1081,7 @@
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
-            addControl.Show();
+            addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
 
@@ -1092,7 +1093,7 @@
             addControl.Width = csi.Width + 80;
             addControl.Height = csi.Height + 80;
             addControl.Content = csi;
-            addControl.Show();
+            addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
 
