@@ -23,7 +23,7 @@ namespace OSAE.Weather_Control
     /// </summary>
     public partial class CustomUserControl : UserControl
     {
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+       // private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
         OSAEObject weatherObj;
         public Point Location;
         public string _controlname;
@@ -155,10 +155,7 @@ namespace OSAE.Weather_Control
                     imageBox.Source = imageSource;
 
                 }
-                catch (Exception ex)
-                {
-                    this.Log.Error("Unable to download weather image " + url.OriginalString, ex);
-                }
+                catch { }
             }
         }
 

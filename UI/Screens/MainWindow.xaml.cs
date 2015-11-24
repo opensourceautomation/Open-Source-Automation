@@ -23,8 +23,8 @@
         //OSAELog
         private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
         
-        public String gAppName = "";
-        public String gCurrentScreen = "";
+        public string gAppName = "";
+        public string gCurrentScreen = "";
 
         List<StateImage> stateImages = new List<StateImage>();
         List<NavigationImage> navImages = new List<NavigationImage>();
@@ -159,7 +159,9 @@
             {
                 this.Log.Error("Failed to load screen: " + sScreen, ex);
             }
+            this.Log.Info("Loaded Screen:  " + sScreen);
             _timer.Start();
+
         }
 
         private void Load_Objects(String sScreen)
@@ -181,6 +183,7 @@
                         System.Threading.Thread.Sleep(100);
                     }
                     updatingScreen = true;
+                    this.Log.Debug("Checking for updates on:  " + gCurrentScreen);
                     bool oldCtrl = false;
                     List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
 
@@ -672,6 +675,8 @@
                 OSAEObjectManager.ObjectAdd(gAppName, gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, "GUI");
             }
+            this.Log.Info("Found this Screen App's Object Name:  " + gAppName);
+
         }
 
         private void Set_Default_Screen()
