@@ -13,12 +13,13 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class AddControlScreen : UserControl
     {
-        private string currentScreen;
+        public string currentScreen;
         OSAEImage img = new OSAEImage();
         private OSAEImageManager imgMgr = new OSAEImageManager();
         string sOriginalName = "";
         string sWorkingName = "";
         string sMode = "";
+        string gHostGUI;
 
         public AddControlScreen(string screen)
         {
@@ -70,6 +71,7 @@ namespace OSAE.UI.Controls
                 string tempName = txtScreenName.Text;
                 OSAEObjectManager.ObjectAdd(tempName, tempName, tempName, "SCREEN", "", tempName, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, "GUI");
+                currentScreen = txtScreenName.Text;
                 NotifyParentFinished();
             }
         }
@@ -89,6 +91,17 @@ namespace OSAE.UI.Controls
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
+            //read in the Container/Object ID to hack this delete until it gets made into a Proc/API call
+            DataSet dsScreenControlID = OSAESql.RunSQL("SELECT object_id FROM osae_object where object_name = '" + currentScreen + "'");
+            string iObjectID = dsScreenControlID.Tables[0].Rows[0][0].ToString();
+            //Delete the controls on the screen, then the screen, then load a valid screen
+            DataSet dsTemp = OSAESql.RunSQL("DELETE FROM osae_object WHERE container_id = " + iObjectID);
+            dsTemp = OSAESql.RunSQL("DELETE FROM osae_object WHERE object_name ='" + currentScreen + "'");
+            OSAEObjectCollection screens = OSAEObjectManager.GetObjectsByType("SCREEN");
+            if (screens.Count > 0)
+                currentScreen = screens[0].Name;
+            else
+                currentScreen = "";
             NotifyParentFinished();
         }
 

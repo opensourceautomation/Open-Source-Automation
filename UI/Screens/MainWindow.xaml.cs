@@ -23,8 +23,8 @@
         //OSAELog
         private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
         
-        String gAppName = "";
-        String gCurrentScreen = "";
+        public String gAppName = "";
+        public String gCurrentScreen = "";
 
         List<StateImage> stateImages = new List<StateImage>();
         List<NavigationImage> navImages = new List<NavigationImage>();
@@ -1106,7 +1106,9 @@
             addControl.Height = cscr.Height + 80;
             addControl.Content = cscr;
             addControl.ShowDialog();
-            Load_Screen(gCurrentScreen);
+            Load_Screen(cscr.currentScreen);
+          //  Load_Screen(gCurrentScreen);
+
         }
 
         private void menuInstallUserControl_Click(object sender, RoutedEventArgs e)
