@@ -6,7 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using OSAE;
 
-public partial class controls_ctrlEmbedded : System.Web.UI.UserControl
+public partial class controls_ctrlBrowser: System.Web.UI.UserControl
 {
     public OSAEObject screenObject { get; set; }
     public string Source;
@@ -14,8 +14,9 @@ public partial class controls_ctrlEmbedded : System.Web.UI.UserControl
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        OSAEObject obj = OSAEObjectManager.GetObjectByName(screenObject.Property("Object Name").Value);
-        Source = renameingSys(obj.Property("URI").Value);
+        //OSAEObject obj = OSAEObjectManager.GetObjectByName(screenObject.Property("Object Name").Value);
+        //Source = renameingSys(obj.Property("URI").Value);
+        Source = renameingSys(screenObject.Property("URI").Value);
         width = screenObject.Property("Width").Value;
         height = screenObject.Property("Height").Value;
         frame.Attributes.Add("width", width);
@@ -35,9 +36,7 @@ public partial class controls_ctrlEmbedded : System.Web.UI.UserControl
             string getProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Property("Object Name").Value, renameProperty).Value;
             // log any errors
             if (getProperty.Length > 0)
-            {
                 newData = newData.Replace("[" + renameProperty + "]", getProperty);
-            }
         }
         newData = @"http://" + newData;
         return newData;

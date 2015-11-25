@@ -47,7 +47,6 @@
             }
         }
 
-
         public static void ScreenObjectDelete(string screen, string objectName, string controlName)
         {
             using (MySqlCommand command = new MySqlCommand())
@@ -67,8 +66,6 @@
                 }
             }
         }
-
-
 
         public static List<OSAEScreenControl> GetScreenControls(string screenName)
         {           
