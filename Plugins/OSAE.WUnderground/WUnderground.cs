@@ -436,7 +436,7 @@
                     if (!Metric)
                     {
                         GetFieldFromXmlAndReport(xml, "Day5 High", @"response/forecast/simpleforecast/forecastdays/forecastday[period=6]/high/fahrenheit");
-                        GetFieldFromXmlAndReport(xml, "Nigh5 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=6]/low/fahrenheit");
+                        GetFieldFromXmlAndReport(xml, "Night5 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=6]/low/fahrenheit");
                     }
                     else
                     {
@@ -456,7 +456,7 @@
                     if (!Metric)
                     {
                         GetFieldFromXmlAndReport(xml, "Day6 High", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/high/fahrenheit");
-                        GetFieldFromXmlAndReport(xml, "Nigh6 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/low/fahrenheit");
+                        GetFieldFromXmlAndReport(xml, "Night6 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/low/fahrenheit");
                     }
                     else
                     {
@@ -476,7 +476,7 @@
                     if (!Metric)
                     {
                         GetFieldFromXmlAndReport(xml, "Day7 High", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/high/fahrenheit");
-                        GetFieldFromXmlAndReport(xml, "Nigh7 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/low/fahrenheit");
+                        GetFieldFromXmlAndReport(xml, "Night7 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/low/fahrenheit");
                     }
                     else
                     {
