@@ -178,7 +178,7 @@
         {
                  //while (!closing)
                 //{
-                    while (loadingScreen)
+                    while (loadingScreen || updatingScreen)
                     {
                         System.Threading.Thread.Sleep(100);
                     }
@@ -274,6 +274,7 @@
                         }
                         #endregion
 
+                        
                         #region CONTROL NAVIGATION IMAGE
                         else if (newCtrl.ControlType == "CONTROL NAVIGATION IMAGE")
                         {
@@ -283,7 +284,7 @@
                             }
                         }
                         #endregion
-
+                
                         #region CONTROL CLICK IMAGE
                         else if (newCtrl.ControlType == "CONTROL METHOD IMAGE")
                         {
