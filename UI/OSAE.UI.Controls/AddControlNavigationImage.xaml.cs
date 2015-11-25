@@ -57,7 +57,6 @@ namespace OSAE.UI.Controls
                 sMode = "Add";
                 controlName = sWorkingName;
                 txtName.Text = controlName;
-                //LoadCurrentScreenObject(controlName);
             }
             Enable_Buttons();
         }
@@ -67,7 +66,11 @@ namespace OSAE.UI.Controls
             //First Senerio is a New Control, not a rename or update.
             if (sMode == "Add")
             {
-                btnAdd.IsEnabled = true;
+                if (cboScreens.SelectedValue != null)
+                    btnAdd.IsEnabled = true;
+                else
+                    btnAdd.IsEnabled = false;
+
                 btnUpdate.IsEnabled = false;
                 btnDelete.IsEnabled = false;
             }
@@ -264,9 +267,13 @@ namespace OSAE.UI.Controls
                 MessageBox.Show("Please specify a target for the control");
                 validate = false;
             }
-
             return validate;
         }
-        
+
+        private void cboScreens_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            txtName.Text = currentScreen + " - Goto " + cboScreens.SelectedValue;
+            Enable_Buttons();
+        }
     }
 }

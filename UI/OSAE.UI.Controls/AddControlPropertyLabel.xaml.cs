@@ -26,6 +26,8 @@ namespace OSAE.UI.Controls
             currentScreen = screen;
             LoadObjects();
             LoadColors();
+            txtFont.Text = "Arial";
+            txtSize.Text = "12";
 
             //Check if controlName was passed in, if so, goto edit mode
             if (controlName != "")
@@ -90,7 +92,11 @@ namespace OSAE.UI.Controls
             //First Senerio is a New Control, not a rename or update.
             if (sMode == "Add")
             {
-                btnAdd.IsEnabled = true;
+                if (cboObject.SelectedValue != null && cboProperty.SelectedValue != null)
+                    btnAdd.IsEnabled = true;
+                else
+                    btnAdd.IsEnabled = false;
+
                 btnUpdate.IsEnabled = false;
                 btnDelete.IsEnabled = false;
             }
@@ -109,9 +115,6 @@ namespace OSAE.UI.Controls
                 btnDelete.IsEnabled = false;
             }
         }
-
-
-
 
         /// <summary>
         /// Load the screens from the DB into the combo box
@@ -144,7 +147,6 @@ namespace OSAE.UI.Controls
             //return the color list
             cboForeColor.Text = "Black";
             cboBackColor.Text = "White";
-
         }
 
         private void cboObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -155,7 +157,8 @@ namespace OSAE.UI.Controls
 
         private void cboProperty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //txtControlName.Text = currentScreen + " - " + cboObject.Text + " " + cboProperty.SelectedValue;
+            txtControlName.Text = currentScreen + " - " + cboObject.SelectedValue + " " + cboProperty.SelectedValue;
+            Enable_Buttons();
         }
 
         private void txtFont_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)

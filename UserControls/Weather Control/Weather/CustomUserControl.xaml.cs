@@ -23,7 +23,6 @@ namespace OSAE.Weather_Control
     /// </summary>
     public partial class CustomUserControl : UserControl
     {
-       // private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
         OSAEObject weatherObj;
         public Point Location;
         public string _controlname;

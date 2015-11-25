@@ -20,8 +20,8 @@ namespace OSAE.Weather_Control
         //Declarations of all our internal plugin variables
         string myName = "WEATHERCONTROL";
         string myDescription = "Weather Screen Control";
-        string myAuthor = "Brian - Automate";
-        string myVersion = "0.4.0";
+        string myAuthor = "Vaughn, Updated by Brian, Automate, Kherron";
+        string myVersion = "0.4.7";
 
         #region DO NOT CHANGE
         IPluginHost myHost = null;

@@ -93,7 +93,7 @@
             foreColorComboBox.Text = "Black";
             backColorComboBox.Text = "White";
             txtFont.Text = "Arial";
-            txtSize.Text = "8.5";
+            txtSize.Text = "12";
         }
 
         private void txtFont_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -110,9 +110,7 @@
                     txtSize.Text = dlgFont.Font.Size.ToString();
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -156,7 +154,8 @@
 
         private void objectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //lblName.Content = "Screen - " + currentScreen.Replace("Screen - ","") + " - " + (sender as ComboBox).SelectedValue.ToString() + " (Off Timer)";
+            txtControlName.Text = currentScreen + " - " + objectComboBox.SelectedValue.ToString() + " (Off Timer)";
+            Enable_Buttons();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -194,7 +193,11 @@
             //First Senerio is a New Control, not a rename or update.
             if (sMode == "Add")
             {
-                btnAdd.IsEnabled = true;
+                if (objectComboBox.SelectedValue != null)
+                    btnAdd.IsEnabled = true;
+                else
+                    btnAdd.IsEnabled = false;
+
                 btnUpdate.IsEnabled = false;
                 btnDelete.IsEnabled = false;
             }

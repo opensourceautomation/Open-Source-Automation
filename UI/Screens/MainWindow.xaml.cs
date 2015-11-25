@@ -604,11 +604,11 @@
                     sUCType = sUCType.Replace("USER CONTROL ", "");
                     OSAE.Types.AvailablePlugin selectedPlugin = GlobalUserControls.OSAEUserControls.AvailablePlugins.Find(sUCType);
                     selectedPlugin.Instance.InitializeMainCtrl(obj);
-                    UserControl ucC = new UserControl();
                     dynamic uc = new UserControl();
                     uc = selectedPlugin.Instance.mainCtrl;
                     uc.MouseRightButtonDown += new MouseButtonEventHandler(UserControl_MouseRightButtonDown);
-                    canGUI.Children.Add(uc);
+                    uc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    
                     OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
                     OSAE.OSAEObjectProperty pX = obj.Property("X");
                     OSAE.OSAEObjectProperty pY = obj.Property("Y");
@@ -620,10 +620,11 @@
                     Canvas.SetZIndex(uc, dZ);
                     uc.Location.X = dX;
                     uc.Location.Y = dY;
+                    canGUI.Children.Add(uc);
                     userControls.Add(uc);
                     controlTypes.Add(uc.GetType());
                     //controlTypes.Add(typeof(UserControl));
-                    uc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+
                 }
                 #endregion
 
@@ -863,6 +864,7 @@
                             double height = sender.ActualHeight;
                             double x = sender.Location.X;
                             double y = sender.Location.Y;
+                            
 
                             if (
                                     (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance)

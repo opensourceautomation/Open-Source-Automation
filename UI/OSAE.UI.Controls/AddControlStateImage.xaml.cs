@@ -70,7 +70,6 @@ namespace OSAE.UI.Controls
                 //LoadCurrentScreenObject(controlName);
             }
             Enable_Buttons();
-
         }
 
         /// <summary>
@@ -87,36 +86,31 @@ namespace OSAE.UI.Controls
                 imgState1Img1.Source = LoadImage(State1Img1.Data);
                 Validate_Initial_Coordinates();
             }
-            catch
-            {
-            }
+            catch { }
+
             try
             {
                 State1Img2 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image 2").Value);
                 imgState1Img2.Source = LoadImage(State1Img2.Data);
                 Validate_Initial_Coordinates();
             }
-            catch
-            {
-            }
+            catch { }
+
             try
             {
                 State1Img3 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image 3").Value);
                 imgState1Img3.Source = LoadImage(State1Img3.Data);
                 Validate_Initial_Coordinates();
             }
-            catch 
-            {
-            }
+            catch { }
+
             try
             {
                 State1Img4 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image 4").Value);
                 imgState1Img4.Source = LoadImage(State1Img4.Data);
                 Validate_Initial_Coordinates();
             }
-            catch 
-            {
-            }
+            catch { }
 
             txtState1X.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 X").Value;
             txtState1Y.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Y").Value;
@@ -129,36 +123,31 @@ namespace OSAE.UI.Controls
                 imgState2Img1.Source = LoadImage(State2Img1.Data);
                 Validate_Initial_Coordinates();
             }
-            catch
-            {
-            }
+            catch { }
+
             try
             {
                 State2Img2 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image 2").Value);
                 imgState2Img2.Source = LoadImage(State2Img2.Data);
                 Validate_Initial_Coordinates();
             }
-            catch 
-            {
-            }
+            catch { }
+
             try
             {
                 State2Img3 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image 3").Value);
                 imgState2Img3.Source = LoadImage(State2Img3.Data);
                 Validate_Initial_Coordinates();
             }
-            catch 
-            {
-            }
+            catch { }
+
             try
             {
                 State2Img4 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image 4").Value);
                 imgState2Img4.Source = LoadImage(State2Img4.Data);
                 Validate_Initial_Coordinates();
             }
-            catch 
-            {
-            }
+            catch { }
 
             txtState2X.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 X").Value;
             txtState2Y.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Y").Value;
@@ -170,26 +159,21 @@ namespace OSAE.UI.Controls
                 chkRepeat.IsChecked = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Repeat Animation").Value);
             }
             catch 
-            {
-                chkRepeat.IsChecked = true;
-            }
+            { chkRepeat.IsChecked = true; }
+
             try
             {
                 chkSlider.IsChecked = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Show Slider").Value);
             }
             catch
-            {
-                chkSlider.IsChecked = false;
-            }
+            { chkSlider.IsChecked = false; }
+
             try
             {
                 txtDelay.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Frame Delay").Value;
             }
             catch 
-            {
-                txtDelay.Text = "500";
-            }
-
+            { txtDelay.Text = "500"; }
         }
 
         private void Enable_Buttons()
@@ -197,7 +181,11 @@ namespace OSAE.UI.Controls
             //First Senerio is a New Control, not a rename or update.
             if (sMode == "Add")
             {
-                btnAdd.IsEnabled = true;
+                if (cboObject.SelectedValue != null)
+                    btnAdd.IsEnabled = true;
+                else
+                    btnAdd.IsEnabled = false;
+
                 btnUpdate.IsEnabled = false;
                 btnDelete.IsEnabled = false;
             }
@@ -238,7 +226,6 @@ namespace OSAE.UI.Controls
             }
         }
 
-
         /// <summary>
         /// Load the objects from the DB into the combo box
         /// </summary>
@@ -258,6 +245,7 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+
         private void btnLoadS1I1_RightClick(object sender, RoutedEventArgs e)
         {
             State1Img1 = null;
@@ -274,6 +262,7 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+
         private void btnLoadS1I2_RightClick(object sender, RoutedEventArgs e)
         {
             State1Img2 = null;
@@ -290,6 +279,7 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+
         private void btnLoadS1I3_RightClick(object sender, RoutedEventArgs e)
         {
             State1Img3 = null;
@@ -306,6 +296,7 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+
         private void btnLoadS1I4_RightClick(object sender, RoutedEventArgs e)
         {
             State1Img4 = null;
@@ -322,6 +313,7 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+
         private void btnLoadS2I1_RightClick(object sender, RoutedEventArgs e)
         {
             State2Img1 = null;
@@ -338,6 +330,7 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+
         private void btnLoadS2I2_RightClick(object sender, RoutedEventArgs e)
         {
             State2Img2 = null;
@@ -354,6 +347,7 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+
         private void btnLoadS2I3_RightClick(object sender, RoutedEventArgs e)
         {
             State2Img3 = null;
@@ -370,12 +364,12 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
         }
+
         private void btnLoadS2I4_RightClick(object sender, RoutedEventArgs e)
         {
             State2Img4 = null;
             imgState2Img4.Source = null;
         }
-
 
         private void cboObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -384,6 +378,11 @@ namespace OSAE.UI.Controls
             cboState2.ItemsSource = dataSet.Tables[0].DefaultView;
             DataSet dataSet2 = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_name");
             cboSliderMethod.ItemsSource = dataSet2.Tables[0].DefaultView;
+
+            // The Screen - Object Is default name for the screen control, so update it based on the selection here
+            // Check Enable Buttons, changing the object on an existing control should ?? Update the original control, renaming it?
+            txtControlName.Text = currentScreen + " - " + cboObject.SelectedValue;
+            Enable_Buttons();
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -527,7 +526,6 @@ namespace OSAE.UI.Controls
             Validate_Initial_Coordinates();
         }
 
-
         protected void si_S2I1ImagePicked(object sender, EventArgs e)
         {
             OSAEImageManager imgMgr = new OSAEImageManager();
@@ -563,7 +561,6 @@ namespace OSAE.UI.Controls
             imgState2Img4.Source = LoadImage(State2Img4.Data);
             Validate_Initial_Coordinates();
         }
-
 
         private static BitmapImage LoadImage(byte[] imageData)
         {
