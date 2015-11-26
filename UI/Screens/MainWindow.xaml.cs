@@ -39,7 +39,7 @@
         bool loadingScreen = true;
         bool updatingScreen = false;
         bool editMode = false;
-        bool closing = false;
+        //bool closing = false;
         System.Timers.Timer _timer;
 
         #region drag and drop properties
@@ -176,12 +176,13 @@
 
         private void Update_Objects()
         {
-                 //while (!closing)
-                //{
-                    while (loadingScreen || updatingScreen)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                    }
+            //while (!closing)
+            //{
+            if (loadingScreen || updatingScreen)
+            {
+                updatingScreen = false;
+                return;
+            }
                     updatingScreen = true;
                     this.Log.Debug("Checking for updates on:  " + gCurrentScreen);
                     bool oldCtrl = false;
@@ -366,8 +367,6 @@
                         }
                     }
                     updatingScreen = false;
-                    //System.Threading.Thread.Sleep(500);
-              //  }
         }
 
         private void LoadControl(OSAE.OSAEObject obj)
@@ -1145,7 +1144,7 @@
 
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            closing = true;
+            //closing = true;
             _timer.Stop();
         }
 

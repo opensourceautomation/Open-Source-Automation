@@ -45,9 +45,7 @@ namespace OSAE.UI.Controls
                         SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
                         staticLabel.Background = brush;
                     }
-                    catch (Exception myerror)
-                    {
-                    }
+                    catch { }
                 }
                 if (sForeColor != "")
                 {
@@ -57,9 +55,7 @@ namespace OSAE.UI.Controls
                         SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
                         staticLabel.Foreground = brush;
                     }
-                    catch (Exception myerror)
-                    {
-                    }
+                    catch { }
                 }
                 if (iFontSize != "")
                 {
@@ -67,9 +63,7 @@ namespace OSAE.UI.Controls
                     {
                         staticLabel.FontSize = Convert.ToDouble(iFontSize);
                     }
-                    catch (Exception myerror)
-                    {
-                    }
+                    catch { }
                 }
                 staticLabel.Content = sValue;
             }

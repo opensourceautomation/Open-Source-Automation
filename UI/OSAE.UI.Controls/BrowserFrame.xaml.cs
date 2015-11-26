@@ -37,10 +37,7 @@ namespace OSAE.UI.Controls
                 Uri uriproperty = new Uri(screenObject.Property("URI").Value);
                 wbBrowser.Source = uriproperty;
             }
-            catch (Exception ex)
-            {
-               
-            }
+            catch { }
         }
     }
 }

@@ -80,7 +80,7 @@
                 catch (Exception ex)
                 {
                     // This method is called in its own App Domain so will not have access to the calling logger
-                    this.Log.Error("An assembly was not found for file!  (" + file + ")");
+                    this.Log.Error("An assembly was not found for file!  (" + file + ")", ex);
                 }
             }
             return result;

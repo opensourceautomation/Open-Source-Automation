@@ -95,18 +95,15 @@ namespace OSAE.UI.Controls
                 imgNormal.Source = LoadImage(imgNormalRaw.Data);
                 Validate_Initial_Coordinates();
             }
-            catch (Exception ex)
-            {
-            }
+            catch { }
+
             try
             {
                 imgPressedRaw = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Pressed Image").Value);
                 imgPressed.Source = LoadImage(imgPressedRaw.Data);
                 Validate_Initial_Coordinates();
             }
-            catch (Exception ex)
-            {
-            }
+            catch { }
        }
 
 

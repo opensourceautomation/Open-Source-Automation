@@ -204,13 +204,9 @@ namespace OSAE.UI.Controls
             {
                 img = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(screenName, "Background Image").Value);
                 if (img != null)
-                {
                     imgScreen.Source = LoadImage(img.Data);
-                }
             }
-            catch (Exception ex)
-            {
-            }
+            catch { }
          }
 
         private bool validateForm(string mthd)
