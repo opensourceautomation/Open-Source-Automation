@@ -70,6 +70,7 @@
     <Content Include="config\2GIG\ct100.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\2GIG\ct101.xml" />
     <Content Include="config\2GIG\ct30.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -111,6 +112,30 @@
     <Content Include="config\aeon_labs\ses.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\aeotec\alms.xml" />
+    <Content Include="config\aeotec\doorbell_gen5.xml" />
+    <Content Include="config\aeotec\doorwindow.xml" />
+    <Content Include="config\aeotec\drycontactsensor.xml" />
+    <Content Include="config\aeotec\dsd31.xml" />
+    <Content Include="config\aeotec\hdss_gen5.xml" />
+    <Content Include="config\aeotec\hem.xml" />
+    <Content Include="config\aeotec\hemg2.xml" />
+    <Content Include="config\aeotec\keyfob.xml" />
+    <Content Include="config\aeotec\keyfob2.xml" />
+    <Content Include="config\aeotec\ledbulb.xml" />
+    <Content Include="config\aeotec\minimote.xml" />
+    <Content Include="config\aeotec\msesv2.xml" />
+    <Content Include="config\aeotec\multisensor6.xml" />
+    <Content Include="config\aeotec\multisensor_gen5.xml" />
+    <Content Include="config\aeotec\panicbtn.xml" />
+    <Content Include="config\aeotec\recessed_doorsensor.xml" />
+    <Content Include="config\aeotec\recessed_doorsensor_gen5.xml" />
+    <Content Include="config\aeotec\sd6.xml" />
+    <Content Include="config\aeotec\ses.xml" />
+    <Content Include="config\aeotec\ses2.xml" />
+    <Content Include="config\aeotec\ss6.xml" />
+    <Content Include="config\aeotec\watersensor.xml" />
+    <Content Include="config\aeotec\zstickgen5.xml" />
     <Content Include="config\assa_abloy\RealLivingCapTouch.xml" />
     <Content Include="config\BeNext\1poleswitch.xml" />
     <Content Include="config\BeNext\2poleswitch.xml" />
@@ -122,11 +147,15 @@
     <Content Include="config\BeNext\EnergySwitch.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\BeNext\HeatingControl.xml" />
     <Content Include="config\BeNext\Molite.xml" />
     <Content Include="config\BeNext\PluginDimmer.xml" />
+    <Content Include="config\BeNext\SceneController.xml" />
     <Content Include="config\BeNext\TagReader.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\cooper\RF9505-T.xml" />
+    <Content Include="config\cooper\RF9540-N.xml" />
     <Content Include="config\danfoss\living.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -136,19 +165,27 @@
     <Content Include="config\device_classes.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\dlink\dch-z110.xml" />
+    <Content Include="config\dragontech\wd-100.xml" />
     <Content Include="config\duwi\ZWES1000.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\duwi\ZWESJ300.xml" />
     <Content Include="config\eurotronic\eur_stellaz.xml" />
     <Content Include="config\everspringct\hsm02.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\everspring\ad146.xml" />
+    <Content Include="config\everspring\ad147.xml" />
     <Content Include="config\everspring\an145.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config\everspring\an158.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\everspring\an179.xml" />
+    <Content Include="config\everspring\an180.xml" />
+    <Content Include="config\everspring\hsp02.xml" />
     <Content Include="config\everspring\se812.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -164,6 +201,7 @@
     <Content Include="config\everspring\sp814.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\everspring\st812.xml" />
     <Content Include="config\everspring\st814.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -173,6 +211,9 @@
     <Content Include="config\everspring\tse03.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\evolve\lrm-as.xml" />
+    <Content Include="config\evolve\lsm-15.xml" />
+    <Content Include="config\evolve\ltm-5.xml" />
     <Content Include="config\express_controls\ezmotion.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -182,6 +223,7 @@
     <Content Include="config\fibaro\fgd211.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\fibaro\fgd212.xml" />
     <Content Include="config\fibaro\fgfs101.xml" />
     <Content Include="config\fibaro\fgk001.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -195,9 +237,12 @@
     <Content Include="config\fibaro\fgs211.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\fibaro\fgs212.xml" />
     <Content Include="config\fibaro\fgs221.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\fibaro\fgs222.xml" />
+    <Content Include="config\fibaro\fgsd002.xml" />
     <Content Include="config\fibaro\fgss101.xml" />
     <Content Include="config\fibaro\fgwpe.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -217,6 +262,7 @@
     <Content Include="config\greenwave\powernode6.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\homeseer\ezmotionplus.xml" />
     <Content Include="config\homeseer\hsm100.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -232,6 +278,7 @@
     <Content Include="config\intermatic\ca8900.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\iris\rangeextender.xml" />
     <Content Include="config\leviton\rzi10.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -247,14 +294,32 @@
     <Content Include="config\leviton\vri10.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\linear\PD300Z-2.xml" />
+    <Content Include="config\linear\WD500Z-1.xml" />
     <Content Include="config\manufacturer_specific.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\mcohome\mhs311.xml" />
+    <Content Include="config\mcohome\mhs312.xml" />
+    <Content Include="config\mcohome\mhs314.xml" />
+    <Content Include="config\mcohome\mhs411.xml" />
+    <Content Include="config\mcohome\mhs412.xml" />
+    <Content Include="config\mcohome\mhs513.xml" />
+    <Content Include="config\merten\50x5xx.xml" />
+    <Content Include="config\nodon\asp3100SmartPlug.xml" />
+    <Content Include="config\nodon\crc3100OctanRemote.xml" />
+    <Content Include="config\nodon\cws3101wallswitch.xml" />
     <Content Include="config\northq\nq92021.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config\philio\pan04.xml" />
     <Content Include="config\philio\psm02.xml" />
+    <Content Include="config\philio\pst02-1c.xml" />
+    <Content Include="config\philio\pst02-b.xml" />
+    <Content Include="config\philio\pst02.xml" />
+    <Content Include="config\polycontrol\doorlock.xml" />
+    <Content Include="config\polycontrol\keypad.xml" />
+    <Content Include="config\polycontrol\polylock.xml" />
     <Content Include="config\popp\123580.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -265,16 +330,38 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config\qees\reto-plugin-switch.xml" />
+    <Content Include="config\qubino\ZMNHAA2.xml" />
+    <Content Include="config\qubino\ZMNHAD1.xml" />
+    <Content Include="config\qubino\ZMNHBA2.xml" />
+    <Content Include="config\qubino\ZMNHBD2.xml" />
+    <Content Include="config\qubino\ZMNHCA2.xml" />
+    <Content Include="config\qubino\ZMNHDA2.xml" />
+    <Content Include="config\qubino\ZMNHIA2.xml" />
+    <Content Include="config\qubino\ZMNHJA2.xml" />
+    <Content Include="config\remotec\zfm-80.xml" />
     <Content Include="config\remotec\zxt-120.xml" />
     <Content Include="config\schlagelink\itemp.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="config\schlagelink\minikeypad.xml" />
+    <Content Include="config\schlage\BE469NXCEN.xml" />
+    <Content Include="config\swiid\swiidinter.xml" />
+    <Content Include="config\swiid\swiidplug.xml" />
+    <Content Include="config\thermofloor\multireg.xml" />
+    <Content Include="config\vision\zd2102.xml" />
     <Content Include="config\vision\zm1601eu.xml" />
+    <Content Include="config\vision\zm1602eu.xml" />
+    <Content Include="config\vision\zp3102.xml" />
     <Content Include="config\vision\zs5101eu.xml" />
     <Content Include="config\vitrum\vitrumBS.xml" />
+    <Content Include="config\wenzhou\sm103.xml" />
+    <Content Include="config\wenzhou\tsp01.xml" />
     <Content Include="config\wenzhou\tz65d.xml" />
     <Content Include="config\wenzhou\tz66d.xml" />
+    <Content Include="config\wenzhou\tz67.xml" />
     <Content Include="config\wenzhou\tz88.xml" />
+    <Content Include="config\widom\UBS104.xml" />
+    <Content Include="config\widom\UME304C_S.xml" />
     <Content Include="config\zipato\MiniKeypad.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -290,6 +377,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config\zwave.me\ZME_06436.xml" />
+    <Content Include="config\zwave.me\ZME_064435.xml" />
+    <Content Include="config\zwave.me\ZME_WALLC-S.xml" />
     <Content Include="config\zwave.me\ZME_WCD2.xml" />
     <Content Include="options.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -337,6 +426,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
