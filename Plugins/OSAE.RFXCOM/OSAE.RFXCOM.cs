@@ -2685,7 +2685,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName,"Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New temperature sensor found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("Temperature Sensor - " + (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "Temperature Sensor", "OS TEMP SENSOR", (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("Temperature Sensor - " + (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "", "Temperature Sensor", "OS TEMP SENSOR", (recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP.id1] * 256 + recbuf[(byte)TEMP.id2]).ToString());
             }
 
@@ -2771,7 +2771,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New humidity sensor found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("Humidity Sensor - " + (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "Humidity Sensor", "HUMIDITY METER", (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("Humidity Sensor - " + (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "", "Humidity Sensor", "HUMIDITY METER", (recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)HUM.id1] * 256 + recbuf[(byte)HUM.id2]).ToString());
             }
 
@@ -2827,7 +2827,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New temperature and humidity sensor found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("Temp and Humidity Sensor - " + (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "Temp and Humidity Sensor", "TEMP HUM METER", (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("Temp and Humidity Sensor - " + (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "", "Temp and Humidity Sensor", "TEMP HUM METER", (recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM.id1] * 256 + recbuf[(byte)TEMP_HUM.id2]).ToString());
             }
             
@@ -2996,7 +2996,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New temperature, humidity and barometric sensor found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("Temp, Humidity and Baro Sensor - " + (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "Temp, Humidity and Baro Sensor", "TEMP HUM BARO METER", (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("Temp, Humidity and Baro Sensor - " + (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "", "Temp, Humidity and Baro Sensor", "TEMP HUM BARO METER", (recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)TEMP_HUM_BARO.id1] * 256 + recbuf[(byte)TEMP_HUM_BARO.id2]).ToString());
             }
             
@@ -3094,7 +3094,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New temperature sensor found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("Rain Meter - " + (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "Rain Meter", "OS RAIN METER", (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("Rain Meter - " + (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "", "Rain Meter", "OS RAIN METER", (recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)RAIN.id1] * 256 + recbuf[(byte)RAIN.id2]).ToString());
             }
 
@@ -3152,7 +3152,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New wind sensor found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("Wind Sensor - " + (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "Wind Sensor", "WIND SENSOR", (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("Wind Sensor - " + (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "", "Wind Sensor", "WIND SENSOR", (recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WIND.id1] * 256 + recbuf[(byte)WIND.id2]).ToString());
             }
 
@@ -3359,7 +3359,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New UV sensor found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("UV Sensor - " + (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "UV Sensor", "UV SENSOR", (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("UV Sensor - " + (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "", "UV Sensor", "UV SENSOR", (recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)UV.id1] * 256 + recbuf[(byte)UV.id2]).ToString());
             }
 
@@ -3446,7 +3446,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New Current meter found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("Current Meter - " + (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "Current Meter", "CURRENT METER", (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("Current Meter - " + (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "", "Current Meter", "CURRENT METER", (recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)CURRENT.id1] * 256 + recbuf[(byte)CURRENT.id2]).ToString());
             }
 
@@ -3489,7 +3489,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New Energy meter found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("Energy Meter - " + (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "Energy Meter", "ENERGY METER", (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("Energy Meter - " + (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "", "Energy Meter", "ENERGY METER", (recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)ENERGY.id1] * 256 + recbuf[(byte)ENERGY.id2]).ToString());
             }
 
@@ -3546,7 +3546,7 @@
             if (obj == null && OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Learning Mode").Value == "TRUE")
             {
                 this.Log.Info("New Scale found.  Adding to OSA");
-                OSAEObjectManager.ObjectAdd("Scale Meter - " + (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "Scale Meter", "SCALE", (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("Scale Meter - " + (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "", "Scale Meter", "SCALE", (recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString(), "", true);
                 obj = obj = OSAEObjectManager.GetObjectByAddress((recbuf[(byte)WEIGHT.id1] * 256 + recbuf[(byte)WEIGHT.id2]).ToString());
             }
             
