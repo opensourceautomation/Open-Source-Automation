@@ -43,7 +43,7 @@
             }
             if (controlName == "") 
             {
-                sWorkingName = currentScreen + " - New State Image";
+                sWorkingName = currentScreen + " - New Off Timer Label";
                 DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
                 int iCount = 0;
 
@@ -51,7 +51,7 @@
                 {
                     // We have a duplicate name, we must get a unique name
                     iCount += 1;
-                    sWorkingName = currentScreen + " - New State Image" + iCount;
+                    sWorkingName = currentScreen + " - New Off Timer Label " + iCount;
                     dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
                 }
                 controlName = sWorkingName;
@@ -116,6 +116,7 @@
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             string sName = txtControlName.Text;
+
             OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL TIMER LABEL", "", currentScreen, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");

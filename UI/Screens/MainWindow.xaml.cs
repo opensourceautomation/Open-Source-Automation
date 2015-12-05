@@ -119,9 +119,10 @@
             try
             {
                 loadingScreen = true;
-                while (updatingScreen)
+                if (updatingScreen)
                 {
-                    System.Threading.Thread.Sleep(100);
+                    System.Threading.Thread.Sleep(1000);
+                    updatingScreen = false;
                 }
 
                 stateImages.Clear();
@@ -176,197 +177,201 @@
 
         private void Update_Objects()
         {
-            //while (!closing)
-            //{
-            if (loadingScreen || updatingScreen)
+            try
+
             {
-                updatingScreen = false;
-                return;
-            }
-                    updatingScreen = true;
-                    this.Log.Debug("Checking for updates on:  " + gCurrentScreen);
-                    bool oldCtrl = false;
-                    List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
+                if (loadingScreen || updatingScreen)
+                {
+                    updatingScreen = false;
+                    return;
+                }
+                updatingScreen = true;
+                this.Log.Debug("Checking for updates on:  " + gCurrentScreen);
+                bool oldCtrl = false;
+                List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
 
-                    foreach (OSAE.OSAEScreenControl newCtrl in controls)
+                foreach (OSAE.OSAEScreenControl newCtrl in controls)
+                {
+                    oldCtrl = false;
+
+                    #region CONTROL STATE IMAGE
+                    if (newCtrl.ControlType == "CONTROL STATE IMAGE")
                     {
-                        oldCtrl = false;
-
-                        #region CONTROL STATE IMAGE
-                        if (newCtrl.ControlType == "CONTROL STATE IMAGE")
+                        foreach (StateImage sImage in stateImages)
                         {
-                            foreach (StateImage sImage in stateImages)
+                            if (newCtrl.ControlName == sImage.screenObject.Name)
                             {
-                                if (newCtrl.ControlName == sImage.screenObject.Name)
+                                if (newCtrl.LastUpdated != sImage.LastUpdated)
                                 {
-                                    if (newCtrl.LastUpdated != sImage.LastUpdated)
+                                    sImage.LastUpdated = newCtrl.LastUpdated;
+                                    try
                                     {
-                                        sImage.LastUpdated = newCtrl.LastUpdated;
-                                        try
-                                        {
-                                            sImage.Update();
-                                        }
-                                        catch
-                                        {}
-                                        this.Dispatcher.Invoke((Action)(() =>
-                                        {
-                                            Canvas.SetLeft(sImage, sImage.Location.X);
-                                            Canvas.SetTop(sImage, sImage.Location.Y);
-                                            sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
-                                        }));
-                                        this.Log.Debug("Updated:  " + newCtrl.ControlName);
+                                        sImage.Update();
                                     }
-                                    oldCtrl = true;
+                                    catch
+                                    { }
+                                    this.Dispatcher.Invoke((Action)(() =>
+                                    {
+                                        Canvas.SetLeft(sImage, sImage.Location.X);
+                                        Canvas.SetTop(sImage, sImage.Location.Y);
+                                        sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
+                                    }));
+                                    this.Log.Debug("Updated:  " + newCtrl.ControlName);
                                 }
+                                oldCtrl = true;
                             }
-                        }
-                        #endregion
-
-                        #region CONTROL PROPERTY LABEL
-                        else if (newCtrl.ControlType == "CONTROL PROPERTY LABEL")
-                        {
-                            foreach (PropertyLabel pl in propLabels)
-                            {
-                                if (newCtrl.ControlName == pl.screenObject.Name)
-                                {
-                                    if (newCtrl.PropertyLastUpdated >= pl.LastUpdated)
-                                    {
-                                        pl.LastUpdated = newCtrl.PropertyLastUpdated;
-                                        pl.Update("Full");
-                                        this.Log.Debug("Updated:  " + newCtrl.ControlName);
-                                        oldCtrl = true;
-                                    }
-                                    else
-                                    {
-                                        pl.Update("Refresh");
-                                        oldCtrl = true;
-                                    }
-                                }
-                            }
-                        }
-                        #endregion
-
-                        #region CONTROL TIMER LABEL
-                        else if (newCtrl.ControlType == "CONTROL TIMER LABEL")
-                        {
-                            foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
-                            {
-                                if (newCtrl.ControlName == tl.screenObject.Name)
-                                {
-                                    if (newCtrl.LastUpdated != tl.LastUpdated)
-                                    {
-                                        tl.LastUpdated = newCtrl.LastUpdated;
-                                        tl.Update();
-                                        this.Log.Debug("Updated:  " + newCtrl.ControlName);
-                                    }
-                                    oldCtrl = true;
-                                }
-                            }
-                        }
-                        #endregion
-
-                        #region CONTROL STATIC LABEL
-                        else if (newCtrl.ControlType == "CONTROL STATIC LABEL")
-                        {
-                            foreach (OSAE.UI.Controls.StaticLabel sl in staticLabels)
-                            {
-                                if (newCtrl.ControlName == sl.screenObject.Name) oldCtrl = true;
-                            }
-                        }
-                        #endregion
-
-                        
-                        #region CONTROL NAVIGATION IMAGE
-                        else if (newCtrl.ControlType == "CONTROL NAVIGATION IMAGE")
-                        {
-                            foreach (OSAE.UI.Controls.NavigationImage nav in navImages)
-                            {
-                                if (newCtrl.ControlName == nav.screenObject.Name) oldCtrl = true;
-                            }
-                        }
-                        #endregion
-                
-                        #region CONTROL CLICK IMAGE
-                        else if (newCtrl.ControlType == "CONTROL METHOD IMAGE")
-                        {
-                            foreach (OSAE.UI.Controls.ClickImage method in clickImages)
-                            {
-                                if (newCtrl.ControlName == method.screenObject.Name) oldCtrl = true;
-                            }
-                        }
-                        #endregion
-
-                        #region CONTROL CAMERA VIEWER
-                        else if (newCtrl.ControlType == "CONTROL CAMERA VIEWER")
-                        {
-                            foreach (OSAE.UI.Controls.VideoStreamViewer vsv in cameraViewers)
-                            {
-                                if (newCtrl.ControlName == vsv.screenObject.Name) oldCtrl = true;
-                            }
-                        }
-                        #endregion
-
-                        #region CONTROL USER CONTROL
-                        else if (newCtrl.ControlType.Contains("USER CONTROL"))
-                        {
-                            foreach (dynamic obj in userControls)
-                            {
-                                if (newCtrl.ControlName == obj.screenObject.Name)
-                                {
-                                    if (newCtrl.LastUpdated != obj.LastUpdated)
-                                    {
-                                        this.Dispatcher.Invoke((Action)(() =>
-                                        {
-                                            obj.LastUpdated = newCtrl.LastUpdated;
-                                            obj.Update();
-                                        }));
-                                    }
-                                    oldCtrl = true;
-                                }
-                            }
-                        }
-                        #endregion
-
-                        #region CONTROL BROWSER
-                        if (newCtrl.ControlType == "CONTROL BROWSER")
-                        {
-                            //    foreach (BrowserFrame oBrowser in browserFrames)
-                            //     {
-                            //      if (newCtrl.ControlName == oBrowser.screenObject.Name)
-                            //      {
-                            //  if (newCtrl.LastUpdated != sImage.LastUpdated)
-                            //  {
-                            //        this.Log.Debug("Updating:  " + newCtrl.ControlName);
-                            //  sImage.LastUpdated = newCtrl.LastUpdated;
-                            //   try
-                            //   {
-                            //      sImage.Update();
-                            //  }
-                            //   catch (Exception ex)
-                            //   {
-
-                            //    }
-                            //        this.Dispatcher.Invoke((Action)(() =>
-                            //        {
-                            //           Canvas.SetLeft(oBrowser, oBrowser.Location.X);
-                            //           Canvas.SetTop(oBrowser, oBrowser.Location.Y);
-                            //           }));
-                            //          this.Log.Debug("Complete:  " + newCtrl.ControlName);
-                            //      }
-                            //       oldCtrl = true;
-                            //   }
-                            //   }
-                        }
-                        #endregion
-
-                        if (!oldCtrl)
-                        {
-                            OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(newCtrl.ControlName);
-                            this.Log.Debug("Load new control: " + newCtrl.ControlName);
-                            LoadControl(obj);
                         }
                     }
-                    updatingScreen = false;
+                    #endregion
+
+                    #region CONTROL PROPERTY LABEL
+                    else if (newCtrl.ControlType == "CONTROL PROPERTY LABEL")
+                    {
+                        foreach (PropertyLabel pl in propLabels)
+                        {
+                            if (newCtrl.ControlName == pl.screenObject.Name)
+                            {
+                                if (newCtrl.PropertyLastUpdated >= pl.LastUpdated)
+                                {
+                                    pl.LastUpdated = newCtrl.PropertyLastUpdated;
+                                    pl.Update("Full");
+                                    this.Log.Debug("Updated:  " + newCtrl.ControlName);
+                                    oldCtrl = true;
+                                }
+                                else
+                                {
+                                    pl.Update("Refresh");
+                                    oldCtrl = true;
+                                }
+                            }
+                        }
+                    }
+                    #endregion
+
+                    #region CONTROL TIMER LABEL
+                    else if (newCtrl.ControlType == "CONTROL TIMER LABEL")
+                    {
+                        foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
+                        {
+                            if (newCtrl.ControlName == tl.screenObject.Name)
+                            {
+                                if (newCtrl.LastUpdated != tl.LastUpdated)
+                                {
+                                    tl.LastUpdated = newCtrl.LastUpdated;
+                                    tl.Update();
+                                    this.Log.Debug("Updated:  " + newCtrl.ControlName);
+                                }
+                                oldCtrl = true;
+                            }
+                        }
+                    }
+                    #endregion
+
+                    #region CONTROL STATIC LABEL
+                    else if (newCtrl.ControlType == "CONTROL STATIC LABEL")
+                    {
+                        foreach (OSAE.UI.Controls.StaticLabel sl in staticLabels)
+                        {
+                            if (newCtrl.ControlName == sl.screenObject.Name) oldCtrl = true;
+                        }
+                    }
+                    #endregion
+
+
+                    #region CONTROL NAVIGATION IMAGE
+                    else if (newCtrl.ControlType == "CONTROL NAVIGATION IMAGE")
+                    {
+                        foreach (OSAE.UI.Controls.NavigationImage nav in navImages)
+                        {
+                            if (newCtrl.ControlName == nav.screenObject.Name) oldCtrl = true;
+                        }
+                    }
+                    #endregion
+
+                    #region CONTROL CLICK IMAGE
+                    else if (newCtrl.ControlType == "CONTROL METHOD IMAGE")
+                    {
+                        foreach (OSAE.UI.Controls.ClickImage method in clickImages)
+                        {
+                            if (newCtrl.ControlName == method.screenObject.Name) oldCtrl = true;
+                        }
+                    }
+                    #endregion
+
+                    #region CONTROL CAMERA VIEWER
+                    else if (newCtrl.ControlType == "CONTROL CAMERA VIEWER")
+                    {
+                        foreach (OSAE.UI.Controls.VideoStreamViewer vsv in cameraViewers)
+                        {
+                            if (newCtrl.ControlName == vsv.screenObject.Name) oldCtrl = true;
+                        }
+                    }
+                    #endregion
+
+                    #region CONTROL USER CONTROL
+                    else if (newCtrl.ControlType.Contains("USER CONTROL"))
+                    {
+                        foreach (dynamic obj in userControls)
+                        {
+                            if (newCtrl.ControlName == obj.screenObject.Name)
+                            {
+                                if (newCtrl.LastUpdated != obj.LastUpdated)
+                                {
+                                    this.Dispatcher.Invoke((Action)(() =>
+                                    {
+                                        obj.LastUpdated = newCtrl.LastUpdated;
+                                        obj.Update();
+                                    }));
+                                }
+                                oldCtrl = true;
+                            }
+                        }
+                    }
+                    #endregion
+
+                    #region CONTROL BROWSER
+                    if (newCtrl.ControlType == "CONTROL BROWSER")
+                    {
+                        //    foreach (BrowserFrame oBrowser in browserFrames)
+                        //     {
+                        //      if (newCtrl.ControlName == oBrowser.screenObject.Name)
+                        //      {
+                        //  if (newCtrl.LastUpdated != sImage.LastUpdated)
+                        //  {
+                        //        this.Log.Debug("Updating:  " + newCtrl.ControlName);
+                        //  sImage.LastUpdated = newCtrl.LastUpdated;
+                        //   try
+                        //   {
+                        //      sImage.Update();
+                        //  }
+                        //   catch (Exception ex)
+                        //   {
+
+                        //    }
+                        //        this.Dispatcher.Invoke((Action)(() =>
+                        //        {
+                        //           Canvas.SetLeft(oBrowser, oBrowser.Location.X);
+                        //           Canvas.SetTop(oBrowser, oBrowser.Location.Y);
+                        //           }));
+                        //          this.Log.Debug("Complete:  " + newCtrl.ControlName);
+                        //      }
+                        //       oldCtrl = true;
+                        //   }
+                        //   }
+                    }
+                    #endregion
+
+                    if (!oldCtrl)
+                    {
+                        OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(newCtrl.ControlName);
+                        this.Log.Debug("Load new control: " + newCtrl.ControlName);
+                        LoadControl(obj);
+                    }
+                }
+            }
+            catch (Exception ex)
+            { this.Log.Error("Error in Update!", ex); }
+            updatingScreen = false;
         }
 
         private void LoadControl(OSAE.OSAEObject obj)
