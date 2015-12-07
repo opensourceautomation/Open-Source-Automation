@@ -56,7 +56,7 @@ namespace OSAE.Zwave
                     {
                         Log.Info("Requesting Node Neighbor Update: " + obj.Name);
                         m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
-                        if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RequestNodeNeighborUpdate, false, nid))
+                        if (!m_manager.RequestNodeNeighborUpdate(m_homeId, nid))
                         {
                             Log.Info("Request Node Neighbor Update Failed: " + obj.Name);
                             m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
@@ -188,7 +188,7 @@ namespace OSAE.Zwave
                             //    break;
                             case "ADD DEVICE":
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
-                                if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.AddDevice, false, nid))
+                                if (!m_manager.AddNode(m_homeId, false))
                                 {
                                     Log.Info("Add Device Failed");
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
@@ -196,7 +196,7 @@ namespace OSAE.Zwave
                                 break;
                             case "REMOVE DEVICE":
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
-                                if (m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RemoveDevice, false, nid))
+                                if (m_manager.RemoveNode(m_homeId))
                                 {
                                     OSAEObjectManager.ObjectDelete(OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).Name);
                                 }
@@ -208,7 +208,7 @@ namespace OSAE.Zwave
                                 break;
                             case "REMOVE FAILED NODE":
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
-                                if (m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RemoveFailedNode, false, nid))
+                                if (m_manager.RemoveFailedNode(m_homeId, nid))
                                 {
                                     OSAEObjectManager.ObjectDelete(OSAEObjectManager.GetObjectByAddress("Z" + nid.ToString()).Name);
                                 }
@@ -234,7 +234,7 @@ namespace OSAE.Zwave
                             case "NODE NEIGHBOR UPDATE":
                                 Log.Info("Requesting Node Neighbor Update: Z" + nid.ToString());
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
-                                if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RequestNodeNeighborUpdate, false, nid))
+                                if (!m_manager.RequestNodeNeighborUpdate(m_homeId, nid))
                                 {
                                     Log.Info("Request Node Neighbor Update Failed: Z" + nid.ToString());
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
@@ -243,7 +243,7 @@ namespace OSAE.Zwave
                             case "NETWORK UPDATE":
                                 Log.Info("Requesting Network Update");
                                 m_manager.OnControllerStateChanged += m_controllerStateChangedHandler;
-                                if (!m_manager.BeginControllerCommand(m_homeId, ZWControllerCommand.RequestNetworkUpdate, false, nid))
+                                if (!m_manager.RequestNetworkUpdate(m_homeId, nid))
                                 {
                                     Log.Info("Request Network Update Failed: Z" + nid.ToString());
                                     m_manager.OnControllerStateChanged -= m_controllerStateChangedHandler;
@@ -323,11 +323,11 @@ namespace OSAE.Zwave
                                 {
                                     if (value.Label == "Sensor")
                                     {
-                                        OSAEObjectTypeManager.ObjectTypeStateAdd("ON", "On", objType);
-                                        OSAEObjectTypeManager.ObjectTypeStateAdd("OFF", "Off", objType);
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd("ON", "On", objType);
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd("OFF", "Off", objType);
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd("ALARM", "Alarm", objType);
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "ON", "On" );
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "OFF", "Off");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "ON", "On");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "OFF", "Off");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "ALARM", "Alarm");
                                     }
                                     else
                                     {
@@ -339,8 +339,8 @@ namespace OSAE.Zwave
                                         else
                                             propType = "String";
 
-                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, propType,"", "", objType, false);
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd(value.Label, value.Label, objType);
+                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(objType, value.Label, propType,"", "", false);
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, value.Label, value.Label);
                                     }
                                 }
                             }
@@ -351,18 +351,18 @@ namespace OSAE.Zwave
                                 {
                                     if (value.Label == "Switch" || value.Label == "Level")
                                     {
-                                        OSAEObjectTypeManager.ObjectTypeStateAdd("ON", "On", objType);
-                                        OSAEObjectTypeManager.ObjectTypeStateAdd("OFF", "Off", objType);
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd("ON", "On", objType);
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd("OFF", "Off", objType);
-                                        OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "", "", "", "");
-                                        OSAEObjectTypeManager.ObjectTypeMethodAdd("OFF", "Off", objType, "", "", "", "");
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "ON", "On");
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "OFF", "Off");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "ON", "On");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "OFF", "Off");
+                                        OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "ON", "On", "", "", "", "");
+                                        OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "OFF", "Off", "", "", "", "");
                                         if (value.Label == "Level")
                                         {
-                                            OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "Level", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "ON", "On", "Level", "", "", "");
                                         }
                                         else
-                                            OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", objType, "", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "ON", "On", "", "", "", "");
                                     }
                                     else
                                     {
@@ -370,12 +370,12 @@ namespace OSAE.Zwave
                                         if (value.Type == ZWValueID.ValueType.Byte || value.Type == ZWValueID.ValueType.Decimal || value.Type == ZWValueID.ValueType.Int)
                                         {
                                             Log.Debug("Adding method: " + value.Label);
-                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, "Set " + value.Label, objType, "Value", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, value.Label, "Set " + value.Label, "Value", "", "", "");
                                             Log.Debug("Adding property: " + value.Label);
                                         }
                                         else if (value.Type == ZWValueID.ValueType.Button)
                                         {
-                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label, value.Label, objType, "", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, value.Label, value.Label, "", "", "", "");
                                         }
                                         else if (value.Type == ZWValueID.ValueType.List)
                                         {
@@ -383,8 +383,8 @@ namespace OSAE.Zwave
                                             if (m_manager.GetValueListItems(value.ValueID, out options))
                                             {
                                                 foreach (string option in options)
-                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(value.Label + " - " + option, value.Label + " - " + option, objType, "", "", "", "");
-                                                OSAEObjectTypeManager.ObjectTypePropertyAdd(value.Label, "String", "", "", objType, false);
+                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, value.Label + " - " + option, value.Label + " - " + option, "", "", "", "");
+                                                OSAEObjectTypeManager.ObjectTypePropertyAdd(objType, value.Label, "String", "", "", false);
                                             }
                                         }
                                     }
@@ -591,9 +591,9 @@ namespace OSAE.Zwave
                                 }
 
                                 OSAEObjectTypeManager.ObjectTypeAdd(node.Product, node.Label, pName, baseType,  false, false, false, true);
-                                OSAEObjectTypeManager.ObjectTypeMethodAdd("NODE NEIGHBOR UPDATE", "Node Neighbor Update", node.Product, "", "", "", "");
-                                OSAEObjectTypeManager.ObjectTypePropertyAdd("Home ID", "String", "", "", node.Product, false);
-                                OSAEObjectTypeManager.ObjectTypePropertyAdd("Poll", "Boolean", "", "", node.Product, false);
+                                OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, "NODE NEIGHBOR UPDATE", "Node Neighbor Update", "", "", "", "");
+                                OSAEObjectTypeManager.ObjectTypePropertyAdd(node.Product, "Home ID", "String", "", "", false);
+                                OSAEObjectTypeManager.ObjectTypePropertyAdd(node.Product, "Poll", "Boolean", "", "", false);
 
                                 string propType;
                                 foreach (Value v in node.Values)
@@ -607,7 +607,7 @@ namespace OSAE.Zwave
                                         else
                                             propType = "String";
 
-                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(v.Label, propType, "", "", node.Product, false);
+                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(node.Product, v.Label, propType, "", "", false);
                                     }
                                     else
                                     {
@@ -615,22 +615,22 @@ namespace OSAE.Zwave
                                         {
                                             if (v.Label == "Switch" || v.Label == "Level")
                                             {
-                                                OSAEObjectTypeManager.ObjectTypeStateAdd("ON", "On", node.Product);
-                                                OSAEObjectTypeManager.ObjectTypeStateAdd("OFF", "Off", node.Product);
-                                                OSAEObjectTypeManager.ObjectTypeEventAdd("ON", "On", node.Product);
-                                                OSAEObjectTypeManager.ObjectTypeEventAdd("OFF", "Off", node.Product);
-                                                OSAEObjectTypeManager.ObjectTypeMethodAdd("ON", "On", node.Product, "", "", "", "");
-                                                OSAEObjectTypeManager.ObjectTypeMethodAdd("OFF", "Off", node.Product, "", "", "", "");
+                                                OSAEObjectTypeManager.ObjectTypeStateAdd(node.Product, "ON", "On");
+                                                OSAEObjectTypeManager.ObjectTypeStateAdd(node.Product, "OFF", "Off");
+                                                OSAEObjectTypeManager.ObjectTypeEventAdd(node.Product, "ON", "On");
+                                                OSAEObjectTypeManager.ObjectTypeEventAdd(node.Product, "OFF", "Off");
+                                                OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, "ON", "On", "", "", "", "");
+                                                OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, "OFF", "Off", "", "", "", "");
                                             }
                                             else
                                             {
                                                 if (v.Type == ZWValueID.ValueType.Byte || v.Type == ZWValueID.ValueType.Decimal || v.Type == ZWValueID.ValueType.Int)
                                                 {
-                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(v.Label, v.Label, node.Product, "Value", "", "", "");
+                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, v.Label, v.Label, "Value", "", "", "");
                                                 }
                                                 else if (v.Type == ZWValueID.ValueType.Button)
                                                 {
-                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(v.Label, v.Label, node.Product, "", "", "", "");
+                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, v.Label, v.Label, "", "", "", "");
                                                 }
                                             }
                                         }
@@ -882,8 +882,7 @@ namespace OSAE.Zwave
                     case "Binary Toggle Remote Switch":
                         foreach (Value v in n.Values)
                         {
-                            if (v.Label == "Switch")
-                                zv = v.ValueID;
+                            if (v.Label == "Switch") m_manager.EnablePoll(v.ValueID);
                         }
                         break;
                     case "Multilevel Toggle Remote Switch":
@@ -898,8 +897,7 @@ namespace OSAE.Zwave
                     case "Motor Control Class C":
                         foreach (Value v in n.Values)
                         {
-                            if (v.Genre == ZWValueID.ValueGenre.User && v.Label == "Level")
-                                zv = v.ValueID;
+                            if (v.Genre == ZWValueID.ValueGenre.User && v.Label == "Level") m_manager.EnablePoll(v.ValueID);
                         }
                         break;
                     case "General Thermostat V2":
@@ -910,8 +908,10 @@ namespace OSAE.Zwave
                     case "Setback Thermostat":
                         foreach (Value v in n.Values)
                         {
-                            if (v.Label == "Temperature")
-                                zv = v.ValueID;
+                            if (v.Label == "Temperature") m_manager.EnablePoll(v.ValueID);
+                            if (v.Label == "Fan State") m_manager.EnablePoll(v.ValueID);
+                            if (v.Label == "Operating State") m_manager.EnablePoll(v.ValueID);
+                            if (v.Label == "Mode") m_manager.EnablePoll(v.ValueID);
                         }
                         break;
                     case "Static PC Controller":
@@ -927,8 +927,7 @@ namespace OSAE.Zwave
                     case "Entry Control":
                         foreach (Value v in n.Values)
                         {
-                            if (v.Genre == ZWValueID.ValueGenre.User && v.Label == "Basic")
-                                zv = v.ValueID;
+                            if (v.Genre == ZWValueID.ValueGenre.User && v.Label == "Basic") m_manager.EnablePoll(v.ValueID);
                         }
                         break;
                     case "Alarm Sensor":
@@ -945,13 +944,10 @@ namespace OSAE.Zwave
                     case "Routing Binary Sensor":
                         foreach (Value v in n.Values)
                         {
-                            if (v.Genre == ZWValueID.ValueGenre.User && v.Label == "Basic")
-                                zv = v.ValueID;
+                            if (v.Genre == ZWValueID.ValueGenre.User && v.Label == "Basic") m_manager.EnablePoll(v.ValueID);
                         }
                         break;
                 }
-                if (zv != null)
-                    m_manager.EnablePoll(zv);
             }
             catch (Exception ex)
             {

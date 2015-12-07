@@ -27,6 +27,14 @@
      </xs:restriction>
     </xs:simpleType>
    </xs:attribute>
+   <xs:attribute name='refreshonnodeinfoframe' use='optional'>
+    <xs:simpleType>
+     <xs:restriction base='xs:string'>
+      <xs:enumeration value='true'/>
+      <xs:enumeration value='false'/>
+     </xs:restriction>
+    </xs:simpleType>
+   </xs:attribute>
   </xs:complexType>
  </xs:element>
 
@@ -58,6 +66,7 @@
    <xs:attribute name='action' type='xs:string' use='optional'/>
    <xs:attribute name='base' type='xs:string' use='optional'/>
    <xs:attribute name='override_precision' type='xs:string' use='optional'/>
+   <xs:attribute name='scenecount' type='xs:string' use='optional'/>
    <xs:attribute name='create_vars' use='optional'>
     <xs:simpleType>
      <xs:restriction base='xs:string'>
@@ -99,6 +108,14 @@
      </xs:restriction>
     </xs:simpleType>
    </xs:attribute>
+   <xs:attribute name='coloridxbug' use='optional'>
+    <xs:simpleType>
+     <xs:restriction base='xs:string'>
+      <xs:enumeration value='true'/>
+      <xs:enumeration value='false'/>
+     </xs:restriction>
+    </xs:simpleType>
+   </xs:attribute>
    <xs:attribute name='version' type='xs:string' use='optional'/>
    <xs:attribute name='request_flags' type='xs:string' use='optional'/>
    <xs:attribute name='endpoints' type='xs:string' use='optional'/>
@@ -132,6 +149,14 @@
    <xs:attribute name='max_associations' type='xs:string' use='required'/>
    <xs:attribute name='label' type='xs:string' use='required'/>
    <xs:attribute name='auto' use='optional'>
+    <xs:simpleType>
+     <xs:restriction base='xs:string'>
+      <xs:enumeration value='true'/>
+      <xs:enumeration value='false'/>
+     </xs:restriction>
+    </xs:simpleType>
+   </xs:attribute>
+   <xs:attribute name='multiInstance' use='optional'>
     <xs:simpleType>
      <xs:restriction base='xs:string'>
       <xs:enumeration value='true'/>
@@ -217,7 +242,9 @@
        <xs:restriction base='xs:string'>
 	 <xs:enumeration value='1'/>
 	 <xs:enumeration value='2'/>
+	 <xs:enumeration value='3'/>
 	 <xs:enumeration value='4'/>
+	 <xs:enumeration value='16'/>
        </xs:restriction>
      </xs:simpleType>
    </xs:attribute>
@@ -238,6 +265,14 @@
     </xs:simpleType>
    </xs:attribute>
    <xs:attribute name='write_only' use='optional'>
+    <xs:simpleType>
+     <xs:restriction base='xs:string'>
+      <xs:enumeration value='true'/>
+      <xs:enumeration value='false'/>
+     </xs:restriction>
+    </xs:simpleType>
+   </xs:attribute>
+   <xs:attribute name='verify_changes' use='optional'>
     <xs:simpleType>
      <xs:restriction base='xs:string'>
       <xs:enumeration value='true'/>
