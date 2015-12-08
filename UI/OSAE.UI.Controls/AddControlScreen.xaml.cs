@@ -26,7 +26,6 @@ namespace OSAE.UI.Controls
             InitializeComponent();
             currentScreen = screen;
 
-
             //Check if Screen Name was passed in, if so, goto edit mode
             if (currentScreen != "")
             {

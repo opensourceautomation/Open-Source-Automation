@@ -33,9 +33,82 @@
                 Log.Info("Speech Plugin took ownership of the Speech Object Type.");
             }
             else
-            {
                 Log.Info("The Speech Plugin correctly owns the Speech Object Type.");
+        }
+
+        private void Load_Settings()
+        {
+            try
+            {
+                try
+                {
+                    gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
+                }
+                catch
+                { Log.Error("I think the Debug property is missing from the Speech object type!"); }
+
+                Log.Info("Debug Mode Set to " + gDebug);
+                gSelectedVoice = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Voice").Value;
+                bool VoiceValid = false;
+                string aValidVoice = "";
+                OSAEObjectPropertyManager.ObjectPropertyArrayDeleteAll(gAppName, "Voices");
+                foreach (System.Speech.Synthesis.InstalledVoice i in oSpeech.GetInstalledVoices())
+                {
+                    if (aValidVoice == "") aValidVoice = i.VoiceInfo.Name;
+                    if (gSelectedVoice == "") gSelectedVoice = i.VoiceInfo.Name;
+                    Log.Info("Adding Voice: " + i.VoiceInfo.Name);
+                    if (gSelectedVoice == i.VoiceInfo.Name) VoiceValid = true;
+                    OSAEObjectPropertyManager.ObjectPropertyArrayAdd(gAppName, "Voices", i.VoiceInfo.Name, "Voice");
+                }
+                if (VoiceValid != true) gSelectedVoice = aValidVoice;
+
+                if (gSelectedVoice != "")
+                {
+                    oSpeech.SelectVoice(gSelectedVoice);
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Voice", gSelectedVoice, "SPEECH");
+                    Log.Info("Current Voice Set to " + gSelectedVoice);
+                }
+
+                // Load the speech rate, which must be -10 to 10, and set it to 0 if it is not valid.
+                Int16 iTTSRate = 0;
+                try
+                {
+                    iTTSRate = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
+                }
+                catch
+                {
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
+                    Log.Info("TTS Rate was invalid! I changed it to " + iTTSRate.ToString());
+                }
+                if (iTTSRate < -10 || iTTSRate > 10)
+                {
+                    iTTSRate = 0;
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
+                    Log.Info("TTS Rate was invalid! I changed it to " + iTTSRate.ToString());
+                }
+                Log.Info("TTS Rate Set to " + iTTSRate.ToString());
+                oSpeech.Rate = iTTSRate;
+                Int16 iTTSVolume = 0;
+                try
+                {
+                    iTTSVolume = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
+                }
+                catch
+                {
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", iTTSVolume.ToString(), gAppName);
+                    Log.Info("TTS Volume was invalid! I changed it to " + iTTSVolume.ToString());
+                }
+                if (iTTSVolume < -10 || iTTSVolume > 10)
+                {
+                    iTTSVolume = 0;
+                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", iTTSVolume.ToString(), gAppName);
+                    Log.Info("TTS Volume was invalid! I changed it to " + iTTSVolume.ToString());
+                }
+                oSpeech.Rate = iTTSVolume;
+                Log.Info("TTS Volume Set to " + iTTSVolume.ToString());
             }
+            catch (Exception ex)
+            { Log.Error("Error in Load_Settings!", ex); }
         }
 
         public override void ProcessCommand(OSAEMethod method)
@@ -119,90 +192,7 @@
             }
         }
 
-        private void Load_Settings()
-        {        
-            try
-            {
-                try
-                {
-                    gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
-                }
-                catch
-                {
-                    Log.Error("I think the Debug property is missing from the Speech object type!");
-                }
-                Log.Info("Debug Mode Set to " + gDebug);
-                gSelectedVoice = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Voice").Value;
-                bool VoiceValid = false;
-                string aValidVoice = "";
-                OSAEObjectPropertyManager.ObjectPropertyArrayDeleteAll(gAppName, "Voices");
-                foreach (System.Speech.Synthesis.InstalledVoice i in oSpeech.GetInstalledVoices())
-                {
-                    if (aValidVoice == "") aValidVoice = i.VoiceInfo.Name;
-                    if (gSelectedVoice == "")
-                    {
-                        gSelectedVoice = i.VoiceInfo.Name;
-                        OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Voice", gSelectedVoice, "SPEECH");
-                        Log.Info("Default Voice Set to " + gSelectedVoice);
-                    }
-                    Log.Info("Adding Voice: " + i.VoiceInfo.Name);
-                    if (gSelectedVoice == i.VoiceInfo.Name) VoiceValid = true;
-                    OSAEObjectPropertyManager.ObjectPropertyArrayAdd(gAppName, "Voices", i.VoiceInfo.Name, "Voice");
-                }
-                if (VoiceValid != true) gSelectedVoice = aValidVoice;
-
-                if (gSelectedVoice != "")
-                {
-                    oSpeech.SelectVoice(gSelectedVoice);
-                    Log.Info("Current Voice Set to " + gSelectedVoice);
-                }
-                
-
-                // Load the speech rate, which must be -10 to 10, and set it to 0 if it is not valid.
-                Int16 iTTSRate = 0;
-                try
-                {
-                    iTTSRate = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
-                }
-                catch
-                {
-                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
-                    Log.Info("TTS Rate was invalid! I changed it to " + iTTSRate.ToString());
-                }
-                if (iTTSRate < -10 || iTTSRate > 10)
-                {
-                    iTTSRate = 0;
-                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
-                    Log.Info("TTS Rate was invalid! I changed it to " + iTTSRate.ToString());
-                }
-                Log.Info("TTS Rate Set to " + iTTSRate.ToString());
-                oSpeech.Rate = iTTSRate;
-                Int16 iTTSVolume = 0;
-                try
-                {
-                    iTTSVolume = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
-                }
-                catch
-                {
-                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", iTTSVolume.ToString(), gAppName);
-                    Log.Info("TTS Volume was invalid! I changed it to " + iTTSVolume.ToString());
-                }
-                if (iTTSVolume < -10 || iTTSVolume > 10)
-                {
-                    iTTSVolume = 0;
-                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", iTTSVolume.ToString(), gAppName);
-                    Log.Info("TTS Volume was invalid! I changed it to " + iTTSVolume.ToString());
-                }
-                oSpeech.Rate = iTTSVolume;
-                Log.Info("TTS Volume Set to " + iTTSVolume.ToString());
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Error in Load_Settings!", ex);
-            }
-        }
-
-        public override void Shutdown()
+          public override void Shutdown()
         {
             this.Log.Info("Recieved Shutdown Order.");
         }
