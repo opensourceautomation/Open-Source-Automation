@@ -570,12 +570,12 @@
                     if (DayNight != "Day")
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Day", pName);
-                        //if (DayNight == "Night" | DayNight == "Dawn")
-                       // {
-                        //    logging.EventLogAdd(WeatherObjName, "Day");
-                        //}
+                        if (DayNight == "Night" | DayNight == "Dawn")
+                        {
+                            OSAE.OSAEObjectManager.EventTrigger(WeatherObjName, "Day");
+                        }
                         DayNight = "Day";
-                        this.Log.Debug("Day");
+                        this.Log.Debug("Day event Triggered");
                     }
                 }
                 else if (Now >= DuskEnd | Now < DawnStart)
@@ -583,12 +583,12 @@
                     if (DayNight != "Night")
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Night",pName);
-                      //  if (DayNight == "Day" | DayNight == "Dusk")
-                       // {
-                       //     logging.EventLogAdd(WeatherObjName, "Night");
-                       // }
+                        if (DayNight == "Day" | DayNight == "Dusk")
+                        {
+                            OSAE.OSAEObjectManager.EventTrigger(WeatherObjName, "Night");
+                        }
                         DayNight = "Night";
-                         this.Log.Info("Night");
+                        this.Log.Info("Night event Triggered");
                     }
                 }
                 else if (Now >= DawnStart & Now < DawnEnd)
