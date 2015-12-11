@@ -100,6 +100,14 @@
                             <asp:Button ID="objectsExportButton"  class="btn" runat="server" Text="Export" OnClick="objectsExportButton_Click" />
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            History:
+                        </td>
+                        <td>
+                            <asp:Button ID="clearHistoryButton"  class="btn" runat="server" Text="Clear" OnClick="clearHistoryButton_Click" />
+                        </td>
+                    </tr>
                 </table>
                 </center>
         </div>
