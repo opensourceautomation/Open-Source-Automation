@@ -3,13 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Open Source Automation - Main Window" Height="195" Width="576" Loaded="Window_Loaded" Closing="Window_Closing_1" Icon="icon.png" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight">
     <Grid>
-        <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FF939342" Focusable="True" MouseRightButtonDown="canvas1_RightButtonDown">
+        <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FF939342" Focusable="True" >
             <Canvas.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="menuEditMode" Header="Edit Mode" IsCheckable="True" Checked="menuEditMode_Checked" Unchecked="menuEditMode_Unchecked"/>
                     <MenuItem Name="menuChangeScreen" Header="Switch Screen" Click="menuChangeScreen_Click"/>
                     <MenuItem Name="menuCreateScreen" Header="Add/Edit Screen" Click="menuCreateScreen_Click" />
-                    <MenuItem Header="Add Control">
+                    <MenuItem Name="menuAddControl" Header="Add Control">
                         <MenuItem Name="menuAddStateImage" Header="State Image" Click="menuAddStateImage_Click" />
                         <MenuItem Name="menuAddPropertyLabel" Header="Property Label" Click="menuAddPropertyLabel_Click" />
                         <MenuItem Name="menuAddClickImage" Header="Click Image" Click="menuAddClickImage_Click" />

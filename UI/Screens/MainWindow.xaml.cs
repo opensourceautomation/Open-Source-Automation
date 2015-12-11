@@ -25,7 +25,9 @@
         
         public string gAppName = "";
         public string gCurrentScreen = "";
+        public string gCurrentUser = "";
 
+        private UserSelector userSelectorControl;
         List<StateImage> stateImages = new List<StateImage>();
         List<NavigationImage> navImages = new List<NavigationImage>();
         List<ClickImage> clickImages = new List<ClickImage>();
@@ -97,10 +99,8 @@
             _timer.Enabled = true; // Enable it
 
             gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
-            if (gCurrentScreen == "")
-            {
-                Set_Default_Screen();
-            }
+            if (gCurrentScreen == "") Set_Default_Screen();
+
             Load_Screen(gCurrentScreen);
 
             this.canGUI.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(DragSource_PreviewMouseLeftButtonDown);
@@ -135,7 +135,7 @@
                 controlTypes.Clear();
 
                 gCurrentScreen = sScreen;
-                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, gCurrentUser);
                 OSAE.OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
                 string imgID = OSAEObjectPropertyManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
                 OSAE.OSAEImage img = imgMgr.GetImage(imgID);
@@ -178,7 +178,6 @@
         private void Update_Objects()
         {
             try
-
             {
                 if (loadingScreen || updatingScreen)
                 {
@@ -188,11 +187,31 @@
                 updatingScreen = true;
                 this.Log.Debug("Checking for updates on:  " + gCurrentScreen);
                 bool oldCtrl = false;
+                gCurrentUser = userSelectorControl._CurrentUser;
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    if (gCurrentUser == "")
+                    {
+                        menuEditMode.IsChecked = false;
+                        menuEditMode.IsEnabled = false;
+                        menuCreateScreen.IsEnabled = false;
+                        menuAddControl.IsEnabled = false;
+                    }
+                    else
+                    {
+                        menuEditMode.IsEnabled = true;
+                        menuCreateScreen.IsEnabled = true;
+                        menuAddControl.IsEnabled = true;
+                    }
+
+                }));
                 List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
+
 
                 foreach (OSAE.OSAEScreenControl newCtrl in controls)
                 {
                     oldCtrl = false;
+
 
                     #region CONTROL STATE IMAGE
                     if (newCtrl.ControlType == "CONTROL STATE IMAGE")
@@ -332,32 +351,30 @@
                     #region CONTROL BROWSER
                     if (newCtrl.ControlType == "CONTROL BROWSER")
                     {
-                        //    foreach (BrowserFrame oBrowser in browserFrames)
-                        //     {
-                        //      if (newCtrl.ControlName == oBrowser.screenObject.Name)
-                        //      {
-                        //  if (newCtrl.LastUpdated != sImage.LastUpdated)
-                        //  {
-                        //        this.Log.Debug("Updating:  " + newCtrl.ControlName);
-                        //  sImage.LastUpdated = newCtrl.LastUpdated;
-                        //   try
-                        //   {
-                        //      sImage.Update();
-                        //  }
-                        //   catch (Exception ex)
-                        //   {
-
-                        //    }
-                        //        this.Dispatcher.Invoke((Action)(() =>
-                        //        {
-                        //           Canvas.SetLeft(oBrowser, oBrowser.Location.X);
-                        //           Canvas.SetTop(oBrowser, oBrowser.Location.Y);
-                        //           }));
-                        //          this.Log.Debug("Complete:  " + newCtrl.ControlName);
-                        //      }
-                        //       oldCtrl = true;
-                        //   }
-                        //   }
+                        foreach (BrowserFrame oBrowser in browserFrames)
+                        {
+                           if (newCtrl.ControlName == oBrowser.screenObject.Name)
+                            {
+                             //   if (newCtrl.LastUpdated != oBrowser.LastUpdated)
+                            //    {
+                             //       this.Log.Debug("Updating:  " + newCtrl.ControlName);
+                                    //sImage.LastUpdated = newCtrl.LastUpdated;
+                             //       try
+                             //       {
+                                    // sImage.Update();
+                             ///       }
+                              //      catch (Exception ex)
+                               //     { }
+                               //     this.Dispatcher.Invoke((Action)(() =>
+                              //          {
+                              //              Canvas.SetLeft(oBrowser, oBrowser.Location.X);
+                              //              Canvas.SetTop(oBrowser, oBrowser.Location.Y);
+                               //         }));
+                               //         this.Log.Debug("Complete:  " + newCtrl.ControlName);
+                               //     }
+                                oldCtrl = true;
+                            }
+                        }
                     }
                     #endregion
 
@@ -379,6 +396,21 @@
             this.Dispatcher.Invoke((Action)(() =>
             {
                 String sStateMatch = "";
+
+                #region USER SELECTOR
+                userSelectorControl = new UserSelector();
+                userSelectorControl.MouseRightButtonDown += new MouseButtonEventHandler(State_Image_MouseRightButtonDown);
+                userSelectorControl.Location.X = canGUI.Width - userSelectorControl.Width;
+                userSelectorControl.Location.Y = 0;
+                canGUI.Children.Add(userSelectorControl);
+                Canvas.SetLeft(userSelectorControl, userSelectorControl.Location.X);
+                Canvas.SetTop(userSelectorControl, userSelectorControl.Location.Y);
+                Canvas.SetZIndex(userSelectorControl, 5);
+                controlTypes.Add(typeof(UserSelector));
+                userSelectorControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                
+                #endregion
+
 
                 #region CONTROL STATE IMAGE
                 if (obj.Type == "CONTROL STATE IMAGE")
@@ -679,7 +711,7 @@
             {
                 gAppName = "GUI CLIENT-" + Common.ComputerName;
                 OSAEObjectManager.ObjectAdd(gAppName, gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", true);
-                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, gCurrentUser);
             }
             this.Log.Info("Found this Screen App's Object Name:  " + gAppName);
 
@@ -691,19 +723,13 @@
             if (screens.Count > 0)
             {
                 gCurrentScreen = screens[0].Name;
-                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, "GUI");
+                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, gCurrentUser);
             }
-        }
-
-        private void canvas1_RightButtonDown(object sender, RoutedEventArgs e)
-        {
-            //mnuMain. = true;
-            //MessageBox.Show(sender.ToString());
         }
 
         private void Click_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
-            if (editMode == false) return;
+            if (editMode == false || gCurrentUser == "") return;
             ClickImage navCtrl = (ClickImage)sender;
             //MessageBox.Show(navCtrl.screenObject.Name);
             AddControl addControl = new AddControl();
@@ -718,7 +744,7 @@
 
         private void State_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
-            if (editMode == false) return;
+            if (editMode == false || gCurrentUser == "") return;
             StateImage navCtrl = (StateImage)sender;
             //MessageBox.Show(navCtrl.screenObject.Name);
             AddControl addControl = new AddControl();
@@ -733,7 +759,7 @@
 
         private void Broswer_Control_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
-            if (editMode == false) return;
+            if (editMode == false || gCurrentUser == "") return;
             BrowserFrame bfCtrl = (BrowserFrame)sender;
             AddControl addControl = new AddControl();
             AddControlBrowser cmi = new AddControlBrowser(gCurrentScreen, bfCtrl.screenObject.Name);
@@ -747,7 +773,7 @@
 
         private void Navigaton_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
-            if (editMode == false) return;
+            if (editMode == false || gCurrentUser == "") return;
             NavigationImage navCtrl = (NavigationImage)sender;
             AddControl addControl = new AddControl();
             AddControlNavigationImage cmi = new AddControlNavigationImage(gCurrentScreen, navCtrl.screenObject.Name);
@@ -761,7 +787,7 @@
 
         private void Property_Label_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
-            if (editMode == false) return;
+            if (editMode == false || gCurrentUser == "") return;
             PropertyLabel propLabel = (PropertyLabel)sender;
             AddControl addControl = new AddControl();
             AddControlPropertyLabel cmi = new AddControlPropertyLabel(gCurrentScreen, propLabel.screenObject.Name);
@@ -782,7 +808,7 @@
 
         private void Timer_Label_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
-            if (editMode == false) return;
+            if (editMode == false || gCurrentUser == "") return;
             TimerLabel tmrLbl = (TimerLabel)sender;
             AddControl addControl = new AddControl();
             AddControlTimerLabel cmi = new AddControlTimerLabel(gCurrentScreen, tmrLbl.screenObject.Name);
@@ -796,7 +822,7 @@
 
         private void VideoStreamViewer_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
-            if (editMode == false) return;
+            if (editMode == false || gCurrentUser == "") return;
             VideoStreamViewer vidviewr = (VideoStreamViewer)sender;
             AddControl addControl = new AddControl();
             AddNewCameraViewer cmi = new AddNewCameraViewer(gCurrentScreen, vidviewr.screenObject.Name);
@@ -810,7 +836,7 @@
 
         private void UserControl_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
-            if (editMode == false) return;
+            if (editMode == false || gCurrentUser == "") return;
             dynamic item = sender;
             string sUCType = item._controlname;
             string screenObject = item.screenObject.Name;
@@ -981,8 +1007,8 @@
 
         private void updateObjectCoords(OSAE.OSAEObject obj, string X, string Y)
         {
-            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "X", X, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Y", Y, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "X", X, gCurrentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Y", Y, gCurrentUser);
 
             obj.Property("X").Value = X;
             obj.Property("Y").Value = Y;
@@ -990,8 +1016,8 @@
 
         private void updateObjectCoordsStateImg(OSAE.OSAEObject obj, string state, string X, string Y)
         {
-            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, state + " X", X, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, state + " Y", Y, "GUI");
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, state + " X", X, gCurrentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, state + " Y", Y, gCurrentUser);
 
             obj.Property(state + " X").Value = X; 
             obj.Property(state + " Y").Value = Y;

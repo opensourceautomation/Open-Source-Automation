@@ -62,7 +62,6 @@
         Dim DataAvailable As Short ' how many bytes of data available between x_Start and X_LastWrite?
         Dim data(2) As Byte
         Dim DataString As String
-        'If gDebug Then Log.Debug("PLM Is Receiving a Message")
         'Debug.WriteLine("PLM starting: x_LastWrite: " & x_LastWrite & " x_Start: " & x_Start)
         If x_Start = x_LastWrite Then Exit Sub ' reached end of data, get out of sub
         ' x_Start = the last byte that was read and processed here
@@ -71,7 +70,6 @@
 
         ' Find the beginning of the next command (always starts with 0x02)
         Do Until (x(x_Start + 1) = 2) Or (x_Start = x_LastWrite) Or (x_Start + 1 = x_LastWrite)
-            'Debug.WriteLine("PLM unrecognized byte " & GetHex(x(x_Start + 1)))
             x_Start = x_Start + 1
             If x_Start > 1000 Then x_Start = 1 ' Loop according to the same looping rule as x_LastWrite
         Loop
@@ -97,13 +95,12 @@
                 If DataAvailable >= 8 Then
                     x_Start = MessageEnd
                     PLM_Address = GetHex(x(ms + 2)) & "." & GetHex(x(ms + 3)) & "." & GetHex(x(ms + 4))
-                    If gDebug Then Log.Debug("PLM response to Get IM Info: PLM ID: " & PLM_Address)
+                    If gDebug Then Log.Debug("|_PLM response to Get IM Info: PLM ID: " & PLM_Address)
                     Try
-                        If gDebug Then Log.Info("Looking up Object for PLM Address: " & PLM_Address)
                         Dim oObject96 As OSAEObject = OSAEObjectManager.GetObjectByAddress(PLM_Address)
                         If oObject96 IsNot Nothing Then
                             If oObject96.Name <> "" Then
-                                If gDebug Then Log.Info("Found: " & oObject96.Name & " for PLM Address: " & PLM_Address)
+                                If gDebug Then Log.Info("|__Found: " & oObject96.Name & " for PLM Address: " & PLM_Address)
                             End If
                         Else
                             oObject96 = OSAEObjectManager.GetObjectByName(gAppName)
@@ -141,46 +138,39 @@
                     Command2 = x(ms + 10)
                     ' Check if FromAddress is in device database, if not add it (ToAddress will generally = PLM)
                     'Try
-                    If gDebug Then Log.Debug("Looking up Object for From Address: " & FromAddress)
                     Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(FromAddress)
                     If oObject.Name <> "" Then
-                        If gDebug Then Log.Debug("Found: " & oObject.Name & " for From Address: " & FromAddress)
+                        If gDebug Then Log.Debug("RECV:" & FromAddress & " (" & oObject.Name & ")")
                         ' Else
                         ''     OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", True)
                         '     Log.Debug("Added new Object for X10 Address: " & X10Address)
                     End If
                     'OSAEObjectManager.ObjectAdd("NEW " & FromAddress, "NEW " & FromAddress, "X10 RELAY", FromAddress, "", 1)
                     '  Log.Info("Added New Device to DB (" & FromAddress & ")")
-                    '  dsResults = OSAESql.RunQuery(CMD)
-                    ' End If
-                    'If dsResults.Tables(0).Rows.Count > 0 Then
-                    'sObject = dsResults.Tables(0).Rows(0).Item(0)
-                    'End If
-                    ' Catch ex As Exception
-                    'Log.Error("Added Insteon error (" & ex.Message & ")")
                     '  'Log.Error("sObject= (" & sObject & ")")
-                    ' End Try
-                    If gDebug Then Log.Debug("RECV: From: " & FromAddress & "  To: " & ToAddress)
+
                     Select Case Flags And 224
                         Case 0 ' 000 Direct message
-                            If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (direct) ")
+                            If gDebug Then Log.Debug("|_RECV: From: " & FromAddress & "  To: " & ToAddress & " Flags: " & GetHex(Flags) & " (direct) ")
                         Case 32 ' 001 ACK direct message
-                            If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (ACK direct) ")
+                            If gDebug Then Log.Debug("|_RECV: From: " & FromAddress & "  To: " & ToAddress & " Flags: " & GetHex(Flags) & " (ACK direct) ")
                         Case 64 ' 010 Group cleanup direct message
-                            If gDebug Then Log.Debug(" Flags: DEC=" & Flags & ", HEX=" & GetHex(Flags) & "  (Group cleanup direct) ")
+                            If gDebug Then Log.Debug("|_RECV: From: " & FromAddress & "  To: " & ToAddress & " Flags: " & GetHex(Flags) & " (Group cleanup direct) ")
                         Case 96 ' 011 ACK group cleanup direct message
-                            If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (ACK Group cleanup direct) ")
+                            If gDebug Then Log.Debug("|_RECV: From: " & FromAddress & "  To: " & ToAddress & " Flags: " & GetHex(Flags) & " (ACK Group cleanup direct) ")
                         Case 128 ' 100 Broadcast message
-                            If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (Broadcast) ")
+                            If gDebug Then Log.Debug("|_RECV: From: " & FromAddress & "  To: " & ToAddress & " Flags: " & GetHex(Flags) & " (Broadcast) ")
                         Case 160 ' 101 NAK direct message
-                            If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (NAK direct) ")
+                            If gDebug Then Log.Debug("|_RECV: From: " & FromAddress & "  To: " & ToAddress & " Flags: " & GetHex(Flags) & " (NAK direct) ")
                         Case 192 ' 110 Group broadcast message
-                            If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (Group broadcast) ")
+                            If gDebug Then Log.Debug("|_RECV: From: " & FromAddress & "  To: " & ToAddress & " Flags: " & GetHex(Flags) & " (Group broadcast) ")
                         Case 224 ' 111 NAK group cleanup direct message
-                            If gDebug Then Log.Debug(" Flags: " & GetHex(Flags) & "  (NAK Group cleanup direct) ")
+                            If gDebug Then Log.Debug("|_RECV: From: " & FromAddress & "  To: " & ToAddress & " Flags: " & GetHex(Flags) & " (NAK Group cleanup direct) ")
+                        Case Else
+                            If gDebug Then Log.Debug("|_RECV: From: " & FromAddress & "  To: " & ToAddress)
                     End Select
-                    If gDebug Then Log.Debug(" Command1: DEC=" & Command1 & ", HEX=" & GetHex(Command1) & ", Insteon Command=" & CommandsInsteon(Command1))
-                    If gDebug Then Log.Debug(" Command2: DEC=" & Command2 & ", HEX=" & GetHex(Command2))
+                    If gDebug Then Log.Debug("|__Command1: DEC=" & Command1 & ", HEX=" & GetHex(Command1) & ", Insteon Command=" & CommandsInsteon(Command1))
+                    If gDebug Then Log.Debug("|__Command2: DEC=" & Command2 & ", HEX=" & GetHex(Command2))
 
                     ' Update the status of the sending device
                     IAddress = InsteonNum(FromAddress)  ' already checked to make sure it was in list
@@ -191,7 +181,7 @@
                                 If (Flags And 64) = 64 Then ' Group message (broadcast or cleanup)
                                     If Command2 <> 4 Then
                                         OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
-                                        Log.Info("Set: " & oObject.Name & " to ON")
+                                        Log.Info("|___Set: " & oObject.Name & " to ON")
                                     End If
 
                                 Else
@@ -201,10 +191,12 @@
                                     OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", sLevel, gAppName)
                                     If Convert.ToUInt16(sLevel) > 0 Then
                                         OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
-                                        Log.Info("Set: " & oObject.Name & " to ON (" & sLevel & "%)")
+                                        OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", sLevel, gAppName)
+                                        Log.Info("|___Set:  " & oObject.Name & " to ON (" & sLevel & "%)")
                                     Else
                                         OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", gAppName)
-                                        Log.Info("Set: " & oObject.Name & " to OFF (" & sLevel & "%)")
+                                        OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", sLevel, gAppName)
+                                        Log.Info("|___Set: " & oObject.Name & " to OFF (" & sLevel & "%)")
                                     End If
 
                                 End If
@@ -215,14 +207,14 @@
                                     ' Insteon(IAddress).Level = 100  ' the real level is the preset for the link, but...
                                     OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
                                     OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", gAppName)
-                                    Log.Info("Set: " & oObject.Name & " to ON")
+                                    Log.Info("|___Set: " & oObject.Name & " to ON")
                                 Else
                                     ' Direct message
                                     ' Insteon(IAddress).Level = (Command2 Or 15) / 2.55  ' high bits of cmd2 + binary 1111
                                     'MsgBox("Light On At Ramp Rate, Command2 = " & Command2 & " (Command2 or 15)/2.55 = " & Insteon(IAddress).Level)
                                     OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
                                     OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "100", gAppName)
-                                    Log.Info("Set: " & oObject.Name & " to ON")
+                                    Log.Info("|___Set: " & oObject.Name & " to ON")
                                 End If
                             Case 19, 20, 47 ' Off, Fast Off, Light Off At Ramp Rate (slow off)
                                 'MsgBox("Off, Fast Off, Light Off At Ramp Rate")
@@ -230,16 +222,21 @@
                                 'Insteon(IAddress).Level = 0
                                 OSAEObjectStateManager.ObjectStateSet(oObject.Name, "OFF", gAppName)
                                 OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", "0", gAppName)
-                                Log.Info("Set: " & oObject.Name & " to OFF")
+                                Log.Info("|___Set: " & oObject.Name & " to OFF")
                             Case 21 ' Bright
+                                Dim sLevel As String = CStr(CInt(Command2 / 2.55))
                                 OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
-                                Log.Info("Set: " & oObject.Name & " to ON")
-                                ' Insteon(IAddress).Device_On = True
-                                'If Insteon(IAddress).Level > 100 Then Insteon(IAddress).Level = 100
-                                'Insteon(IAddress).Level = Insteon(IAddress).Level + 3
+                                OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", sLevel, gAppName)
+                                Log.Info("|___Set: " & oObject.Name & " to Bright (+3.2%)")
+                            ' Insteon(IAddress).Device_On = True
+                            'If Insteon(IAddress).Level > 100 Then Insteon(IAddress).Level = 100
+                            'Insteon(IAddress).Level = Insteon(IAddress).Level + 3
                             Case 22 ' Dim
+                                Dim sLevel As String = CStr(CInt(Command2 / 2.55))
                                 OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", gAppName)
-                                Log.Info("Set: " & oObject.Name & " to ON")
+                                OSAEObjectPropertyManager.ObjectPropertySet(oObject.Name, "Level", sLevel, gAppName)
+                                Log.Info("|___Set: " & oObject.Name & " to Dim (-3.2%)")
+
                                 'Insteon(IAddress).Level = Insteon(IAddress).Level - 3
                                 'If Insteon(IAddress).Level < 0 Then Insteon(IAddress).Level = 0
                                 ' If Insteon(IAddress).Level = 0 Then Insteon(IAddress).Device_On = False
@@ -393,8 +390,6 @@
                     '            'Insteon(IAddress).LastGroup = 0
                     '        Case 160, 224 ' 101 NAK direct message, 111 NAK group cleanup direct message
                     '            ' Command received by another device but failed - display message in log
-                    '            ' Time stamp in blue
-                    '            'ListBox1.Items.Add(VB6.Format(TimeOfDay) & " ")
                     '            'ListBox1.Items.Add(DeviceNameInsteon(FromAddress) & " NAK to command " & GetHex(Command1) & " (" & CommandsInsteon(Command1) & ")")
                     '            'Insteon(IAddress).LastCommand = Command1
                     '            'Insteon(IAddress).LastFlags = Flags And 224
@@ -1114,8 +1109,6 @@ PLMerror:
                 Else
                     iParameter = 100
                 End If
-
-                If gDebug Then Log.Debug("SEND: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName & " PARAM: " & iParameter)
             Catch ex As Exception
                 Log.Error("Error ProcessCommand - " & ex.Message)
             End Try
@@ -1151,7 +1144,6 @@ PLMerror:
                         Log.Error("Error ProcessCommand - " & ex.Message)
                     End Try
                 Case 21, 22 ' Bright/Dim by one step (on 32 step scale)
-                    'WriteEvent(Yellow, "Sent " + DeviceNameInsteon((cmbInsteonID.Text)) + " " + VB6.GetItemString(cmbCommandToSend, cmbCommandToSend.SelectedIndex) + " (one step)" + vbCrLf)
                     a = Replace(method.Address, ".", " ")
                     data(0) = 2
                     data(1) = 98 ' 0x062 = send Insteon standard or extended message
@@ -1160,7 +1152,7 @@ PLMerror:
                     data(4) = Convert.ToInt32(sAddress3, 16)
                     data(5) = 15 ' flags
                     data(6) = i ' command1
-                    data(7) = 255
+                    data(7) = 0 '255 if you break it
                     SerialPLM.Write(data, 0, 8)
                     Log.Info("SEND: " & sAddress1 & "." & sAddress2 & "." & sAddress3 & " " & method.MethodName & " (command=" & i & ")")
                 Case Else

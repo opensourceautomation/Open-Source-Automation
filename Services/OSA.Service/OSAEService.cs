@@ -138,9 +138,14 @@ namespace OSAE.Service
 
             Common.CreateComputerObject(sourceName);
             CreateServiceObject();
-
-            OSAE.OSAESql.RunSQL("SET GLOBAL event_scheduler = ON;");
-
+            try
+            {
+                OSAE.OSAESql.RunSQL("SET GLOBAL event_scheduler = ON;");
+            }
+            catch (Exception ex)
+            {
+                this.Log.Fatal("Error setting the event scheduler: " + ex.Message, ex);
+            }
             checkLog = new System.Timers.Timer(60000);
             checkLog.Elapsed += checkLogEvent;
             checkLog.Enabled = true;
