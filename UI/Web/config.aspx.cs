@@ -155,4 +155,10 @@ public partial class config : System.Web.UI.Page
         Response.AddHeader("Content-Disposition", "attachment; filename=Objects.xml");
         Response.End();
     }
+    protected void clearHistoryButton_Click(object sender, EventArgs e)
+    {
+        DataSet d = OSAESql.RunSQL("CALL osae_sp_object_history_clear");
+    }
+
+    
 }
