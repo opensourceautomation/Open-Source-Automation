@@ -34,6 +34,11 @@ CALL osae_sp_object_type_event_add ('DSC ALARM PARTITION','READY','Partition Rea
 CALL osae_sp_object_type_event_add ('DSC ALARM PARTITION','NOTREADY','Partition Not Ready');
 CALL osae_sp_object_type_event_add ('DSC ALARM PARTITION','DISARMED','Partition Disarmed');
 CALL osae_sp_object_type_event_add ('DSC ALARM PARTITION','READYFORCEARMING','Partition Ready for Forced Arming');
+CALL osae_sp_object_type_method_add('DSC ALARM PARTITION','ARMSTAY','Arm Stay','','','','');
+CALL osae_sp_object_type_method_add('DSC ALARM PARTITION','ARMAWAY','Arm Away','','','','');
+CALL osae_sp_object_type_method_add('DSC ALARM PARTITION','ARMNOENTRYDELAY','Arm No Entry Delay','','','','');
+CALL osae_sp_object_type_method_add('DSC ALARM PARTITION','DISARM','Disarm','','','','');
+
 
 CALL osae_sp_object_type_add ('DSC ALARM ZONE','DSC Alarm Zone','','DSC ALARM ZONE',0,0,0,0);
 CALL osae_sp_object_type_state_add ('DSC ALARM ZONE','OPEN','Open');
