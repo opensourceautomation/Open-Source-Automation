@@ -105,7 +105,7 @@
                         Else
                             oObject96 = OSAEObjectManager.GetObjectByName(gAppName)
                             If oObject96.Name <> "" Then
-                                OSAEObjectManager.ObjectUpdate(oObject96.Name, oObject96.Name, oObject96.Alias, oObject96.Description, oObject96.Type, PLM_Address, oObject96.Container, oObject96.Enabled)
+                                OSAEObjectManager.ObjectUpdate(oObject96.Name, oObject96.Name, oObject96.Alias, oObject96.Description, oObject96.Type, PLM_Address, oObject96.Container, 30, oObject96.Enabled)
                                 If gDebug Then Log.Info("I set the PLM Address on the plugin to: " & PLM_Address)
                             Else
                                 If gDebug Then Log.Error("Plugin could not be updated with Address of: " & PLM_Address & ".  Please set the Insteon plugin's address")
@@ -547,7 +547,7 @@
                             If gDebug Then Log.Debug("Looking up object for address: " & X10Address)
                             Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(X10Address)
                             If IsNothing(oObject) Then
-                                OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", True)
+                                OSAEObjectManager.ObjectAdd("Unknown-" & X10Address, "Unknown-" & X10Address, "Unknown Device found by Insteon", "X10 DIMMER", X10Address, "", 30, True)
                                 Log.Info("Added new Object for X10 Address: " & X10Address)
                             ElseIf oObject.Name <> "" Then
                                 ' Handle incoming event

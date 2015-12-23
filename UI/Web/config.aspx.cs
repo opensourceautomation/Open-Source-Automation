@@ -30,7 +30,7 @@ public partial class config : System.Web.UI.Page
     protected void ddlDebug_SelectedIndexChanged(object sender, EventArgs e)
     {
         string s = ddlDebug.SelectedItem.Text.ToUpper();
-        OSAEObjectPropertyManager.ObjectPropertySet("SYSTEM", "Debug", ddlDebug.SelectedItem.Text.ToUpper(), "Web UI");
+        OSAEObjectPropertyManager.ObjectPropertySet("SYSTEM", "Debug", ddlDebug.SelectedItem.Text.ToUpper(), Session["Username"].ToString());
     }
 
     private void CheckServiceStatus()

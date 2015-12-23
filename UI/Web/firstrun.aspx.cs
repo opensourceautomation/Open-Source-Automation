@@ -24,7 +24,7 @@ public partial class firstrun : System.Web.UI.Page
             if (txtPass.Text == txtPass2.Text)
             {
                 OSAEObjectManager.ObjectAdd(txtUser.Text, txtUser.Text, "Web UI user", "PERSON", "", "House",50, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(txtUser.Text, "Password", txtPass.Text, "Web UI");
+                OSAEObjectPropertyManager.ObjectPropertySet(txtUser.Text, "Password", txtPass.Text, "SYSTEM");
                 Response.Redirect("~/objects.aspx"); 
             }
             else

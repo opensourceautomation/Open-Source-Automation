@@ -23,8 +23,7 @@
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     DataSet dataset = new DataSet();
-
-                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE (UPPER(object_name) = UPPER('" + ObjectName + "') OR UPPER(object_alias) = UPPER('" + ObjectName + "')) AND property_name=@OSAEObjectProperty";
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE (UPPER(object_name) = UPPER(@ObjectName) OR UPPER(object_alias) = UPPER(@ObjectName)) AND property_name=@OSAEObjectProperty";
                     command.Parameters.AddWithValue("@ObjectName", ObjectName);
                     command.Parameters.AddWithValue("@OSAEObjectProperty", ObjectProperty);
                     dataset = OSAESql.RunQuery(command);

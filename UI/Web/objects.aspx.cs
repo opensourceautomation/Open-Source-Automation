@@ -140,6 +140,8 @@ public partial class home : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null)
+            Response.Redirect("~/Default.aspx");
         if (!IsPostBack)  
         {
             ViewState["sortOrder"] = "";  
@@ -232,7 +234,7 @@ public partial class home : System.Web.UI.Page
 
     protected void ddlState_SelectedIndexChanged(object sender, EventArgs e)
     {
-        OSAEObjectStateManager.ObjectStateSet(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), ddlState.SelectedItem.Value, "Web UI");
+        OSAEObjectStateManager.ObjectStateSet(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), ddlState.SelectedItem.Value, Session["Username"].ToString());
         lblAlert.Text = "State set successfully to " + ddlState.SelectedItem.Text;
         alert.Visible = true;
     }
@@ -255,14 +257,14 @@ public partial class home : System.Web.UI.Page
             }
             else
             {
-                OSAEMethodManager.MethodQueueAdd(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), ddlMethod.SelectedItem.Value, "", "", "Web UI");
+                OSAEMethodManager.MethodQueueAdd(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), ddlMethod.SelectedItem.Value, "", "", Session["Username"].ToString());
                 lblAlert.Text = "Method successfuly executed: " + ddlMethod.SelectedItem.Text;
                 alert.Visible = true;
             }
         }
         else
         {
-            OSAEMethodManager.MethodQueueAdd(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), ddlMethod.SelectedItem.Value, "", "", "Web UI");
+            OSAEMethodManager.MethodQueueAdd(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), ddlMethod.SelectedItem.Value, "", "", Session["Username"].ToString());
             lblAlert.Text = "Method successfuly executed: " + ddlMethod.SelectedItem.Text;
             alert.Visible = true;
         }
@@ -270,7 +272,7 @@ public partial class home : System.Web.UI.Page
 
     protected void btnExecute_Click(object sender, EventArgs e)
     {
-        OSAEMethodManager.MethodQueueAdd(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), ddlMethod.SelectedItem.Value, txtParam1.Text, txtParam2.Text, "Web UI");
+        OSAEMethodManager.MethodQueueAdd(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), ddlMethod.SelectedItem.Value, txtParam1.Text, txtParam2.Text, Session["Username"].ToString());
         lblAlert.Text = "Method successfuly executed: " + ddlMethod.SelectedItem.Text;
         alert.Visible = true;
         divParameters.Visible = false;
