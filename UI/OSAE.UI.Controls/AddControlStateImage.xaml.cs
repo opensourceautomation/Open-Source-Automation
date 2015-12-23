@@ -15,6 +15,7 @@ namespace OSAE.UI.Controls
     public partial class AddControlStateImage : UserControl
     {
         private string currentScreen;
+        private string currentUser;
         OSAEImage State1Img1 = new OSAEImage();
         OSAEImage State1Img2 = new OSAEImage();
         OSAEImage State1Img3 = new OSAEImage();
@@ -29,10 +30,11 @@ namespace OSAE.UI.Controls
         string sWorkingName = "";
         string sMode = "";
 
-        public AddControlStateImage(string screen, string controlName = "")
+        public AddControlStateImage(string screen, string user, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
+            currentUser = user;
             LoadObjects();
 
             //Check if controlName was passed in, if so, goto edit mode
@@ -77,38 +79,63 @@ namespace OSAE.UI.Controls
         /// </summary>
         private void LoadCurrentScreenObject(string controlName)
         {
+            string sCheckName = "";
             OSAEImageManager imgMgr = new OSAEImageManager();
             cboObject.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Object Name").Value;
-            cboState1.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Name").Value;
+            cboState1.SelectedValue = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Name").Value;
             try
             {
-                State1Img1 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image").Value);
-                imgState1Img1.Source = LoadImage(State1Img1.Data);
-                Validate_Initial_Coordinates();
+                sCheckName = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image").Value;
+                if (sCheckName != "")
+                {
+                    State1Img1 = imgMgr.GetImage(sCheckName);
+                    imgState1Img1.Source = LoadImage(State1Img1.Data);
+                    Validate_Initial_Coordinates();
+                    lblState1X.IsEnabled = false;
+                    lblState1Y.IsEnabled = false;
+                    txtState1X.IsEnabled = true;
+                    txtState1Y.IsEnabled = true;
+                    lblZOrder.IsEnabled = true;
+                    txtZOrder.IsEnabled = true;
+                    btnLoadS1I2.IsEnabled = true;
+                    imgState1Img2.IsEnabled = true;
+                }
             }
             catch { }
 
             try
             {
-                State1Img2 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image 2").Value);
-                imgState1Img2.Source = LoadImage(State1Img2.Data);
-                Validate_Initial_Coordinates();
+                sCheckName = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image 2").Value;
+                if (sCheckName != "")
+                {
+                    State1Img2 = imgMgr.GetImage(sCheckName);
+                    imgState1Img2.Source = LoadImage(State1Img2.Data);
+                    Validate_Initial_Coordinates();
+                }
             }
             catch { }
 
             try
             {
-                State1Img3 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image 3").Value);
-                imgState1Img3.Source = LoadImage(State1Img3.Data);
-                Validate_Initial_Coordinates();
+                sCheckName = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image 3").Value;
+                if (sCheckName != "")
+                {
+                    State1Img3 = imgMgr.GetImage(sCheckName);
+                    imgState1Img3.Source = LoadImage(State1Img3.Data);
+                    Validate_Initial_Coordinates();
+                }
             }
             catch { }
 
             try
             {
-                State1Img4 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image 4").Value);
-                imgState1Img4.Source = LoadImage(State1Img4.Data);
-                Validate_Initial_Coordinates();
+                sCheckName = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Image 4").Value;
+                if (sCheckName != "")
+                {
+                    State1Img4 = imgMgr.GetImage(sCheckName);
+                    imgState1Img4.Source = LoadImage(State1Img4.Data);
+                    Validate_Initial_Coordinates();
+                }
             }
             catch { }
 
@@ -116,36 +143,58 @@ namespace OSAE.UI.Controls
             txtState1Y.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 1 Y").Value;
             txtZOrder.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "ZOrder").Value;
 
-            cboState2.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Name").Value;
+            cboState2.SelectedValue = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Name").Value;
             try
             {
-                State2Img1 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image").Value);
-                imgState2Img1.Source = LoadImage(State2Img1.Data);
-                Validate_Initial_Coordinates();
+                sCheckName = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image").Value;
+                if (sCheckName != "")
+                {
+                    State2Img1 = imgMgr.GetImage(sCheckName);
+                    imgState2Img1.Source = LoadImage(State2Img1.Data);
+                    Validate_Initial_Coordinates();
+                    lblState2X.IsEnabled = true;
+                    lblState2Y.IsEnabled = true;
+                    txtState2X.IsEnabled = true;
+                    txtState2Y.IsEnabled = true;
+                    lblZOrder.IsEnabled = true;
+                    txtZOrder.IsEnabled = true;
+                }
             }
             catch { }
 
             try
             {
-                State2Img2 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image 2").Value);
-                imgState2Img2.Source = LoadImage(State2Img2.Data);
-                Validate_Initial_Coordinates();
+                sCheckName = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image 2").Value;
+                if (sCheckName != "")
+                {
+                    State2Img2 = imgMgr.GetImage(sCheckName);
+                    imgState2Img2.Source = LoadImage(State2Img2.Data);
+                    Validate_Initial_Coordinates();
+                }
             }
             catch { }
 
             try
             {
-                State2Img3 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image 3").Value);
-                imgState2Img3.Source = LoadImage(State2Img3.Data);
-                Validate_Initial_Coordinates();
+                sCheckName = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image 3").Value;
+                if (sCheckName != "")
+                {
+                    State2Img3 = imgMgr.GetImage(sCheckName);
+                    imgState2Img3.Source = LoadImage(State2Img3.Data);
+                    Validate_Initial_Coordinates();
+                }
             }
             catch { }
 
             try
             {
-                State2Img4 = imgMgr.GetImage(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image 4").Value);
-                imgState2Img4.Source = LoadImage(State2Img4.Data);
-                Validate_Initial_Coordinates();
+                sCheckName = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Image 4").Value;
+                if (sCheckName != "")
+                {
+                    State2Img4 = imgMgr.GetImage(sCheckName);
+                    imgState2Img4.Source = LoadImage(State2Img4.Data);
+                    Validate_Initial_Coordinates();
+                }
             }
             catch { }
 
@@ -237,6 +286,23 @@ namespace OSAE.UI.Controls
 
         private void btnLoadS1I1_Click(object sender, RoutedEventArgs e)
         {
+            imgState1Img1.Source = null;
+            imgState1Img1.ToolTip = "";
+            btnLoadS1I2.IsEnabled = false;
+            imgState1Img2.IsEnabled = false;
+            lblState1X.IsEnabled = false;
+            lblState1Y.IsEnabled = false;
+            txtState1X.IsEnabled = false;
+            txtState1Y.IsEnabled = false;
+            lblZOrder.IsEnabled = false;
+            txtZOrder.IsEnabled = false;
+            txtDelay.IsEnabled = false;
+            
+            chkRepeat.IsEnabled = false;
+            lblAnimationDelay.IsEnabled = false;
+            txtDelay.IsEnabled = false;
+            chkRepeat.IsEnabled = false;
+
             selectImageWindow dlgSelectImage = new selectImageWindow();
             ctrlSelectImage si = new ctrlSelectImage();
             si.ImagePicked += si_S1I1ImagePicked;
@@ -244,16 +310,22 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Height = si.Height + 80;
             dlgSelectImage.Content = si;
             dlgSelectImage.Show();
-        }
 
-        private void btnLoadS1I1_RightClick(object sender, RoutedEventArgs e)
-        {
-            State1Img1 = null;
-            imgState1Img1.Source = null;
         }
 
         private void btnLoadS1I2_Click(object sender, RoutedEventArgs e)
         {
+            imgState1Img2.Source = null;
+            imgState1Img2.ToolTip = "";
+            btnLoadS1I3.IsEnabled = false;
+            imgState1Img3.IsEnabled = false;
+            if (imgState2Img2.Source == null)
+            {
+                lblAnimationDelay.IsEnabled = false;
+                txtDelay.IsEnabled = false;
+                chkRepeat.IsEnabled = false;
+            }
+
             selectImageWindow dlgSelectImage = new selectImageWindow();
             ctrlSelectImage si = new ctrlSelectImage();
             si.ImagePicked += si_S1I2ImagePicked;
@@ -263,14 +335,13 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Show();
         }
 
-        private void btnLoadS1I2_RightClick(object sender, RoutedEventArgs e)
-        {
-            State1Img2 = null;
-            imgState1Img2.Source = null;
-        }
-
         private void btnLoadS1I3_Click(object sender, RoutedEventArgs e)
         {
+            imgState1Img3.Source = null;
+            imgState1Img3.ToolTip = "";
+            btnLoadS1I4.IsEnabled = false;
+            imgState1Img4.IsEnabled = false;
+
             selectImageWindow dlgSelectImage = new selectImageWindow();
             ctrlSelectImage si = new ctrlSelectImage();
             si.ImagePicked += si_S1I3ImagePicked;
@@ -280,14 +351,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Show();
         }
 
-        private void btnLoadS1I3_RightClick(object sender, RoutedEventArgs e)
-        {
-            State1Img3 = null;
-            imgState1Img3.Source = null;
-        }
-
         private void btnLoadS1I4_Click(object sender, RoutedEventArgs e)
         {
+            imgState1Img4.Source = null;
+            imgState1Img4.ToolTip = "";
+
             selectImageWindow dlgSelectImage = new selectImageWindow();
             ctrlSelectImage si = new ctrlSelectImage();
             si.ImagePicked += si_S1I4ImagePicked;
@@ -305,6 +373,17 @@ namespace OSAE.UI.Controls
 
         private void btnLoadS2I1_Click(object sender, RoutedEventArgs e)
         {
+            imgState2Img1.Source = null;
+            imgState2Img1.ToolTip = "";
+            btnLoadS2I2.IsEnabled = false;
+            imgState2Img2.IsEnabled = false;
+            lblState2X.IsEnabled = false;
+            lblState2Y.IsEnabled = false;
+            txtState2X.IsEnabled = false;
+            txtState2Y.IsEnabled = false;
+
+            txtDelay.IsEnabled = false;
+
             selectImageWindow dlgSelectImage = new selectImageWindow();
             ctrlSelectImage si = new ctrlSelectImage();
             si.ImagePicked += si_S2I1ImagePicked;
@@ -314,14 +393,19 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Show();
         }
 
-        private void btnLoadS2I1_RightClick(object sender, RoutedEventArgs e)
-        {
-            State2Img1 = null;
-            imgState2Img1.Source = null;
-        }
-
         private void btnLoadS2I2_Click(object sender, RoutedEventArgs e)
         {
+            imgState2Img2.Source = null;
+            imgState2Img2.ToolTip = "";
+            btnLoadS2I3.IsEnabled = false;
+            imgState2Img3.IsEnabled = false;
+            if (imgState1Img2.Source == null)
+            {
+                lblAnimationDelay.IsEnabled = false;
+                txtDelay.IsEnabled = false;
+                chkRepeat.IsEnabled = false;
+            }
+
             selectImageWindow dlgSelectImage = new selectImageWindow();
             ctrlSelectImage si = new ctrlSelectImage();
             si.ImagePicked += si_S2I2ImagePicked;
@@ -331,14 +415,13 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Show();
         }
 
-        private void btnLoadS2I2_RightClick(object sender, RoutedEventArgs e)
-        {
-            State2Img2 = null;
-            imgState2Img2.Source = null;
-        }
-
         private void btnLoadS2I3_Click(object sender, RoutedEventArgs e)
         {
+            imgState2Img3.Source = null;
+            imgState2Img3.ToolTip = "";
+            btnLoadS2I4.IsEnabled = false;
+            imgState2Img4.IsEnabled = false;
+
             selectImageWindow dlgSelectImage = new selectImageWindow();
             ctrlSelectImage si = new ctrlSelectImage();
             si.ImagePicked += si_S2I3ImagePicked;
@@ -348,14 +431,11 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Show();
         }
 
-        private void btnLoadS2I3_RightClick(object sender, RoutedEventArgs e)
-        {
-            State2Img3 = null;
-            imgState2Img3.Source = null;
-        }
-
         private void btnLoadS2I4_Click(object sender, RoutedEventArgs e)
         {
+            imgState2Img4.Source = null;
+            imgState2Img4.ToolTip = "";
+
             selectImageWindow dlgSelectImage = new selectImageWindow();
             ctrlSelectImage si = new ctrlSelectImage();
             si.ImagePicked += si_S2I4ImagePicked;
@@ -365,23 +445,36 @@ namespace OSAE.UI.Controls
             dlgSelectImage.Show();
         }
 
-        private void btnLoadS2I4_RightClick(object sender, RoutedEventArgs e)
-        {
-            State2Img4 = null;
-            imgState2Img4.Source = null;
-        }
-
         private void cboObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DataSet dataSet = OSAESql.RunSQL("SELECT state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue + "' order by state_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT state_label, state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue + "' order by state_label");
             cboState1.ItemsSource = dataSet.Tables[0].DefaultView;
-            cboState2.ItemsSource = dataSet.Tables[0].DefaultView;
-            DataSet dataSet2 = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_name");
+            DataSet dataSet2 = OSAESql.RunSQL("SELECT method_label FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_label");
             cboSliderMethod.ItemsSource = dataSet2.Tables[0].DefaultView;
 
             // The Screen - Object Is default name for the screen control, so update it based on the selection here
             // Check Enable Buttons, changing the object on an existing control should ?? Update the original control, renaming it?
             txtControlName.Text = currentScreen + " - " + cboObject.SelectedValue;
+            cboState1.IsEnabled = true;
+
+            string CurLevel = "0";
+            try
+            {
+                CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(cboObject.SelectedValue.ToString(), "Level").Value;
+                if (CurLevel != "")
+                {
+                    chkSlider.IsEnabled = true;
+                    lblSliderMethod.IsEnabled = true;
+                    cboSliderMethod.IsEnabled = true;
+                }
+            }
+            catch
+            {
+                chkSlider.IsEnabled = false;
+                lblSliderMethod.IsEnabled = false;
+                cboSliderMethod.IsEnabled = false;
+            }
+
             Enable_Buttons();
         }
 
@@ -390,35 +483,35 @@ namespace OSAE.UI.Controls
             if (validateForm("Add"))
             {
                 string sName = txtControlName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.Text, "GUI");
-                if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", "", "GUI");
-                if (State1Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", State1Img2.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", "", "GUI");
-                if (State1Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", State1Img3.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", "", "GUI");
-                if (State1Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", State1Img4.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", "", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", txtState1X.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", txtState1Y.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", cboState2.Text, "GUI");
-                if (State2Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", "", "GUI");
-                if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", "GUI");
-                if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", "GUI");
-                if (State2Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", txtState2X.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", txtState2Y.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Show Slider", chkSlider.IsChecked.ToString(), "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.Text, "GUI");
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL STATE IMAGE", "", currentScreen, 50, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.SelectedValue.ToString(), currentUser);
+                if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", "", currentUser);
+                if (State1Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", State1Img2.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", "", currentUser);
+                if (State1Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", State1Img3.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", "", currentUser);
+                if (State1Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", State1Img4.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", "", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", txtState1X.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", txtState1Y.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", cboState2.SelectedValue.ToString(), currentUser);
+                if (State2Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", "", currentUser);
+                if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", currentUser);
+                if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", currentUser);
+                if (State2Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", txtState2X.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", txtState2Y.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Show Slider", chkSlider.IsChecked.ToString(), currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
                 NotifyParentFinished();
             }
@@ -430,35 +523,35 @@ namespace OSAE.UI.Controls
             {
                 string sName = txtControlName.Text;
                 //OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL STATE IMAGE", "", currentScreen, 1);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.Text, "GUI");
-                if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", "", "GUI");
-                if (State1Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", State1Img2.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", "", "GUI");
-                if (State1Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", State1Img3.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", "", "GUI");
-                if (State1Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", State1Img4.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", "", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", txtState1X.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", txtState1Y.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", cboState2.Text, "GUI");
-                if (State2Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", "", "GUI");
-                if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", "GUI");
-                if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", "GUI");
-                if (State2Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", txtState2X.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", txtState2Y.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Show Slider", chkSlider.IsChecked.ToString(), "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.Text, "GUI");
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, "", sName, "CONTROL STATE IMAGE", "", currentScreen, 50, 1);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.SelectedValue.ToString(), currentUser);
+                if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", "", currentUser);
+                if (State1Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", State1Img2.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", "", currentUser);
+                if (State1Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", State1Img3.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", "", currentUser);
+                if (State1Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", State1Img4.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", "", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", txtState1X.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", txtState1Y.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", cboState2.SelectedValue.ToString(), currentUser);
+                if (State2Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", "", currentUser);
+                if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", currentUser);
+                if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", currentUser);
+                if (State2Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", txtState2X.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", txtState2Y.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Show Slider", chkSlider.IsChecked.ToString(), currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, cboObject.Text, sName);
                 NotifyParentFinished();
             }
@@ -496,6 +589,14 @@ namespace OSAE.UI.Controls
             imgState1Img1.Source = LoadImage(State1Img1.Data);
             imgState1Img1.ToolTip = "Width:" + imgState1Img1.Width + " Height:" + imgState1Img1.Height;
             Validate_Initial_Coordinates();
+            lblState1X.IsEnabled = false;
+            lblState1Y.IsEnabled = false;
+            txtState1X.IsEnabled = true;
+            txtState1Y.IsEnabled = true;
+            lblZOrder.IsEnabled = true;
+            txtZOrder.IsEnabled = true;
+            btnLoadS1I2.IsEnabled = true;
+            imgState1Img2.IsEnabled = true;
         }
 
         protected void si_S1I2ImagePicked(object sender, EventArgs e)
@@ -504,7 +605,13 @@ namespace OSAE.UI.Controls
 
             State1Img2 = imgMgr.GetImage((int)sender);
             imgState1Img2.Source = LoadImage(State1Img2.Data);
+            imgState1Img2.ToolTip = "Width:" + imgState1Img2.Width + " Height:" + imgState1Img2.Height;
             Validate_Initial_Coordinates();
+            btnLoadS1I3.IsEnabled = true;
+            imgState1Img3.IsEnabled = true;
+            lblAnimationDelay.IsEnabled = true;
+            txtDelay.IsEnabled = true;
+            chkRepeat.IsEnabled = true;
         }
 
         protected void si_S1I3ImagePicked(object sender, EventArgs e)
@@ -513,7 +620,10 @@ namespace OSAE.UI.Controls
 
             State1Img3 = imgMgr.GetImage((int)sender);
             imgState1Img3.Source = LoadImage(State1Img3.Data);
+            imgState1Img3.ToolTip = "Width:" + imgState1Img3.Width + " Height:" + imgState1Img3.Height;
             Validate_Initial_Coordinates();
+            btnLoadS1I4.IsEnabled = true;
+            imgState1Img4.IsEnabled = true;
         }
 
         protected void si_S1I4ImagePicked(object sender, EventArgs e)
@@ -523,6 +633,7 @@ namespace OSAE.UI.Controls
 
             State1Img4 = imgMgr.GetImage((int)sender);
             imgState1Img4.Source = LoadImage(State1Img4.Data);
+            imgState1Img4.ToolTip = "Width:" + imgState1Img4.Width + " Height:" + imgState1Img4.Height;
             Validate_Initial_Coordinates();
         }
 
@@ -532,7 +643,16 @@ namespace OSAE.UI.Controls
 
             State2Img1 = imgMgr.GetImage((int)sender);
             imgState2Img1.Source = LoadImage(State2Img1.Data);
+            imgState2Img1.ToolTip = "Width:" + imgState2Img1.Width + " Height:" + imgState2Img1.Height;
             Validate_Initial_Coordinates();
+            lblState2X.IsEnabled = true;
+            lblState2Y.IsEnabled = true;
+            txtState2X.IsEnabled = true;
+            txtState2Y.IsEnabled = true;
+            lblZOrder.IsEnabled = true;
+            txtZOrder.IsEnabled = true;
+            btnLoadS2I2.IsEnabled = true;
+            imgState2Img2.IsEnabled = true;
         }
 
         protected void si_S2I2ImagePicked(object sender, EventArgs e)
@@ -541,7 +661,13 @@ namespace OSAE.UI.Controls
 
             State2Img2 = imgMgr.GetImage((int)sender);
             imgState2Img2.Source = LoadImage(State2Img2.Data);
+            imgState2Img2.ToolTip = "Width:" + imgState2Img2.Width + " Height:" + imgState2Img2.Height;
             Validate_Initial_Coordinates();
+            btnLoadS2I3.IsEnabled = true;
+            imgState2Img3.IsEnabled = true;
+            lblAnimationDelay.IsEnabled = true;
+            txtDelay.IsEnabled = true;
+            chkRepeat.IsEnabled = true;
         }
 
         protected void si_S2I3ImagePicked(object sender, EventArgs e)
@@ -550,7 +676,10 @@ namespace OSAE.UI.Controls
 
             State2Img3 = imgMgr.GetImage((int)sender);
             imgState2Img3.Source = LoadImage(State2Img3.Data);
+            imgState2Img3.ToolTip = "Width:" + imgState2Img3.Width + " Height:" + imgState2Img3.Height;
             Validate_Initial_Coordinates();
+            btnLoadS2I4.IsEnabled = true;
+            imgState2Img4.IsEnabled = true;
         }
 
         protected void si_S2I4ImagePicked(object sender, EventArgs e)
@@ -559,6 +688,7 @@ namespace OSAE.UI.Controls
 
             State2Img4 = imgMgr.GetImage((int)sender);
             imgState2Img4.Source = LoadImage(State2Img4.Data);
+            imgState2Img4.ToolTip = "Width:" + imgState2Img4.Width + " Height:" + imgState2Img4.Height;
             Validate_Initial_Coordinates();
         }
 
@@ -603,20 +733,16 @@ namespace OSAE.UI.Controls
             {
                 try
                 {
-                OSAEObject oExist = OSAEObjectManager.GetObjectByName(txtControlName.Text);
-                if (oExist != null)
-                {
-                    MessageBox.Show("Control name already exist. Please Change!");
-                    validate = false;
+                    OSAEObject oExist = OSAEObjectManager.GetObjectByName(txtControlName.Text);
+                    if (oExist != null)
+                    {
+                        MessageBox.Show("Control name already exist. Please Change!");
+                        validate = false;
+                    }
                 }
-                }
-                catch {}
+                catch { }
             }
-            if (string.IsNullOrEmpty(txtControlName.Text))
-            {
-                MessageBox.Show("You must enter a Name for this control!");
-                validate = false;
-            }
+
             if (string.IsNullOrEmpty(cboObject.Text))
             {
                 MessageBox.Show("You must choose an associated object!");
@@ -627,21 +753,7 @@ namespace OSAE.UI.Controls
                 MessageBox.Show("You must set the State 1 property!");
                 validate = false;
             }
-            if(string.IsNullOrEmpty(cboState2.Text))
-            {
-                MessageBox.Show("You must set the State 2 property!");
-                validate = false;
-            }
-            if(imgState1Img1.Source == null)
-            {
-                MessageBox.Show("You must select Image 1 for State 1!");
-                validate = false;
-            }
-            if (imgState2Img1.Source == null)
-            {
-                MessageBox.Show("You must select Image 1 for State 2!");
-                validate = false;
-            }
+
             if (string.IsNullOrEmpty(txtState1X.Text))
             {
                 MessageBox.Show("State 1 X Can not be empty");
@@ -670,5 +782,19 @@ namespace OSAE.UI.Controls
             return validate;
         }
 
+        private void cboState1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            btnLoadS1I1.IsEnabled = true;
+            imgState1Img1.IsEnabled = true;
+            cboState2.IsEnabled = true;
+            DataSet dataSet = OSAESql.RunSQL("SELECT state_label, state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue + "' AND state_name !='" + cboState1.SelectedValue + "' order by state_label");
+            cboState2.ItemsSource = dataSet.Tables[0].DefaultView;
+        }
+
+        private void cboState2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            btnLoadS2I1.IsEnabled = true;
+            imgState2Img1.IsEnabled = true;
+        }
     }
 }

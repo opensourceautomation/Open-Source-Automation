@@ -15,15 +15,17 @@ namespace OSAE.UI.Controls
     public partial class AddControlNavigationImage : UserControl
     {
         private string currentScreen;
+        private string currentUser;
         OSAEImage img = new OSAEImage();
         string sOriginalName = "";
         string sWorkingName = "";
         string sMode = "";
 
-        public AddControlNavigationImage(string screen, string controlName = "")
+        public AddControlNavigationImage(string screen, string user, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
+            currentUser = user;
             LoadScreens();
             //Check if controlName was passed in, if so, goto edit mode
             if (controlName != "")
@@ -141,12 +143,12 @@ namespace OSAE.UI.Controls
             if (validateForm("Add"))
             {
                 string sName = txtName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, "GUI");
+                OSAEObjectManager.ObjectAdd(sName, "", sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, 50, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboScreens.Text, sName);
                 NotifyParentFinished();
             }
@@ -159,15 +161,14 @@ namespace OSAE.UI.Controls
                 sWorkingName = txtName.Text;
                 OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
                 //We call an object update here in case the Name was changed, then perform the updates against the New name
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
-                string sName = txtName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Image", img.Name, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Screen", cboScreens.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, "GUI");
-                OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, cboScreens.Text, sName);
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, obj.Enabled);
+                //OSAEObjectManager.ObjectAdd(sWorkingName, "", sWorkingName, "CONTROL NAVIGATION IMAGE", "", currentScreen, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Image", img.Name, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Screen", cboScreens.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "X", txtX.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Y", txtY.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Zorder", txtZOrder.Text, currentUser);
+                OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, cboScreens.Text, sWorkingName);
                 NotifyParentFinished();
             }
         }

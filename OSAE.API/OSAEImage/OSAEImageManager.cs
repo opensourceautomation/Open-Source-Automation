@@ -37,14 +37,23 @@
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_image_add (@pimage_data, @pimage_name, @pimage_type)";
+                MemoryStream ms1 = new MemoryStream(imageData);
+                BitmapImage bitmapImage = new BitmapImage();
+
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = ms1;
+                bitmapImage.EndInit();
+
+                command.CommandText = "CALL osae_sp_image_add (@pimage_data, @pimage_name, @pimage_type, @pimage_width, @pimage_height, @pimage_dpi)";
                 command.Parameters.AddWithValue("@pimage_data", imageData);
                 command.Parameters.AddWithValue("@pimage_name", name);
                 command.Parameters.AddWithValue("@pimage_type", type);
+                command.Parameters.AddWithValue("@pimage_width", bitmapImage.Width);
+                command.Parameters.AddWithValue("@pimage_height", bitmapImage.Height);
+                command.Parameters.AddWithValue("@pimage_dpi", bitmapImage.DpiX);
                 command.Parameters.Add(new MySqlParameter("@id", MySqlDbType.Int32));
                 command.Parameters["@id"].Direction = System.Data.ParameterDirection.Output;
                 DataSet ds = OSAESql.RunQuery(command);
-
 
                 return int.Parse(ds.Tables[0].Rows[0][0].ToString());
 

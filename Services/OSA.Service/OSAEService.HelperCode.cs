@@ -26,9 +26,8 @@
                 this.Log.Debug("EventLog Source Ensured.");
             }
             catch (Exception ex)
-            {
-                this.Log.Error("CreateEventSource error: " + ex.Message, ex);
-            }
+            { this.Log.Error("CreateEventSource error: " + ex.Message, ex); }
+
             this.ServiceName = "OSAE";
             this.EventLog.Source = "OSAE";
             this.EventLog.Log = "Application";
@@ -43,7 +42,6 @@
 
             foreach (string f in stores)
                 File.Delete(f);
-
         }       
 
         /// <summary>
@@ -57,15 +55,12 @@
             {
                 OSAEObject svcobj = OSAEObjectManager.GetObjectByName("SERVICE-" + Common.ComputerName);
                 if (svcobj == null)
-                {
-                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "SERVICE", "", "SYSTEM", true);
-                }
+                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "SERVICE", "", "SYSTEM", 50, true);
+
                 OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", "OSAE Service");
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error creating service object: " + ex.Message, ex);
-            }
+            { this.Log.Error("Error creating service object: " + ex.Message, ex); }
         }                     
 
         /// <summary>
@@ -188,9 +183,7 @@
                     }
                 }
                 catch (Exception ex)
-                {
-                    this.Log.Error("Error in QueryCommandQueue: " + ex.Message, ex);
-                }
+                { this.Log.Error("Error in QueryCommandQueue: " + ex.Message, ex); }
 
                 System.Threading.Thread.Sleep(100);
             }
@@ -241,9 +234,7 @@
                 {
                     OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
                     if (obj != null)
-                    {
                         enablePlugin(p);
-                    }
                 }
             }
         }        

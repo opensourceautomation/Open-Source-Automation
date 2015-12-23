@@ -19,15 +19,16 @@
     public partial class AddControlBrowser : UserControl
     {
         private string currentScreen;
+        private string currentUser;
         string sOriginalName = "";
         string sWorkingName = "";
         string sMode = "";
 
-        public AddControlBrowser(string screen, string controlName = "")
+        public AddControlBrowser(string screen, string user, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
-
+            currentUser = user;
             //Check if controlName was passed in, if so, goto edit mode
             if (controlName != "")
             {
@@ -70,11 +71,11 @@
             if (validateForm("Add"))
             {
                 string sName = txtName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL BROWSER", "", currentScreen, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "URI", txtURI.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Height", txtHeight.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL BROWSER", "", currentScreen, 30, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "URI", txtURI.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Height", txtHeight.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, "", txtName.Text);
                 NotifyParentFinished();
             }
@@ -85,11 +86,11 @@
             if (validateForm("Update"))
             {
                 string sName = txtName.Text;
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL BROWSER", "", currentScreen, 1);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "URI", txtURI.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Height", txtHeight.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL BROWSER", "", currentScreen, 30, 1);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "URI", txtURI.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Height", txtHeight.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, "", txtName.Text);
                 NotifyParentFinished();
             }

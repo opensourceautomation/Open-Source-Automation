@@ -15,18 +15,20 @@ namespace OSAE.UI.Controls
     public partial class AddControlClickImage : UserControl
     {
         private string currentScreen;
+        private string currentUser;
         OSAEImage imgNormalRaw = new OSAEImage();
         OSAEImage imgPressedRaw = new OSAEImage();
         string sOriginalName = "";
         string sWorkingName = "";
         string sMode = "";
 
-        public AddControlClickImage(string screen,string controlName = "")
+        public AddControlClickImage(string screen, string user,string controlName = "")
         {
             InitializeComponent();
             LoadObjects();
             currentScreen = screen;
-            
+            currentUser = user;
+
             //Check if controlName was passed in, if so, goto edit mode
             if (controlName != "")
             {
@@ -125,28 +127,28 @@ namespace OSAE.UI.Controls
             if (validateForm("Add"))
             {
                 sWorkingName = txtControlName.Text;
-                OSAEObjectManager.ObjectAdd(sWorkingName, sWorkingName, sWorkingName, "CONTROL CLICK IMAGE", "", currentScreen, true);
-                if (imgNormalRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", "", "GUI");
-                if (imgPressedRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", "", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Object Name", cboPressObject.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Method Name", cboPressMethod.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Param 1", txtPressParam1.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Param 2", txtPressParam2.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Name", cboPressScript.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Param 1", txtPressScriptParam1.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Param 2", txtPressScriptParam2.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Object Name", cboReleaseObject.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Method Name", cboReleaseMethod.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Param 1", txtReleaseParam1.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Param 2", txtReleaseParam2.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Name", cboReleaseScript.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Param 1", txtReleaseScriptParam1.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Param 2", txtReleaseScriptParam2.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "X", "100", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Y", "100", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Zorder", txtZOrder.Text, "GUI");
+                OSAEObjectManager.ObjectAdd(sWorkingName, sWorkingName, sWorkingName, "CONTROL CLICK IMAGE", "", currentScreen,50, true);
+                if (imgNormalRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", "", currentUser);
+                if (imgPressedRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", "", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Object Name", cboPressObject.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Method Name", cboPressMethod.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Param 1", txtPressParam1.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Param 2", txtPressParam2.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Name", cboPressScript.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Param 1", txtPressScriptParam1.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Param 2", txtPressScriptParam2.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Object Name", cboReleaseObject.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Method Name", cboReleaseMethod.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Param 1", txtReleaseParam1.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Param 2", txtReleaseParam2.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Name", cboReleaseScript.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Param 1", txtReleaseScriptParam1.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Param 2", txtReleaseScriptParam2.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "X", "100", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Y", "100", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Zorder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, "", sWorkingName);
                 NotifyParentFinished();
             }
@@ -159,29 +161,29 @@ namespace OSAE.UI.Controls
                 sWorkingName = txtControlName.Text;
                 OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
                 //We call an object update here in case the Name was changed, then perform the updates against the New name
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, obj.Enabled);
 
-                if (imgNormalRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", "", "GUI");
-                if (imgPressedRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, "GUI");
-                else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", "", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Object Name", cboPressObject.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Method Name", cboPressMethod.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Param 1", txtPressParam1.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Param 2", txtPressParam2.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Name", cboPressScript.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Param 1", txtPressScriptParam1.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Param 2", txtPressScriptParam2.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Object Name", cboReleaseObject.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Method Name", cboReleaseMethod.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Param 1", txtReleaseParam1.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Param 2", txtReleaseParam2.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Name", cboReleaseScript.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Param 1", txtReleaseScriptParam1.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Param 2", txtReleaseScriptParam2.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "X", txtNormalX.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Y", txtNormalY.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Zorder", txtZOrder.Text, "GUI");
+                if (imgNormalRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", "", currentUser);
+                if (imgPressedRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, currentUser);
+                else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", "", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Object Name", cboPressObject.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Method Name", cboPressMethod.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Param 1", txtPressParam1.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Param 2", txtPressParam2.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Name", cboPressScript.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Param 1", txtPressScriptParam1.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Press Script Param 2", txtPressScriptParam2.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Object Name", cboReleaseObject.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Method Name", cboReleaseMethod.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Param 1", txtReleaseParam1.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Param 2", txtReleaseParam2.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Name", cboReleaseScript.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Param 1", txtReleaseScriptParam1.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Release Script Param 2", txtReleaseScriptParam2.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "X", txtNormalX.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Y", txtNormalY.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Zorder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, "", sWorkingName);
                 NotifyParentFinished();
             }
@@ -231,12 +233,14 @@ namespace OSAE.UI.Controls
         private void cboPressObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DataSet dataSet = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboPressObject.SelectedValue + "' order by method_name");
+            cboPressMethod.IsEnabled = true;
             cboPressMethod.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
         private void cboReleaseObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DataSet dataSet = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboReleaseObject.SelectedValue + "' order by method_name");
+            cboReleaseMethod.IsEnabled = true;
             cboReleaseMethod.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -378,6 +382,42 @@ namespace OSAE.UI.Controls
                 validate = false;
             }
             return validate;
+        }
+
+        private void cboPressMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lblAsk1.IsEnabled = true;
+            lblDMP1.IsEnabled = true;
+            txtPressParam1.IsEnabled = true;
+            lblDMP2.IsEnabled = true;
+            txtPressParam2.IsEnabled = true;
+        }
+
+        private void cboReleaseMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lblAsk2.IsEnabled = true;
+            lblUMP1.IsEnabled = true;
+            txtReleaseParam1.IsEnabled = true;
+            lblUMP2.IsEnabled = true;
+            txtReleaseParam2.IsEnabled = true;
+        }
+
+        private void cboPressScript_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lblAsk3.IsEnabled = true;
+            lblDSP1.IsEnabled = true;
+            txtPressScriptParam1.IsEnabled = true;
+            lblDSP2.IsEnabled = true;
+            txtPressScriptParam2.IsEnabled = true;
+        }
+
+        private void cboReleaseScript_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lblAsk4.IsEnabled = true;
+            lblUSP1.IsEnabled = true;
+            txtReleaseScriptParam1.IsEnabled = true;
+            lblUSP2.IsEnabled = true;
+            txtReleaseScriptParam2.IsEnabled = true;
         }
     }
 }

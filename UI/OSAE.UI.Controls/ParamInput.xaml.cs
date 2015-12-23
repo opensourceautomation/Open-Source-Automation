@@ -15,7 +15,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-
     /// <summary>
     /// Interaction logic for ParamInput.xaml
     /// </summary>
@@ -26,9 +25,11 @@ using System.Windows.Shapes;
         string Param1;
         string Param2;
         string ctrlType;
-        public ParamInput(string ctlType, OSAEObject screenObject)
+        private string currentUser;
+        public ParamInput(string ctlType, OSAEObject screenObject, string user)
         {
             InitializeComponent();
+            currentUser = user;
             ctrlType = ctlType;
             if (ctrlType == "Method")
             {
@@ -79,28 +80,21 @@ using System.Windows.Shapes;
         {
             if (ctrlType == "Method")
             {
-               if (inputParam1.Text == "[ASK]" | inputParam2.Text == "[ASK]")
-                   {
-                       // invalid input
-                       BadInputLab.Visibility = System.Windows.Visibility.Visible;
-                       OKButt.IsEnabled = false;
-                   }
-                   else
-                   {
-                   
-                   // Input Changed
-                   BadInputLab.Visibility = System.Windows.Visibility.Hidden;
-                   OKButt.IsEnabled = true; 
-                   if (Param1 == "[ASK]")
-                   {
-                       Param1 = inputParam1.Text;
-                   }
-                   if (Param2 == "[ASK]")
-                   {
-                       Param2 = inputParam2.Text;
-                   }
+                if (inputParam1.Text == "[ASK]" | inputParam2.Text == "[ASK]")
+                {
+                    // invalid input
+                    BadInputLab.Visibility = System.Windows.Visibility.Visible;
+                    OKButt.IsEnabled = false;
                 }
-                OSAEMethodManager.MethodQueueAdd(ObjectName, MethodName, Param1, Param2, "GUI");
+                else
+                {
+                    // Input Changed
+                    BadInputLab.Visibility = System.Windows.Visibility.Hidden;
+                    OKButt.IsEnabled = true; 
+                    if (Param1 == "[ASK]") Param1 = inputParam1.Text;
+                    if (Param2 == "[ASK]") Param2 = inputParam2.Text;
+                }
+                OSAEMethodManager.MethodQueueAdd(ObjectName, MethodName, Param1, Param2, currentUser);
                 NotifyParentFinished();
             }
         }

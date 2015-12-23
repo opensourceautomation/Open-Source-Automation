@@ -111,7 +111,7 @@ namespace VR2
                 txtLog.ScrollToEnd();
             }
             catch 
-            { //AddToLog("Error in AddToLog: " + ex.Message);
+            { //AddToLog("Error in AddToLog: " + ex.Message); 
             }
         }
 
@@ -123,15 +123,13 @@ namespace VR2
                 if (gAppName == "")
                 {
                     gAppName = "VR CLIENT-" + OSAE.Common.ComputerName;
-                    OSAEObjectManager.ObjectAdd(gAppName, gAppName, gAppName, "VR CLIENT", "", "SYSTEM", true);
+                    OSAEObjectManager.ObjectAdd(gAppName, gAppName, gAppName, "VR CLIENT", "", "SYSTEM", 30, true);
                     OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", OSAE.Common.ComputerName, "VR");
                 }
                 OSAEObjectStateManager.ObjectStateSet(gAppName, "ON", OSAE.Common.ComputerName);
             }
             catch (Exception ex)
-            {
-                AddToLog("Error messaging host: " + ex.Message);
-            }
+            { AddToLog("Error messaging host: " + ex.Message); }
         }
 
         private void Load_Settings()

@@ -23,6 +23,9 @@
                         </asp:TemplateField>
                         <asp:BoundField DataField="image_name" HeaderText="Name" /> 
                         <asp:BoundField DataField="image_type" HeaderText="Type" />
+                        <asp:BoundField DataField="image_width" HeaderText="Width" />
+                        <asp:BoundField DataField="image_height" HeaderText="Height" />
+                        <asp:BoundField DataField="image_dpi" HeaderText="DPI" />
                         <asp:TemplateField HeaderText="Delete" Visible="True">
                             <ItemTemplate>
                                 <center>

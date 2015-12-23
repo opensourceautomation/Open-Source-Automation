@@ -24,9 +24,7 @@ public partial class plugins : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!Page.IsPostBack)
-        {
             loadPlugins();
-        }
     }    
 
     private void loadPlugins()
@@ -47,9 +45,7 @@ public partial class plugins : System.Web.UI.Page
                 desc.Enabled = false;
                 
                 if (desc.WikiUrl.Trim() == "")
-                {
                     desc.WikiUrl = "http://www.opensourceautomation.com/wiki/index.php?title=Plugins";
-                }
                 
                 OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                 foreach (OSAEObject o in objs)
@@ -67,7 +63,6 @@ public partial class plugins : System.Web.UI.Page
                         pluginList.Add(desc);
                         Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
                     }
-
                 }
             }
         }
@@ -121,9 +116,7 @@ public partial class plugins : System.Web.UI.Page
             {
                 CheckBox chkBx = (CheckBox)rw.FindControl("chkEnabled");
                 if (chkBx == ckbx)
-                {
                     pluginName = ((Label)rw.FindControl("lblObject")).Text;
-                }
             }
 
             NetworkComms.SendObject("Plugin", Common.LocalIPAddress(), 10051, pluginName + "|" + enabled);
@@ -132,13 +125,11 @@ public partial class plugins : System.Web.UI.Page
             foreach (PluginDescription plugin in pluginList)
             {
                 if (plugin.Name == pluginName && plugin.Name != null)
-                {
                     plugin.Status = "Starting...";
-                }
             }
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(pluginName);
-            OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+            OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 1);
             loadPlugins();
         }
         catch (Exception ex)
@@ -182,22 +173,16 @@ public partial class plugins : System.Web.UI.Page
                         latestRevision = Int32.Parse(e.D);
 
                         if ((latestMajor > curMajor) || (latestMajor == curMajor && latestMinor > curMinor) || (latestMajor == curMajor && latestMinor == curMinor && latestRevision > curRevion))
-                        {
                             d.Upgrade = latestMajor + "." + latestMinor + "." + latestRevision;
-                        }
                         else
-                        {
                             d.Upgrade = "";
-                        }
                     }
                 }
                 response.Close();
             }            
         }
         catch (Exception ex)
-        { 
-           
-        }
+        { }
     }
 
     protected void btnGetMorePlugins_Click(object sender, EventArgs e)

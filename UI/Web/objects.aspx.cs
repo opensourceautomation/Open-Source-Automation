@@ -9,7 +9,7 @@ using OSAE;
 
 public partial class home : System.Web.UI.Page
 {
-    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+    //private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
 
     public void RaisePostBackEvent(string eventArgument)
     {
@@ -153,6 +153,7 @@ public partial class home : System.Web.UI.Page
             loadDDLs();
             loadProperties();
             loadDetails();
+            Master.Log.Info("Object.aspx Loaded");
         }  
     }
 
@@ -345,9 +346,11 @@ public partial class home : System.Web.UI.Page
         txtAlias.Text = obj.Alias;
         txtDescr.Text = obj.Description;
         txtAddress.Text = obj.Address;
+        txtTrustLevel.Text = obj.MinTrustLevel.ToString();
         ddlContainer.SelectedValue = obj.Container;
-        if(obj.State.Value != "")
+        if (obj.State.Value != "")
             ddlState.SelectedValue = obj.State.Value;
+
         ddlType.SelectedValue = obj.Type;
         if (obj.Enabled == 1)
             chkEnabled.Checked = true;
@@ -377,7 +380,7 @@ public partial class home : System.Web.UI.Page
 
     protected void btnAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectManager.ObjectAdd(txtName.Text,txtAlias.Text, txtDescr.Text, ddlType.SelectedItem.Value, txtAddress.Text, ddlContainer.SelectedValue, chkEnabled.Checked);
+        OSAEObjectManager.ObjectAdd(txtName.Text,txtAlias.Text, txtDescr.Text, ddlType.SelectedItem.Value, txtAddress.Text, ddlContainer.SelectedValue,Convert.ToInt16(txtTrustLevel.Text), chkEnabled.Checked);
         gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
         txtName.Text = "";
@@ -407,7 +410,7 @@ public partial class home : System.Web.UI.Page
         int enabled = 0;
         if(chkEnabled.Checked)
             enabled = 1;
-        OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), txtName.Text, txtAlias.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, enabled);
+        OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), txtName.Text, txtAlias.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, Convert.ToInt16(txtTrustLevel.Text), enabled);
         gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object order by container_name, object_name");
         gvObjects.DataBind();
     }

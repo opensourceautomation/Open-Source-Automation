@@ -16,14 +16,16 @@ namespace OSAE.UI.Controls
     public partial class AddControlPropertyLabel : UserControl
     {
         private string currentScreen;
+        private string currentUser;
         string sOriginalName = "";
         string sWorkingName = "";
         string sMode = "";
 
-        public AddControlPropertyLabel(string screen, string controlName = "")
+        public AddControlPropertyLabel(string screen, string user, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
+            currentUser = user;
             LoadObjects();
             LoadColors();
             txtFont.Text = "Arial";
@@ -65,7 +67,6 @@ namespace OSAE.UI.Controls
                // LoadCurrentScreenObject(controlName);
             }
             Enable_Buttons();
-
         }
 
         /// <summary>
@@ -153,12 +154,32 @@ namespace OSAE.UI.Controls
         {
             DataSet dataSet = OSAESql.RunSQL("select property_name from osae_v_object_property where object_name='" + (sender as ComboBox).SelectedValue.ToString() + "' Union select 'State' order by property_name");
             cboProperty.ItemsSource = dataSet.Tables[0].DefaultView;
+            lblProperty.IsEnabled = true;
+            cboProperty.IsEnabled = true;
         }
 
         private void cboProperty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             txtControlName.Text = currentScreen + " - " + cboObject.SelectedValue + " " + cboProperty.SelectedValue;
             Enable_Buttons();
+            lblPrefix.IsEnabled = true;
+            txtPrefix.IsEnabled = true;
+            lblSuffix.IsEnabled = true;
+            txtSuffix.IsEnabled = true;
+            lblFont.IsEnabled = true;
+            txtFont.IsEnabled = true;
+            lblSize.IsEnabled = true;
+            txtSize.IsEnabled = true;
+            lblForeColor.IsEnabled = true;
+            cboForeColor.IsEnabled = true;
+            lblBackColor.IsEnabled = true;
+            cboBackColor.IsEnabled = true;
+            lblX.IsEnabled = true;
+            txtX.IsEnabled = true;
+            lblY.IsEnabled = true;
+            txtY.IsEnabled = true;
+            lblZ.IsEnabled = true;
+            txtZOrder.IsEnabled = true;
         }
 
         private void txtFont_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -185,18 +206,18 @@ namespace OSAE.UI.Controls
             if (validateForm("Add"))
             {
                 string sName = txtControlName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", cboBackColor.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", cboProperty.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, "GUI");
+                OSAEObjectManager.ObjectAdd(sName, "", sName, "CONTROL PROPERTY LABEL", "", currentScreen, 50, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", cboBackColor.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", cboProperty.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
                 NotifyParentFinished();
             }
@@ -207,18 +228,18 @@ namespace OSAE.UI.Controls
             if (validateForm("Update"))
             {
                 string sName = txtControlName.Text;
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, 1);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", cboBackColor.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", cboProperty.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, "GUI");
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, 50, 1);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", cboBackColor.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Property Name", cboProperty.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Prefix", txtPrefix.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Suffix", txtSuffix.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Zorder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, cboObject.Text, sName);
                 NotifyParentFinished();
             }

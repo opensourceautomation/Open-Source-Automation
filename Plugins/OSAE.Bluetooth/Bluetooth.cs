@@ -13,12 +13,12 @@
         #region OSAEPlugin Members
 
         private OSAE.General.OSAELog Log = new General.OSAELog();
+        BluetoothClient bc;
+        BluetoothDeviceInfo[] nearosaeDevices;
         System.Timers.Timer Clock;
         private Thread search_thread;
         string gAppName;
         bool gDebug = false;
-
-        BluetoothClient localClient = new BluetoothClient();
 
         public override void ProcessCommand(OSAEMethod method)
         {
@@ -37,9 +37,8 @@
                 gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
             }
             catch
-            {
-                Log.Error("I think the Debug property is missing from the Speech object type!");
-            }
+            { Log.Error("I think the Debug property is missing from the Speech object type!"); }
+
             Log.Info("Debug Mode Set to " + gDebug);
 
             int iScanInterval = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Scan Interval").Value);
@@ -79,30 +78,42 @@
 
         private void search()
         {
-            Log.Debug("Search beginning");
             try
             {
-                if (OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Learning Mode").Value == "TRUE")
+                Guid uuid = BluetoothService.L2CapProtocol;
+                BluetoothDeviceInfo bdi;
+                BluetoothAddress ba;
+                byte tmp;
+                bool found = false;
+                int discarded;
+
+                bc = new BluetoothClient();
+
+                bc.InquiryLength = new TimeSpan(0, 0, 0, int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Discover Length").Value), 0);
+                nearosaeDevices = bc.DiscoverDevices(10, false, false, true);
+
+                for (int j = 0; j < nearosaeDevices.Length; j++)
                 {
-                    // client is used to manage connections
-                    localClient = new BluetoothClient();
-                    localClient.InquiryLength = new TimeSpan(0, 0, 0, int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Discover Length").Value), 0);
-                    // component is used to manage device discovery
-                    BluetoothComponent localComponent = new BluetoothComponent(localClient);
-                    // async methods, can be done synchronously too
-                    localComponent.DiscoverDevicesAsync(255, true, true, true, false, null);
-                    localComponent.DiscoverDevicesProgress += new EventHandler<DiscoverDevicesEventArgs>(component_DiscoverDevicesProgress);
-                    localComponent.DiscoverDevicesComplete += new EventHandler<DiscoverDevicesEventArgs>(component_DiscoverDevicesComplete);
+                    string addr = nearosaeDevices[j].DeviceAddress.ToString();
+
+                    Object obj = OSAEObjectManager.GetObjectByAddress(addr);
+
+                    if (obj == null)
+                    {
+                        if (OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Learning Mode").Value == "TRUE")
+                        {
+                            OSAEObjectManager.ObjectAdd(nearosaeDevices[j].DeviceName, nearosaeDevices[j].DeviceName, nearosaeDevices[j].DeviceName, "BLUETOOTH DEVICE", nearosaeDevices[j].DeviceAddress.ToString(), string.Empty, 50, true);
+                            OSAEObjectPropertyManager.ObjectPropertySet(nearosaeDevices[j].DeviceName, "Discover Type", "0", gAppName);
+                            if (gDebug) Log.Debug(addr + " - " + nearosaeDevices[j].DeviceName + ": added to OSA");
+                        }
+                    }
                 }
 
                 OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("BLUETOOTH DEVICE");
 
-                int discarded;
-                byte tmp;
-                BluetoothAddress ba;
-                BluetoothDeviceInfo bdi;
                 foreach (OSAEObject obj in objects)
                 {
+                    found = false;
                     string address = obj.Address;
                     byte[] byteArray = HexEncoding.GetBytes(address, out discarded);
                     tmp = byteArray[0];
@@ -116,62 +127,66 @@
                     byteArray[3] = tmp;
                     ba = new BluetoothAddress(byteArray);
                     bdi = new BluetoothDeviceInfo(ba);
+                    if (gDebug) Log.Debug("Begin search for " + address);
 
-                    if (gDebug) Log.Debug(obj.Name + " (" + address + ") - Attempt connection");
-                    Guid uuid = new Guid("{F13F471D-47CB-41d6-9409-BAD0690BF891}");
+                    for (int j = 0; j < nearosaeDevices.Length; j++)
+                    {
+                        if (nearosaeDevices[j].DeviceAddress.ToString() == address)
+                        {
+                            found = true;
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + ": found with DiscoverDevices");
+                        }
+                    }
+                    if (!found)
+                        if (gDebug) Log.Debug(address + " - " + obj.Name + ": failed with DiscoverDevices");
+
                     try
                     {
-                        ServiceRecord[] records = bdi.GetServiceRecords(uuid);
-                        Log.Debug(obj.Name + " (" + address + ") in Range");
-                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", gAppName);
+                        if (!found && (int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 2 || Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
+                        {
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + ": attempting GetServiceRecords");
+
+                            bdi.GetServiceRecords(uuid);
+                            found = true;
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + " found with GetServiceRecords");
+                        }
                     }
                     catch (Exception ex)
+                    { if (gDebug) Log.Debug(address + " - " + obj.Name + " failed GetServiceRecords. exception: " + ex.Message); }
+
+                    try
                     {
-                        Log.Debug(obj.Name + " (" + address + ") NOT in Range");
-                        //OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", gAppName);
+                        if (!found && (int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 3 || int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Discover Type").Value) == 0))
+                        {
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + ": attempting Connection");
+                            //attempt a connect
+                            BluetoothEndPoint ep;
+                            ep = new BluetoothEndPoint(bdi.DeviceAddress, BluetoothService.Handsfree);
+                            //MessageBox.Show("attempt connect: " + pairedDevices[i].DeviceAddress);
+                            bc.Connect(ep);
+                            if (gDebug) Log.Debug(address + " - " + obj.Name + " found with Connect attempt");
+                            bc.Close();
+                            found = true;
+                        }
+                    }
+                    catch (Exception ex)
+                    { Log.Error(address + " - " + obj.Name + " failed with Connect attempt. exception: " + ex.Message); }
+
+                    if (found)
+                    {
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", gAppName);
+                        if (gDebug) Log.Debug(obj.Name + " Status Updated in osae");
+                    }
+                    else
+                    {
+                        OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", gAppName);
+                        if (gDebug) Log.Debug(obj.Name + " Status Updated in osae");
                     }
                 }
             }
             catch (Exception ex)
-            {
-                Log.Error("Error searching for devices", ex);
-            }
+            { Log.Error("Error searching for devices", ex); }
         }
-
-        private void component_DiscoverDevicesProgress(object sender, DiscoverDevicesEventArgs e)
-        {
-            if (gDebug) Log.Debug("DiscoverDevicesEventArgs triggered");
-            // log and save all found devices
-            for (int i = 0; i < e.Devices.Length; i++)
-            {
-                if (e.Devices[i].Remembered)
-                {
-
-                }
-                else
-                {
-                    if (gDebug) Log.Debug(e.Devices[i].DeviceName + " (" + e.Devices[i].DeviceAddress.ToString() + "): Device is unknown");
-                    string addr = e.Devices[i].DeviceAddress.ToString();
-                    Object obj = OSAEObjectManager.GetObjectByAddress(addr);
-                    if (obj == null)
-                    {
-                        Log.Debug(e.Devices[i].DeviceName + " (" + e.Devices[i].DeviceAddress.ToString() + "): Adding device to OSA");
-                        OSAEObjectManager.ObjectAdd(e.Devices[i].DeviceName, e.Devices[i].DeviceName, e.Devices[i].DeviceName, "BLUETOOTH DEVICE", e.Devices[i].DeviceAddress.ToString(), string.Empty, true);
-                        OSAEObjectPropertyManager.ObjectPropertySet(e.Devices[i].DeviceName, "Discover Type", "0", gAppName);
-                        if (gDebug) Log.Debug(addr + " - " + e.Devices[i].DeviceName + ": added to OSA");
-                    }
-                }
-            }
-        }
-
-        private void component_DiscoverDevicesComplete(object sender, DiscoverDevicesEventArgs e)
-        {
-            // Discovery Complete
-            Log.Debug("Search complete");
-
-        }
-        
-
         #endregion
     }
 

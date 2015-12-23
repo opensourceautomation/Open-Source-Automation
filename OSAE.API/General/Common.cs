@@ -246,24 +246,24 @@
                 OSAEObject obj = OSAEObjectManager.GetObjectByAddress(computerIp);
                 if (obj == null)
                 {
-                    OSAEObjectManager.ObjectAdd(Common.ComputerName, Common.ComputerName, Common.ComputerName, "COMPUTER", computerIp, string.Empty, true);
+                    OSAEObjectManager.ObjectAdd(Common.ComputerName, Common.ComputerName, Common.ComputerName, "COMPUTER", computerIp, string.Empty, obj.MinTrustLevel, true);
                     OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
                 }
                 else if (obj.Type == "COMPUTER")
                 {
-                    OSAEObjectManager.ObjectUpdate(obj.Name, Common.ComputerName, obj.Alias, obj.Description, "COMPUTER", computerIp, obj.Container, obj.Enabled);
+                    OSAEObjectManager.ObjectUpdate(obj.Name, Common.ComputerName, obj.Alias, obj.Description, "COMPUTER", computerIp, obj.Container, obj.MinTrustLevel, obj.Enabled);
                     OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
                 }
                 else
                 {
-                    OSAEObjectManager.ObjectAdd(Common.ComputerName + "." + computerIp, Common.ComputerName, Common.ComputerName, "COMPUTER", computerIp, string.Empty, true);
+                    OSAEObjectManager.ObjectAdd(Common.ComputerName + "." + computerIp, Common.ComputerName, Common.ComputerName, "COMPUTER", computerIp, string.Empty, obj.MinTrustLevel, true);
                     OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName + "." + computerIp, "Host Name", Common.ComputerName, sourceName);
                 }
             }
             else
             {
                 OSAEObject obj = OSAEObjectManager.GetObjectByName(Common.ComputerName);
-                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, "COMPUTER", computerIp, obj.Container, obj.Enabled);
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, "COMPUTER", computerIp, obj.Container, obj.MinTrustLevel, obj.Enabled);
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Host Name", Common.ComputerName, sourceName);
             }
         }

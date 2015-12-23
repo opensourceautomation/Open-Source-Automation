@@ -117,9 +117,10 @@
                     lbl_isRunning.Content = "NOT INSTALLED";
                     btnService.IsEnabled = false;
                 }
-                
             }
-                        
+
+            loadPlugins();
+            
             Clock.Interval = 1000;
             Clock.Elapsed += new System.Timers.ElapsedEventHandler(CheckService);
             Clock.Start();
@@ -127,18 +128,62 @@
             try
             {
                 this.Log.Debug("Starting UDP listener");
+                NetworkComms.AppendGlobalIncomingPacketHandler<string>("Plugin", PluginMessageReceived);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Commmand", CommandMessageReceived);
                 //Start listening for incoming UDP data
                 UDPConnection.StartListening(true);
                 this.Log.Debug("UPD Listener started");
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error starting listener", ex);
-            }
+            { this.Log.Error("Error starting listener", ex); }
             
         }
         
+        private void dgLocalPlugins_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                gbPluginInfo.Visibility = System.Windows.Visibility.Visible;
+                DataGrid dg = (DataGrid)sender;
+                PluginDescription p = (PluginDescription)dg.SelectedItems[0];
+
+                lblAuthor.Content = "by " + p.Author;
+                txbkDescription.Text = p.Description;
+                lblPluginName.Content = p.Type;
+                lblVersion.Content = p.Version;
+
+                if (p.WikiUrl != string.Empty)
+                {
+                    hypWiki.NavigateUri = new Uri(p.WikiUrl);
+                    txblWiki.Visibility = System.Windows.Visibility.Visible;
+                }
+                else
+                    txblWiki.Visibility = System.Windows.Visibility.Hidden;
+
+                string pluginPath = Common.ApiPath + "\\Plugins\\" + p.Path + "\\";
+                string[] paths = System.IO.Directory.GetFiles(pluginPath, "Screenshot*");
+
+                this.Log.Info("Plugin path: " + pluginPath);
+                this.Log.Info("paths length: " + paths.Length.ToString());
+                if (paths.Length > 0)
+                {
+                    // load the image, specify CacheOption so the file is not locked
+                    var image = new BitmapImage();
+                    image.BeginInit();
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.UriSource = new Uri(paths[0]);
+                    image.EndInit();
+
+                    imgPlugin.Stretch = Stretch.Fill;
+                    imgPlugin.Source = image;
+                }
+                else
+                    imgPlugin.Source = null;
+            }
+            catch (Exception ex)
+            { this.Log.Error("Error loading details", ex); }
+        }
+
         private void CheckService(object sender, EventArgs e)
         {            
             string svcStatus = myService.Status.ToString();
@@ -177,10 +222,80 @@
                     Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
                     m_WorkerThreadStart.Start();
                 }
-                
             }
         }
-        
+
+        private void loadPlugins()
+        {
+            pluginList = new BindingList<PluginDescription>();
+            List<string> osapdFiles = new List<string>();
+            string[] pluginFile = Directory.GetFiles(Common.ApiPath + "\\Plugins", "*.osapd", SearchOption.AllDirectories);
+            osapdFiles.AddRange(pluginFile);
+            bool bFoundObject = false;
+            foreach (string path in osapdFiles)
+            {
+                if (!string.IsNullOrEmpty(path))
+                {
+                    bFoundObject = false;
+                    PluginDescription desc = new PluginDescription();
+                 
+                    desc.Deserialize(path);
+                    desc.Status = "No Object";
+                    desc.Enabled = false;
+                    this.Log.Info(desc.Type + ":  Plugin DLL found, Desc ID = " + desc.ID);
+                    OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
+                    foreach (OSAEObject o in objs)
+                    {
+                        if (OSAEObjectPropertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
+                        {
+                            desc.Name = o.Name;
+                            bFoundObject = true;
+                            if (o.Enabled == 1)
+                                desc.Enabled = true;
+                            if (o.State.Value == "ON")
+                                desc.Status = "Running";
+                            else if (o.State.Value == "OFF")
+                                desc.Status = "Stopped";
+                            else
+                                desc.Status = o.State.Value;
+
+                            this.Log.Info(desc.Type + ":  Plugin Object found, Object Name = " + o.Name);
+                            pluginList.Add(desc);
+                        }
+                    }
+                    // Here we try to create the Object if none was found above, we need a valid Object Type for this.
+                    if (bFoundObject == false)
+                    {
+                        this.Log.Info(desc.Type + ":  Plugin Object Missing!");
+                        bool bObjectTypeExists = OSAEObjectTypeManager.ObjectTypeExists(desc.Type);
+                        if (bObjectTypeExists)
+                        {
+                            this.Log.Info(desc.Type + ":  Valid Object Type found.  Attempting to create Object...");
+                            OSAEObjectManager.ObjectAdd(desc.Type, desc.Type, desc.Type + " plugin's Object", desc.Type, "", "SYSTEM", 50, false);
+                            OSAEObject obj = OSAEObjectManager.GetObjectByName(desc.Type);
+                            if (obj != null)
+                            {
+                                desc.Name = obj.Name;
+                                desc.Enabled = false;
+                                if (obj.State.Value == "ON")
+                                    desc.Status = "Running";
+                                else if (obj.State.Value == "OFF")
+                                    desc.Status = "Stopped";
+                                else
+                                    desc.Status = obj.State.Value;
+
+                                this.Log.Info(desc.Type + ":  Plugin Object now found!");
+                                pluginList.Add(desc);
+                            }
+                        }
+                        else
+                            this.Log.Info(desc.Type + ":  NO Valid Object Type found!  I cannot create an Object!  Please run Install.sql for this plugin.");
+                    }
+                }
+            }            
+            dgLocalPlugins.ItemsSource = pluginList;
+        }
+
         private void StartService()
         {
             try
@@ -240,9 +355,7 @@
         private void btnService_Click(object sender, RoutedEventArgs e)
         {
             if (btnService.Content.ToString() == "Stop")
-            {
                 clicked = true;
-            }
 
             setButton(btnService.Content.ToString(), false);
             if (btnService.Content.ToString() == "Stop")
@@ -251,7 +364,7 @@
                 setLabel(Brushes.Red, "STOPPING...");
                 foreach (PluginDescription pd in pluginList)
                 {
-                    if(pd.Enabled)
+                    if (pd.Enabled)
                         pd.Status = "Stopping...";
                 }
                 Thread m_WorkerThreadStop = new Thread(new ThreadStart(this.StopService));
@@ -264,9 +377,7 @@
                 foreach (PluginDescription pd in pluginList)
                 {
                     if (pd.Enabled)
-                    {
                         pd.Status = "Starting...";
-                    }
                 }
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
@@ -285,9 +396,7 @@
                 NetworkComms.Shutdown();
             }
             catch(Exception ex)
-            {
-                this.Log.Error("Error closing Manager", ex);
-            }
+            { this.Log.Error("Error closing Manager", ex); }
         }
 
         void MyNotifyIcon_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -298,13 +407,9 @@
         private void Window_StateChanged(object sender, EventArgs e)
         {
             if (this.WindowState == WindowState.Minimized)
-            {
                 this.ShowInTaskbar = false;
-            }
             else if (this.WindowState == WindowState.Normal)
-            {
                 this.ShowInTaskbar = true;
-            }
         }
 
         void MyNotifyIcon_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -335,7 +440,65 @@
         {
             Process.Start(Common.ApiPath + "\\OSAE.Screens.exe");
         }
-                
+
+        void OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (dgLocalPlugins.SelectedItem != null)
+                {
+                    PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
+
+                    this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=True");
+                    OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
+                    OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 1);
+
+                    //NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|True");
+
+                    //this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True");
+                    //if (myService.Status == ServiceControllerStatus.Running)
+                   // {
+                    //    foreach (PluginDescription plugin in pluginList)
+                    //    {
+                     //       if (plugin.Name == pd.Name && plugin.Name != null)
+                     //       {
+                     //           plugin.Status = "Starting...";
+                    //        }
+                  //      }
+                   // }
+                }
+            }
+            catch (Exception ex)
+            { this.Log.Error("Error enabling plugin ", ex); }
+        }
+
+        void OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
+
+                this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=False");
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
+                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 0);   
+
+             //   NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|False");
+             //   this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False");
+            //    if (myService.Status == ServiceControllerStatus.Running)
+            //    {
+             //       foreach (PluginDescription plugin in pluginList)
+             //       {
+             //           if (plugin.Name == pd.Name && plugin.Name != null)
+             //           {
+              //              plugin.Status = "Stopping...";
+             //           }
+             //       }
+             //   }
+            }
+            catch (Exception ex)
+            { this.Log.Error("Error disabling plugin", ex); }
+        }
+        
         private void InstallPlugin_Click(object sender, RoutedEventArgs e)
         {
             // Configure open file dialog box 
@@ -354,6 +517,7 @@
                 // Open Plugin Package 
                 PluginInstallerHelper pInst = new PluginInstallerHelper();
                 pInst.InstallPlugin(dlg.FileName);
+                loadPlugins();
             }
         }
 
@@ -362,7 +526,40 @@
             LogWindow l = new LogWindow();
             l.ShowDialog();
         }
-        
+
+        private void PluginMessageReceived(PacketHeader header, Connection connection, string message)
+        {
+            string[] split = message.Split('|');
+            bool enabled = false;
+            if (split[1].Trim() == "True")
+            {
+                enabled = true;
+            }
+
+            foreach (PluginDescription plugin in pluginList)
+            {
+                if ((plugin.Type == split[5].Trim() && Common.ComputerName == split[6].Trim()) || plugin.Name == split[0].Trim())
+                {
+                    if (split[3].Trim() == "ON")
+                        plugin.Status = "Running";
+                    else if (split[3].Trim() == "OFF")
+                        plugin.Status = "Stopped";
+                    else
+                        plugin.Status = split[3].Trim();
+                    plugin.Enabled = enabled;
+                    plugin.Name = split[0].Trim();
+                    if (split[4].Trim() != "")
+                        plugin.Upgrade = split[4].Trim();
+                    else
+                    {
+                        plugin.Upgrade = string.Empty;
+                    }
+                    this.Log.Info("updated plugin: " + plugin.Name + "|" + plugin.Version + "|" + plugin.Upgrade + "|" + plugin.Status + "| " + plugin.Enabled.ToString());
+                    break;
+                }
+            }
+        }
+
         private void CommandMessageReceived(PacketHeader header, Connection connection, string message)
         {
             string[] param = message.Split('|');

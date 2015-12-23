@@ -17,12 +17,13 @@ namespace OSAE.UI.Controls
         public Point Location;
         public DateTime LastUpdated;
         public DateTime LastStateChange;
-        
+        public DateTime PropertyLastUpdated;
         public string StateMatch;
         public string CurState;
         public string CurStateLabel;
         public string CurLevel = "";
         public int LightLevel = 100;
+        private string gAppName = "";
 
         public string ObjectName;
         public string SliderMethod;
@@ -41,21 +42,28 @@ namespace OSAE.UI.Controls
         private Boolean updatingSlider = false; 
         private DispatcherTimer timer = new DispatcherTimer();
 
-        public StateImage(OSAEObject sObject)
+        public StateImage(OSAEObject sObject, string appName)
         {
             InitializeComponent();
 
             OSAEImageManager imgMgr = new OSAEImageManager();
 
+            gAppName = appName;
             screenObject = sObject;
             ObjectName = screenObject.Property("Object Name").Value;
             SliderMethod = screenObject.Property("Slider Method").Value;
             CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
 
             try
-            { LightLevel = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value); }
+            {
+                string propertyCheck = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value;
+                if (propertyCheck != "")
+                    LightLevel = Convert.ToUInt16(propertyCheck);
+                else
+                    LightLevel = 100;
+            }
             catch
-            { LightLevel = 100; }
+            { }
 
             LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
             Image.ToolTip = ObjectName + "\n" + CurState + " since: " + LastStateChange;
@@ -69,73 +77,84 @@ namespace OSAE.UI.Controls
                     StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
             }
 
-            string imgName = screenObject.Property(StateMatch + " Image").Value;
-            string imgName2 = screenObject.Property(StateMatch + " Image 2").Value;
-            string imgName3 = screenObject.Property(StateMatch + " Image 3").Value;
-            string imgName4 = screenObject.Property(StateMatch + " Image 4").Value;
             try
             {
-                repeatAnimation = Convert.ToBoolean(screenObject.Property("Repeat Animation").Value);
-            }
-            catch
-            {
-                OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Repeat Animation", "TRUE", "GUI");
-                repeatAnimation = true;
-            }
-            try
-            { frameDelay = Convert.ToInt16(screenObject.Property("Frame Delay").Value); }
-            catch
-            {
-                frameDelay = 100;
-                OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Frame Delay", "100", "GUI");
-            }
-            OSAEImage img1 = imgMgr.GetImage(imgName);
-            if (img1 != null)
-            {
-                ms1 = new MemoryStream(img1.Data);
-                BitmapImage bitmapImage = new BitmapImage();
+                string imgName = screenObject.Property(StateMatch + " Image").Value;
+                string imgName2 = screenObject.Property(StateMatch + " Image 2").Value;
+                string imgName3 = screenObject.Property(StateMatch + " Image 3").Value;
+                string imgName4 = screenObject.Property(StateMatch + " Image 4").Value;
 
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = ms1;
-                bitmapImage.EndInit();
-
-                Image.Source = bitmapImage;
-                Image.Visibility = System.Windows.Visibility.Visible;
-
-                imageFrames = 1;
-                currentFrame = 1;
-                OSAEImage img2 = imgMgr.GetImage(imgName2);
-                if (img2 != null)
+                try
                 {
-                    ms2 = new MemoryStream(img2.Data);
-                    imageFrames = 2;
-                    OSAEImage img3 = imgMgr.GetImage(imgName3);
-                    if (img3 != null)
+                    repeatAnimation = Convert.ToBoolean(screenObject.Property("Repeat Animation").Value);
+                }
+                catch
+                {
+                    OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Repeat Animation", "TRUE", gAppName);
+                    repeatAnimation = true;
+                }
+                try
+                {
+                    frameDelay = Convert.ToInt16(screenObject.Property("Frame Delay").Value);
+                }
+                catch
+                {
+                    frameDelay = 100;
+                    OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Frame Delay", "100", gAppName);
+                }
+                OSAEImage img1 = imgMgr.GetImage(imgName);
+                if (img1 != null)
+                {
+                    ms1 = new MemoryStream(img1.Data);
+                    BitmapImage bitmapImage = new BitmapImage();
+
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = ms1;
+                    bitmapImage.EndInit();
+
+                    Image.Source = bitmapImage;
+                    Image.Visibility = System.Windows.Visibility.Visible;
+
+                    imageFrames = 1;
+                    currentFrame = 1;
+                    OSAEImage img2 = imgMgr.GetImage(imgName2);
+                    if (img2 != null)
                     {
-                        ms3 = new MemoryStream(img3.Data);
-                        imageFrames = 3;
-                        OSAEImage img4 = imgMgr.GetImage(imgName4);
-                        if (img4 != null)
+                        ms2 = new MemoryStream(img2.Data);
+                        imageFrames = 2;
+                        OSAEImage img3 = imgMgr.GetImage(imgName3);
+                        if (img3 != null)
                         {
-                            ms4 = new MemoryStream(img4.Data);
-                            imageFrames = 4;
+                            ms3 = new MemoryStream(img3.Data);
+                            imageFrames = 3;
+                            OSAEImage img4 = imgMgr.GetImage(imgName4);
+                            if (img4 != null)
+                            {
+                                ms4 = new MemoryStream(img4.Data);
+                                imageFrames = 4;
+                            }
                         }
                     }
                 }
+                else
+                {
+                    Image.Source = null;
+                    Image.Visibility = System.Windows.Visibility.Hidden;
+                }
             }
-            else
-            {
-                Image.Source = null;
-                Image.Visibility = System.Windows.Visibility.Hidden;
-            }
+            catch { }
 
             sliderVisible = Convert.ToBoolean(screenObject.Property("Show Slider").Value);
 
             if (sliderVisible)
             {
                 sldSlider.Visibility = System.Windows.Visibility.Visible;
-                CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
-                sldSlider.Value = Convert.ToUInt16(CurLevel);
+                try
+                {
+                    CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
+                    sldSlider.Value = Convert.ToUInt16(CurLevel);
+                }
+                catch { }
             }
             else
                 sldSlider.Visibility = System.Windows.Visibility.Hidden;
@@ -217,10 +236,14 @@ namespace OSAE.UI.Controls
 
                 try
                 {
-                    LightLevel = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value);
+                    string propertyCheck = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value;
+                    if (propertyCheck != "")
+                        LightLevel = Convert.ToUInt16(propertyCheck);
+                    else
+                        LightLevel = 100;
                 }
                 catch
-                { LightLevel = 100; }
+                { }
 
                 if (stateChanged)
                 {
@@ -229,64 +252,78 @@ namespace OSAE.UI.Controls
                     string imgName2 = screenObject.Property(StateMatch + " Image 2").Value;
                     string imgName3 = screenObject.Property(StateMatch + " Image 3").Value;
                     string imgName4 = screenObject.Property(StateMatch + " Image 4").Value;
-
-                    OSAEImage img1 = imgMgr.GetImage(imgName);
-                    if (img1 != null)
-                    {
-                        ms1 = new MemoryStream(img1.Data);
-                        imageFrames = 1;
-                        currentFrame = 1;
-                        // Primary Frame is loaded, load up additional frames for the time to display.
-                        OSAEImage img2 = imgMgr.GetImage(imgName2);
-                        if (img2 != null)
+                    if (imgName != "")
+                    { 
+                        OSAEImage img1 = imgMgr.GetImage(imgName);
+                        if (img1 != null)
                         {
-                            ms2 = new MemoryStream(img2.Data);
-                            imageFrames = 2;
-                            OSAEImage img3 = imgMgr.GetImage(imgName3);
-                            if (img3 != null)
+                            ms1 = new MemoryStream(img1.Data);
+                            imageFrames = 1;
+                            currentFrame = 1;
+                            this.Dispatcher.Invoke((Action)(() =>
                             {
-                                ms3 = new MemoryStream(img3.Data);
-                                imageFrames = 3;
-                                OSAEImage img4 = imgMgr.GetImage(imgName4);
-                                if (img4 != null)
+                                BitmapImage bitmapImage = new BitmapImage();
+                                bitmapImage.BeginInit();
+                                bitmapImage.StreamSource = ms1;
+                                bitmapImage.EndInit();
+                                Image.Source = bitmapImage;
+
+                                if (sliderVisible && updatingSlider == false)
                                 {
-                                    ms4 = new MemoryStream(img4.Data);
-                                    imageFrames = 4;
+                                    try
+                                    {
+                                        CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
+                                    }
+                                    catch { CurLevel = "0"; }
+
+                                    sldSlider.ToolTip = CurLevel + "%";
+                                    sldSlider.Value = Convert.ToUInt16(CurLevel);
+                                }
+                                if (CurLevel != "")
+                                    Image.ToolTip = ObjectName + "\n" + CurStateLabel + " (" + CurLevel + "%) since: " + LastStateChange;
+                                else
+                                    Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
+                            }));
+
+                            // Primary Frame is loaded, load up additional frames for the time to display.
+                            if (imgName2 != "")
+                            {
+                                OSAEImage img2 = imgMgr.GetImage(imgName2);
+                                if (img2 != null)
+                                {
+                                    ms2 = new MemoryStream(img2.Data);
+                                    imageFrames = 2;
+                                    if (imgName3 != "")
+                                    {
+                                        OSAEImage img3 = imgMgr.GetImage(imgName3);
+                                        if (img3 != null)
+                                        {
+                                            ms3 = new MemoryStream(img3.Data);
+                                            imageFrames = 3;
+                                            if (imgName4 != "")
+                                            {
+                                                OSAEImage img4 = imgMgr.GetImage(imgName4);
+                                                if (img4 != null)
+                                                {
+                                                    ms4 = new MemoryStream(img4.Data);
+                                                    imageFrames = 4;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                     else
                     {
-                        Image.Source = null;
-                        Image.Visibility = System.Windows.Visibility.Hidden;
-                        Image.Source = null;
-                        Image.Visibility = System.Windows.Visibility.Hidden;
-                    }
-
-                    if (img1 != null)
-                    {
                         this.Dispatcher.Invoke((Action)(() =>
-                    {
-                        BitmapImage bitmapImage = new BitmapImage();
-                        bitmapImage.BeginInit();
-                        bitmapImage.StreamSource = ms1;
-                        bitmapImage.EndInit();
-                        Image.Source = bitmapImage;
-
-                        if (sliderVisible && updatingSlider == false)
                         {
-                            CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
-                            sldSlider.ToolTip = CurLevel + "%";
-                            sldSlider.Value = Convert.ToUInt16(CurLevel);
-                        }
-                        if (CurLevel != "")
-                            Image.ToolTip = ObjectName + "\n" + CurStateLabel + " (" + CurLevel + "%) since: " + LastStateChange;
-                        else
-                            Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
-                    }));
+                            Image.Source = null;
+                           // Image.Visibility = System.Windows.Visibility.Hidden;
+                        }));
                     }
-
+              
                     if (imageFrames > 1) timer.Start();
                 }
             }
@@ -295,16 +332,18 @@ namespace OSAE.UI.Controls
         }
 
         private void State_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
-        {             
+        {
+            string currentUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Current User").Value;
+            if (currentUser == "") return;
             if (CurState == "ON")
             {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "0", "", "GUI");
-                OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", "GUI");
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "0", "", currentUser);
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", currentUser);
             }
             else
             {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "100", "", "GUI");
-                OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", "GUI");
+                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "100", "", currentUser);
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", currentUser);
             }        
         }
 
@@ -320,7 +359,7 @@ namespace OSAE.UI.Controls
 
         private void Slider_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            OSAEMethodManager.MethodQueueAdd(ObjectName, SliderMethod, Convert.ToUInt16(sldSlider.Value).ToString(), "", "GUI");
+            OSAEMethodManager.MethodQueueAdd(ObjectName, SliderMethod, Convert.ToUInt16(sldSlider.Value).ToString(), "", gAppName);
             updatingSlider = false;
         }        
     }

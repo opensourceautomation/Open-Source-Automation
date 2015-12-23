@@ -15,15 +15,17 @@
     public partial class AddControlTimerLabel : UserControl
     {
         private string currentScreen;
+        private string currentUser;
         string sOriginalName = "";
         string sOriginalObject = "";
         string sWorkingName = "";
         string sMode = "";
 
-        public AddControlTimerLabel(string screen, string controlName = "")
+        public AddControlTimerLabel(string screen, string user, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
+            currentUser = user;
             LoadObjects();
             LoadColors();
 
@@ -116,16 +118,15 @@
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             string sName = txtControlName.Text;
-
-            OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL TIMER LABEL", "", currentScreen, true);
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+            OSAEObjectManager.ObjectAdd(sName, "", sName, "CONTROL TIMER LABEL", "", currentScreen, 50, true);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
             OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectComboBox.Text, sName);
             NotifyParentFinished();
         }
@@ -134,15 +135,15 @@
         {
             string sName = txtControlName.Text;
             OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
-            OSAEObjectManager.ObjectUpdate(sOriginalName, sName, obj.Alias, "CONTROL TIMER LABEL", "CONTROL TIMER LABEL", "", currentScreen, 1);
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-            OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+            OSAEObjectManager.ObjectUpdate(sOriginalName, sName, obj.Alias, "CONTROL TIMER LABEL", "CONTROL TIMER LABEL", "", currentScreen, 50, 1);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Back Color", backColorComboBox.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectComboBox.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
+            OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
             OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, objectComboBox.Text, sName);
             NotifyParentFinished();
         }

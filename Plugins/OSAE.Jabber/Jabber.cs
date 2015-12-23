@@ -43,9 +43,7 @@ namespace OSAE.Jabber
                 //oRecognizer.AudioStateChanged += new EventHandler<AudioStateChangedEventArgs>(oRecognizer_StateChanged);
             }
             catch (Exception ex)
-            {
-                Log.Error("Unable to configure oRecognizer", ex);
-            }
+            { Log.Error("Unable to configure oRecognizer", ex); }
 
             oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
             Log.Info("Load_Direct_Grammar completed");
@@ -255,7 +253,7 @@ namespace OSAE.Jabber
             if (!found)
             {
                 Log.Info(String.Format("Received NEW Contact {0}", item.Jid.Bare));
-                OSAEObjectManager.ObjectAdd(item.Jid.Bare, item.Jid.Bare, "Discovered Jabber contact", "PERSON", "", "Unknown", true);
+                OSAEObjectManager.ObjectAdd(item.Jid.Bare, "", "Discovered Jabber contact", "PERSON", "", "Unknown", 50, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
             }
         }
@@ -341,9 +339,7 @@ namespace OSAE.Jabber
                 // scriptParameter = scriptParameter.Replace();
                 string sResults = "";
                 if (e.Result.Semantics.ContainsKey("ANSWER"))
-                {
                     Question_Answered(e.Result.Semantics["ANSWER"].Value.ToString());
-                }
                 else
                 {
                     if (result.Grammar.Name.ToString() == "Direct Match")

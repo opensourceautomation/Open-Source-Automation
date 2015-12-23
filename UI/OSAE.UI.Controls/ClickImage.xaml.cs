@@ -14,7 +14,8 @@ namespace OSAE.UI.Controls
     {
         public Point Location;
         public OSAEObject screenObject { get; set; }
-
+        private string gAppName = "";
+        private string currentUser;
         private string PressObjectName = "";
         private string PressMethodName = "";
         private string PressMethodParam1 = "";
@@ -38,11 +39,13 @@ namespace OSAE.UI.Controls
 
         private OSAEImageManager imgMgr = new OSAEImageManager();
 
-        public ClickImage(OSAEObject sObj)
+        public ClickImage(OSAEObject sObj, string appName, string user)
 
         {
             InitializeComponent();
             screenObject = sObj;
+            gAppName = appName;
+            currentUser = user;
             PressObjectName = screenObject.Property("Press Object Name").Value;
             PressMethodName = screenObject.Property("Press Method Name").Value;
             PressMethodParam1 = screenObject.Property("Press Method Param 1").Value;
@@ -85,12 +88,13 @@ namespace OSAE.UI.Controls
                 Image.Source = null;
                 Image.Visibility = System.Windows.Visibility.Hidden;
             }
-
         }
-
 
         private void Click_Image_MouseLeftButtonDown(object sender, MouseEventArgs e)
         {
+            string currentUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Current User").Value;
+            if (currentUser == "") return;
+
             string imgName = screenObject.Property("Pressed Image").Value;
             OSAEImage img = imgMgr.GetImage(imgName);
 
@@ -114,7 +118,7 @@ namespace OSAE.UI.Controls
             {
                 if (PressMethodParam1 == "[ASK]" | PressMethodParam2 == "[ASK]")
                 {
-                    ParamInput addControl = new ParamInput("Method", screenObject);
+                    ParamInput addControl = new ParamInput("Method", screenObject,currentUser);
                     string cppX = screenObject.Property("X").Value;
                     string cppY = screenObject.Property("Y").Value;
                     double cpp_X = Convert.ToDouble(cppX);
@@ -127,14 +131,14 @@ namespace OSAE.UI.Controls
                 }
                 else
                 {
-                    OSAEMethodManager.MethodQueueAdd(PressObjectName, PressMethodName, PressMethodParam1, PressMethodParam2, "GUI");
+                    OSAEMethodManager.MethodQueueAdd(PressObjectName, PressMethodName, PressMethodParam1, PressMethodParam2, currentUser);
                 }
             }
             if (PressScriptName != "")
             {
                 if (PressMethodParam1 == "[ASK]" | PressMethodParam2 == "[ASK]")
                 {
-                    ParamInput addControl = new ParamInput("Method", screenObject);
+                    ParamInput addControl = new ParamInput("Method", screenObject, currentUser);
                     string cppX = screenObject.Property("X").Value;
                     string cppY = screenObject.Property("Y").Value;
                     double cpp_X = Convert.ToDouble(cppX);
@@ -147,8 +151,7 @@ namespace OSAE.UI.Controls
                 }
                 else
                 {
-                    OSAEMethodManager.MethodQueueAdd(PressObjectName, PressMethodName, PressMethodParam1, PressMethodParam2, "GUI");
-
+                    OSAEMethodManager.MethodQueueAdd(PressObjectName, PressMethodName, PressMethodParam1, PressMethodParam2, currentUser);
                 }
             }
         }
@@ -179,7 +182,7 @@ namespace OSAE.UI.Controls
             {
                 if (ReleaseMethodParam1 == "[ASK]" | ReleaseMethodParam2 == "[ASK]")
                 {
-                    ParamInput addControl = new ParamInput("Method", screenObject);
+                    ParamInput addControl = new ParamInput("Method", screenObject, currentUser);
                     string cppX = screenObject.Property("X").Value;
                     string cppY = screenObject.Property("Y").Value;
                     double cpp_X = Convert.ToDouble(cppX);
@@ -192,14 +195,14 @@ namespace OSAE.UI.Controls
                 }
                 else
                 {
-                    OSAEMethodManager.MethodQueueAdd(ReleaseObjectName, ReleaseMethodName, ReleaseMethodParam1, ReleaseMethodParam2, "GUI");
+                    OSAEMethodManager.MethodQueueAdd(ReleaseObjectName, ReleaseMethodName, ReleaseMethodParam1, ReleaseMethodParam2, currentUser);
                 }
             }
             if (PressScriptName != "")
             {
                 if (PressScriptParam1 == "[ASK]" | PressScriptParam2 == "[ASK]")
                 {
-                    ParamInput addControl = new ParamInput("Method", screenObject);
+                    ParamInput addControl = new ParamInput("Method", screenObject,currentUser);
                     string cppX = screenObject.Property("X").Value;
                     string cppY = screenObject.Property("Y").Value;
                     double cpp_X = Convert.ToDouble(cppX);
@@ -212,7 +215,7 @@ namespace OSAE.UI.Controls
                 }
                 else
                 {
-                    OSAEMethodManager.MethodQueueAdd(ReleaseObjectName, ReleaseMethodName, ReleaseMethodParam1, ReleaseMethodParam2, "GUI");
+                    OSAEMethodManager.MethodQueueAdd(ReleaseObjectName, ReleaseMethodName, ReleaseMethodParam1, ReleaseMethodParam2, currentUser);
                 }
             }
         }     

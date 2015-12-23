@@ -12,11 +12,12 @@ namespace OSAE.UI.Controls
     public partial class AddControlUserControl : UserControl
     {
         string currentScreen;
-
-        public AddControlUserControl(string screen, string controlName = "")
+        private string currentUser;
+        public AddControlUserControl(string screen, string user, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
+            currentUser = user;
             LoadUserControls();
         }
 

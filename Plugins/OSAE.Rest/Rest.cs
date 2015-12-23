@@ -64,7 +64,8 @@
 
                 String restUrl = "http://localhost:"+restPort.ToString()+"/api";
                 serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri(restUrl));
-                WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None); 
+                
+               WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None); 
                 binding.CrossDomainScriptAccessEnabled = true;
                 var endpoint = serviceHost.AddServiceEndpoint(typeof(IRestService), binding, "");
 

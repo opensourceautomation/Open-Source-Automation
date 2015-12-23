@@ -13,7 +13,6 @@
     [ServiceContract]
     public interface IRestService
     {
-        
         [OperationContract]
         [WebGet(UriTemplate = "object/{name}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         OSAEObject GetObject(string name);
@@ -27,14 +26,14 @@
         Boolean ExecuteMethod(string name, string method, string param1, string param2);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/add?name={name}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/add?name={name}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&mintrustlevel={mintrustlevel}&enabled={enabled}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean AddObject(string name, string alias, string description, string type, string address, string container, string enabled);
+        Boolean AddObject(string name, string alias, string description, string type, string address, string container, int mintrustlevel, string enabled);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/update?oldName={oldName}&newName={newName}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/update?oldName={oldName}&newName={newName}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&mintrustlevel={mintrustlevel}&enabled={enabled}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, string enabled);
+        Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, int mintrustlevel, string enabled);
 
         [OperationContract]
         [WebGet(UriTemplate = "objects/type/{type}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -117,19 +116,18 @@
             {
                 oObj.Properties = getProperties(oObj.Name);
             }
-
+            Log.Debug("Looking up objects of the type:  " + type + ".  I Found " + objects.Count + ".");
             return objects;
         }
 
         public OSAEObjectCollection GetObjectsByBaseType(string type)
         {
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByBaseType(type);
-
             foreach (OSAEObject oObj in objects)
             {
                 oObj.Properties = getProperties(oObj.Name);
             }
-
+            Log.Debug("Looking up objects of the base type:  " + type + ".  I Found " + objects.Count + ".");
             return objects;
         }
 
@@ -141,7 +139,7 @@
             {
                 oObj.Properties = getProperties(oObj.Name);
             }
-
+            Log.Debug("Looking up objects in container:  " + container + ".  I Found " + objects.Count + ".");
             return objects;
         }
 
@@ -184,17 +182,17 @@
             return false;
         }
 
-        public Boolean AddObject(string name, string alias, string description, string type, string address, string container, string enabled)
+        public Boolean AddObject(string name, string alias, string description, string type, string address, string container, int mintruestlevel, string enabled)
         {
 
-            OSAEObjectManager.ObjectAdd(name, alias, description, type, address, container, StringToBoolean(enabled));
+            OSAEObjectManager.ObjectAdd(name, alias, description, type, address, container, mintruestlevel, StringToBoolean(enabled));
 
             return true;
         }
 
-        public Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, string enabled)
+        public Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, int mintruestlevel, string enabled)
         {
-            OSAEObjectManager.ObjectUpdate(oldName, newName, alias, description, type, address, container, Convert.ToInt32(StringToBoolean(enabled)));
+            OSAEObjectManager.ObjectUpdate(oldName, newName, alias, description, type, address, container, mintruestlevel, Convert.ToInt32(StringToBoolean(enabled)));
 
             return true;
         }
@@ -283,7 +281,6 @@
 
         private Boolean StringToBoolean(string passedvalue)
         {
-
             Boolean booleanvalue = false;  //if we fail to convert we will just default to false
 
             if (!Boolean.TryParse(passedvalue, out booleanvalue)) //if they passed "true"/"false" this will work and booleanvalue will contain our converted value

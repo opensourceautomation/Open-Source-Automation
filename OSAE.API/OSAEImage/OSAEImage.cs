@@ -21,5 +21,21 @@
         /// The binary data for the image
         /// </summary>
         public byte[] Data { get; set; }
+
+        /// <summary>
+        /// The width of the image
+        /// </summary>
+        public int Width { get; set; }
+
+        /// <summary>
+        /// The height of the image
+        /// </summary>
+        public int Height { get; set; }
+
+        /// <summary>
+        /// The dpi of the image
+        /// </summary>
+        public int DPI { get; set; }
+
     }
 }

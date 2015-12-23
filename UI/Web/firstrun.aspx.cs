@@ -10,15 +10,12 @@ public partial class firstrun : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-
         //don't let them create a user if a user already exists
         OSAEObjectCollection objects = new OSAEObjectCollection();
         objects = OSAEObjectManager.GetObjectsByType("PERSON");
 
         if (objects.Count > 0)
-        {
             Response.Redirect("~/Default.aspx");
-        }
     }
     protected void createUserLinkButton_Click(object sender, EventArgs e)
     {
@@ -26,7 +23,7 @@ public partial class firstrun : System.Web.UI.Page
         {
             if (txtPass.Text == txtPass2.Text)
             {
-                OSAEObjectManager.ObjectAdd(txtUser.Text, txtUser.Text, "Web UI user", "PERSON", "", "House", true);
+                OSAEObjectManager.ObjectAdd(txtUser.Text, txtUser.Text, "Web UI user", "PERSON", "", "House",50, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(txtUser.Text, "Password", txtPass.Text, "Web UI");
                 Response.Redirect("~/objects.aspx"); 
             }

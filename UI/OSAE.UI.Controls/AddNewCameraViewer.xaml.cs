@@ -12,14 +12,16 @@ namespace OSAE.UI.Controls
     public partial class AddNewCameraViewer : UserControl
     {
         private string currentScreen;
+        private string currentUser;
         string sOriginalName = "";
         string sWorkingName = "";
         string sMode = "";
 
-        public AddNewCameraViewer(string screen, string controlName = "")
+        public AddNewCameraViewer(string screen, string user, string controlName = "")
         {
             InitializeComponent();
             currentScreen = screen;
+            currentUser = user;
             LoadObjects();
 
             if (controlName != "")
@@ -81,11 +83,11 @@ namespace OSAE.UI.Controls
             if (validateForm("Add"))
             {
                 string sName = txtControlName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+                OSAEObjectManager.ObjectAdd(sName, "", sName, "CONTROL CAMERA VIEWER", "", currentScreen, 50, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
                 NotifyParentFinished();
             }
@@ -100,11 +102,11 @@ namespace OSAE.UI.Controls
             if (validateForm("Update"))
             {
                 string sName = txtControlName.Text;
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL CAMERA VIEWER", "", currentScreen, 1);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, "GUI");
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, "", sName, "CONTROL CAMERA VIEWER", "", currentScreen, 50, 1);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
                 NotifyParentFinished();
             }

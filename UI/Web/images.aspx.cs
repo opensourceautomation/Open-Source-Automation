@@ -75,7 +75,7 @@ public partial class images : System.Web.UI.Page
     private void loadImages()
     {
 
-        gvImages.DataSource = OSAESql.RunSQL("SELECT image_name, image_type, image_id FROM osae_images ORDER BY image_name");
+        gvImages.DataSource = OSAESql.RunSQL("SELECT image_name, image_type, image_width, image_height, image_dpi, image_id FROM osae_images ORDER BY image_name");
         gvImages.DataBind();
     }
 
@@ -96,13 +96,14 @@ public partial class images : System.Web.UI.Page
                     {
                         
                         OSAEImage img = new OSAEImage();
+
                         img.Data = fileUpload.FileBytes;
                         img.Name = txtName.Text;
                         img.Type = System.IO.Path.GetExtension(fileUpload.FileName).ToLower().Substring(1);
 
-
                         var imageManager = new OSAE.OSAEImageManager();
                         imageManager.AddImage(img);
+
                         loadImages();
                     }
                     else

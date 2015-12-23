@@ -5,34 +5,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" Height="270" Width="446" Margin="20">
     <Grid>
-        <TextBox x:Name="txtPrefix" HorizontalAlignment="Left" Height="23" Margin="81,99,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145"/>
-        <Label Content="Prefix" HorizontalAlignment="Left" Margin="9,96,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtSuffix" HorizontalAlignment="Left" Height="23" Margin="274,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145"/>
-        <Label Content="Property" HorizontalAlignment="Left" Margin="9,68,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtPrefix" HorizontalAlignment="Left" Height="23" Margin="81,99,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" IsEnabled="False"/>
+        <Label x:Name="lblPrefix" Content="Prefix" HorizontalAlignment="Left" Margin="9,96,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+        <TextBox x:Name="txtSuffix" HorizontalAlignment="Left" Height="23" Margin="274,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" IsEnabled="False"/>
+        <Label x:Name="lblProperty" Content="Property" HorizontalAlignment="Left" Margin="9,68,0,0" VerticalAlignment="Top" IsEnabled="False"/>
         <Button Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="9,239,0,0" VerticalAlignment="Top" Width="75" Click="btnAdd_Click"/>
         <Button Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="360,239,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"/>
         <Label Content="Object" HorizontalAlignment="Left" Margin="9,37,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cboObject" HorizontalAlignment="Left" Margin="82,39,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="cboObject_SelectionChanged"/>
-        <Label Content="Suffix" HorizontalAlignment="Left" Margin="230,99,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cboProperty" HorizontalAlignment="Left" Margin="80,68,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=property_name}"  DisplayMemberPath="property_name" SelectedValuePath="property_name" IsEditable="False" SelectionChanged="cboProperty_SelectionChanged"/>
-        <TextBox x:Name="txtFont" HorizontalAlignment="Left" Height="23" Margin="81,130,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" PreviewMouseDown="txtFont_MouseLeftButtonUp"/>
-        <Label Content="Font" HorizontalAlignment="Left" Margin="9,127,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtSize" HorizontalAlignment="Left" Height="23" Margin="274,131,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" MouseLeftButtonUp="txtFont_MouseLeftButtonUp" PreviewMouseDown="txtFont_MouseLeftButtonUp"/>
-        <Label Content="Size" HorizontalAlignment="Left" Margin="230,130,0,0" VerticalAlignment="Top"/>
-        <Label Content="Back Color" HorizontalAlignment="Left" Margin="230,163,0,0" VerticalAlignment="Top"/>
-        <Label Content="Fore Color" HorizontalAlignment="Left" Margin="9,161,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cboForeColor" HorizontalAlignment="Left" Margin="80,163,0,0" VerticalAlignment="Top" Width="115"/>
-        <ComboBox x:Name="cboBackColor" HorizontalAlignment="Left" Margin="303,165,0,0" VerticalAlignment="Top" Width="114"/>
+        <ComboBox x:Name="cboObject" HorizontalAlignment="Left" Margin="80,39,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="cboObject_SelectionChanged"/>
+        <Label x:Name="lblSuffix" Content="Suffix" HorizontalAlignment="Left" Margin="230,99,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+        <ComboBox x:Name="cboProperty" HorizontalAlignment="Left" Margin="80,68,0,0" VerticalAlignment="Top" Width="337" ItemsSource="{Binding Path=property_name}"  DisplayMemberPath="property_name" SelectedValuePath="property_name" IsEditable="False" SelectionChanged="cboProperty_SelectionChanged" IsEnabled="False"/>
+        <TextBox x:Name="txtFont" HorizontalAlignment="Left" Height="23" Margin="81,130,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" PreviewMouseDown="txtFont_MouseLeftButtonUp" IsEnabled="False"/>
+        <Label x:Name="lblFont" Content="Font" HorizontalAlignment="Left" Margin="9,127,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+        <TextBox x:Name="txtSize" HorizontalAlignment="Left" Height="23" Margin="274,131,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="145" MouseLeftButtonUp="txtFont_MouseLeftButtonUp" PreviewMouseDown="txtFont_MouseLeftButtonUp" IsEnabled="False"/>
+        <Label x:Name="lblSize" Content="Size" HorizontalAlignment="Left" Margin="230,130,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+        <Label x:Name="lblBackColor" Content="Back Color" HorizontalAlignment="Left" Margin="230,163,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+        <Label x:Name="lblForeColor" Content="Fore Color" HorizontalAlignment="Left" Margin="9,161,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+        <ComboBox x:Name="cboForeColor" HorizontalAlignment="Left" Margin="80,163,0,0" VerticalAlignment="Top" Width="115" IsEnabled="False"/>
+        <ComboBox x:Name="cboBackColor" HorizontalAlignment="Left" Margin="303,165,0,0" VerticalAlignment="Top" Width="114" IsEnabled="False"/>
         <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="89,239,0,0" VerticalAlignment="Top" Width="75" Click="btnUpdate_Click"/>
         <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="169,239,0,0" VerticalAlignment="Top" Width="75" Click="btnDelete_Click"/>
-        <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="26" Margin="99,199,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Text="100"/>
-        <TextBox x:Name="txtY" HorizontalAlignment="Left" Height="26" Margin="174,199,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100"/>
-        <Label Content="Y" HorizontalAlignment="Left" Margin="157,195,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846"/>
-        <Label Content="X" HorizontalAlignment="Left" Margin="82,199,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="22" Margin="99,203,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Text="100" IsEnabled="False"/>
+        <TextBox x:Name="txtY" HorizontalAlignment="Left" Height="22" Margin="174,203,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100" IsEnabled="False"/>
+        <Label x:Name="lblY" Content="Y" HorizontalAlignment="Left" Margin="157,199,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846" IsEnabled="False"/>
+        <Label x:Name="lblX" Content="X" HorizontalAlignment="Left" Margin="82,199,0,0" VerticalAlignment="Top" IsEnabled="False"/>
         <Label Content="Name" Height="28" HorizontalAlignment="Left" Margin="10,9,0,0" x:Name="label3_Copy" VerticalAlignment="Top" Width="53" />
-        <TextBox x:Name="txtControlName" HorizontalAlignment="Left" Height="23" Margin="80,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="339"/>
-        <TextBox x:Name="txtZOrder" HorizontalAlignment="Left" Height="26" Margin="291,199,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="1"/>
-        <Label Content="ZOrder" HorizontalAlignment="Left" Margin="244,199,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846" Width="47"/>
+        <TextBox x:Name="txtControlName" HorizontalAlignment="Left" Height="23" Margin="80,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="339" IsEnabled="False"/>
+        <TextBox x:Name="txtZOrder" HorizontalAlignment="Left" Height="18" Margin="291,203,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="1" IsEnabled="False"/>
+        <Label x:Name="lblZ" Content="ZOrder" HorizontalAlignment="Left" Margin="244,199,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846" Width="47" IsEnabled="False"/>
 
 
     </Grid>

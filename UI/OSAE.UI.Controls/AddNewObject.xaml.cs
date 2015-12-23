@@ -47,14 +47,8 @@
         {
             if (ValidateForm())
             {
-                OSAEObjectManager.ObjectAdd(
-                    nameTextBox.Text,
-                    nameTextBox.Text,
-                    descriptionTextBox.Text,
-                    objectTypesComboBox.SelectedValue.ToString(),
-                    addressTextBox.Text,
-                    (containersComboBox.SelectedIndex == -1) ? "" : containersComboBox.SelectedValue.ToString(),
-                    true);
+                OSAEObjectManager.ObjectAdd(nameTextBox.Text, "", descriptionTextBox.Text, objectTypesComboBox.SelectedValue.ToString(), addressTextBox.Text,
+                    (containersComboBox.SelectedIndex == -1) ? "" : containersComboBox.SelectedValue.ToString(), 50, true);
             }
             else
             {

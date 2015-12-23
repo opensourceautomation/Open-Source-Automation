@@ -16,6 +16,7 @@
         private string _baseType;
         private string _address;             
         private string _container;
+        private int _minTrustLevel;
         private int _enabled;
         private string _lastUpd;
         private OSAEObjectState _state;
@@ -36,7 +37,7 @@
 
             set
             {
-                OSAEObjectManager.ObjectUpdate(_name, value, _alias, _description, _type, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, value, _alias, _description, _type, _address, _container, _minTrustLevel, _enabled);
                 _name = value;
             }
         }
@@ -51,7 +52,7 @@
 
             set
             {
-                OSAEObjectManager.ObjectUpdate(_name,_name, value, _description, _type, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name,_name, value, _description, _type, _address, _container, _minTrustLevel, _enabled);
                 _name = value;
             }
         }
@@ -67,7 +68,7 @@
             set
             {
                 _description = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, value, _type, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, value, _type, _address, _container, _minTrustLevel, _enabled);
             }
         }
 
@@ -82,7 +83,7 @@
             set
             {
                 _type = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, value, _address, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, value, _address, _container, _minTrustLevel, _enabled);
             }
         }
 
@@ -111,7 +112,7 @@
             set
             {
                 _address = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, value, _container, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, value, _container, _minTrustLevel, _enabled);
             }
         }
 
@@ -126,9 +127,25 @@
             set
             {
                 _container = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, _address, value, _enabled);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, _address, value, _minTrustLevel, _enabled);
             }
         }
+
+        [DataMember]
+        public int MinTrustLevel
+        {
+            get
+            {
+                return _minTrustLevel;
+            }
+
+            set
+            {
+                _minTrustLevel = value;
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, _address, _container, value, _enabled);
+            }
+        }
+
 
         [DataMember]
         public int Enabled  
@@ -141,7 +158,7 @@
             set
             {
                 _enabled = value;
-                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, _address, _container, value);
+                OSAEObjectManager.ObjectUpdate(_name, _name, _alias, _description, _type, _address, _container, _minTrustLevel, value);
             }
         }
 
@@ -177,13 +194,14 @@
         
         #endregion
 
-        public OSAEObject(string name, string alias, string description, string type, string address, string container, int enabled)
+        public OSAEObject(string name, string alias, string description, string type, string address, string container, int mintrustlevel, int enabled)
         {
             _name = name;
             _alias = alias;
             _type = type;
             _address = address;
             _container = container;
+            _minTrustLevel = mintrustlevel;
             _enabled = enabled;
             _description = description;
             _state = new OSAEObjectState();

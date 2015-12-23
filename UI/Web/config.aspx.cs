@@ -130,29 +130,47 @@ public partial class config : System.Web.UI.Page
     }
     protected void scriptsExportButton_Click(object sender, EventArgs e)
     {
-        DataSet d = OSAESql.RunSQL("SELECT * FROM osae_script");
+        //  DataSet d = OSAESql.RunSQL("SELECT * FROM osae_script");
+        DataSet d = OSAESql.RunSQL("CALL osae_sp_script_export_all");
         d.DataSetName = "Scripts";
         d.Tables[0].TableName = "Script";
 
-        MemoryStream s = new MemoryStream();        
-        d.WriteXml(s);
+        //  MemoryStream s = new MemoryStream();        
+        // d.WriteXml(s);
+        foreach (DataTable tab in d.Tables)
+        {
 
-        Response.BinaryWrite(s.ToArray());
-        Response.ContentType = "text/xml";
-        Response.AddHeader("Content-Disposition", "attachment; filename=Scripts.xml");
+            foreach (DataRow drow in tab.Rows)
+            {
+                Response.Write(drow[0].ToString());
+            }
+        }
+
+
+      //  Response.BinaryWrite(s.ToArray());
+        Response.ContentType = "text/sql";
+        Response.AddHeader("Content-Disposition", "attachment; filename=Scripts.sql");
         Response.End();
     }
     protected void objectsExportButton_Click(object sender, EventArgs e)
     {
-        DataSet d = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
-        MemoryStream s = new MemoryStream();
+  //      DataSet d = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_name, last_updated, address FROM osae_v_object order by container_name, object_name");
+        DataSet d = OSAESql.RunSQL("CALL osae_sp_object_export_all");
+
+        //MemoryStream s = new MemoryStream();
         d.DataSetName = "Objects";
         d.Tables[0].TableName = "Object";
-        d.WriteXml(s);
+        // d.WriteXml(s);
+        foreach (DataTable tab in d.Tables)
+        {
 
-        Response.BinaryWrite(s.ToArray());
-        Response.ContentType = "text/xml";
-        Response.AddHeader("Content-Disposition", "attachment; filename=Objects.xml");
+            foreach (DataRow drow in tab.Rows)
+            {
+                        Response.Write(drow[0].ToString());
+            }
+        }
+        Response.ContentType = "text/sql";
+        Response.AddHeader("Content-Disposition", "attachment; filename=Objects.sql");
         Response.End();
     }
     protected void clearHistoryButton_Click(object sender, EventArgs e)

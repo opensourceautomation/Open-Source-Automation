@@ -20,7 +20,7 @@
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
 
-            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 1);
             try
             {
                 if (plugin.ActivatePlugin())
@@ -32,9 +32,7 @@
                 }
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error activating plugin (" + plugin.PluginName + "): " + ex.Message, ex);
-            }           
+            { this.Log.Error("Error activating plugin (" + plugin.PluginName + "): " + ex.Message, ex); }           
         }
 
         public void disablePlugin(Plugin p)
@@ -42,7 +40,7 @@
             this.Log.Info(p.PluginName + ":  Disabling Plugin...");
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
-            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 0);
+            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 0);
             try
             {
                 p.Shutdown();
@@ -50,9 +48,7 @@
                 p.Domain = Common.CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet, typeof(OSAEService));                
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error stopping plugin (" + p.PluginName + "): " + ex.Message, ex);
-            }
+            { this.Log.Error("Error stopping plugin (" + p.PluginName + "): " + ex.Message, ex); }
         }
 
         public bool pluginExist(string name)
@@ -60,9 +56,7 @@
             foreach (Plugin p in plugins)
             {
                 if (p.PluginType == name)
-                {
                     return true;
-                }
             }
             return false;
         }
@@ -86,9 +80,7 @@
             //        enablePlugin(plugin);
             //        logging.AddToLog("New Process ID: " + plugin.process.ProcessId, true);
             //    }
-
             //}
-
         }
 
         #endregion     
@@ -114,9 +106,7 @@
 
                 Plugin p = new Plugin(type.AssemblyName, type.TypeName, domain, type.Location);
                 if (!pluginLoaded(p.PluginType))
-                {
                     newPlugins.Add(p); 
-                }
             }
 
             this.Log.Info("Found " + newPlugins.Count.ToString() + " Assemblies");
@@ -149,7 +139,7 @@
 
                                 if (obj == null)
                                 {
-                                    OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName + " plugin's Object", plugin.PluginType, "", "", true);
+                                    OSAEObjectManager.ObjectAdd(plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", "", 50, true);
                                     obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
                                 }
 
@@ -157,9 +147,7 @@
                                 {
                                     this.Log.Info(obj.Name + ":  Plugin Object found.  Plugin Object Enabled = " + obj.Enabled.ToString());
                                     if (obj.Enabled == 1)
-                                    {
                                         enablePlugin(plugin);
-                                    }
                                     else
                                         plugin.Enabled = false;
 
@@ -197,7 +185,7 @@
                                 }
 
                                 this.Log.Info(plugin.PluginName + ":  Plugin object does not exist in DB!");
-                                OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
+                                OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", 50, false);
                                 OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, sourceName);
                                 this.Log.Info(plugin.PluginName + ":  Plugin added to DB.");
                                 UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));

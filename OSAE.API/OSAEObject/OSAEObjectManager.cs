@@ -6,7 +6,8 @@
     using MySql.Data.MySqlClient;
 
     public class OSAEObjectManager
-    {       
+    {
+        
         /// <summary>
         /// Returns true or false whether the object with the specified address exists
         /// </summary>
@@ -25,13 +26,9 @@
                     dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
-                    {
                         return true;
-                    }
                     else
-                    {
                         return false;
-                    }
                 }
             }
             catch (Exception ex)
@@ -59,13 +56,9 @@
                     dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
-                    {
                         return true;
-                    }
                     else
-                    {
                         return false;
-                    }
                 }
             }
             catch (Exception ex)
@@ -95,15 +88,12 @@
                     if (dataset.Tables[0].Rows.Count > 0)
                     {
                         if (dataset.Tables[0].Rows[0][0].ToString()=="1")
-                        { return true;}
+                            return true;
                         else
-                        {return false;}
-
+                            return false;
                     }
                     else
-                    {
                         return false;
-                    }
                 }
             }
             catch (Exception ex)
@@ -125,28 +115,24 @@
 
             try
             {
-                command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE UPPER(object_name)=UPPER(@Name) OR UPPER(object_alias)=UPPER(@Name)";
+                command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, min_trust_level, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE UPPER(object_name)=UPPER(@Name) OR UPPER(object_alias)=UPPER(@Name)";
                 command.Parameters.AddWithValue("@Name", name);
                 dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
-                    OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                    OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
                     obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
                     obj.LastUpd = dataset.Tables[0].Rows[0]["last_updated"].ToString();
-
                     obj.Properties = OSAEObjectPropertyManager.GetObjectProperties(obj.Name);
-
                     obj.Methods = GetObjectMethods(obj.Name);
 
                     return obj;
                 }
                 else
-                {
                     return null;
-                }
             }
             catch (Exception ex)
             {
@@ -170,13 +156,13 @@
                 {
                     DataSet dataset = new DataSet();
 
-                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE address=@Address";
+                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, min_trust_level, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE address=@Address";
                     command.Parameters.AddWithValue("@Address", address);
                     dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
                     {
-                        obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                        obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
                         obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                         obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
@@ -187,9 +173,7 @@
                         return obj;
                     }
                     else
-                    {
                         return null;
-                    }
                 }
             }
             catch (Exception ex)
@@ -213,12 +197,10 @@
             try
             {
                 if (ContainerName == string.Empty)
-                {
-                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
-                }
+                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, min_trust_level, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name is null ORDER BY object_name ASC";
                 else
                 {
-                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName AND enabled = 1 ORDER BY object_name ASC";
+                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, min_trust_level, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE container_name=@ContainerName AND enabled = 1 ORDER BY object_name ASC";
                     command.Parameters.AddWithValue("@ContainerName", ContainerName);
                 }
 
@@ -227,7 +209,7 @@
                 {
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
-                        obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), int.Parse(dr["enabled"].ToString()));
+                        obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dr["enabled"].ToString()));
                         obj.State.Value = dr["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
@@ -236,10 +218,8 @@
                         obj.Methods = GetObjectMethods(obj.Name);
                         objects.Add(obj);
                     }
-
                     return objects;
                 }
-
                 return objects;
             }
             catch (Exception ex)
@@ -260,7 +240,7 @@
                     DataSet dataset = new DataSet();
                     OSAEObject obj = new OSAEObject();
 
-                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE owned_by=@ObjectOwner";
+                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, min_trust_level, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE owned_by=@ObjectOwner";
                     command.Parameters.AddWithValue("@ObjectOwner", ObjectOwner);
                     dataset = OSAESql.RunQuery(command);
 
@@ -268,7 +248,7 @@
                     {
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
-                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), int.Parse(dr["enabled"].ToString()));
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dr["enabled"].ToString()));
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
@@ -278,11 +258,9 @@
                             obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
-
                         return objects;
                     }
                 }
-
                 return objects;
             }
             catch (Exception ex)
@@ -307,7 +285,7 @@
             {
                 try
                 {
-                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE base_type=@ObjectType";
+                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, min_trust_level, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE base_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectBaseType);
                     dataset = OSAESql.RunQuery(command);
 
@@ -315,7 +293,7 @@
                     {
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
-                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), int.Parse(dr["enabled"].ToString()));
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dr["enabled"].ToString()));
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
@@ -325,10 +303,8 @@
                             obj.Methods = GetObjectMethods(obj.Name);
                             objects.Add(obj);
                         }
-
                         return objects;
                     }
-
                     return objects;
                 }
                 catch (Exception ex)
@@ -354,7 +330,7 @@
             {
                 try
                 {
-                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE object_type=@ObjectType";
+                    command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, min_trust_level, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE object_type=@ObjectType";
                     command.Parameters.AddWithValue("@ObjectType", ObjectType);
                     dataset = OSAESql.RunQuery(command);
 
@@ -362,7 +338,7 @@
                     {
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
-                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), int.Parse(dr["enabled"].ToString()));
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dr["enabled"].ToString()));
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
@@ -391,10 +367,9 @@
         /// <param name="objectType"></param>
         /// <param name="address"></param>
         /// <param name="container"></param>
-        public static void ObjectAdd(string name, string alias, string description, string objectType, string address, string container, bool enabled)
+        public static void ObjectAdd(string name, string alias, string description, string objectType, string address, string container, int minTrustLevel, bool enabled)
         {
             Logging logging = Logging.GetLogger();
-
             using (MySqlCommand command = new MySqlCommand())
             {
                 command.CommandText = "osae_sp_object_add";
@@ -406,6 +381,7 @@
                 command.Parameters.AddWithValue("?pobjecttype", objectType);
                 command.Parameters.AddWithValue("?paddress", address);
                 command.Parameters.AddWithValue("?pcontainer", container);
+                command.Parameters.AddWithValue("?pmintrustlevel", minTrustLevel);
                 command.Parameters.AddWithValue("?penabled", enabled);
                 command.Parameters.Add(new MySqlParameter("?results", MySqlDbType.Int32));
                 command.Parameters["?results"].Direction = ParameterDirection.Output;
@@ -418,17 +394,11 @@
                     command.ExecuteNonQuery();
 
                     if (command.Parameters["?results"].Value.ToString() == "1")
-                    {
                         logging.AddToLog("API - ObjectAdded successfully", true);
-                    }
                     else if (command.Parameters["?results"].Value.ToString() == "2")
-                    {
                         logging.AddToLog("API - ObjectAdd failed.  Object type doesn't exist.", true);
-                    }
                     else if (command.Parameters["?results"].Value.ToString() == "3")
-                    {
                         logging.AddToLog("API - ObjectAdd failed.  Object with same name or address already exists", true);
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -508,11 +478,11 @@
         /// <param name="Address"></param>
         /// <param name="Container"></param>
         /// <param name="Enabled"></param>
-        public static void ObjectUpdate(string oldName, string newName, string alias, string description, string objectType, string address, string container, int enabled)
+        public static void ObjectUpdate(string oldName, string newName, string alias, string description, string objectType, string address, string container, int minTrustLevel, int enabled)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_update (@OldName, @NewName, @Alias, @Description, @ObjectType, @Address, @Container, @Enabled)";
+                command.CommandText = "CALL osae_sp_object_update (@OldName, @NewName, @Alias, @Description, @ObjectType, @Address, @Container, @MinTrustLevel, @Enabled)";
                 command.Parameters.AddWithValue("@OldName", oldName);
                 command.Parameters.AddWithValue("@NewName", newName);
                 command.Parameters.AddWithValue("@Alias", alias);
@@ -520,6 +490,7 @@
                 command.Parameters.AddWithValue("@ObjectType", objectType);
                 command.Parameters.AddWithValue("@Address", address);
                 command.Parameters.AddWithValue("@Container", container);
+                command.Parameters.AddWithValue("@MinTrustLevel", minTrustLevel);
                 command.Parameters.AddWithValue("@Enabled", enabled);
 
                 try

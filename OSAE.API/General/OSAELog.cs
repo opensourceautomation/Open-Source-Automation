@@ -29,7 +29,6 @@ namespace OSAE.General
             MethodBase method = frame.GetMethod();
             logSource = method.DeclaringType;
             Log = LogManager.GetLogger(logSource);
-
             bPrune = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value);
             bDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value);
             var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;

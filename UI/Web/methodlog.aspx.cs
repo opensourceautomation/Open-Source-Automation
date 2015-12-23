@@ -36,4 +36,9 @@ public partial class methodlog : System.Web.UI.Page
         logging.EventLogClear();
         BindData();
     }
+
+    protected void btnRefresh_Click(object sender, EventArgs e)
+    {
+        BindData();
+    }
 }

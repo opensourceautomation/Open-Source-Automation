@@ -46,7 +46,8 @@
                     <asp:BoundField HeaderText="Exception" DataField="Exception"/>
                 </Columns>
             </asp:GridView>
-            
+            <asp:Button runat="server" ID="btnRefresh2" Text="Refresh" class="btn" OnClick="btnRefresh_Click"/>
+            <asp:Button runat="server" ID="btnClear2" Text="Clear" class="btn" OnClick="btnClear_Click"/>
         </div>
         <div class="span1">
         </div>

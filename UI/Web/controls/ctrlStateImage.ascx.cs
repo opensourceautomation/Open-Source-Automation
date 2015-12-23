@@ -29,9 +29,7 @@ public partial class controls_ctrlStateImage : System.Web.UI.UserControl
         foreach (OSAEObjectProperty p in screenObject.Properties)
         {
             if (p.Value.ToLower() == CurState.ToLower())
-            {
                 StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
-            }
         }
 
         try
@@ -39,10 +37,7 @@ public partial class controls_ctrlStateImage : System.Web.UI.UserControl
             LightLevel = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value);
         }
         catch
-        {
-            LightLevel = 100.00;
-        }
-
+        { LightLevel = 100.00; }
 
         string imgName = screenObject.Property(StateMatch + " Image").Value;
         OSAEImage img = imgMgr.GetImage(imgName);
@@ -52,13 +47,9 @@ public partial class controls_ctrlStateImage : System.Web.UI.UserControl
             imgStateImage.Attributes.Add("Style", "position:absolute;top:" + (Int32.Parse(screenObject.Property(StateMatch + " Y").Value) + 50).ToString() + "px;left:" + (Int32.Parse(screenObject.Property(StateMatch + " X").Value) + 10).ToString() + "px;z-index:" + (Int32.Parse(screenObject.Property("ZOrder").Value) + 10).ToString() + ";opacity:" + LightLevel / 100.00 + ";");
             imgStateImage.ToolTip = ObjectName + "\n" + CurState + " since: " + LastStateChange;
             if (CurState == "ON")
-            {
                 imgStateImage.Attributes.Add("onclick", "runMethod('" + ObjectName + "','OFF','','');");
-            }
             else
-            {
                 imgStateImage.Attributes.Add("onclick", "runMethod('" + ObjectName + "','ON','','');");
-            }
         }
     }
 

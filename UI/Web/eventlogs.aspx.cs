@@ -33,4 +33,9 @@ public partial class eventlogs : System.Web.UI.Page
         OSAE.General.OSAELog.EventLogClear();
         BindData();
     }
+
+    protected void btnRefresh_Click(object sender, EventArgs e)
+    {
+        BindData();
+    }
 }

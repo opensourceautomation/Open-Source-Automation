@@ -117,14 +117,11 @@ namespace OSAE.XBMC
                 if (gDebug) Log.Debug("Timers Started");
             }
             catch (Exception ex)
-            {
-                Log.Error("Error starting timers ", ex);
-            }
+            { Log.Error("Error starting timers ", ex); }
         }
 
         public override void Shutdown()
         {
-            
         }
 
         public void OwnTypes()
@@ -148,9 +145,7 @@ namespace OSAE.XBMC
                 Log.Info("XBMC Plugin took ownership of the XBMC SYSTEM Object Type.");
             }
             else
-            {
                 Log.Info("XBMC Plugin correctly owns the XBMC SYSTEM Object Type.");
-            }
         }
 
         public XBMCSystem getXBMCSystem(string name)
@@ -214,8 +209,12 @@ namespace OSAE.XBMC
                     }
                     if (gDebug) Log.Debug("Creating new XBMC System connection: " + obj.Name + " - " + ip);
                     XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
-                    if (system.Connect())
-                        Systems.Add(system);
+                    try
+                    {
+                        if (system.Connect())
+                            Systems.Add(system);
+                    }
+                    catch { }
                 }
             }
             catch (Exception ex)

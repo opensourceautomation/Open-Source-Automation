@@ -118,7 +118,7 @@ namespace OSAE.ClientService
                 OSAEObject svcobj = OSAEObjectManager.GetObjectByName("SERVICE-" + Common.ComputerName);
                 if (svcobj == null)
                 {
-                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "", "SYSTEM", true);
+                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "", "SYSTEM",90, true);
                 }
                 OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", sourceName);
             }
@@ -142,9 +142,7 @@ namespace OSAE.ClientService
                 foreach (Plugin p in plugins)
                 {
                     if (p.Enabled)
-                    {
                         p.Shutdown();
-                    }
                 }
             }
             catch (Exception ex)
@@ -238,7 +236,7 @@ namespace OSAE.ClientService
                             plugin.PluginName = plugin.PluginType + "-" + Common.ComputerName;
 
                             this.Log.Info("Plugin object does not exist in DB: " + plugin.PluginName);
-                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", false);
+                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System",50, false);
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, "Client Service");
 
                             this.Log.Info("Plugin added to DB: " + plugin.PluginName);
@@ -285,7 +283,7 @@ namespace OSAE.ClientService
                         }
                         if (arguments[1] == "True" && !p.Enabled && !isSystemPlugin)
                         {
-                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 1);
                             try
                             {
                                 enablePlugin(p);
@@ -298,7 +296,7 @@ namespace OSAE.ClientService
                         }
                         else if (arguments[1] == "False" && p.Enabled && !isSystemPlugin)
                         {
-                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 0);
+                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 0);
                             try
                             {
                                 disablePlugin(p);
@@ -355,7 +353,7 @@ namespace OSAE.ClientService
         {
             OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
 
-            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 1);
+            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 1);
             try
             {
                 if (plugin.ActivatePlugin())
@@ -375,7 +373,7 @@ namespace OSAE.ClientService
         {
             OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
 
-            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, 0);
+            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 0);
             try
             {
                 p.Shutdown();

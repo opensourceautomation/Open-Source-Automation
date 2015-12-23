@@ -14,6 +14,7 @@ namespace OSAE.UI.Controls
     public partial class AddControlScreen : UserControl
     {
         public string currentScreen;
+        private string currentUser;
         OSAEImage img = new OSAEImage();
         private OSAEImageManager imgMgr = new OSAEImageManager();
         string sOriginalName = "";
@@ -21,11 +22,11 @@ namespace OSAE.UI.Controls
         string sMode = "";
         string gHostGUI;
 
-        public AddControlScreen(string screen)
+        public AddControlScreen(string screen, string user)
         {
             InitializeComponent();
             currentScreen = screen;
-
+            currentUser = user;
             //Check if Screen Name was passed in, if so, goto edit mode
             if (currentScreen != "")
             {
@@ -68,9 +69,10 @@ namespace OSAE.UI.Controls
             if (validateForm("Add"))
             {
                 string tempName = txtScreenName.Text;
-                OSAEObjectManager.ObjectAdd(tempName, tempName, tempName, "SCREEN", "", tempName, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, "GUI");
+                OSAEObjectManager.ObjectAdd(tempName, "", tempName, "SCREEN", "", tempName, 50, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, currentUser);
                 currentScreen = txtScreenName.Text;
+                OSAEObjectManager.ObjectAdd(tempName + " User Selector", "", tempName + " User Selector", "CONTROL USER SELECTOR", "", tempName, 50, true);
                 NotifyParentFinished();
             }
         }
@@ -82,8 +84,8 @@ namespace OSAE.UI.Controls
                 string tempName = txtScreenName.Text;
                 OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
                 //We call an object update here in case the Name was changed, then perform the updates against the New name
-                OSAEObjectManager.ObjectUpdate(sOriginalName, tempName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
-                OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, "GUI");
+                OSAEObjectManager.ObjectUpdate(sOriginalName, tempName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, obj.Enabled);
+                OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, currentUser);
                 NotifyParentFinished();
             }
         }

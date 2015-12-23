@@ -78,7 +78,7 @@
     <div class="row-fluid">
         <div class="span8">
             <div ID="ObjPanel">
-                <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:670px;" onscroll="SetDivPosition()">
+                <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:600px;" onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvObjects" AllowSorting="True" OnSorting="gvObjects_OnSorting"
                         AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static"
                         OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="true">
@@ -102,10 +102,10 @@
                     <div class="span1" style="text-align:right;">
                         <label>Name</label>
                     </div>
-                    <div class="span5" style="text-align:left;">
+                    <div class="span4" style="text-align:left;">
                         <asp:TextBox class="input-xlarge" runat="server" ID="txtName"></asp:TextBox>
                     </div>
-                    <div class="span1" style="text-align:right;">
+                    <div class="span2" style="text-align:right;">
                         <label>Container</label>
                     </div>
                     <div class="span5" style="text-align:left;">
@@ -118,10 +118,10 @@
                     <div class="span1" style="text-align:right;">
                         <label>Alias</label>
                     </div>
-                    <div class="span5" style="text-align:left;">
+                    <div class="span4" style="text-align:left;">
                         <asp:TextBox class="input-xlarge" runat="server" ID="txtAlias"></asp:TextBox>
                     </div>
-                    <div class="span1" style="text-align:right;">
+                    <div class="span2" style="text-align:right;">
                         <label>Address</label>
                     </div>
                     <div class="span5" style="text-align:left;">
@@ -132,12 +132,12 @@
                     <div class="span1" style="text-align:right;">
                         <label>Type</label>
                     </div>
-                    <div class="span5" style="text-align:left;">
+                    <div class="span4" style="text-align:left;">
                         <asp:DropDownList runat="server" ID="ddlType" datatextfield="Text" datavaluefield="Value" style="width:280px;">
                             <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
-                    <div class="span1" style="text-align:right;">
+                    <div class="span2" style="text-align:right;">
                         <label>Owned By</label>
                     </div>
                     <div class="span5" style="text-align:left;">
@@ -148,16 +148,30 @@
                     <div class="span1" style="text-align:right;">
                         <label>Desc</label>
                     </div>
-                    <div class="span5" style="text-align:left;">
+                    <div class="span4" style="text-align:left;">
                         <asp:TextBox class="input-xlarge" runat="server" ID="txtDescr"></asp:TextBox>
                     </div>
 
-                    <div class="span5" style="text-align:right;" >
+                    <div class="span2" style="text-align:right;" >
+                        <label>Min Trust Level</label>
+                    </div>
+                    <div class="span1" style="text-align:left;">
+                        <asp:TextBox class="input" runat="server" ID="txtTrustLevel" Width="40px"></asp:TextBox>
+                    </div>
+                    <div class="span4" style="text-align:left;" >
                         <asp:CheckBox runat="server" ID="chkEnabled" /> Enabled 
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span5" style="text-align:right;" >
+                    </div>
+                    <div class="span5" style="text-align:right;" >
                         <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
                         <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" Visible="false"/>&nbsp
                         <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object?');" />
                         <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
+                    </div>
+                    <div class="span2" style="text-align:right;" >
                     </div>
                 </div>
             </div>
