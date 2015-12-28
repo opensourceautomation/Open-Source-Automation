@@ -502,6 +502,11 @@ public partial class objtypes : System.Web.UI.Page
     }
     protected void ddlPropType_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (ddlPropType.SelectedItem.Value == "Integer")
+            txtPropDefault.Text = "0";
+        else
+            txtPropDefault.Text = "";
+
         //string s = ddlBaseType2.SelectedItem.Text.ToUpper();
         hdnSelectedPropDataType.Text = ddlPropType.SelectedValue.ToString();
     }
