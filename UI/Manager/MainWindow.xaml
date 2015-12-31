@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Manager_WPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Open Source Automation - Manager" Height="172.97" Width="305" Loaded="Window_Loaded" Closing="Window_Closing" StateChanged="Window_StateChanged" Icon="/OSAE.Manager;component/Resources/icon_3_32x32x32.png">
+        Title="OSA Manager" Height="172.97" Width="305" Loaded="Window_Loaded" Closing="Window_Closing" StateChanged="Window_StateChanged" Icon="/OSAE.Manager;component/Resources/icon_3_32x32x32.png" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <DockPanel Width="Auto" Height="Auto" LastChildFill="True" Margin="0,0,2,1">
         <Menu Width="Auto" Height="20" 
             Background="#FFD9D9D9"
@@ -17,12 +17,8 @@
             <MenuItem Header="Plugins">
                 <MenuItem Header="Install Plugin" Name="mnuInstall" Click="InstallPlugin_Click" IsEnabled="False"/>
             </MenuItem>
-            <MenuItem Header="Screens">
-                <MenuItem Header="Install Plugin" Name="mnuScreens" Click="hypScreens_Click" IsEnabled="False"/>
-            </MenuItem>
-            <MenuItem Header="WebUI">
-                <MenuItem Header="Install Plugin" Name="mnuWebUI" Click="hypWebUI_Click" IsEnabled="False"/>
-            </MenuItem>            
+            <MenuItem Header="Screens" Name="mnuScreens" Click="hypScreens_Click" IsEnabled="True"/>
+            <MenuItem Header="WebUI" Name="mnuWebUI" Click="hypWebUI_Click" IsEnabled="True"/>
         </Menu>
         <Grid Margin="0,0,0,0" Width="auto">
             <!--Top Menu Area-->
