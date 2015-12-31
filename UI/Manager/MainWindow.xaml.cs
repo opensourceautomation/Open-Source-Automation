@@ -31,7 +31,9 @@
         private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
         System.Timers.Timer Clock = new System.Timers.Timer();
         private bool clicked = true;
+        private bool webclicked = true;
         private bool starting = false;
+        private bool webstarting = false;
         private const string Unique = "OSAE Manager";
 
         [STAThread]
@@ -67,6 +69,7 @@
                 SingleInstance<App>.Cleanup();
             }
         }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -121,7 +124,9 @@
 
             loadPlugins();
             
-            Clock.Interval = 1000;
+
+
+            Clock.Interval = 2000;
             Clock.Elapsed += new System.Timers.ElapsedEventHandler(CheckService);
             Clock.Start();
 
@@ -185,7 +190,8 @@
         }
 
         private void CheckService(object sender, EventArgs e)
-        {            
+        {
+            CheckWebService();   
             string svcStatus = myService.Status.ToString();
 
             if (svcStatus == "Running")
@@ -220,6 +226,42 @@
                     clicked = false;
                     System.Threading.Thread.Sleep(5000);
                     Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
+                    m_WorkerThreadStart.Start();
+                }
+            }
+        }
+
+        private void CheckWebService()
+        {
+            ServiceController hiService = new ServiceController();
+            hiService.ServiceName = "UWS HiPriv Services";
+            string hisvcStatus = hiService.Status.ToString();
+
+            ServiceController loService = new ServiceController();
+            loService.ServiceName = "UWS LoPriv Services";
+            string losvcStatus = loService.Status.ToString();
+
+            ServiceController wsService = new ServiceController();
+            wsService.ServiceName = "UltiDev Web Server Pro";
+            string wssvcStatus = wsService.Status.ToString();
+
+            if (hisvcStatus == "Running" && losvcStatus == "Running" && wssvcStatus == "Running")
+            {
+                setWebLabel(Brushes.Green, "RUNNING");
+                setWebButton("Stop", true);
+                webstarting = false;
+            }
+            else 
+            {
+                setWebLabel(Brushes.Red, "STOPPED");
+
+                setWebButton("Start", true);
+                if (!webclicked)
+                {
+                    this.Log.Info("Web Services died.  Attempting to restart.");
+                    webclicked = false;
+                    System.Threading.Thread.Sleep(5000);
+                    Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartWebService));
                     m_WorkerThreadStart.Start();
                 }
             }
@@ -293,7 +335,7 @@
                     }
                 }
             }            
-            dgLocalPlugins.ItemsSource = pluginList;
+            //dgLocalPlugins.ItemsSource = pluginList;
         }
 
         private void StartService()
@@ -328,6 +370,125 @@
             }
         }
 
+        private void StartWebService()
+        {
+            System.TimeSpan ts = new TimeSpan(0, 0, 30);
+
+            this.Log.Info("Checking for UWS HiPriv Services...");
+            try
+            {
+                ServiceController hiService = new ServiceController();
+                hiService.ServiceName = "UWS HiPriv Services";
+                string svcStatus = hiService.Status.ToString();
+                if (svcStatus == "Stopped")
+                {
+                    hiService.Start();
+                    hiService.WaitForStatus(ServiceControllerStatus.Running, ts);
+                    this.Log.Info("Started UWS Priv Services");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error checking for UWS Server!", ex);
+            }
+
+            ts = new TimeSpan(0, 0, 30);
+            try
+            {
+                ServiceController loService = new ServiceController();
+                loService.ServiceName = "UWS LoPriv Services";
+                string svcStatus = loService.Status.ToString();
+                if (svcStatus == "Stopped")
+                {
+                    loService.Start();
+                    loService.WaitForStatus(ServiceControllerStatus.Running, ts);
+                    this.Log.Info("Started UWS LoPriv Services");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error checking for UWS Server!", ex);
+            }
+
+            ts = new TimeSpan(0, 0, 30);
+            try
+            {
+                ServiceController wsService = new ServiceController();
+                wsService.ServiceName = "UltiDev Web Server Pro";
+                string svcStatus = wsService.Status.ToString();
+                if (svcStatus == "Stopped")
+                {
+                    wsService.Start();
+                    wsService.WaitForStatus(ServiceControllerStatus.Running, ts);
+                    this.Log.Info("Started UWS Web Server");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error checking for UWS Server!", ex);
+            }
+        }
+
+        private void StopWebService()
+        {
+            System.TimeSpan ts = new TimeSpan(0, 0, 30);
+
+            this.Log.Info("Checking for UWS HiPriv Services...");
+            try
+            {
+                ServiceController hiService = new ServiceController();
+                hiService.ServiceName = "UWS HiPriv Services";
+                string svcStatus = hiService.Status.ToString();
+                if (svcStatus == "Running")
+                {
+                    hiService.Stop();
+                    hiService.WaitForStatus(ServiceControllerStatus.Running, ts);
+                    this.Log.Info("Started UWS Priv Services");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error checking for UWS Server!", ex);
+            }
+
+            ts = new TimeSpan(0, 0, 30);
+            try
+            {
+                ServiceController loService = new ServiceController();
+                loService.ServiceName = "UWS LoPriv Services";
+                string svcStatus = loService.Status.ToString();
+                if (svcStatus == "Running")
+                {
+                    loService.Stop();
+                    loService.WaitForStatus(ServiceControllerStatus.Running, ts);
+                    this.Log.Info("Started UWS LoPriv Services");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error checking for UWS Server!", ex);
+            }
+
+            ts = new TimeSpan(0, 0, 30);
+            try
+            {
+                ServiceController wsService = new ServiceController();
+                wsService.ServiceName = "UltiDev Web Server Pro";
+                string svcStatus = wsService.Status.ToString();
+                if (svcStatus == "Running")
+                {
+                    wsService.Stop();
+                    wsService.WaitForStatus(ServiceControllerStatus.Running, ts);
+                    this.Log.Info("Started UWS UWS Server");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error checking for UWS Server!", ex);
+            }
+        }
+
         private void setButton(string text, bool enabled)
         {
             btnService.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
@@ -337,6 +498,15 @@
                 }));
         }
 
+        private void setWebButton(string text, bool enabled)
+        {
+            btnWebService.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
+            {
+                this.btnWebService.IsEnabled = enabled;
+                this.btnWebService.Content = text;
+            }));
+        }
+
         private void setLabel(Brush color, string text)
         {
             lbl_isRunning.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
@@ -344,6 +514,15 @@
                     this.lbl_isRunning.Foreground = color;
                     this.lbl_isRunning.Content = text;
                 }));
+        }
+
+        private void setWebLabel(Brush color, string text)
+        {
+            lbl_isWebRunning.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
+            {
+                this.lbl_isWebRunning.Foreground = color;
+                this.lbl_isWebRunning.Content = text;
+            }));
         }
 
         void HandleRequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -428,77 +607,19 @@
 
         private void Menu_GUI(object sender, RoutedEventArgs e)
         {
-            Process.Start(Common.ApiPath + "\\OSAE.GUI.exe");
+            Process.Start(Common.ApiPath + "\\OSAE.Screens.exe");
         }
 
-        private void hypSettings_Click(object sender, RoutedEventArgs e)
+        private void hypWebUI_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("http://localhost:8081/default.aspx");
         }
 
-        private void hypGUI_Click(object sender, RoutedEventArgs e)
+        private void hypScreens_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(Common.ApiPath + "\\OSAE.Screens.exe");
         }
 
-        void OnChecked(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (dgLocalPlugins.SelectedItem != null)
-                {
-                    PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
-
-                    this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=True");
-                    OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
-                    OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 1);
-
-                    //NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|True");
-
-                    //this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|True");
-                    //if (myService.Status == ServiceControllerStatus.Running)
-                   // {
-                    //    foreach (PluginDescription plugin in pluginList)
-                    //    {
-                     //       if (plugin.Name == pd.Name && plugin.Name != null)
-                     //       {
-                     //           plugin.Status = "Starting...";
-                    //        }
-                  //      }
-                   // }
-                }
-            }
-            catch (Exception ex)
-            { this.Log.Error("Error enabling plugin ", ex); }
-        }
-
-        void OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                PluginDescription pd = (PluginDescription)dgLocalPlugins.SelectedItem;
-
-                this.Log.Info("Updating Object: " + pd.Name + ", Setting Enabled=False");
-                OSAEObject obj = OSAEObjectManager.GetObjectByName(pd.Name);
-                OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 0);   
-
-             //   NetworkComms.SendObject("Plugin", "127.0.0.1", 10051, pd.Name + "|False");
-             //   this.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pd.Name + "|False");
-            //    if (myService.Status == ServiceControllerStatus.Running)
-            //    {
-             //       foreach (PluginDescription plugin in pluginList)
-             //       {
-             //           if (plugin.Name == pd.Name && plugin.Name != null)
-             //           {
-              //              plugin.Status = "Stopping...";
-             //           }
-             //       }
-             //   }
-            }
-            catch (Exception ex)
-            { this.Log.Error("Error disabling plugin", ex); }
-        }
-        
         private void InstallPlugin_Click(object sender, RoutedEventArgs e)
         {
             // Configure open file dialog box 
@@ -570,6 +691,30 @@
                 pr.StartInfo.FileName = param[0].Trim();
                 pr.StartInfo.Arguments = param[1].Trim();
                 pr.Start();
+            }
+        }
+
+        private void btnWebService_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnWebService.Content.ToString() == "Stop")
+                webclicked = true;
+
+            setWebButton(btnWebService.Content.ToString(), false);
+            if (btnWebService.Content.ToString() == "Stop")
+            {
+                //client.Close();
+                setWebLabel(Brushes.Red, "STOPPING...");
+                Thread m_WorkerThreadStop = new Thread(new ThreadStart(this.StopWebService));
+                m_WorkerThreadStop.Start();
+            }
+            else if (btnWebService.Content.ToString() == "Start")
+            {
+                webstarting = true;
+                setWebLabel(Brushes.Green, "STARTING...");
+
+                System.TimeSpan ts = new TimeSpan(0, 0, 30);
+                Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartWebService));
+                m_WorkerThreadStart.Start();
             }
         }
     }
