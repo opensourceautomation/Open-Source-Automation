@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Screens.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title ="OSA Screens" Height="195" Width="576" Loaded="Window_Loaded" Closing="Window_Closing" Icon="icon.png" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight"
+        Title ="OSA Screens" Loaded="Window_Loaded" Closing="Window_Closing" Icon="icon.png" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight"
         >
     <Grid>
         <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FF939342" Focusable="True" >

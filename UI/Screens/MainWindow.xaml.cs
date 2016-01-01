@@ -24,9 +24,11 @@
         private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
         
         public string gAppName = "";
+        public int gAppMinTrust = 50;
         public string gAppLocation = "";
         public string gCurrentScreen = "";
         public string gCurrentUser = "";
+        public int gCurrentUserTrust = 0;
         public bool gDebug = false;
 
         private UserSelector userSelectorControl;
@@ -89,9 +91,6 @@
             Uri uri = new Uri("pack://siteoforigin:,,,/OSA.png");
             var bitmapImage = new BitmapImage(uri);
             
-            canGUI.Background = new ImageBrush(bitmapImage);
-            canGUI.Height = bitmapImage.Height;
-            canGUI.Width = bitmapImage.Width;
             canGUI.Background = new ImageBrush(bitmapImage);
             canGUI.Height = bitmapImage.Height;
             canGUI.Width = bitmapImage.Width;
@@ -198,32 +197,33 @@
                 updatingScreen = true;
                 if (gDebug) Log.Debug("Checking for updates on:  " + gCurrentScreen);
                 bool oldCtrl = false;
-                gCurrentUser = userSelectorControl._CurrentUser;
-                this.Dispatcher.Invoke((Action)(() =>
+                if (gCurrentUser != userSelectorControl._CurrentUser)
                 {
-                    if (gCurrentUser == "")
+                    gCurrentUser = userSelectorControl._CurrentUser;
+                    gCurrentUserTrust = userSelectorControl._CurrentUserTrust;
+                    this.Dispatcher.Invoke((Action)(() =>
                     {
-                        menuEditMode.IsChecked = false;
-                        menuEditMode.IsEnabled = false;
-                        menuShowControlList.IsChecked = false;
-                        menuShowControlList.IsEnabled = false;
+                        if (gCurrentUser == "" || gCurrentUserTrust < gAppMinTrust)
+                        {
+                            menuEditMode.IsChecked = false;
+                            menuEditMode.IsEnabled = false;
+                            menuShowControlList.IsChecked = false;
+                            menuShowControlList.IsEnabled = false;
+                            menuCreateScreen.IsEnabled = false;
+                            menuAddControl.IsEnabled = false;
+                        }
+                        else
+                        {
+                            menuEditMode.IsEnabled = true;
+                            menuShowControlList.IsEnabled = true;
+                            menuCreateScreen.IsEnabled = true;
+                            menuAddControl.IsEnabled = true;
+                        }
+                        if (screenObjectControl.Visibility == System.Windows.Visibility.Hidden) menuShowControlList.IsChecked = false;
+                    }));
+                }
 
-
-                        menuCreateScreen.IsEnabled = false;
-                        menuAddControl.IsEnabled = false;
-                    }
-                    else
-                    {
-                        menuEditMode.IsEnabled = true;
-                        menuShowControlList.IsEnabled = true;
-                        menuCreateScreen.IsEnabled = true;
-                        menuAddControl.IsEnabled = true;
-                    }
-                    if (screenObjectControl.Visibility == System.Windows.Visibility.Hidden) menuShowControlList.IsChecked = false;
-                }));
                 List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
-
-
                 foreach (OSAE.OSAEScreenControl newCtrl in controls)
                 {
                     oldCtrl = false;

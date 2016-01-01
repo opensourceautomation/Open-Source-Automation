@@ -84,19 +84,14 @@ namespace OSAE.NetworkMonitor
                 }
 
                 objects = OSAEObjectManager.GetObjectsByType("COMPUTER");
-                this.Log.Debug("# COMPUTERS: " + objects.Count.ToString());
+                Log.Debug("# COMPUTERS: " + objects.Count.ToString());
                 
                 foreach (OSAEObject obj in objects)
                 {
-                    this.Log.Debug("Pinging: " + obj.Address);
                     if (CanPing(obj.Address))
-                    {
                         OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", gAppName);
-                    }
                     else
-                    {
                         OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", gAppName);
-                    }
                 }
 
             }
@@ -117,18 +112,18 @@ namespace OSAE.NetworkMonitor
 
                 if (reply.Status == IPStatus.Success)
                 {
-                    this.Log.Debug("On-Line!");
+                    Log.Debug(address + " is On-Line!");
                     return true;
                 }
                 else
                 {
-                    this.Log.Debug("Off-Line");
+                    Log.Debug(address + " is Off-Line");
                     return false;
                 }
             }
             catch (PingException)
             {
-                this.Log.Debug("Off-Line");
+                Log.Debug(address + " is Off-Line");
                 return false;
             }
 

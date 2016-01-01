@@ -22,6 +22,7 @@ namespace OSAE.UI.Controls
     {
         public Point Location;
         public string _CurrentUser = "";
+        public int _CurrentUserTrust = 0;
         public string _AppName = "";
         public string _ScreenLocation = "";
         private OSAEImageManager imgMgr = new OSAEImageManager();
@@ -48,6 +49,7 @@ namespace OSAE.UI.Controls
                 {
                     cboUsers.SelectedIndex = cboUsers.Items.Count - 1;
                     _CurrentUser = currentUser;
+                    _CurrentUserTrust = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(_CurrentUser, "Trust Level").Value);
                     cboUsers.Background = new SolidColorBrush(Colors.Green);
                 }
             }
@@ -69,6 +71,7 @@ namespace OSAE.UI.Controls
             if (loadingFlag) return;
 
             _CurrentUser = "";
+            _CurrentUserTrust = 0;
             _pwbuff = "";
             _usersPIN = "";
             lblPIN.Content = "";
@@ -86,8 +89,10 @@ namespace OSAE.UI.Controls
                 {
                     userGrid.Height = 25;
                     cboUsers.Background = new SolidColorBrush(Colors.Green);
+                    _CurrentUserTrust = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(cboUsers.SelectedItem.ToString(), "Trust Level").Value);
                     _CurrentUser = cboUsers.SelectedItem.ToString();
                     OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "Current User", _CurrentUser, "SYSTEM");
+
                 }
                 else
                     userGrid.Height = 184;
@@ -101,6 +106,7 @@ namespace OSAE.UI.Controls
             {
                 userGrid.Height = 25;
                 cboUsers.Background = new SolidColorBrush(Colors.Green);
+                _CurrentUserTrust = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(cboUsers.SelectedItem.ToString(), "Trust Level").Value);
                 _CurrentUser = cboUsers.SelectedItem.ToString();
                 //For a User to use a screen, they are oviously here and in the same room as the screen
                 OSAEObject oUser = OSAE.OSAEObjectManager.GetObjectByName(_CurrentUser);

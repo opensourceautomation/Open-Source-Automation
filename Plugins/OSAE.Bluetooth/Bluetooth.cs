@@ -127,7 +127,7 @@
                     byteArray[3] = tmp;
                     ba = new BluetoothAddress(byteArray);
                     bdi = new BluetoothDeviceInfo(ba);
-                    if (gDebug) Log.Debug("Begin search for " + address);
+                    //if (gDebug) Log.Debug("Begin search for " + address);
 
                     for (int j = 0; j < nearosaeDevices.Length; j++)
                     {
