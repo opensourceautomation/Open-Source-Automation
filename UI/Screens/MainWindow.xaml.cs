@@ -30,6 +30,8 @@
         public bool gDebug = false;
 
         private UserSelector userSelectorControl;
+        private ScreenObjectList screenObjectControl;
+
         List<StateImage> stateImages = new List<StateImage>();
         List<NavigationImage> navImages = new List<NavigationImage>();
         List<ClickImage> clickImages = new List<ClickImage>();
@@ -45,6 +47,8 @@
         bool editMode = false;
         //bool closing = false;
         System.Timers.Timer _timer;
+
+
 
         #region drag and drop properties
         private Point _startPoint;
@@ -157,6 +161,7 @@
 
                 Load_Objects(sScreen);
                 loadingScreen = false;
+              //  tvControls
             }
             catch (Exception ex)
             {
@@ -168,8 +173,11 @@
 
         private void Load_Objects(String sScreen)
         {
-            bool FoundUserControl = OSAEObjectManager.ObjectExists(sScreen + " User Selector");
-            if (!FoundUserControl) OSAEObjectManager.ObjectAdd(sScreen + " User Selector", "", sScreen + " User Selector", "CONTROL USER SELECTOR", "", sScreen, 50, true);
+            bool FoundUserControl = OSAEObjectManager.ObjectExists(sScreen + " - User Selector");
+            if (!FoundUserControl) OSAEObjectManager.ObjectAdd(sScreen + " - User Selector", "", sScreen + " - User Selector", "CONTROL USER SELECTOR", "", sScreen, 50, true);
+
+            bool FoundObjectList = OSAEObjectManager.ObjectExists(sScreen + " - Screen Objects");
+            if (!FoundObjectList) OSAEObjectManager.ObjectAdd(sScreen + " - Screen Objects", "", sScreen + " - Screen Objects", "CONTROL SCREEN OBJECTS", "", sScreen, 50, true);
 
             OSAEObjectCollection screenObjects = OSAEObjectManager.GetObjectsByContainer(sScreen);
             foreach (OSAE.OSAEObject obj in screenObjects)
@@ -197,16 +205,21 @@
                     {
                         menuEditMode.IsChecked = false;
                         menuEditMode.IsEnabled = false;
+                        menuShowControlList.IsChecked = false;
+                        menuShowControlList.IsEnabled = false;
+
+
                         menuCreateScreen.IsEnabled = false;
                         menuAddControl.IsEnabled = false;
                     }
                     else
                     {
                         menuEditMode.IsEnabled = true;
+                        menuShowControlList.IsEnabled = true;
                         menuCreateScreen.IsEnabled = true;
                         menuAddControl.IsEnabled = true;
                     }
-
+                    if (screenObjectControl.Visibility == System.Windows.Visibility.Hidden) menuShowControlList.IsChecked = false;
                 }));
                 List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
 
@@ -423,7 +436,25 @@
                     Canvas.SetZIndex(userSelectorControl, 5);
                     controlTypes.Add(typeof(UserSelector));
                     userSelectorControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
-                }    
+                }
+                #endregion
+
+                #region USER SELECTOR
+                if (obj.Type == "CONTROL SCREEN OBJECTS")
+                {
+                    screenObjectControl = new ScreenObjectList(gCurrentScreen,gCurrentUser);
+                    screenObjectControl.MouseRightButtonDown += new MouseButtonEventHandler(State_Image_MouseRightButtonDown);
+                    screenObjectControl.Location.X = 0;
+                    screenObjectControl.Location.Y = 0;
+                    screenObjectControl._ScreenLocation = gAppLocation;
+                    screenObjectControl.Visibility = System.Windows.Visibility.Hidden;
+                    canGUI.Children.Add(screenObjectControl);
+                    Canvas.SetLeft(screenObjectControl, screenObjectControl.Location.X);
+                    Canvas.SetTop(screenObjectControl, screenObjectControl.Location.Y);
+                    Canvas.SetZIndex(screenObjectControl, 5);
+                    controlTypes.Add(typeof(ObjectList));
+                  //  screenObjectControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                }
                 #endregion
 
                 #region CONTROL STATE IMAGE
@@ -1191,14 +1222,14 @@
             }
         }
 
-        private void menuTreeView_Checked(object sender, RoutedEventArgs e)
+        private void menuShowControlList_Checked(object sender, RoutedEventArgs e)
         {
-            tvControls.Visibility = System.Windows.Visibility.Visible;
+            screenObjectControl.Visibility = System.Windows.Visibility.Visible;
         }
 
-        private void menuTreeView_Unchecked(object sender, RoutedEventArgs e)
+        private void menuShowControlList_Unchecked(object sender, RoutedEventArgs e)
         {
-            tvControls.Visibility = System.Windows.Visibility.Hidden;
+            screenObjectControl.Visibility = System.Windows.Visibility.Hidden;
         }
 
         #endregion

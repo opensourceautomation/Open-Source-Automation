@@ -101,6 +101,12 @@
     <Compile Include="ClickImage.xaml.cs">
       <DependentUpon>ClickImage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ObjectList.xaml.cs">
+      <DependentUpon>ObjectList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ScreenObjectList.xaml.cs">
+      <DependentUpon>ScreenObjectList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserSelector.xaml.cs">
       <DependentUpon>UserSelector.xaml</DependentUpon>
     </Compile>
@@ -186,6 +192,14 @@
     <Page Include="ClickImage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ObjectList.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ScreenObjectList.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UserSelector.xaml">
       <Generator>MSBuild:Compile</Generator>

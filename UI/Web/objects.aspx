@@ -81,7 +81,7 @@
                 <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:600px;" onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvObjects" AllowSorting="True" OnSorting="gvObjects_OnSorting"
                         AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static"
-                        OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="true">
+                        OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="true" OnSelectedIndexChanged="gvObjects_SelectedIndexChanged">
                         <RowStyle CssClass="rowHover"></RowStyle>
                         <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
                         <AlternatingRowStyle CssClass="rowHoverAlt"></AlternatingRowStyle>

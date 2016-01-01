@@ -1,7 +1,8 @@
 ﻿<Window x:Class="Screens.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Open Source Automation - Main Window" Height="195" Width="576" Loaded="Window_Loaded" Closing="Window_Closing" Icon="icon.png" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight">
+        Title ="OSA Screens" Height="195" Width="576" Loaded="Window_Loaded" Closing="Window_Closing" Icon="icon.png" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight"
+        >
     <Grid>
         <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FF939342" Focusable="True" >
             <Canvas.ContextMenu>
@@ -28,10 +29,9 @@
                             <MenuItem Name="menuFrameCenter" Header="Center" Click="menuFrameCentre_Click"  />
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Name="menuTreeView" Header="Show Control List" IsCheckable="True" Checked="menuTreeView_Checked" Unchecked="menuTreeView_Unchecked"/>
+                    <MenuItem Name="menuShowControlList" Header="Show Control List" IsCheckable="True" Checked="menuShowControlList_Checked" Unchecked="menuShowControlList_Unchecked"/>
                 </ContextMenu>
             </Canvas.ContextMenu>
-            <TreeView x:Name="tvControls" Height="145" Canvas.Left="10" Canvas.Top="10" Width="167" Panel.ZIndex="7"/>
         </Canvas>
     </Grid>
 </Window>

@@ -1,0 +1,10 @@
+﻿<UserControl x:Class="OSAE.UI.Controls.ObjectList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Height="183.999" Width="181.291">
+    <Grid x:Name="userGrid" Margin="10,0" Height="184" VerticalAlignment="Top">
+        <TreeView x:Name="tvObjects" HorizontalAlignment="Left" Height="164" Margin="4,10,0,0" VerticalAlignment="Top" Width="147"/>
+    </Grid>
+</UserControl>
