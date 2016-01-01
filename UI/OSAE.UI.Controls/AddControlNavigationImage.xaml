@@ -6,8 +6,8 @@
              mc:Ignorable="d" Height="308" Width="294" Margin="20">
     <Grid>
         <Button Name="btnOpen" Content="Select Image" HorizontalAlignment="Left" Margin="8,74,0,0" VerticalAlignment="Top" Width="86" Click="btnOpen_Click" RenderTransformOrigin="2.833,1.273"/>
-        <TextBox x:Name="txtName" HorizontalAlignment="Left" Height="23" Margin="57,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="230" TextChanged="txtName_TextChanged"/>
-        <Label Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtName" HorizontalAlignment="Left" Height="23" Margin="57,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="230" TextChanged="txtName_TextChanged" IsEnabled="False"/>
+        <Label Content="Name" HorizontalAlignment="Left" Margin="9,7,0,0" VerticalAlignment="Top"/>
         <Image Name="imgScreen" HorizontalAlignment="Left" Height="166" Margin="5,104,0,0" VerticalAlignment="Top" Width="277"/>
         <Button Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="10,276,0,0" VerticalAlignment="Top" Width="56" Click="btnAdd_Click"/>
         <Button Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="209,276,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"/>
