@@ -99,12 +99,14 @@
             // lookup object 
             OSAEObject OSAEobj = OSAEObjectManager.GetObjectByName(name);
             OSAEobj.Properties = getProperties(OSAEobj.Name);
+            Log.Debug("Retrieving object:  " + name + ".");
             return OSAEobj;
         }
 
         public OSAEObjectState GetObjectState(string name)
         {
             OSAEObjectState state = OSAEObjectStateManager.GetObjectStateValue(name);
+            Log.Debug("Looking up object state:  " + name + ".  I Found " + state.StateLabel + ".");
             return state;
         }
 
@@ -147,6 +149,7 @@
         {
             // execute a method on an object 
             OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "REST Service");
+            Log.Debug("Executing Method:  " + name + "." + method + "."+ param1 + "." + param2);
             return true;
         }
 
@@ -163,7 +166,6 @@
                 Log.Error("Unable to configure oRecognizer", ex);
             }
 
-            oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
             oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
             oRecognizer = OSAEGrammar.Load_Voice_Grammars(oRecognizer);
             oRecognizer = OSAEGrammar.Load_Text_Only_Grammars(oRecognizer);
@@ -186,13 +188,14 @@
         {
 
             OSAEObjectManager.ObjectAdd(name, alias, description, type, address, container, mintruestlevel, StringToBoolean(enabled));
-
+            Log.Debug("Oject Add:  " + name + ", " + alias + ", " + description + ", " + type + ", " + address + ", " + container + ", " + mintruestlevel + ", " + enabled);
             return true;
         }
 
         public Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, int mintruestlevel, string enabled)
         {
             OSAEObjectManager.ObjectUpdate(oldName, newName, alias, description, type, address, container, mintruestlevel, Convert.ToInt32(StringToBoolean(enabled)));
+            Log.Debug("Oject Update:  " + oldName + ", " + newName + ", " + alias + ", " + description + ", " + type + ", " + address + ", " + container + ", " + mintruestlevel + ", " + enabled);
 
             return true;
         }

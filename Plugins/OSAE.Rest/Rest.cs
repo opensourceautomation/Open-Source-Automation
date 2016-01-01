@@ -73,7 +73,7 @@
                 sdb.HttpHelpPageEnabled = false;
                 if (showHelp) serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
 
-                this.Log.Info("Starting Rest Interface");
+                this.Log.Info("Starting RESTful Interface");
                 serviceHost.Open();                                
             }
             catch (Exception ex)
