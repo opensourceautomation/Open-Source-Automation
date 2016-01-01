@@ -106,7 +106,6 @@ CALL osae_sp_object_type_property_add('WEATHER','Latitude','Float','','',0);
 CALL osae_sp_object_type_property_add('WEATHER','Longitude','Float','','',0);
 CALL osae_sp_object_type_property_add('WEATHER','DayNight','String','','',0);
 
-
 CALL osae_sp_object_type_add ('WUNDERGROUND','Weather Underground','','PLUGIN',1,0,0,1);
 CALL osae_sp_object_type_state_add('WUNDERGROUND','ON','Running');
 CALL osae_sp_object_type_state_add('WUNDERGROUND','OFF','Stopped');
@@ -115,14 +114,16 @@ CALL osae_sp_object_type_event_add('WUNDERGROUND','OFF','Stopped');
 CALL osae_sp_object_type_method_add('WUNDERGROUND','ON','Start','','','','');
 CALL osae_sp_object_type_method_add('WUNDERGROUND','OFF','Stop','','','','');
 CALL osae_sp_object_type_method_add('WUNDERGROUND','UPDATE','Update','','','','');
-CALL osae_sp_object_type_property_add('WUNDERGROUND','State','String','KS','',0);
-CALL osae_sp_object_type_property_add('WUNDERGROUND','Forecast Interval','Integer','60','',0);
-CALL osae_sp_object_type_property_add('WUNDERGROUND','Metric','Boolean','FALSE','',0);
-CALL osae_sp_object_type_property_add('WUNDERGROUND','DuskPre','Integer','0','',0);
-CALL osae_sp_object_type_property_add('WUNDERGROUND','DuskPost','Integer','0','',0);
-CALL osae_sp_object_type_property_add('WUNDERGROUND','DawnPre','Integer','0','',0);
-CALL osae_sp_object_type_property_add('WUNDERGROUND','DawnPost','Integer','0','',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','State','String','','KS',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','Forecast Interval','Integer','','180',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','Metric','Boolean','','FALSE',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','DuskPre','Integer','','0',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','DuskPost','Integer','','0',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','DawnPre','Integer','','0',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','DawnPost','Integer','','0',0);
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Key','String','','',0);
-CALL osae_sp_object_type_property_add('WUNDERGROUND','City','String','Ellis','',0);
-CALL osae_sp_object_type_property_add('WUNDERGROUND','Conditions Interval','Integer','5','',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','City','String','','Ellis',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','Conditions Interval','Integer','','15',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','Trust Level','Integer','','50',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','Debug','Boolean','','FALSE',0);
 

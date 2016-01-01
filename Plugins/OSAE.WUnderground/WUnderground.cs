@@ -10,11 +10,12 @@
     public class WUnderground : OSAEPluginBase
     {
         string pName;
+        bool gDebug = false;
         private OSAE.General.OSAELog Log = new General.OSAELog();
         Thread updateConditionsThread, updateForecastThread, updateDayNightThread;
         System.Timers.Timer ConditionsUpdateTimer, ForecastUpdateTimer, DayNightUpdateTimer;
         string latitude ="", longitude="";
-        int Conditionsupdatetime, Forecastupdatetime, DayNightupdatetime = 60000;
+        int Conditionsupdatetime, Forecastupdatetime, DayNightupdatetime = 300000;
         Boolean FirstUpdateRun;
         Boolean FirstForcastRun;
         String DayNight, WeatherObjName, pKey, pCity, pState;
@@ -44,10 +45,18 @@
                     if (Boolean.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Metric").Value))
                     {
                         Metric = true;
-                        this.Log.Info("Using metric units");
+                        Log.Info("Using metric units");
                     }
                 }
                 catch {}
+
+                try
+                {
+                    gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Debug").Value);
+                }
+                catch
+                { Log.Info("The WUnderground Object Type seems to be missing the Debug Property!"); }
+                Log.Info("Debug Mode Set to " + gDebug);
 
                 try
                 {
@@ -100,7 +109,7 @@
                 {
                     latitude = OSAEObjectPropertyManager.GetObjectPropertyValue(WeatherObjName, "latitude").Value;
                     longitude = OSAEObjectPropertyManager.GetObjectPropertyValue(WeatherObjName, "longitude").Value;
-                    Log.Debug("Read in properties: Lat=" + latitude + ", Long=" + longitude);
+                    if (gDebug) Log.Debug("Read in properties: Lat=" + latitude + ", Long=" + longitude);
                 }
 
                 do
@@ -208,14 +217,14 @@
             {
                 OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, fieldName, fieldValue, pName);
                 if (fieldName == "Temp")
-                    this.Log.Debug("Found " + fieldName + ": " + fieldValue);
+                    if (gDebug) Log.Debug("...Found " + fieldName + ": " + fieldValue);
                 else
-                    this.Log.Debug("Found " + fieldName + ": " + fieldValue);
+                    if (gDebug) Log.Debug("...Found " + fieldName + ": " + fieldValue);
             }
             else
             {
                 if (fieldName != "Windchill" & fieldName != "Visibility" & fieldName != "Conditions")
-                    this.Log.Debug("NOT FOUND " + fieldName);
+                    if (gDebug) Log.Debug("NOT FOUND " + fieldName);
             }
         }
 
@@ -229,7 +238,7 @@
         {
             if (Conditionsupdatetime > 0) updateconditions();
             if (Forecastupdatetime > 0) updateforecast();
-            this.Log.Info("Updated " + WeatherObjName + ", setting Weather object to Updated.");
+            Log.Info("Updated " + WeatherObjName + ", setting Weather object to Updated.");
             OSAE.OSAEMethodManager.MethodQueueAdd(WeatherObjName, "Updated", "", "", pName);
         }
 
@@ -243,7 +252,7 @@
             try
             {
                     feedUrl = "http://api.wunderground.com/api/" + pKey + "/conditions/q/" + pState + "/" + pCity + ".xml";
-                    Log.Debug("Reading Feed: " + feedUrl);
+                    if (gDebug) Log.Debug("Reading Feed: " + feedUrl);
                     sXml = webClient.DownloadString(feedUrl);
                     xml = new XmlDocument();
                     xml.LoadXml(sXml);
@@ -285,7 +294,7 @@
                     #endregion
             }
             catch (Exception ex)
-            { this.Log.Error("Error updating current weather - ", ex); }
+            { Log.Error("Error updating current weather - ", ex); }
 
             FirstUpdateRun = false;
         }
@@ -303,7 +312,7 @@
                 if (latitude != "" && longitude != "")
                 {
                     feedUrl = "http://api.wunderground.com/api/" + pKey + "/astronomy/q/" + pState + "/" + pCity + ".xml";
-                    Log.Debug("Reading Sunset: " + feedUrl);
+                    if (gDebug) Log.Debug("Reading Sunset: " + feedUrl);
                     sXml = webClient.DownloadString(feedUrl);
                     xml = new XmlDocument();
                     xml.LoadXml(sXml);
@@ -315,7 +324,6 @@
             catch (Exception ex)
             { this.Log.Error("Error updating sunset - " + ex.Message); }
 
-
             try
             {
                 Log.Info("***  Reading Forecast  ***");
@@ -323,7 +331,7 @@
                 {
                     // Now get the forecast.
                     feedUrl = "http://api.wunderground.com/api/d50de2112f55424b/forecast10day/q/" + pState + "/" + pCity + ".xml";
-                    Log.Debug("Reading Forcast: " + feedUrl);
+                    if (gDebug) Log.Debug("Reading Forcast: " + feedUrl);
                     sXml = webClient.DownloadString(feedUrl);
                     xml = new XmlDocument();
                     xml.LoadXml(sXml);
@@ -490,7 +498,7 @@
                 }
             }
             catch (Exception ex)
-            { this.Log.Error("Error updating forecasted weather - " + ex.Message); }
+            { Log.Error("Error updating forecasted weather - " + ex.Message); }
             FirstForcastRun = false;
         }
 
@@ -513,7 +521,6 @@
             Int32 DawnPost;
             Int32 Number;
 
-            Log.Info("***  Reading Day/Night  ***");
             try
             {
                     Now = DateTime.Now.TimeOfDay;
@@ -553,11 +560,11 @@
 
                 String John = " " + " " + Convert.ToString(DuskStart);
 
-                this.Log.Debug(Convert.ToString(DawnStart) + " " + Convert.ToString(DawnEnd) + " " + Convert.ToString(DuskStart) + " " + Convert.ToString(DuskEnd) + " ");
+                    if (gDebug) Log.Debug("Checking for Dawn/Dusk (Dawn start: " + Convert.ToString(DawnStart) + ", Dawn end: " + Convert.ToString(DawnEnd) + " Dusk start: " + Convert.ToString(DuskStart) + " Dusk end: " + Convert.ToString(DuskEnd)+ ")");
                 }
                 catch (Exception ex)
                 {
-                    this.Log.Error("Error setting times in updating day/night ", ex);
+                    Log.Error("Error setting times in updating day/night ", ex);
                     DawnStart = Sunrise;
                     DawnEnd = Sunrise;
 
@@ -571,9 +578,8 @@
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Day", pName);
                         if (DayNight == "Night" | DayNight == "Dawn")
-                        {
                             OSAE.OSAEObjectManager.EventTrigger(WeatherObjName, "Day");
-                        }
+
                         DayNight = "Day";
                         this.Log.Debug("Day event Triggered");
                     }
@@ -584,9 +590,8 @@
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Night",pName);
                         if (DayNight == "Day" | DayNight == "Dusk")
-                        {
                             OSAE.OSAEObjectManager.EventTrigger(WeatherObjName, "Night");
-                        }
+
                         DayNight = "Night";
                         this.Log.Info("Night event Triggered");
                     }
@@ -613,7 +618,7 @@
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error updating day/night ",ex);
+                Log.Error("Error updating day/night ",ex);
             }
         }
 
