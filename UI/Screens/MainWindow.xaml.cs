@@ -95,6 +95,13 @@
             canGUI.Height = bitmapImage.Height;
             canGUI.Width = bitmapImage.Width;
 
+            menuEditMode.IsChecked = false;
+            menuEditMode.IsEnabled = false;
+            menuShowControlList.IsChecked = false;
+            menuShowControlList.IsEnabled = false;
+            menuCreateScreen.IsEnabled = false;
+            menuAddControl.IsEnabled = false;
+
             Load_App_Name();
 
             _timer = new System.Timers.Timer(1000);
@@ -197,6 +204,12 @@
                 updatingScreen = true;
                 if (gDebug) Log.Debug("Checking for updates on:  " + gCurrentScreen);
                 bool oldCtrl = false;
+
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    if (screenObjectControl.Visibility == System.Windows.Visibility.Hidden && menuShowControlList.IsChecked) menuShowControlList.IsChecked = false;
+                }));
+
                 if (gCurrentUser != userSelectorControl._CurrentUser)
                 {
                     gCurrentUser = userSelectorControl._CurrentUser;
@@ -219,7 +232,7 @@
                             menuCreateScreen.IsEnabled = true;
                             menuAddControl.IsEnabled = true;
                         }
-                        if (screenObjectControl.Visibility == System.Windows.Visibility.Hidden) menuShowControlList.IsChecked = false;
+                       
                     }));
                 }
 
