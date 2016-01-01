@@ -161,7 +161,7 @@ public partial class home : System.Web.UI.Page
 
     public void bindGridView(string sortExp,string sortDir)  
     {
-        DataSet myDataSet = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object order by container_name, object_name");
+        DataSet myDataSet = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name");
         DataView myDataView = new DataView();
         myDataView = myDataSet.Tables[0].DefaultView;
 
