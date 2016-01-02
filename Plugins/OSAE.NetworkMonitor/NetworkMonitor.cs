@@ -14,6 +14,7 @@ namespace OSAE.NetworkMonitor
         System.Timers.Timer Clock = new System.Timers.Timer();
         Thread updateThread;
         string gAppName;
+        bool gDebug = false;
 
         #region OSAEPlugin Members
 
@@ -28,7 +29,14 @@ namespace OSAE.NetworkMonitor
             if (OSAEObjectManager.ObjectExists(gAppName))
                 Log.Info("Found the Network Monitor plugin's Object (" + gAppName + ")");
 
-            this.Log.Info("Running Interface!");
+            try
+            {
+                gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
+            }
+            catch
+            { Log.Error("I think the Debug property is missing from the Speech object type!"); }
+
+            Log.Info("Running Interface!");
             int interval;
             bool isNum = int.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Poll Interval").Value, out interval);
             Clock = new System.Timers.Timer();
@@ -39,8 +47,8 @@ namespace OSAE.NetworkMonitor
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
 
-            this.updateThread = new Thread(new ThreadStart(update));
-            this.updateThread.Start();
+            updateThread = new Thread(new ThreadStart(update));
+            updateThread.Start();
         }
 
         public override void Shutdown()
@@ -56,11 +64,10 @@ namespace OSAE.NetworkMonitor
             {
                 if (!updateThread.IsAlive)
                 {
-                    this.updateThread = new Thread(new ThreadStart(update));
-                    this.updateThread.Start();
+                    updateThread = new Thread(new ThreadStart(update));
+                    updateThread.Start();
                 }
             }
-
         }
 
         public void update()
@@ -68,23 +75,19 @@ namespace OSAE.NetworkMonitor
             try
             {
                 OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("NETWORK DEVICE");
-                this.Log.Debug("# NETWORK DEVICE: " + objects.Count.ToString());
+                if (gDebug) Log.Debug("# NETWORK DEVICE: " + objects.Count.ToString());
                 
                 foreach (OSAEObject obj in objects)
                 {
-                    this.Log.Debug("Pinging: " + obj.Address);
+                    if (gDebug) Log.Debug("Pinging: " + obj.Address);
                     if (CanPing(obj.Address.ToString()))
-                    {
                         OSAEObjectStateManager.ObjectStateSet(obj.Name, "ON", gAppName);
-                    }
                     else
-                    {
                         OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", gAppName);
-                    }
                 }
 
                 objects = OSAEObjectManager.GetObjectsByType("COMPUTER");
-                Log.Debug("# COMPUTERS: " + objects.Count.ToString());
+                if (gDebug) Log.Debug("# COMPUTERS: " + objects.Count.ToString());
                 
                 foreach (OSAEObject obj in objects)
                 {
@@ -97,7 +100,7 @@ namespace OSAE.NetworkMonitor
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error pinging", ex);
+                Log.Error("Error pinging", ex);
             }
         }
 
@@ -112,23 +115,20 @@ namespace OSAE.NetworkMonitor
 
                 if (reply.Status == IPStatus.Success)
                 {
-                    Log.Debug(address + " is On-Line!");
+                    if (gDebug) Log.Debug(address + " is On-Line!");
                     return true;
                 }
                 else
                 {
-                    Log.Debug(address + " is Off-Line");
+                    if (gDebug) Log.Debug(address + " is Off-Line");
                     return false;
                 }
             }
             catch (PingException)
             {
-                Log.Debug(address + " is Off-Line");
+                if (gDebug) Log.Debug(address + " is Off-Line");
                 return false;
             }
-
-
-           
         }
     }
 }
