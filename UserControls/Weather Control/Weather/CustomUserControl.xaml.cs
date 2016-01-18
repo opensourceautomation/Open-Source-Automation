@@ -33,10 +33,14 @@ namespace OSAE.Weather_Control
         public DateTime LastStateChange;
         public string objName;
         string sMode = "Max";
+        private string gAppName = "";
+        private string currentUser;
 
-        public CustomUserControl(OSAEObject sObj, string ControlName)
+        public CustomUserControl(OSAEObject sObj, string ControlName, string appName, string user)
         {
             InitializeComponent();
+            gAppName = appName;
+            currentUser = user;
             _controlname = ControlName;
             screenObject = sObj;
             objName = sObj.Property("Object Name").Value;
@@ -45,6 +49,12 @@ namespace OSAE.Weather_Control
             dispatcherTimer.Interval = new TimeSpan(0, 30, 0);
             dispatcherTimer.Start();
             Load_All_Weather();
+        }
+
+        public void setLocation(double X, double Y)
+        {
+            Location.X = X;
+            Location.Y = Y;
         }
 
         private void Load_All_Weather()

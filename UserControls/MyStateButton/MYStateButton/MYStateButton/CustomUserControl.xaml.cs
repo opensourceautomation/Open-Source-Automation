@@ -41,17 +41,27 @@ namespace MYStateButton
         public DateTime LastUpdated;
         public DateTime LastStateChange;
         public string objName;
+        private string gAppName = "";
+        private string currentUser;
 
         // Code to Initialize your custom User Control
-        public CustomUserControl(OSAEObject sObj, string ControlName)
+        public CustomUserControl(OSAEObject sObj, string ControlName, string appName, string user)
         {
             InitializeComponent();
+            gAppName = appName;
+            currentUser = user;
             _controlname = ControlName;
             screenObject = sObj;
             objName = sObj.Property("Object Name").Value;
             CurState = OSAEObjectStateManager.GetObjectStateValue(objName).Value;
             LastStateChange = OSAEObjectStateManager.GetObjectStateValue(objName).LastStateChange;
             this.updateBut();
+        }
+
+        public void setLocation(double X, double Y)
+        {
+            Location.X = X;
+            Location.Y = Y;
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
@@ -75,17 +85,20 @@ namespace MYStateButton
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            this.CurState = OSAEObjectStateManager.GetObjectStateValue(objName).ToString();
+            string currentUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Current User").Value;
+            if (currentUser == "") return;
+
+                this.CurState = OSAEObjectStateManager.GetObjectStateValue(objName).ToString();
             if (this.CurState == "ON")
             {
-                OSAEMethodManager.MethodQueueAdd(objName, "OFF", "0", "", "GUI");
-                OSAEObjectStateManager.ObjectStateSet(objName, "OFF", "GUI");
+                OSAEMethodManager.MethodQueueAdd(objName, "OFF", "0", "", currentUser);
+                OSAEObjectStateManager.ObjectStateSet(objName, "OFF", currentUser);
                 this.CurState = "OFF";
             }
             else
             {
-                OSAEMethodManager.MethodQueueAdd(objName, "ON", "0", "", "GUI");
-                OSAEObjectStateManager.ObjectStateSet(objName, "ON", "GUI");
+                OSAEMethodManager.MethodQueueAdd(objName, "ON", "0", "", currentUser);
+                OSAEObjectStateManager.ObjectStateSet(objName, "ON", currentUser);
                 this.CurState = "ON";
             }
             this.updateBut();

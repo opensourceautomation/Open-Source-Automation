@@ -205,5 +205,9 @@ namespace OSAE.UI.Controls
             NotifyParentFinished();
         }
 
+        private void objectsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            txtControlName.Text = currentScreen + " - " + objectsComboBox.SelectedValue + " - Camera Viewer";
+        }
     }
 }

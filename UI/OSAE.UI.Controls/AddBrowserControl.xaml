@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" Height="213" Width="328" Margin="20">
     <Grid Height="203" VerticalAlignment="Top">
-        <TextBox x:Name="txtURI" HorizontalAlignment="Left" Height="23" Margin="57,53,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="261"/>
-        <TextBox x:Name="txtName" HorizontalAlignment="Left" Height="23" Margin="57,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
+        <TextBox x:Name="txtURI" HorizontalAlignment="Left" Height="23" Margin="57,53,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="261" TextChanged="txtURI_TextChanged"/>
+        <TextBox x:Name="txtName" HorizontalAlignment="Left" Height="23" Margin="57,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261" IsEnabled="False"/>
         <Label Content="Name" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top"/>
         <Label Content="URI" HorizontalAlignment="Left" Margin="23,50,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.176,-0.664"/>
         <Button x:Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="10,171,0,0" VerticalAlignment="Top" Width="64" Click="btnAdd_Click"/>

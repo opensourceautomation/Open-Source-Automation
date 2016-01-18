@@ -29,11 +29,6 @@ namespace UserControlTemplate
         // 2nd, Change this file to include code that populates, updates and runs your control.
         // See each section below!
 
-        #region Logging
-        // Uncomment this line to add OSAE General Logging. Not all controls need Logging.
-        // private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
-        #endregion
-
         #region Required Properties DO NOT DELETE
         // Do Not remove these:
         public OSAEObject screenObject = new OSAEObject();
@@ -44,16 +39,20 @@ namespace UserControlTemplate
         public DateTime LastUpdated;
         public DateTime LastStateChange;
         public string objName;
-        
+        private string gAppName = "";
+        private string currentUser;
+
         // Add any additional properties needed here...
 
         #endregion
 
         #region Constructor
         // Code to Initialize your custom User Control
-        public CustomUserControl(OSAEObject sObj, string ControlName)
+        public CustomUserControl(OSAEObject sObj, string ControlName, string appName, string user)
         {
             InitializeComponent();
+            gAppName = appName;
+            currentUser = user;
             _controlname = ControlName;
             screenObject = sObj;
             objName = sObj.Property("Object Name").Value;
@@ -66,12 +65,18 @@ namespace UserControlTemplate
             // Execute the refreshControl function. See below!
             refreshControl();
         }
+
+        public void setLocation(double X, double Y)
+        {
+            Location.X = X;
+            Location.Y = Y;
+        }
         #endregion
 
         #region refreshControl
         private void refreshControl()
         {
-            // This code should populate or refresh the screen object with old/new information retieved
+            // This code should populate or refresh the screen object with new information retieved
             // For Example:
             
             // if (this.CurState == "ON")

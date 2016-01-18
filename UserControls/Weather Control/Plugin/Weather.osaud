@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>WeatherControl</plugin-name>
-<plugin-id></plugin-id>
+<plugin-id>cf54ccfd-5ce6-465c-baab-cb18bc4ba505</plugin-id>
 <plugin-version>4.4</plugin-version>
 <plugin-state>stable</plugin-state>
 <short-description>Custom Weather Screen Control</short-description>

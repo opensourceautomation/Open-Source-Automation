@@ -22,7 +22,7 @@ namespace MYStateButton
     public partial class AddNewControl : UserControl
     {
         // Set the Default name to use when a user adds this to a screen
-        string defaultNewName = "New Custom State Control";
+        string defaultNewName = "New State Button";
 
         // Set the Default Object Type to Associate with this Custom UserControl
         // Example, X-10 RELAY, IP CAMERA, DIMMER, THERMOSTAT
@@ -46,6 +46,7 @@ namespace MYStateButton
         List<objParams> oParams = new List<objParams>();
         string osaeControlType = "USER CONTROL";
         public string currentScreen;
+        private string currentUser;
         private Window parentWindow;
         private objParams selectedParam;
         public string _controlName;
@@ -54,11 +55,12 @@ namespace MYStateButton
         string sMode = "";
         string _pluginName;
 
-        public AddNewControl(string screen, string pluginName, string controlName = "")
+        public AddNewControl(string screen, string pluginName, string user, string controlName = "")
         {
             InitializeComponent();
             AssocObj.Content = defaultCaption;
             currentScreen = screen;
+            currentUser = user;
             LoadObjects();
             _pluginName = pluginName;
 
@@ -145,17 +147,17 @@ namespace MYStateButton
             if (ValidateForm("Add"))
             {
                 string sName = cntrlName.Text;
-                OSAEObjectManager.ObjectAdd(sName, sName, sName, osaeControlType + " " + _pluginName, "", currentScreen, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType + " " + _pluginName, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", "1", "GUI");
+                OSAEObjectManager.ObjectAdd(sName, sName, sName, osaeControlType + " " + _pluginName, "", currentScreen, 30, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType + " " + _pluginName, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", "100", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", "100", currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", "1", currentUser);
                 if (hasParams == true)
                 {
                     foreach (objParams op in oParams)
                     {
-                        OSAEObjectPropertyManager.ObjectPropertySet(sName, op.Name, op.Value, "GUI");
+                        OSAEObjectPropertyManager.ObjectPropertySet(sName, op.Name, op.Value, currentUser);
                     }
                 }
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
@@ -174,19 +176,19 @@ namespace MYStateButton
                 sWorkingName = cntrlName.Text;
                 OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
                 //We call an object update here in case the Name was changed, then perform the updates against the New name
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.Enabled);
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, obj.Enabled);
                 string sName = cntrlName.Text;
-                OSAEObjectManager.ObjectUpdate(sOriginalName,sName, sName,sName, osaeControlType + " " + _pluginName, "", currentScreen, 1);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType + " " + _pluginName, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", cntrlX.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", cntrlY.Text, "GUI");
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", cntrlZOrder.Text, "GUI");
+                OSAEObjectManager.ObjectUpdate(sOriginalName,sName, sName,sName, osaeControlType + " " + _pluginName, "", currentScreen, 30, 1);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType + " " + _pluginName, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", cntrlX.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", cntrlY.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", cntrlZOrder.Text, currentUser);
                 if (hasParams == true)
                 {
                     foreach (objParams op in oParams)
                     {
-                        OSAEObjectPropertyManager.ObjectPropertySet(sName, op.Name, op.Value, "GUI");
+                        OSAEObjectPropertyManager.ObjectPropertySet(sName, op.Name, op.Value, currentUser);
                     }
                 }
                 OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, objectsComboBox.Text, sName);
@@ -333,6 +335,10 @@ namespace MYStateButton
             selectedParam.Value = paramValue.Text;
         }
 
+        private void objectsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cntrlName.Text = currentScreen + " - " + objectsComboBox.SelectedValue + " - " + "State Button";
+        }
     }
 
     public class objParams

@@ -199,5 +199,12 @@
             }
             return validate;
         }
+
+        private void txtURI_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string cURL = txtURI.Text;
+            string newURL = cURL.Replace("http://", "");
+            txtName.Text = currentScreen + " - " + cURL + " - Browser";
+        }
     }
 }

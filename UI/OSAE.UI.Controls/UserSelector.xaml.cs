@@ -51,6 +51,27 @@ namespace OSAE.UI.Controls
                     _CurrentUser = currentUser;
                     _CurrentUserTrust = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(_CurrentUser, "Trust Level").Value);
                     cboUsers.Background = new SolidColorBrush(Colors.Green);
+
+                    // Add Remember me option
+                    ContextMenu ctmRembMe = new ContextMenu();
+                    MenuItem miRembMe = new MenuItem();
+                    miRembMe.Name = "rememberMode";
+                    miRembMe.IsCheckable = true;
+                    miRembMe.Checked += rememberMode_Checked;
+                    miRembMe.Unchecked += rememberMode_Unchecked;
+                    miRembMe.Header = "LogOut on Close";
+                    string remUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(_AppName, "LogOut on Close").Value;
+                    bool loUser = Convert.ToBoolean(remUser);
+                    if (loUser == true)
+                    {
+                        miRembMe.IsChecked = true;
+                    }
+                    else
+                    {
+                        miRembMe.IsChecked = false;
+                    }
+                    ctmRembMe.Items.Add(miRembMe);
+                    cboUsers.ContextMenu = ctmRembMe;
                 }
             }
             
@@ -80,6 +101,8 @@ namespace OSAE.UI.Controls
                 userGrid.Height = 25;
                 cboUsers.Background = new SolidColorBrush(Colors.Yellow);
                 OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "Current User", "", "SYSTEM");
+                cboUsers.ContextMenu = null;
+                OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "LogOut on Close", "TRUE", _CurrentUser);
             }
             else
             {
@@ -92,6 +115,27 @@ namespace OSAE.UI.Controls
                     _CurrentUserTrust = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(cboUsers.SelectedItem.ToString(), "Trust Level").Value);
                     _CurrentUser = cboUsers.SelectedItem.ToString();
                     OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "Current User", _CurrentUser, "SYSTEM");
+
+                    // Add Remember me option
+                    ContextMenu ctmRembMe = new ContextMenu();
+                    MenuItem miRembMe = new MenuItem();
+                    miRembMe.Name = "rememberMode";
+                    miRembMe.IsCheckable = true;
+                    miRembMe.Checked += rememberMode_Checked;
+                    miRembMe.Unchecked += rememberMode_Unchecked;
+                    miRembMe.Header = "LogOut on Close";
+                    string remUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(_AppName, "LogOut on Close").Value;
+                    bool loUser = Convert.ToBoolean(remUser);
+                    if (loUser == true)
+                    {
+                        miRembMe.IsChecked = true;
+                    }
+                    else
+                    {
+                        miRembMe.IsChecked = false;
+                    }
+                    ctmRembMe.Items.Add(miRembMe);
+                    cboUsers.ContextMenu = ctmRembMe;
 
                 }
                 else
@@ -114,6 +158,27 @@ namespace OSAE.UI.Controls
                     OSAE.OSAEObjectManager.ObjectUpdate(oUser.Name, oUser.Name, oUser.Alias, oUser.Description,oUser.Type, oUser.Address, _ScreenLocation,oUser.MinTrustLevel,oUser.Enabled);
 
                 OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "Current User", _CurrentUser, _CurrentUser);
+
+                // Add Remember me option
+                ContextMenu ctmRembMe = new ContextMenu();
+                MenuItem miRembMe = new MenuItem();
+                miRembMe.Name = "rememberMode";
+                miRembMe.IsCheckable = true;
+                miRembMe.Checked += rememberMode_Checked;
+                miRembMe.Unchecked += rememberMode_Unchecked;
+                miRembMe.Header = "LogOut on Close";
+                string remUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(_AppName, "LogOut on Close").Value;
+                bool loUser = Convert.ToBoolean(remUser);
+                if (loUser == true)
+                {
+                    miRembMe.IsChecked = true;
+                }
+                else
+                {
+                    miRembMe.IsChecked = false;
+                }
+                ctmRembMe.Items.Add(miRembMe);
+                cboUsers.ContextMenu = ctmRembMe;
             }
             lblPIN.Content  += "* ";
         }
@@ -177,6 +242,16 @@ namespace OSAE.UI.Controls
         private void buttonGo_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void rememberMode_Checked(object sender, RoutedEventArgs e)
+        {
+            OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "LogOut on Close", "TRUE", _CurrentUser);
+        }
+
+        private void rememberMode_Unchecked(object sender, RoutedEventArgs e)
+        {
+            OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "LogOut on Close", "FALSE", _CurrentUser);
         }
     }
 }

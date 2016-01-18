@@ -145,7 +145,8 @@
                 canGUI.Children.Clear();
                 browserFrames.Clear();
                 controlTypes.Clear();
-
+                string titl = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Title").Value;
+                Title = titl + " - " + sScreen;
                 gCurrentScreen = sScreen;
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current Screen", sScreen, gCurrentUser);
                 OSAE.OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
@@ -452,7 +453,7 @@
                 }
                 #endregion
 
-                #region USER SELECTOR
+                #region SCREEN OBJECTS
                 if (obj.Type == "CONTROL SCREEN OBJECTS")
                 {
                     screenObjectControl = new ScreenObjectList(gCurrentScreen,gCurrentUser);
@@ -698,12 +699,11 @@
                     string sUCType = obj.Property("Control Type").Value;
                     sUCType = sUCType.Replace("USER CONTROL ", "");
                     OSAE.Types.AvailablePlugin selectedPlugin = GlobalUserControls.OSAEUserControls.AvailablePlugins.Find(sUCType);
-                    selectedPlugin.Instance.InitializeMainCtrl(obj);
+                    selectedPlugin.Instance.InitializeMainCtrl(obj, gAppName, gCurrentUser);
                     dynamic uc = new UserControl();
                     uc = selectedPlugin.Instance.mainCtrl;
                     uc.MouseRightButtonDown += new MouseButtonEventHandler(UserControl_MouseRightButtonDown);
-                    uc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
-                    
+                    uc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);                 
                     OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
                     OSAE.OSAEObjectProperty pX = obj.Property("X");
                     OSAE.OSAEObjectProperty pY = obj.Property("Y");
@@ -713,13 +713,10 @@
                     Canvas.SetTop(uc, dY);
                     int dZ = Convert.ToInt32(pZOrder.Value);
                     Canvas.SetZIndex(uc, dZ);
-                    uc.Location.X = dX;
-                    uc.Location.Y = dY;
+                    uc.setLocation(dX, dY);
                     canGUI.Children.Add(uc);
                     userControls.Add(uc);
                     controlTypes.Add(uc.GetType());
-                    //controlTypes.Add(typeof(UserControl));
-
                 }
                 #endregion
 
@@ -785,6 +782,8 @@
             }
         }
 
+        #region CONTROL CLICK EVENTS
+        #region  CLICK IMAGE RIGHT CLICK
         private void Click_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -800,7 +799,9 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+        #endregion
 
+        #region STATE IMAGE RIGHT CLICK
         private void State_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -816,7 +817,9 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+        #endregion
 
+        #region BROWSER RIGHT CLICK
         private void Broswer_Control_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -831,7 +834,9 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+        #endregion
 
+        #region NAVIGATION IMAGE RIGHT CLICK
         private void Navigaton_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -846,7 +851,9 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+        #endregion
 
+        #region PROPERTY LABLE RIGHT CLICK
         private void Property_Label_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -861,7 +868,9 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+        #endregion
 
+        #region NAVIGATION IMAGE LEFT CLICK
         private void Navigaton_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
         {
             _timer.Stop();
@@ -869,7 +878,9 @@
             gCurrentScreen = navCtrl.screenName;
             Load_Screen(gCurrentScreen);
         }
+        #endregion
 
+        #region TIMER LABLE RIGHT CLICK
         private void Timer_Label_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -884,7 +895,9 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+        #endregion
 
+        #region VIDEO STREAM VIEWER RIGHT CLICK
         private void VideoStreamViewer_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -899,7 +912,9 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+        #endregion
 
+        #region USER CONTROL RIGHT CLICK
         private void UserControl_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -908,14 +923,16 @@
             string screenObject = item.screenObject.Name;
             OSAE.Types.AvailablePlugin selectedPlugin = GlobalUserControls.OSAEUserControls.AvailablePlugins.Find(sUCType);
             AddControl addControl = new AddControl();
-            selectedPlugin.Instance.InitializeAddCtrl(gCurrentScreen, selectedPlugin.Instance.Name, screenObject);
+            selectedPlugin.Instance.InitializeAddCtrl(gCurrentScreen, selectedPlugin.Instance.Name, gCurrentUser, screenObject);
             UserControl cmi = selectedPlugin.Instance.CtrlInterface;
             addControl.Content = cmi;
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
+        #endregion
+        #endregion
 
-        #region Drag Events
+        #region DRAG EVENTS
         void DragSource_Drop(dynamic sender, DragEventArgs e)
         {
             IDataObject data = e.Data;
@@ -1091,7 +1108,7 @@
        
         #endregion
                
-        #region menu events
+        #region MENU EVENTS
 
         private void menuEditMode_Checked(object sender, RoutedEventArgs e)
         {
@@ -1245,15 +1262,6 @@
             screenObjectControl.Visibility = System.Windows.Visibility.Hidden;
         }
 
-        #endregion
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            //closing = true;
-            OSAE.OSAEObjectStateManager.ObjectStateSet(gAppName, "OFF", gAppName);
-            _timer.Stop();
-        }
-
         private void menuChangeScreen_Click(object sender, RoutedEventArgs e)
         {
             ChangeScreen chgScrn = new ChangeScreen(this);
@@ -1296,7 +1304,23 @@
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
             this.Left = (desktopWorkingArea.Width / 2) - (this.Width /2);
             this.Top = (desktopWorkingArea.Height / 2) - (this.Height / 2);
-        }       
+        }
+
+        #endregion
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //closing = true;
+            OSAE.OSAEObjectStateManager.ObjectStateSet(gAppName, "OFF", gAppName);
+            string remUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "LogOut on Close").Value;
+            bool loUser = Convert.ToBoolean(remUser);
+            if (loUser == true)
+            {
+                OSAE.OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current User", "", "SYSTEM");
+            }
+            _timer.Stop();
+        }
+ 
     }
     
 }
