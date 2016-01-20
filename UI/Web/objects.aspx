@@ -254,7 +254,7 @@
                         <div class="span10">
                         <asp:Panel runat="server" ID="panelPropForm" Visible ="false">
                             <form class="form-inline">
-                                <asp:Label  runat="server" ID="lblPropType"></asp:Label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <asp:Label ID="lblPropType" runat="server"></asp:Label>&nbsp;&nbsp;&nbsp;&nbsp;
                                 <asp:Label ID="lblTrustLevel" runat="server"></asp:Label>
                                 &nbsp;&nbsp;&nbsp;&nbsp;<asp:Label ID="lblInterestLevel" runat="server"></asp:Label>
                                 <br />

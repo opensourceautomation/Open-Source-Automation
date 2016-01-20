@@ -39,7 +39,7 @@ public partial class home : System.Web.UI.Page
             lblInterestLevel.Text = "Interest Level: " + gvProperties.DataKeys[gvProperties.SelectedIndex]["interest_level"].ToString();
             lblPropLastUpd.Text = "Last Updated: " + gvProperties.DataKeys[gvProperties.SelectedIndex]["last_updated"].ToString();
             hdnSelectedPropType.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString();
-            lblPropType.Text = "Data type: " + hdnSelectedPropType.Text;
+            lblPropType.Text = "Type: " + hdnSelectedPropType.Text;
 
             if (gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString() == "List")
             {
