@@ -41,14 +41,14 @@
                     }
                     else
                     {
-                        OSAEObjectProperty p = new OSAEObjectProperty();
-                        p.Id = string.Empty;
-                        p.DataType = string.Empty;
-                        p.LastUpdated = string.Empty;
-                        p.Name = string.Empty;
-                        p.Value = string.Empty;
+                        //OSAEObjectProperty p = new OSAEObjectProperty();
+                        //p.Id = string.Empty;
+                       // p.DataType = string.Empty;
+                        //p.LastUpdated = string.Empty;
+                       // p.Name = string.Empty;
+                       // p.Value = string.Empty;
 
-                        return p;
+                        return null;
                     }
                 }
             }
@@ -82,6 +82,38 @@
                 {
                     Logging.GetLogger().AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Check if object's property exists
+        /// </summary>
+        /// <param name="objectName">The name of the object</param>
+        /// <param name="propertyName">The name of the property</param>
+        /// <param name="propertyValue">The value of the property</param>
+        public static Boolean ObjectPropertyExists(string objectName, string propertyName)
+        {
+            try
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    DataSet dataset = new DataSet();
+
+                    command.CommandText = "SELECT object_property_id FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@PropertyName)";
+                    command.Parameters.AddWithValue("@ObjectName", objectName);
+                    command.Parameters.AddWithValue("@PropertyName", propertyName);
+                    dataset = OSAESql.RunQuery(command);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                        return true;
+                    else
+                        return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - ObjectPropertyExists Error: " + ex.Message, true);
+                return false;
             }
         }
 

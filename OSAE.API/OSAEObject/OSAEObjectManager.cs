@@ -360,6 +360,45 @@
         }
 
         /// <summary>
+        /// Returns an OSAEObject with the specified property
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static OSAEObject GetObjectByPropertyValue(string property, string value)
+        {
+            MySqlCommand command = new MySqlCommand();
+            DataSet dataset = new DataSet();
+
+            try
+            {
+                command.CommandText = "SELECT object_name, object_alias, object_description, object_type, address, container_name, min_trust_level, enabled, state_name, base_type, coalesce(time_in_state, 0) as time_in_state, last_updated FROM osae_v_object WHERE property_name=@Property AND UPPER(property_value) = UPPER(@Value)";
+                command.Parameters.AddWithValue("@Property", property);
+                command.Parameters.AddWithValue("@Value", value);
+                dataset = OSAESql.RunQuery(command);
+
+                if (dataset.Tables[0].Rows.Count > 0)
+                {
+                    OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                    obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
+                    obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
+                    obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
+                    obj.LastUpd = dataset.Tables[0].Rows[0]["last_updated"].ToString();
+                    obj.Properties = OSAEObjectPropertyManager.GetObjectProperties(obj.Name);
+                    obj.Methods = GetObjectMethods(obj.Name);
+
+                    return obj;
+                }
+                else
+                    return null;
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - GetObjectByPropertyValue (" + property + ") error: " + ex.Message, true);
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Create a new object
         /// </summary>
         /// <param name="name"></param>
