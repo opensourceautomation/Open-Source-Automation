@@ -288,21 +288,24 @@
                     OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
                     foreach (OSAEObject o in objs)
                     {
-                        if (OSAEObjectPropertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
-                        {
-                            desc.Name = o.Name;
-                            bFoundObject = true;
-                            if (o.Enabled == 1)
-                                desc.Enabled = true;
-                            if (o.State.Value == "ON")
-                                desc.Status = "Running";
-                            else if (o.State.Value == "OFF")
-                                desc.Status = "Stopped";
-                            else
-                                desc.Status = o.State.Value;
+                        if (OSAEObjectPropertyManager.ObjectPropertyExists(o.Name, "Computer Name"))
+                            {
+                            if (OSAEObjectPropertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
+                            {
+                                desc.Name = o.Name;
+                                bFoundObject = true;
+                                if (o.Enabled == 1)
+                                    desc.Enabled = true;
+                                if (o.State.Value == "ON")
+                                    desc.Status = "Running";
+                                else if (o.State.Value == "OFF")
+                                    desc.Status = "Stopped";
+                                else
+                                    desc.Status = o.State.Value;
 
-                            this.Log.Info(desc.Type + ":  Plugin Object found, Object Name = " + o.Name);
-                            pluginList.Add(desc);
+                                this.Log.Info(desc.Type + ":  Plugin Object found, Object Name = " + o.Name);
+                                pluginList.Add(desc);
+                            }
                         }
                     }
                     // Here we try to create the Object if none was found above, we need a valid Object Type for this.
