@@ -47,7 +47,7 @@
         <CheckBox x:Name="chkRepeat" Content="Repeat Animation" HorizontalAlignment="Left" Margin="170,358,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.25,0" IsEnabled="False"/>
         <CheckBox x:Name="chkSlider" Content="Show Slider" HorizontalAlignment="Left" Margin="17,383,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.25,0" ToolTip="Show a slider to control dimmers, etc." Checked="chkSlider_Checked" Unchecked="chkSlider_Unchecked" IsEnabled="False"/>
         <Label x:Name="lblSliderMethod" Content="Slider Method" HorizontalAlignment="Left" Margin="129,378,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="219,383,0,0" x:Name="cboSliderMethod" VerticalAlignment="Top" Width="147" ItemsSource="{Binding method_name}"  DisplayMemberPath="method_name" SelectedValuePath="method_name" IsEditable="False" ToolTip="Select the ABSOLUTE Dimming Method, usually ON" IsEnabled="False" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="219,383,0,0" x:Name="cboSliderMethod" VerticalAlignment="Top" Width="147" ItemsSource="{Binding method_name}"  DisplayMemberPath="method_label" SelectedValuePath="method_name" IsEditable="False" ToolTip="Select the ABSOLUTE Dimming Method, usually ON" IsEnabled="False" />
         <TextBox x:Name="txtZOrder" HorizontalAlignment="Left" Height="21" Margin="378,356,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="1" ToolTip="All frames share a single location." IsEnabled="False"/>
         <Label x:Name="lblZOrder" Content="ZOrder" HorizontalAlignment="Left" Margin="325,352,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846" Width="53" IsEnabled="False"/>
 

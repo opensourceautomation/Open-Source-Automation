@@ -245,6 +245,27 @@ namespace OSAE.UI.Controls
                 catch
                 { }
 
+                if (sliderVisible && updatingSlider == false)
+                {
+                    try
+                    {
+                        CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
+                    }
+                    catch { CurLevel = "0"; }
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        sldSlider.ToolTip = CurLevel + "%";
+                    sldSlider.Value = Convert.ToUInt16(CurLevel);
+                    if (CurLevel != "")
+                        Image.ToolTip = ObjectName + "\n" + CurStateLabel + " (" + CurLevel + "%) since: " + LastStateChange;
+                    else
+                        Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
+                    }));
+                }
+
+
+
+
                 if (stateChanged)
                 {
                     timer.Stop();
@@ -267,22 +288,6 @@ namespace OSAE.UI.Controls
                                 bitmapImage.StreamSource = ms1;
                                 bitmapImage.EndInit();
                                 Image.Source = bitmapImage;
-
-                                if (sliderVisible && updatingSlider == false)
-                                {
-                                    try
-                                    {
-                                        CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
-                                    }
-                                    catch { CurLevel = "0"; }
-
-                                    sldSlider.ToolTip = CurLevel + "%";
-                                    sldSlider.Value = Convert.ToUInt16(CurLevel);
-                                }
-                                if (CurLevel != "")
-                                    Image.ToolTip = ObjectName + "\n" + CurStateLabel + " (" + CurLevel + "%) since: " + LastStateChange;
-                                else
-                                    Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
                             }));
 
                             // Primary Frame is loaded, load up additional frames for the time to display.

@@ -201,7 +201,7 @@ namespace OSAE.UI.Controls
             txtState2X.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 X").Value;
             txtState2Y.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Y").Value;
 
-            cboSliderMethod.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Slider Method").Value;
+            cboSliderMethod.SelectedValue = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Slider Method").Value;
 
             try
             {
@@ -449,31 +449,14 @@ namespace OSAE.UI.Controls
         {
             DataSet dataSet = OSAESql.RunSQL("SELECT state_label, state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue + "' order by state_label");
             cboState1.ItemsSource = dataSet.Tables[0].DefaultView;
-            DataSet dataSet2 = OSAESql.RunSQL("SELECT method_label FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_label");
+            DataSet dataSet2 = OSAESql.RunSQL("SELECT method_label, method_name FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_label");
             cboSliderMethod.ItemsSource = dataSet2.Tables[0].DefaultView;
 
             // The Screen - Object Is default name for the screen control, so update it based on the selection here
             // Check Enable Buttons, changing the object on an existing control should ?? Update the original control, renaming it?
             txtControlName.Text = currentScreen + " - " + cboObject.SelectedValue;
             cboState1.IsEnabled = true;
-
-            string CurLevel = "0";
-            try
-            {
-                CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(cboObject.SelectedValue.ToString(), "Level").Value;
-                if (CurLevel != "")
-                {
-                    chkSlider.IsEnabled = true;
-                    lblSliderMethod.IsEnabled = true;
-                    cboSliderMethod.IsEnabled = true;
-                }
-            }
-            catch
-            {
-                chkSlider.IsEnabled = false;
-                lblSliderMethod.IsEnabled = false;
-                cboSliderMethod.IsEnabled = false;
-            }
+            chkSlider.IsEnabled = OSAEObjectPropertyManager.ObjectPropertyExists(cboObject.SelectedValue.ToString(), "Level");
 
             Enable_Buttons();
         }
@@ -511,7 +494,7 @@ namespace OSAE.UI.Controls
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Repeat Animation", chkRepeat.IsChecked.ToString(), currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Frame Delay", txtDelay.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Show Slider", chkSlider.IsChecked.ToString(), currentUser);
-                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Slider Method", cboSliderMethod.SelectedValue.ToString(), currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, cboObject.Text, sName);
                 NotifyParentFinished();
             }
@@ -526,25 +509,42 @@ namespace OSAE.UI.Controls
                 OSAEObjectManager.ObjectUpdate(sOriginalName, sName, "", sName, "CONTROL STATE IMAGE", "", currentScreen, 50, 1);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.SelectedValue.ToString(), currentUser);
-                if (State1Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, currentUser);
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", "", currentUser);
-                if (State1Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", State1Img2.Name, currentUser);
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", "", currentUser);
-                if (State1Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", State1Img3.Name, currentUser);
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", "", currentUser);
-                if (State1Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", State1Img4.Name, currentUser);
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", "", currentUser);
+                if (State1Img1 != null)
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", State1Img1.Name, currentUser);
+                else
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image", "", currentUser);
+                if (State1Img2 != null)
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", State1Img2.Name, currentUser);
+                else
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 2", "", currentUser);
+                if (State1Img3 != null)
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", State1Img3.Name, currentUser);
+                else
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 3", "", currentUser);
+                if (State1Img4 != null)
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", State1Img4.Name, currentUser);
+                else
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Image 4", "", currentUser);
+
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 X", txtState1X.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Y", txtState1Y.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Name", cboState2.SelectedValue.ToString(), currentUser);
-                if (State2Img1 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, currentUser);
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", "", currentUser);
-                if (State2Img2 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, currentUser);
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", currentUser);
-                if (State2Img3 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, currentUser);
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", currentUser);
-                if (State2Img4 != null) OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, currentUser);
-                else OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", currentUser);
+                if (State2Img1 != null)
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", State2Img1.Name, currentUser);
+                else
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image", "", currentUser);
+                if (State2Img2 != null)
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", State2Img2.Name, currentUser);
+                else
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 2", "", currentUser);
+                if (State2Img3 != null)
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", State2Img3.Name, currentUser);
+                else
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 3", "", currentUser);
+                if (State2Img4 != null)
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", State2Img4.Name, currentUser);
+                else
+                    OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Image 4", "", currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 X", txtState2X.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 2 Y", txtState2Y.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
@@ -718,11 +718,13 @@ namespace OSAE.UI.Controls
         private void chkSlider_Checked(object sender, RoutedEventArgs e)
         {
             cboSliderMethod.IsEnabled = true;
+            lblSliderMethod.IsEnabled = true;
         }
 
         private void chkSlider_Unchecked(object sender, RoutedEventArgs e)
         {
             cboSliderMethod.IsEnabled = false;
+            lblSliderMethod.IsEnabled = false;
         }
 
         private bool validateForm(string mthd)
