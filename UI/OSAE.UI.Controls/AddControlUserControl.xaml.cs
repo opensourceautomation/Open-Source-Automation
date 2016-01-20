@@ -59,7 +59,7 @@ namespace OSAE.UI.Controls
                 pluginImg.UriSource = new System.Uri(imgURI);
                 pluginImg.EndInit();
                 PluginImg.Source = pluginImg;
-                selectedPlugin.Instance.InitializeAddCtrl(currentScreen,selectedPlugin.Instance.Name);
+                selectedPlugin.Instance.InitializeAddCtrl(currentScreen,selectedPlugin.Instance.Name,currentUser);
                 UserControl addcontrol = selectedPlugin.Instance.CtrlInterface;
                 if (addcontrol.Height > CntrlPnl.Height)
                 {

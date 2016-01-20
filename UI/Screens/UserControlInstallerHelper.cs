@@ -54,19 +54,16 @@
 
         public bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
-            string exePath = Path.GetDirectoryName(Application.ExecutablePath);
+            string exePath = OSAE.Common.ApiPath;
             if (Directory.Exists(exePath + "/tempDir/"))
             {
                 Directory.Delete(exePath + "/tempDir/", true);
             }
-
             PluginDescription desc = new PluginDescription();
             string tempfolder = exePath + "/tempDir/";
             string zipFileName = Path.GetFullPath(PluginPackagePath);
             string DescPath = null;
-
             bool NoError = true;
-
             ICSharpCode.SharpZipLib.Zip.FastZip fastZip = new ICSharpCode.SharpZipLib.Zip.FastZip();
             try
             {
@@ -76,7 +73,6 @@
                 List<string> sqlFiles = new List<string>();
                 List<string> ctrlFiles = new List<string>();
                 List<string> aspcsFiles = new List<string>();
-
                 string[] pluginFile = Directory.GetFiles(tempfolder, "*.osaud", SearchOption.TopDirectoryOnly);
                 osaudFiles.AddRange(pluginFile);
                 string[] sqlFile = Directory.GetFiles(tempfolder, "*.sql", SearchOption.TopDirectoryOnly);
@@ -85,20 +81,19 @@
                 ctrlFiles.AddRange(ctrlFile);
                 string[] aspcsFile = Directory.GetFiles(tempfolder, "*.ascx.cs", SearchOption.TopDirectoryOnly);
                 aspcsFiles.AddRange(aspcsFile);
-
                 if (osaudFiles.Count == 0)
                 {
-                    MessageBox.Show("No plugin description files found.");
+                    MessageBox.Show("No User Control description files found.");
                     return false;
                 }
                 if (osaudFiles.Count > 1)
                 {
-                    MessageBox.Show("More than one plugin description file found.");
+                    MessageBox.Show("More than one User Control description file found.");
                     return false;
                 }
                 if (ctrlFiles.Count == 0 || aspcsFiles.Count == 0)
                 {
-                    MessageBox.Show("No WebUI UserControl Files found.");
+                    MessageBox.Show("No WebUI User Control Files found.");
                     return false;
                 }
                 if (osaudFiles.Count == 1)
@@ -115,7 +110,6 @@
                     //uninstall previous plugin and delete the folder
                     if (UninstallPlugin(desc))
                     {
-                        //MessageBox.Show("Starting 4.");
                         // get the plugin folder path
                         string pluginFolder = desc.Path;
                         if (!string.IsNullOrEmpty(pluginFolder))  //only extract valid plugins
@@ -124,7 +118,6 @@
 
                             string ConnectionString = string.Format("Uid={0};Pwd={1};Server={2};Port={3};Database={4};allow user variables=true",
                                 Common.DBUsername, Common.DBPassword, Common.DBConnection, Common.DBPort, Common.DBName);
-                            //MessageBox.Show("Connecting to DB using:  " + Common.DBUsername + "  " + Common.DBPassword + "  " + Common.DBConnection + "  " + Common.DBPort + "  " + Common.DBName);
                             MySql.Data.MySqlClient.MySqlConnection connection = new MySql.Data.MySqlClient.MySqlConnection(ConnectionString);
                             connection.Open();
                             foreach (string s in sqlFile)
@@ -182,9 +175,6 @@
                             string[] delfiles = System.IO.Directory.GetFiles(exePath + "/UserControls/" + pluginFolder, "*.x64");
                             foreach (string str in delfiles)
                                 System.IO.File.Delete(str);
-
-                            this.Log.Info("Sending message to service to load plugin.");
-                            
                         }
                     }
                     else
@@ -196,11 +186,10 @@
                 MessageBox.Show("catch: " + ex.Message);
                 return false;
             }
-                if (Directory.Exists(exePath + "/tempDir/"))
-                {
-                    deleteFolder(exePath + "/tempDir/");
-                }
-            GlobalUserControls.OSAEUserControls.FindPlugins(OSAE.Common.ApiPath + @"\UserControls");
+            if (Directory.Exists(exePath + "/tempDir/"))
+            {
+                deleteFolder(exePath + "/tempDir/");
+            }
             return NoError;
         }
 
@@ -212,35 +201,50 @@
         public  bool UninstallPlugin(PluginDescription desc)
         {
             bool returnValue = false;
+            OSAE.Types.AvailablePlugins avPlugins = GlobalUserControls.OSAEUserControls.AvailablePlugins;
+            foreach (OSAE.Types.AvailablePlugin avPlugin in avPlugins)
+            {
+                avPlugin.Instance.Dispose();
+            }
+            avPlugins.Clear();
             GlobalUserControls.OSAEUserControls.ClosePlugins();
             Thread.Sleep(2000);
-            string exePath = Path.GetDirectoryName(Application.ExecutablePath);
+            string exePath = OSAE.Common.ApiPath;
             string pluginFolder = exePath + "/UserControls/" + desc.Path;
-            string webFolder = exePath + "/Plugins/Web Server/wwwroot/controls/usercontrols/" + pluginFolder;
+            string webFolder = exePath + "/Plugins/Web Server/wwwroot/controls/usercontrols/" + desc.Path;
             if (Directory.Exists(pluginFolder))
             {
                 if (deleteFolder(pluginFolder))
-                    returnValue = true;
-                else
-                    returnValue = false;
-                if (Directory.Exists(pluginFolder))
-                    returnValue = false;
-                if (Directory.Exists(webFolder))
                 {
-                    if (deleteFolder(webFolder))
-                        returnValue = true;
-                    else
-                        returnValue = false;
-                    if (Directory.Exists(webFolder))
-                        returnValue = false;
+                    returnValue = true;
                 }
                 else
                 {
+                    returnValue = false;
+                }
+                if (Directory.Exists(pluginFolder))
+                {
+                    returnValue = false;
+                }
+            }
+            if (Directory.Exists(webFolder))
+            {
+                if (deleteFolder(webFolder))
+                {
                     returnValue = true;
+                }
+                else
+                {
+                    returnValue = false;
+                }
+                if (Directory.Exists(webFolder))
+                {
+                    returnValue = false;
                 }
             }
             else
                 returnValue = true;
+
             return returnValue;
         }
 
@@ -253,15 +257,17 @@
             try
             {
                 DirectoryInfo dir = new DirectoryInfo(FolderName);
-                foreach (FileInfo fi in dir.GetFiles())
-                {
-                    fi.Delete();
-                }
                 foreach (DirectoryInfo di in dir.GetDirectories())
                 {
-                    deleteFolder(di.FullName);
+                    deleteAllFiles(di);
+                    Thread.Sleep(500);
+                    deleteDir(di);
+                    Thread.Sleep(500);
                 }
-                dir.Delete(true);
+                deleteAllFiles(dir);
+                Thread.Sleep(500);
+                deleteDir(dir);
+                Thread.Sleep(500);
                 return true;
             }
             catch
@@ -269,6 +275,17 @@
                 return false;
             }
         }
+        public void deleteAllFiles(DirectoryInfo dir)
+        {
+            foreach (FileInfo fi in dir.GetFiles())
+            {
+                fi.Delete();
+            }
+        }
 
+        public void deleteDir(DirectoryInfo di)
+        {
+            di.Delete(true);
+        }
     }
 }

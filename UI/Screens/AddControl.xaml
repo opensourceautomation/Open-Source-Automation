@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Screens.AddControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Add Control" Height="350" Width="550" Icon="icon.png" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="Add Control" Height="350" Width="550" Icon="icon.png" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" SizeToContent="WidthAndHeight">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="307*"/>

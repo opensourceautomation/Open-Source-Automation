@@ -235,6 +235,7 @@ namespace OSAE.UI.Controls
             DataSet dataSet = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboPressObject.SelectedValue + "' order by method_name");
             cboPressMethod.IsEnabled = true;
             cboPressMethod.ItemsSource = dataSet.Tables[0].DefaultView;
+            txtControlName.Text = currentScreen + " - " + cboPressObject.SelectedValue + " - Click Image";
         }
 
         private void cboReleaseObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -242,6 +243,10 @@ namespace OSAE.UI.Controls
             DataSet dataSet = OSAESql.RunSQL("SELECT method_name FROM osae_v_object_method where object_name = '" + cboReleaseObject.SelectedValue + "' order by method_name");
             cboReleaseMethod.IsEnabled = true;
             cboReleaseMethod.ItemsSource = dataSet.Tables[0].DefaultView;
+            if(cboPressObject.Text == "")
+            {
+                txtControlName.Text = currentScreen + " - " + cboReleaseObject.SelectedValue + " - Click Image";
+            }
         }
 
         private void SelectNormalImage_Click(object sender, RoutedEventArgs e)

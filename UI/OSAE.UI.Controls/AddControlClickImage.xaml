@@ -4,18 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" Height="470" Width="550" Margin="20">
-    <Grid Margin="0,0,0,10">
+    <Grid Margin="0,0,0,-6">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="Auto" MinWidth="264"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="98,434,0,0" VerticalAlignment="Top" Width="82" Click="btnUpdate_Click" Height="22"/>
-        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="183,434,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click" Grid.Column="1" Height="22"/>
-        <Button x:Name="SelectNormalImage" Content="Select" HorizontalAlignment="Left" Margin="8,77,0,0" VerticalAlignment="Top" Width="51" Click="SelectNormalImage_Click" Height="22"/>
-        <Label Content="Normal Image" HorizontalAlignment="Left" Margin="5,53,0,0" VerticalAlignment="Top" Width="86" Height="26"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="98,28,0,0" VerticalAlignment="Top" Width="75" x:Name="imgNormal" OpacityMask="#FFEAE0E0" RenderTransformOrigin="0.387,0.48"/>
-        <Image HorizontalAlignment="Left" Height="75" Margin="99,28,0,0" VerticalAlignment="Top" Width="75" x:Name="imgPressed" Grid.Column="1"/>
-        <Grid x:Name="MethodGrid" HorizontalAlignment="Left" Height="175" Margin="10,108,0,0" VerticalAlignment="Top" Width="260" Background="#FFEADCDC">
+        <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="101,454,0,0" VerticalAlignment="Top" Width="82" Click="btnUpdate_Click" Height="22"/>
+        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="186,454,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click" Grid.Column="1" Height="22"/>
+        <Button x:Name="SelectNormalImage" Content="Select" HorizontalAlignment="Left" Margin="8,86,0,0" VerticalAlignment="Top" Width="51" Click="SelectNormalImage_Click" Height="22"/>
+        <Label Content="Normal Image" HorizontalAlignment="Left" Margin="5,62,0,0" VerticalAlignment="Top" Width="86" Height="26"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="98,37,0,0" VerticalAlignment="Top" Width="75" x:Name="imgNormal" OpacityMask="#FFEAE0E0" RenderTransformOrigin="0.387,0.48"/>
+        <Image HorizontalAlignment="Left" Height="75" Margin="93,36,0,0" VerticalAlignment="Top" Width="75" x:Name="imgPressed" Grid.Column="1"/>
+        <Grid x:Name="MethodGrid" HorizontalAlignment="Left" Height="175" Margin="10,124,0,0" VerticalAlignment="Top" Width="260" Background="#FFEADCDC">
             <Label Content="Object" Height="28" HorizontalAlignment="Left" x:Name="label" VerticalAlignment="Top" Width="51" Margin="15,26,0,0" />
             <ComboBox Height="23" HorizontalAlignment="Left" x:Name="cboPressObject" VerticalAlignment="Top" Width="174" ItemsSource="{Binding object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="cboPressObject_SelectionChanged" Margin="66,26,0,0" />
             <Label Content="Method" Height="28" HorizontalAlignment="Left" Margin="10,49,0,0" x:Name="label2" VerticalAlignment="Top" Width="51" IsEnabled="False" />
@@ -27,7 +27,7 @@
             <Label x:Name="lblAsk1" Content="Enter [ASK] to be Prompted." HorizontalAlignment="Left" Margin="83,83,0,0" VerticalAlignment="Top" IsEnabled="False"/>
             <Label Content="Mouse Down Method" Height="28" HorizontalAlignment="Left" x:Name="label_Copy" VerticalAlignment="Top" Width="132" Margin="66,0,0,0" />
         </Grid>
-        <Grid x:Name="ScriptGrid" HorizontalAlignment="Left" Height="141" Margin="10,288,0,0" VerticalAlignment="Top" Width="260" Background="#FFE2D1D1">
+        <Grid x:Name="ScriptGrid" HorizontalAlignment="Left" Height="141" Margin="10,304,0,0" VerticalAlignment="Top" Width="260" Background="#FFE2D1D1">
             <Label Content="Mouse Down Script" Height="28" HorizontalAlignment="Left" x:Name="label_Copy1" VerticalAlignment="Top" Width="115" Margin="83,0,0,0" />
             <Label Content="Script" Height="28" HorizontalAlignment="Left" x:Name="label_Copy2" VerticalAlignment="Top" Width="51" Margin="15,27,0,0" />
             <ComboBox Height="23" HorizontalAlignment="Left" x:Name="cboPressScript" VerticalAlignment="Top" Width="174" ItemsSource="{Binding object_name}"  DisplayMemberPath="script_name" SelectedValuePath="object_name" IsEditable="False" Margin="66,27,0,0" SelectionChanged="cboPressScript_SelectionChanged" />
@@ -37,9 +37,9 @@
             <TextBox HorizontalAlignment="Left" Height="28" Margin="66,101,0,0" TextWrapping="Wrap" x:Name="txtPressScriptParam2" VerticalAlignment="Top" Width="174" IsEnabled="False"/>
             <Label x:Name="lblAsk3" Content="Enter [ASK] to be Prompted." HorizontalAlignment="Left" Margin="83,49,0,0" VerticalAlignment="Top" IsEnabled="False"/>
         </Grid>
-        <Button x:Name="SelectPressedImage" Content="Select" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top" Width="51" Click="SelectPressedImage_Click" Grid.Column="1" Height="22"/>
-        <Label Content="Pressed Image" HorizontalAlignment="Left" Margin="6,53,0,0" VerticalAlignment="Top" Width="93" Grid.Column="1" Height="26"/>
-        <Grid x:Name="MethodGrid_Copy" HorizontalAlignment="Left" Height="175" Margin="0,108,0,0" VerticalAlignment="Top" Width="260" Background="#FFEADCDC" Grid.Column="1">
+        <Button x:Name="SelectPressedImage" Content="Select" HorizontalAlignment="Left" Margin="4,85,0,0" VerticalAlignment="Top" Width="51" Click="SelectPressedImage_Click" Grid.Column="1" Height="22"/>
+        <Label Content="Pressed Image" HorizontalAlignment="Left" Margin="0,61,0,0" VerticalAlignment="Top" Width="93" Grid.Column="1" Height="26"/>
+        <Grid x:Name="MethodGrid_Copy" HorizontalAlignment="Left" Height="175" Margin="0,124,0,0" VerticalAlignment="Top" Width="260" Background="#FFEADCDC" Grid.Column="1">
             <Label Content="Object" Height="28" HorizontalAlignment="Left" x:Name="label1" VerticalAlignment="Top" Width="51" Margin="15,26,0,0" />
             <ComboBox Height="23" HorizontalAlignment="Left" x:Name="cboReleaseObject" VerticalAlignment="Top" Width="174" ItemsSource="{Binding object_name}"  DisplayMemberPath="object_name" SelectedValuePath="object_name" IsEditable="False" SelectionChanged="cboReleaseObject_SelectionChanged" Margin="66,26,0,0" />
             <Label Content="Method" Height="28" HorizontalAlignment="Left" Margin="10,49,0,0" x:Name="label5" VerticalAlignment="Top" Width="51" IsEnabled="False" />
@@ -51,7 +51,7 @@
             <Label x:Name="lblAsk2" Content="Enter [ASK] to be Prompted." HorizontalAlignment="Left" Margin="83,84,0,0" VerticalAlignment="Top" IsEnabled="False"/>
             <Label Content="Mouse Up Method" Height="28" HorizontalAlignment="Left" x:Name="label_Copy3" VerticalAlignment="Top" Width="115" Margin="83,0,0,0" />
         </Grid>
-        <Grid x:Name="ScriptGrid_Copy" HorizontalAlignment="Left" Height="141" Margin="0,288,0,0" VerticalAlignment="Top" Width="260" Background="#FFE2D1D1" Grid.Column="1">
+        <Grid x:Name="ScriptGrid_Copy" HorizontalAlignment="Left" Height="141" Margin="0,304,0,0" VerticalAlignment="Top" Width="260" Background="#FFE2D1D1" Grid.Column="1">
             <Label Content="Mouse Up Script" Height="28" HorizontalAlignment="Left" x:Name="label_Copy4" VerticalAlignment="Top" Width="115" Margin="83,0,0,0" />
             <Label Content="Script" Height="28" HorizontalAlignment="Left" x:Name="label_Copy5" VerticalAlignment="Top" Width="51" Margin="15,27,0,0" />
             <ComboBox Height="23" HorizontalAlignment="Left" x:Name="cboReleaseScript" VerticalAlignment="Top" Width="174" ItemsSource="{Binding object_name}"  DisplayMemberPath="script_name" SelectedValuePath="object_name" IsEditable="False" Margin="66,27,0,0" SelectionChanged="cboReleaseScript_SelectionChanged" />
@@ -61,7 +61,7 @@
             <TextBox HorizontalAlignment="Left" Height="28" Margin="66,101,0,0" TextWrapping="Wrap" x:Name="txtReleaseScriptParam2" VerticalAlignment="Top" Width="174" IsEnabled="False"/>
             <Label x:Name="lblAsk4" Content="Enter [ASK] to be Prompted." HorizontalAlignment="Left" Margin="83,49,0,0" VerticalAlignment="Top" IsEnabled="False"/>
         </Grid>
-        <TextBox x:Name="txtControlName" HorizontalAlignment="Left" Height="23" Margin="133,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="306" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5" TextChanged="txtControlName_TextChanged">
+        <TextBox x:Name="txtControlName" HorizontalAlignment="Left" Height="23" Margin="133,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="306" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5" TextChanged="txtControlName_TextChanged" IsEnabled="False">
             <TextBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -71,15 +71,15 @@
                 </TransformGroup>
             </TextBox.RenderTransform>
         </TextBox>
-        <TextBox x:Name="txtNormalX" HorizontalAlignment="Left" Height="19" Margin="224,33,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" Text="100" IsEnabled="False"/>
-        <TextBox x:Name="txtNormalY" HorizontalAlignment="Left" Height="17" Margin="224,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100" IsEnabled="False"/>
+        <TextBox x:Name="txtNormalX" HorizontalAlignment="Left" Height="22" Margin="224,33,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" Text="100" IsEnabled="False"/>
+        <TextBox x:Name="txtNormalY" HorizontalAlignment="Left" Height="22" Margin="224,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100" IsEnabled="False"/>
         <Label Content="X" HorizontalAlignment="Left" Margin="202,29,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-        <Label Content="Y" HorizontalAlignment="Left" Margin="202,53,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846" IsEnabled="False"/>
-        <Label Content="ZOrder" HorizontalAlignment="Left" Margin="171,75,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+        <Label Content="Y" HorizontalAlignment="Left" Margin="202,62,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846" IsEnabled="False"/>
+        <Label Content="ZOrder" HorizontalAlignment="Left" Margin="171,88,0,0" VerticalAlignment="Top" IsEnabled="False"/>
         <Label Content="Screen Object Name" HorizontalAlignment="Left" Margin="8,1,0,0" VerticalAlignment="Top" Width="121" Height="26"/>
-        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="188,434,0,0" VerticalAlignment="Top" Width="82" Click="btnDelete_Click" Height="22"/>
-        <Button x:Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="9,434,0,0" VerticalAlignment="Top" Width="82" Click="btnAdd_Click" Height="22" RenderTransformOrigin="-0.866,0.727"/>
-        <TextBox x:Name="txtZOrder" HorizontalAlignment="Left" Height="20" Margin="224,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" Text="1" IsEnabled="False" />
+        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="191,454,0,0" VerticalAlignment="Top" Width="82" Click="btnDelete_Click" Height="22"/>
+        <Button x:Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="12,454,0,0" VerticalAlignment="Top" Width="82" Click="btnAdd_Click" Height="22" RenderTransformOrigin="-0.866,0.727"/>
+        <TextBox x:Name="txtZOrder" HorizontalAlignment="Left" Height="20" Margin="224,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" Text="1" IsEnabled="False" />
 
 
     </Grid>

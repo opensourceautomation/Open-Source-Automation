@@ -2,9 +2,9 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>My State Button</plugin-name>
 <plugin-id>f52c9b60-622c-450d-926f-5549543c2bb3</plugin-id>
-<plugin-version>4.7.1.0</plugin-version>
+<plugin-version>0.4.8</plugin-version>
 <plugin-state>beta</plugin-state>
-<short-description></short-description>
+<short-description>OSA Screens State Button Control</short-description>
 <author>Kirk Herron</author>
 <destination-folder>MyStateButton</destination-folder>
 <main-file>MYStateButton.dll</main-file>

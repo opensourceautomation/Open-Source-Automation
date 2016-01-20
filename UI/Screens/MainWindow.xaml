@@ -7,7 +7,7 @@
         <Canvas Grid.ColumnSpan="2" Name="canGUI" Background="#FF939342" Focusable="True" >
             <Canvas.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Name="menuEditMode" Header="Edit Mode" IsCheckable="False" Checked="menuEditMode_Checked" Unchecked="menuEditMode_Unchecked"/>
+                    <MenuItem Name="menuEditMode" Header="Edit Mode" IsCheckable="True" Checked="menuEditMode_Checked" Unchecked="menuEditMode_Unchecked"/>
                     <MenuItem Name="menuChangeScreen" Header="Switch Screen" Click="menuChangeScreen_Click"/>
                     <MenuItem Name="menuCreateScreen" Header="Add/Edit Screen" Click="menuCreateScreen_Click" />
                     <MenuItem Name="menuAddControl" Header="Add Control">

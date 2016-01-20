@@ -83,7 +83,7 @@
         private void AddPlugin(string FileName)
         {
             //Create a new assembly from the plugin file we're adding..
-            Assembly pluginAssembly = Assembly.LoadFrom(FileName);
+            Assembly pluginAssembly = Assembly.Load(File.ReadAllBytes(FileName));
 
             //Next we'll loop through all the Types found in the assembly
             foreach (Type pluginType in pluginAssembly.GetTypes())

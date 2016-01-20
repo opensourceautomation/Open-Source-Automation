@@ -21,7 +21,7 @@ namespace OSAE.Weather_Control
         string myName = "WEATHERCONTROL";
         string myDescription = "Weather Screen Control";
         string myAuthor = "Vaughn, Updated by Brian, Automate, Kherron";
-        string myVersion = "0.4.7";
+        string myVersion = "0.4.8";
 
         #region DO NOT CHANGE
         IPluginHost myHost = null;
@@ -34,10 +34,10 @@ namespace OSAE.Weather_Control
         public System.Windows.Controls.UserControl CtrlInterface { get { return AddCtrlInterface; } }
         public System.Windows.Controls.UserControl mainCtrl { get { return MainCtrl; } }
         public string Version { get { return myVersion; } }
-        public void InitializeAddCtrl(string screen, string pluginName, string obj) { AddCtrlInterface = new AddNewControl(screen, myName, obj); }
-        public void InitializeMainCtrl(OSAEObject obj)
+        public void InitializeAddCtrl(string screen, string pluginName, string user, string obj) { AddCtrlInterface = new AddNewControl(screen, myName, user, obj); }
+        public void InitializeMainCtrl(OSAEObject obj, string appName, string cuser)
         {
-            MainCtrl = new CustomUserControl(obj, myName);
+            MainCtrl = new CustomUserControl(obj, myName, appName, cuser);
         }
 
         public void Dispose()

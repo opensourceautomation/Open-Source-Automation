@@ -20,16 +20,14 @@ namespace PluginInterface
         System.Windows.Controls.UserControl CtrlInterface { get; }
         System.Windows.Controls.UserControl mainCtrl { get; }
 
-        void InitializeAddCtrl(string screen, string pluginname, string obj="");
-        void InitializeMainCtrl(OSAE.OSAEObject obj);
+        void InitializeAddCtrl(string screen, string pluginname, string user, string obj="");
+        void InitializeMainCtrl(OSAE.OSAEObject obj, string appName, string cuser);
 
         void Dispose();
-
     }
 
     public interface IPluginHost
     {
         void Feedback(string Feedback, IPlugin Plugin);
     }
-
 }

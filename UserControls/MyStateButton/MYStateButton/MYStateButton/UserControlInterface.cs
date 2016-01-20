@@ -30,8 +30,8 @@ namespace MYStateButton
         // Change to the correct Author of the plugin
         string myAuthor = "Kirk";
 
-        // Change to match your Version of the Plugin. The first 2 digits should Match the OSA version built upon!
-        string myVersion = "4.7.1.0";
+        // Change to match your Version of the Plugin. Should Match the OSA version built upon!
+        string myVersion = "0.4.8";
 
         #region DO NOT CHANGE
         IPluginHost myHost = null;
@@ -44,10 +44,10 @@ namespace MYStateButton
         public System.Windows.Controls.UserControl CtrlInterface { get { return AddCtrlInterface; } }
         public System.Windows.Controls.UserControl mainCtrl { get { return MainCtrl; } }
         public string Version { get { return myVersion; } }
-        public void InitializeAddCtrl(string screen, string pluginName, string obj) { AddCtrlInterface = new AddNewControl(screen, myName, obj); }
-        public void InitializeMainCtrl(OSAEObject obj)
+        public void InitializeAddCtrl(string screen, string pluginName,string user, string obj) { AddCtrlInterface = new AddNewControl(screen, myName, user, obj); }
+        public void InitializeMainCtrl(OSAEObject obj, string appName, string cuser)
         {
-            MainCtrl = new CustomUserControl(obj, myName);
+            MainCtrl = new CustomUserControl(obj, myName, appName, cuser);
         }
 
         public void Dispose()
