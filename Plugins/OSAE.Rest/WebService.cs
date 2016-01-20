@@ -22,6 +22,10 @@
         OSAEObjectState GetObjectState(string name);
 
         [OperationContract]
+        [WebInvoke(UriTemplate = "object/{name}/setstate/{state}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        Boolean SetObjectState(string name, string state);
+
+        [OperationContract]
         [WebInvoke(UriTemplate = "object/{name}/{method}?param1={param1}&param2={param2}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean ExecuteMethod(string name, string method, string param1, string param2);
 
@@ -70,7 +74,7 @@
         //[OperationContract]
         //[WebGet(UriTemplate = "script/update?obj={objName}&event={objEvent}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         //Boolean UpdateScript(string objName, string objEvent, string script);
-
+    
         [OperationContract]
         [WebGet(UriTemplate = "system/states", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         List<string> GetSystemStates();
@@ -78,6 +82,7 @@
         [OperationContract]        
         [WebInvoke(UriTemplate = "property/update?objName={objName}&propName={propName}&propVal={propVal}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Boolean SetObjectProperty(string objName, string propName, string propVal);
+
 
         [OperationContract]
         [WebGet(UriTemplate = "analytics/{objName}/{propName}?f={from}&t={to}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare )]
@@ -108,6 +113,13 @@
             OSAEObjectState state = OSAEObjectStateManager.GetObjectStateValue(name);
             Log.Debug("Looking up object state:  " + name + ".  I Found " + state.StateLabel + ".");
             return state;
+        }
+
+        public Boolean SetObjectState(string name, string state)
+        {
+            OSAEObjectStateManager.ObjectStateSet(name, state, "REST");
+            Log.Debug("Setting object state:  " + name + " set to: " + state + ".");
+            return true;
         }
 
         public OSAEObjectCollection GetObjectsByType(string type)

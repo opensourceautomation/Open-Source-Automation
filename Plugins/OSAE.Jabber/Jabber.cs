@@ -76,9 +76,7 @@ namespace OSAE.Jabber
                 Log.Info("Jabber Plugin took ownership of the JABBER Object Type.");
             }
             else
-            {
                 Log.Info("Jabber Plugin correctly owns the JABBER Object Type.");
-            }
         }
 
         public override void ProcessCommand(OSAEMethod method)
@@ -92,7 +90,7 @@ namespace OSAE.Jabber
                 if (gDebug) Log.Debug("Message: " + method.Parameter2);
                 OSAEObjectProperty prop = OSAEObjectPropertyManager.GetObjectPropertyValue(method.Parameter1, "JabberID");
 
-                if(prop != null)
+                if (prop != null)
                     to = prop.Value;
                 else
                     to = method.Parameter1;
@@ -183,6 +181,8 @@ namespace OSAE.Jabber
                 if (gDebug) Log.Debug("gCurrentUser: " + dsResults.Tables[0].Rows[0][0].ToString());
                 OSAEObjectPropertyManager.ObjectPropertySet(gCurrentUser, "Communication Method", "Jabber", gCurrentUser);
                 gCurrentAddress = msg.From.Bare;
+                if (msg.Body.EndsWith("?") || msg.Body.EndsWith("!") || msg.Body.EndsWith("."))
+                    msg.Body = msg.Body.Substring(0, msg.Body.Length -1);
 
                 RecognitionResult rr = oRecognizer.EmulateRecognize(msg.Body);
                 if (rr == null)
@@ -236,26 +236,39 @@ namespace OSAE.Jabber
 
         void xmppCon_OnRosterItem(object sender, agsXMPP.protocol.iq.roster.RosterItem item)
         {
-            bool found = false;
-                        OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
+            OSAEObject obj = OSAEObjectManager.GetObjectByPropertyValue("JabberID", item.Jid.Bare);
 
-            foreach (OSAEObject oObj in objects)
-            {
-                OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
-                if (OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
-                {
-                    found = true;
-                    Log.Info(String.Format("Received contact from {0} ({1})", obj.Name, item.Jid.Bare));
-                    break;
-                }
-            }
-
-            if (!found)
-            {
+            if (obj != null)
+                Log.Info(String.Format("Received contact from {0} ({1})", obj.Name, item.Jid.Bare));
+            else
+            { 
                 Log.Info(String.Format("Received NEW Contact {0}", item.Jid.Bare));
-                OSAEObjectManager.ObjectAdd(item.Jid.Bare, "", "Discovered Jabber contact", "PERSON", "", "Unknown", 50, true);
+                OSAEObjectManager.ObjectAdd(item.Jid.Bare, "", "Discovered Jabber contact", "THING", "", "Unknown", 10, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
             }
+
+
+            //   }
+            //            bool found = false;
+            // OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
+
+            // foreach (OSAEObject oObj in objects)
+            //  {
+            //      OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
+            //      if (OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
+            //     {
+            //         found = true;
+            //        Log.Info(String.Format("Received contact from {0} ({1})", obj.Name, item.Jid.Bare));
+            //        break;
+            //     }
+            //  }
+
+            //  if (!found)
+            //   {
+            //      Log.Info(String.Format("Received NEW Contact {0}", item.Jid.Bare));
+            //      OSAEObjectManager.ObjectAdd(item.Jid.Bare, "", "Discovered Jabber contact", "PERSON", "", "Unknown", 50, true);
+            //     OSAEObjectPropertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
+            //   }
         }
 
         void xmppCon_OnRosterEnd(object sender)
