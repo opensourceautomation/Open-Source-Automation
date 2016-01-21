@@ -84,7 +84,6 @@ namespace OSAE.Jabber
             try
             {
                 //basically just need to send parameter two to the contact in parameter one with sendMessage();
-                //Process incomming command
                 string to = "";
                 if (gDebug) Log.Debug("Process command: " + method.MethodName);
                 if (gDebug) Log.Debug("Message: " + method.Parameter2);
@@ -97,12 +96,10 @@ namespace OSAE.Jabber
 
                 if (to == "") to = method.Parameter1;
 
-                if (gDebug) Log.Debug("To: " + to);
-
                 switch (method.MethodName)
                 {
                     case "SEND MESSAGE":
-                        sendMessage(Common.PatternParse(method.Parameter2), to);
+                        sendMessage(method.Parameter1, to, Common.PatternParse(method.Parameter2));
                         break;
 
                     case "SEND QUESTION":
@@ -113,7 +110,7 @@ namespace OSAE.Jabber
                         string speechList = method.Parameter2.Substring(0,method.Parameter2.IndexOf(","));
                         string listItem = method.Parameter2.Substring(method.Parameter2.IndexOf(",") + 1, method.Parameter2.Length - (method.Parameter2.IndexOf(",")+ 1));
                         if (gDebug) Log.Debug("List = " + speechList + "   Item=" + listItem);
-                        sendMessage(Common.PatternParse(OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom(speechList, listItem)), to);
+                        sendMessage(method.Parameter1, to, Common.PatternParse(OSAEObjectPropertyManager.ObjectPropertyArrayGetRandom(speechList, listItem)));
                         break;
                 }
             }
@@ -129,7 +126,7 @@ namespace OSAE.Jabber
             if (dataset.Tables[0].Rows.Count > 0)
             {
                 string sQuestion = dataset.Tables[0].Rows[0]["Question"].ToString();
-                sendMessage(Common.PatternParse(sQuestion), address);
+                sendMessage(gCurrentUser, Common.PatternParse(sQuestion), address);
                 //Unload All grammars
                 oRecognizer.UnloadAllGrammars();
                 //Load Answer grammer based on Property Object Type plus Unknown and None
@@ -137,7 +134,7 @@ namespace OSAE.Jabber
                 //set a AskingQuestionVariables so recognition can run an QuestionedAnswered routine
                 gAnswerObject = dataset.Tables[0].Rows[0]["object_name"].ToString();
                 gAnswerProperty = dataset.Tables[0].Rows[0]["property_name"].ToString();
-                Log.Info("Asking: " + sQuestion + "  (" + gAnswerObject + "," + gAnswerProperty  + ")");
+                Log.Info("-> Asking: " + sQuestion + "  (" + gAnswerObject + "," + gAnswerProperty  + ")");
             }
         }
 
@@ -151,7 +148,7 @@ namespace OSAE.Jabber
             oRecognizer = OSAEGrammar.Load_Text_Only_Grammars(oRecognizer);
             Log.Info("Load_Text_Only_Grammars completed");
 
-            sendMessage(Common.PatternParse("Setting " + gAnswerObject + "'s " + gAnswerProperty + " to " + answer), gCurrentAddress);
+            sendMessage(gCurrentUser,Common.PatternParse("Setting " + gAnswerObject + "'s " + gAnswerProperty + " to " + answer), gCurrentAddress);
 
             Log.Info(Common.PatternParse("Setting " + gAnswerObject + "'s " + gAnswerProperty + " to " + answer));
             OSAEObjectPropertyManager.ObjectPropertySet(gAnswerObject, gAnswerProperty, answer, gCurrentUser);
@@ -174,13 +171,23 @@ namespace OSAE.Jabber
                 // ignore empty messages (events)
                 if (msg.Body == null || oldMmsg == msg || msg.Type == agsXMPP.protocol.client.MessageType.error) return;
                 oldMmsg = msg;
-                if (gDebug) Log.Debug("Searching for: " + msg.From.Bare);
-                DataSet dsResults = new DataSet();  //Build a List of all Users to identify who is sending the message.
-                dsResults = OSAESql.RunSQL("SELECT DISTINCT(object_name) FROM osae_v_object_property WHERE property_name = 'JabberID' and property_value = '" + msg.From.Bare + "' ORDER BY object_name");
-                gCurrentUser = dsResults.Tables[0].Rows[0][0].ToString();
-                if (gDebug) Log.Debug("gCurrentUser: " + dsResults.Tables[0].Rows[0][0].ToString());
-                OSAEObjectPropertyManager.ObjectPropertySet(gCurrentUser, "Communication Method", "Jabber", gCurrentUser);
-                gCurrentAddress = msg.From.Bare;
+
+                string[] jIDRaw = msg.From.ToString().Split('/');
+                string jID = jIDRaw[0];
+                OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByPropertyValue("JabberID", jID);
+                if (objects != null)
+                {
+                    foreach (OSAEObject oObj in objects)
+                    {
+                        gCurrentUser = oObj.Name;
+                    }
+                }
+                else
+                    Log.Info("Message from Unknown address: " + jID);
+
+                if (gDebug) Log.Debug("Current User set to: " + gCurrentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(gCurrentUser, "Communication Method", "Jabber", gAppName);
+                gCurrentAddress = jID;
                 if (msg.Body.EndsWith("?") || msg.Body.EndsWith("!") || msg.Body.EndsWith("."))
                     msg.Body = msg.Body.Substring(0, msg.Body.Length -1);
 
@@ -215,60 +222,46 @@ namespace OSAE.Jabber
 
         void xmppCon_OnPresence(object sender, agsXMPP.protocol.client.Presence pres)
         {
-            Log.Info(String.Format("Received Presence from: {0} show: {1} status: {2}", pres.From.ToString(), pres.Show.ToString(), pres.Status));
-
-            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
-
-            foreach (OSAEObject oObj in objects)
+            string[] jIDRaw = pres.From.ToString().Split('/');
+            string jID = jIDRaw[0];
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByPropertyValue("JabberID", jID);
+            if (objects != null)
             {
-                OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
-
-                if (OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == pres.From.Bare)
+                foreach (OSAEObject oObj in objects)
                 {
+                    Log.Info(String.Format("Received Presence from: {0} show: {1} status: {2}", oObj.Name, pres.Show.ToString(), pres.Status));
                     if (pres.Show.ToString() == "away")
-                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "JabberStatus", "Idle", "Jabber");
+                        OSAEObjectPropertyManager.ObjectPropertySet(oObj.Name, "JabberStatus", "Idle", "Jabber");
                     else if (pres.Show.ToString() == "NONE")
-                        OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "JabberStatus", "Online", "Jabber");
+                        OSAEObjectPropertyManager.ObjectPropertySet(oObj.Name, "JabberStatus", "Online", "Jabber");
                     break;
                 }
             }
+            else
+                Log.Info(String.Format("No object found with address of: {0}",jID, pres.Show.ToString(), pres.Status));
+
         }
 
         void xmppCon_OnRosterItem(object sender, agsXMPP.protocol.iq.roster.RosterItem item)
         {
-            OSAEObject obj = OSAEObjectManager.GetObjectByPropertyValue("JabberID", item.Jid.Bare);
-
-            if (obj != null)
-                Log.Info(String.Format("Received contact from {0} ({1})", obj.Name, item.Jid.Bare));
-            else
+            string[] jIDRaw = item.Jid.Bare.ToString().Split('/');
+            string jID = jIDRaw[0];
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByPropertyValue("JabberID", jID);
+            if (objects == null)
             { 
-                Log.Info(String.Format("Received NEW Contact {0}", item.Jid.Bare));
-                OSAEObjectManager.ObjectAdd(item.Jid.Bare, "", "Discovered Jabber contact", "THING", "", "Unknown", 10, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
+                bool dupName = OSAEObjectManager.ObjectExists(item.Name);
+                if (dupName)
+                    Log.Info(String.Format("Found Object {0} for {1}", item.Name, jID));
+                else
+                {
+                    Log.Info(String.Format("Creating new Object {0} for {1}", item.Name, jID));
+                    OSAEObjectManager.ObjectAdd(item.Name, "", "Discovered Jabber contact", "PERSON", "", "Unknown", 10, true);
+                }
+                Log.Info(String.Format("Updating JabberID for {0}", item.Name));
+                OSAEObjectPropertyManager.ObjectPropertySet(item.Name, "JabberID", jID, gAppName);
             }
-
-
-            //   }
-            //            bool found = false;
-            // OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("PERSON");
-
-            // foreach (OSAEObject oObj in objects)
-            //  {
-            //      OSAEObject obj = OSAEObjectManager.GetObjectByName(oObj.Name);
-            //      if (OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "JabberID").Value == item.Jid.Bare)
-            //     {
-            //         found = true;
-            //        Log.Info(String.Format("Received contact from {0} ({1})", obj.Name, item.Jid.Bare));
-            //        break;
-            //     }
-            //  }
-
-            //  if (!found)
-            //   {
-            //      Log.Info(String.Format("Received NEW Contact {0}", item.Jid.Bare));
-            //      OSAEObjectManager.ObjectAdd(item.Jid.Bare, "", "Discovered Jabber contact", "PERSON", "", "Unknown", 50, true);
-            //     OSAEObjectPropertyManager.ObjectPropertySet(item.Jid.Bare, "JabberID", item.Jid.Bare, "Jabber");
-            //   }
+            else
+                Log.Info(String.Format("Found Object {0} for {1}", item.Name, jID));
         }
 
         void xmppCon_OnRosterEnd(object sender)
@@ -309,13 +302,13 @@ namespace OSAE.Jabber
             { Log.Error("Error connecting: ", ex);}
         }
 
-        private void sendMessage(string message, string contact)
+        private void sendMessage(string name, string address, string message)
         {
-            if (gDebug) Log.Debug("OUTPUT: '" + message + "' to " + contact);
+            Log.Info("-> " + name + ": " + message + " (" + address + ")");
             // Send a message
             agsXMPP.protocol.client.Message msg = new agsXMPP.protocol.client.Message();
             msg.Type = agsXMPP.protocol.client.MessageType.chat;
-            msg.To = new Jid(contact);
+            msg.To = new Jid(address);
             msg.Body = message;
 
             xmppCon.Send(msg);
@@ -357,12 +350,12 @@ namespace OSAE.Jabber
                 {
                     if (result.Grammar.Name.ToString() == "Direct Match")
                     {
-                        Log.Debug("Searching for: " + sResults);
+                        Log.Debug("Search for Meaning of: " + result.Text);
                         sResults = OSAEGrammar.SearchForMeaning(result.Text, scriptParameter, gCurrentUser);
                     }
                     else
                     {
-                        Log.Debug("Searching for: " + sResults);
+                        Log.Debug("Search for Meaning of: " + result.Grammar.Name.ToString());
                         sResults = OSAEGrammar.SearchForMeaning(result.Grammar.Name.ToString(), scriptParameter, gCurrentUser);
                     }
                 }
