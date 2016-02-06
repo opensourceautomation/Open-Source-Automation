@@ -57,8 +57,7 @@
         /// </summary>
         private string _latestAvailableVersion;
 
-        //OSAELog
-        private OSAE.General.OSAELog Log;// = new OSAE.General.OSAELog("Plugin");
+        private OSAE.General.OSAELog Log;
 
         private AppDomain _domain;
         private OSAEPluginBase _plugin;

@@ -120,71 +120,70 @@
             {
                 try
                 {
+                    Log.Info("----------------------------------------------------");
                     if (plugin.PluginName != "")
                     {
-                        Log.Info("----------------------------------------------------");
-                        if (plugin.PluginName != "")
-                        {
-                            OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
-                            if (obj == null)
-                            {
-                                bool found = OSAEObjectTypeManager.ObjectTypeExists(plugin.PluginType);
-                                if (found)
-                                {
-                                    OSAEObjectManager.ObjectAdd(plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", serviceName, 50, true);
-                                    Log.Info(obj.Name + ":  Plugin Object Not found.  Plugin Object Created.");
-                                    obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
-                                    if (obj == null) Log.Info(obj.Name + ":  I failed to create the Plugin Object!");
-                                }
-                                else
-                                    Log.Info(":  Plugin Object Type Not found.  Plugin Object Cannot be Created.");
-                            }
-
-                            if (obj != null)
-                            {
-                                Log.Info(obj.Name + ":  Plugin Object found.  Plugin Object Enabled = " + obj.Enabled.ToString());
-                                //No idea why the following line would run
-                                //OSAEObjectManager.ObjectUpdate(plugin.PluginName,plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", serviceName, 50, true);
-                                if (obj.Enabled == true)
-                                    startPlugin(serviceObject, plugin);
-                                else
-                                {
-                                    plugin.Enabled = false;
-                                    OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", serviceObject);
-                                }
-                                Log.Info(obj.Name + ":  Plugin Enabled =  " + plugin.Enabled.ToString());
-                                Log.Info(obj.Name + ":  Plugin Version = " + plugin.PluginVersion);
-                                OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", serviceName, 50, true);
-                                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Version", plugin.PluginVersion, serviceName);
-                                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Author", plugin.PluginAuthor, serviceName);
-                            }
-
-                        }
-                        else
+                        OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
+                        if (obj == null)
                         {
                             bool found = OSAEObjectTypeManager.ObjectTypeExists(plugin.PluginType);
                             if (found)
                             {
-                                plugin.PluginName = plugin.PluginType;
-                                Log.Info(plugin.PluginName + ":  Plugin object does not exist in DB!");
-                                OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", 50, false);
-                                OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Version", plugin.PluginVersion, serviceName);
-                                OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Author", plugin.PluginAuthor, serviceName);
-                                Log.Info(plugin.PluginName + ":  Plugin added to DB.");
-                                UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
+                                OSAEObjectManager.ObjectAdd(plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", serviceName, 50, false);
+                                Log.Info(obj.Name + ":  Plugin Object Not found.  Plugin Object Created.");
+                                obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
+                                if (obj == null) Log.Info(obj.Name + ":  I failed to create the Plugin Object!");
                             }
                             else
                                 Log.Info(":  Plugin Object Type Not found.  Plugin Object Cannot be Created.");
                         }
-                        plugins.Add(plugin);
-                        masterPlugins.Add(plugin);
+
+                        if (obj != null)
+                        {
+                            Log.Info(obj.Name + ":  Plugin Object found.  Plugin Object Enabled = " + obj.Enabled.ToString());
+                            //No idea why the following line would run
+                            //OSAEObjectManager.ObjectUpdate(plugin.PluginName,plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", serviceName, 50, true);
+                            if (obj.Enabled == true)
+                            {
+                                plugin.Enabled = true;
+                                startPlugin(serviceObject, plugin);
+                            }
+                            else
+                            {
+                                plugin.Enabled = false;
+                                OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", serviceObject);
+                            }
+
+                            Log.Info(obj.Name + ":  Plugin Enabled =  " + plugin.Enabled.ToString());
+                            Log.Info(obj.Name + ":  Plugin Version = " + plugin.PluginVersion);
+                            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", serviceName, 50, plugin.Enabled);
+                            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Version", plugin.PluginVersion, serviceName);
+                            OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Author", plugin.PluginAuthor, serviceName);
+                        }
                     }
                     else
-                        Log.Info(plugin.PluginType + " Skipped! (Not Loaded due to missing Object or other issue)");
+                    {
+                        bool found = OSAEObjectTypeManager.ObjectTypeExists(plugin.PluginType);
+                        if (found)
+                        {
+                            plugin.PluginName = plugin.PluginType;
+                            Log.Info(plugin.PluginName + ":  Plugin object does not exist in DB!");
+                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", 50, false);
+                            OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Version", plugin.PluginVersion, serviceName);
+                            OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Author", plugin.PluginAuthor, serviceName);
+                            Log.Info(plugin.PluginName + ":  Plugin added to DB.");
+                            UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
+                        }
+                        else
+                            Log.Info(":  Plugin Object Type Not found.  Plugin Object Cannot be Created.");
+                    }
+                    plugins.Add(plugin);
+                    masterPlugins.Add(plugin);
                 }
                 catch (Exception ex)
                 { Log.Error("Error loading plugin: " + ex.Message, ex); }
             }
+            OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
         }
 
         private bool pluginLoaded(string type)

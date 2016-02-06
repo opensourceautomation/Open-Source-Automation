@@ -10,6 +10,9 @@ CALL osae_sp_object_type_property_add('RFXCOM','Learning Mode', 'Boolean', '',''
 CALL osae_sp_object_type_property_add ('RFXCOM','Temp Units','String','','',0);
 CALL osae_sp_object_type_property_option_add('RFXCOM','Temp Units','Celsius');
 CALL osae_sp_object_type_property_option_add('RFXCOM','Temp Units','Farenheit ');
+CALL osae_sp_object_type_property_add('RFXCOM','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('RFXCOM','Version','String','','',0);
+CALL osae_sp_object_type_property_add('RFXCOM','Author','String','','',0);
 
 CALL osae_sp_object_type_add ('OS TEMP SENSOR','Oregon Scientific Temperature Sensor','','',0,0,0,1);
 CALL osae_sp_object_type_event_add ('OS TEMP SENSOR','TEMPERATURE','Temperature Changed');

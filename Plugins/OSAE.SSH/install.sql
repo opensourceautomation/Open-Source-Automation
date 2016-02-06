@@ -6,3 +6,6 @@ CALL osae_sp_object_type_event_add ('SSH','OFF','Stopped');
 CALL osae_sp_object_type_method_add ('SSH','EXECUTE','Execute Command','Server/Username/Password','Command','','');
 CALL osae_sp_object_type_method_add ('SSH','ON','Start','','','','');
 CALL osae_sp_object_type_method_add ('SSH','OFF','Stop','','','','');
+CALL osae_sp_object_type_property_add('SSH','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('SSH','Version','String','','',0);
+CALL osae_sp_object_type_property_add('SSH','Author','String','','',0);

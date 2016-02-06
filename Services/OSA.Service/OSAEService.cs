@@ -145,7 +145,7 @@ namespace OSAE.Service
             // Start the threads that monitor the plugin 
             // updates check the method queue and so on
             StartThreads(serviceObject);
-            OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
+            
         }
 
         /// <summary>

@@ -18,3 +18,4 @@ CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','Server Address','Str
 CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','CLI Port','String','9090','',0);
 CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','TTS Save Path','String','','',0);
 CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','TTS Play Path','String','',0);
+

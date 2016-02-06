@@ -42,3 +42,6 @@ CALL osae_sp_object_type_method_add ('APRILAIRETHERMOSTAT','ON','Start','','',''
 CALL osae_sp_object_type_method_add ('APRILAIRETHERMOSTAT','OFF','Stop','','','','');
 CALL osae_sp_object_type_property_add ('APRILAIRETHERMOSTAT','IPAddress','String','','',0);
 CALL osae_sp_object_type_property_add ('APRILAIRETHERMOSTAT','Port','Integer','','0',0);
+CALL osae_sp_object_type_property_add('APRILAIRETHERMOSTAT','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('APRILAIRETHERMOSTAT','Version','String','','',0);
+CALL osae_sp_object_type_property_add('APRILAIRETHERMOSTAT','Author','String','','',0);

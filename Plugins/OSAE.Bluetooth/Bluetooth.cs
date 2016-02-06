@@ -1,12 +1,12 @@
 ﻿namespace OSAE.Bluetooth
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Timers;
     using InTheHand.Net;
     using InTheHand.Net.Bluetooth;
     using InTheHand.Net.Sockets;
+    using System.Collections.Generic;
 
     public class Bluetooth : OSAEPluginBase
     {

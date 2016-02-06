@@ -65,15 +65,19 @@ namespace OSAE.ClientService
 
         public ClientService()
         {
-            bool found = OSAEObjectManager.ObjectExists("SERVICE-" + Common.ComputerName);
-            if (!found)
-                OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "", "SERVICE", "SERVICE", "", "SYSTEM", 50, true);
-
             serviceObject = "SERVICE-" + Common.ComputerName;
-            OSAE.OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
-
             Log = new OSAE.General.OSAELog(serviceObject);
+            bool found = OSAEObjectManager.ObjectExists(serviceObject);
+            if (!found)
+                OSAEObjectManager.ObjectAdd(serviceObject, "", "SERVICE", "SERVICE", "", Common.ComputerName, 50, true);
+            else
+            {
+                OSAEObject obj = OSAEObjectManager.GetObjectByName(serviceObject);
+                OSAEObjectManager.ObjectUpdate(serviceObject, serviceObject, "", obj.Description, obj.Type, "", Common.ComputerName, obj.MinTrustLevel, obj.Enabled);
+            }
 
+            OSAE.OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
+          
             Log.Info("ClientService Starting");
 
             try

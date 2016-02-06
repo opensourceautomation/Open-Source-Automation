@@ -14,18 +14,16 @@
         public Plugin Find(string name)
         {
             foreach (Plugin obj in Items)
-            {
                 if (obj.PluginName == name) return obj;
-            }
+
             return null;
         }
 
         public Plugin Find(string name, bool enabled)
         {
             foreach (Plugin obj in Items)
-            {
                 if (obj.PluginName == name && obj.Enabled == enabled) return obj;
-            }
+
             return null;
         }
 
