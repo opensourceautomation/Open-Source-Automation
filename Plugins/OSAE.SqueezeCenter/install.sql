@@ -15,7 +15,12 @@ CALL osae_sp_object_type_event_add ('SQUEEZEBOX SERVER','OFF','Stopped');
 CALL osae_sp_object_type_method_add ('SQUEEZEBOX SERVER','ON','Start','','','','');
 CALL osae_sp_object_type_method_add ('SQUEEZEBOX SERVER','OFF','Stop','','','','');
 CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','Server Address','String','','',0);
-CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','CLI Port','String','9090','',0);
+CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','CLI Port','String','','9090',0);
 CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','TTS Save Path','String','','',0);
-CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','TTS Play Path','String','',0);
+CALL osae_sp_object_type_property_add ('SQUEEZEBOX SERVER','TTS Play Path','String','','',0);
+CALL osae_sp_object_type_property_add('SQUEEZEBOX SERVER','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('SQUEEZEBOX SERVER','Version','String','','',0);
+CALL osae_sp_object_type_property_add('SQUEEZEBOX SERVER','Author','String','','',0);
+
+
 

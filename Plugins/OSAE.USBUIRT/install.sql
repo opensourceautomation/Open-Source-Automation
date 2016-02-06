@@ -1,13 +1,16 @@
 CALL osae_sp_object_type_add ('USBUIRT','USBUIRT Plugin','','PLUGIN',1,1,0,1);
-CALL osae_sp_object_type_state_add ('ON','Running','USBUIRT');
-CALL osae_sp_object_type_state_add ('OFF','Stopped','USBUIRT');
-CALL osae_sp_object_type_event_add ('ON','Started','USBUIRT');
-CALL osae_sp_object_type_event_add ('OFF','Stopped','USBUIRT');
-CALL osae_sp_object_type_method_add ('ON','Start','USBUIRT','','','','');
-CALL osae_sp_object_type_method_add ('OFF','Stop','USBUIRT','','','','');
-CALL osae_sp_object_type_method_add ('TRANSMIT','Transmit','USBUIRT','IR Code','','','');
-CALL osae_sp_object_type_property_add ('Computer Name','String','','USBUIRT',0);
-CALL osae_sp_object_type_property_add ('System Plugin','Boolean','FALSE','USBUIRT',0);
+CALL osae_sp_object_type_state_add ('USBUIRT','ON','Running');
+CALL osae_sp_object_type_state_add ('USBUIRT','OFF','Stopped');
+CALL osae_sp_object_type_event_add ('USBUIRT','ON','Started');
+CALL osae_sp_object_type_event_add ('USBUIRT','OFF','Stopped');
+CALL osae_sp_object_type_method_add ('USBUIRT','ON','Start','','','','');
+CALL osae_sp_object_type_method_add ('USBUIRT','OFF','Stop','','','','');
+CALL osae_sp_object_type_method_add ('USBUIRT','TRANSMIT','Transmit','IR Code','','','');
+CALL osae_sp_object_type_property_add ('USBUIRT','System Plugin','Boolean','','FALSE',0);
+CALL osae_sp_object_type_property_add('USBUIRT','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('USBUIRT','Version','String','','',0);
+CALL osae_sp_object_type_property_add('USBUIRT','Author','String','','',0);
+
 
 
 

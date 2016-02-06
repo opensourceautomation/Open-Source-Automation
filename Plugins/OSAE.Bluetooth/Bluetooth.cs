@@ -10,7 +10,7 @@
 
     public class Bluetooth : OSAEPluginBase
     {
-        private OSAE.General.OSAELog Log;// = new General.OSAELog();
+        private OSAE.General.OSAELog Log;
         BluetoothClient bc;
         BluetoothDeviceInfo[] nearosaeDevices;
         System.Timers.Timer Clock;

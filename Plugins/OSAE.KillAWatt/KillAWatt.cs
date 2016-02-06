@@ -5,7 +5,7 @@
 
     public class KillAWatt : OSAEPluginBase
     {
-        Logging logging = Logging.GetLogger("KillAWatt");
+        private OSAE.General.OSAELog Log;
         string pName = string.Empty;
         xbee xb;
         List<xbeePacket> xbl = new List<xbeePacket>();
@@ -15,7 +15,6 @@
         int intervalLength = 60;
         Object thisLock = new Object();
 
-
         public override void ProcessCommand(OSAEMethod method)
         {
             // No commands
@@ -24,7 +23,10 @@
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-            OSAEObjectTypeManager.ObjectTypeUpdate("KILLAWATT MODULE", "KILLAWATT MODULE", "Kill-A-Watt Module", pName, "KILLAWATT MODULE", false, false, false, true);
+            Log = new General.OSAELog(pName);
+
+            OSAEObjectType objt = OSAEObjectTypeManager.ObjectTypeLoad("KILLAWATT MODULE");
+            OSAEObjectTypeManager.ObjectTypeUpdate(objt.Name, objt.Name, objt.Description, pName, "THING", objt.Owner, objt.SysType, objt.Container, objt.HideRedundant);
 
             xb = new xbee(Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value));
             xb.xbeePacketReceived += new xbee.xbeePacketReceivedEventHandler(xb_xbeePacketReceived);
@@ -41,8 +43,7 @@
             packetCount++;
             foreach (PowerCollection pc in pcList)
             {
-                if (pc.PacketCount >= intervalLength)
-                    interval();
+                if (pc.PacketCount >= intervalLength) interval();
             }
         }
 
@@ -52,27 +53,23 @@
             {
                 try
                 {
-                    logging.AddToLog("Received Packet: " + packet.Address, false);
+                    Log.Debug("Received Packet: " + packet.Address);
                     VREF = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "VREF").Value);
                     double watts = 0;
-                    int max = 0;
-                    int min = 1024;
-                    int avgv, vpp;
+                    int max = 0, min = 1024, avgv, vpp;
 
                     if (packet.Checksum % 256 == 255)
                     {
                         int x = 0;
                         for (int i = 0; i < 19; i++)
                         {
-                            if (packet.Voltage[i] < min)
-                                min = packet.Voltage[i];
-                            if (packet.Voltage[i] > max)
-                                max = packet.Voltage[i];
+                            if (packet.Voltage[i] < min) min = packet.Voltage[i];
+                            if (packet.Voltage[i] > max) max = packet.Voltage[i];
                         }
 
                         avgv = (min + max) / 2;
                         vpp = max - min;
-                        logging.AddToLog("  avgv: " + avgv, false);
+                        Log.Debug("  avgv: " + avgv);
 
                         for (int i = 0; i < 19; i++)
                         {
@@ -86,40 +83,31 @@
 
                         watts = Math.Round(watts / 19, 3);
 
-
-                        if (watts < 0)
-                            watts = 0;
+                        if (watts < 0)  watts = 0;
                         try
                         {
                             PowerCollection pc = GetPowerCollection(packet.Address);
-                            logging.AddToLog("  watts: " + watts.ToString(), false);
+                            Log.Debug("  watts: " + watts.ToString());
                             pc.DataWattBuffer = pc.DataWattBuffer + watts;
                             pc.PacketCount = pc.PacketCount + 1;
                             pc.RSSI = packet.RSSI;
-                            logging.AddToLog("  RSSI: " + pc.RSSI.ToString(), false);
+                            Log.Debug("  RSSI: " + pc.RSSI.ToString());
                         }
 
                         catch (Exception ex)
-                        {
-                            logging.AddToLog("  error updating object statuses: " + ex.ToString(), false);
-                        }
+                        { Log.Error("  error updating object statuses!", ex); }
                     }
                     else
-                    {
-                        logging.AddToLog("  bad checksum", false);
-                    }
-                    //addToLog("- parse packet ended");
+                        Log.Debug("  bad checksum");
                 }
                 catch (Exception ex)
-                {
-                    logging.AddToLog("- Error parsing packet:" + ex.Message, true);
-                }
+                { Log.Error("- Error parsing packet!", ex); }
             }
         }
 
         private void interval()
         {
-            logging.AddToLog("--- interval started", false);
+            Log.Debug("--- interval started");
             intervalLength = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Interval").Value);
             foreach(PowerCollection pc in pcList)
             {
@@ -129,26 +117,24 @@
                     {
                         
                         string errorStr = OSAEObjectPropertyManager.GetObjectPropertyValue(OSAEObjectManager.GetObjectByAddress("KAW" + pc.Address).Name, "Error Correction").Value;
-                        logging.AddToLog("  errorStr: " + errorStr, false); 
+                        Log.Debug("  errorStr: " + errorStr); 
                         Double errorCorrection = 0, currentWatts;
                         System.Globalization.NumberStyles styles = System.Globalization.NumberStyles.AllowTrailingSign | System.Globalization.NumberStyles.Float;
 
                         try
                         {
-                            if (errorStr.Length > 1)
-                                errorCorrection = Double.Parse(errorStr, styles);
+                            if (errorStr.Length > 1) errorCorrection = Double.Parse(errorStr, styles);
                         }
                         catch
                         { }
                        
                         currentWatts = pc.GetInterval() + errorCorrection;
-                        if (currentWatts < 0)
-                            currentWatts = 0;
+                        if (currentWatts < 0) currentWatts = 0;
 
-                        logging.AddToLog("  device address: " + pc.Address, false);
-                        logging.AddToLog("  dataWattBuffer: " + pc.DataWattBuffer, false);
-                        logging.AddToLog("  dataWattCount: " + pc.PacketCount, false);
-                        logging.AddToLog("  errorStr: " + errorStr, false);
+                        Log.Debug("  device address: " + pc.Address);
+                        Log.Debug("  dataWattBuffer: " + pc.DataWattBuffer);
+                        Log.Debug("  dataWattCount: " + pc.PacketCount);
+                        Log.Debug("  errorStr: " + errorStr);
                         OSAEObjectPropertyManager.ObjectPropertySet(OSAEObjectManager.GetObjectByAddress("KAW" + pc.Address).Name, "RSSI", pc.RSSI.ToString(), pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(OSAEObjectManager.GetObjectByAddress("KAW" + pc.Address).Name, "Current Watts", currentWatts.ToString(), pName);
                         pc.DataWattBuffer = 0;
@@ -157,21 +143,18 @@
                 }
                 catch (Exception ex)
                 {
-                    logging.AddToLog("  error inserting data: " + ex.ToString(), false);
+                    Log.Error("  error inserting dat!", ex);
                     break;
                 }
             }
-            
             //addToLog("--- interval ended");
-
         }
        
         private PowerCollection GetPowerCollection(int address)
         {
             foreach (PowerCollection pc in pcList)
             {
-                if (pc.Address == address)
-                    return pc;
+                if (pc.Address == address) return pc;
             }
             pcList.Add(new PowerCollection(address));
             if(OSAEObjectManager.GetObjectByAddress("KAW" + address.ToString()) == null)
@@ -179,6 +162,5 @@
 
             return GetPowerCollection(address);
         }
-
     }
 }

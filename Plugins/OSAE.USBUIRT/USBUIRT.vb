@@ -5,7 +5,7 @@ Imports OSAE
 
 Public Class USBUIRT
     Inherits OSAEPluginBase
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog
     Private pName As String = ""
     Private mc As Controller
     Private irCode As String = "0000 0071 0000 0032 0080 0040 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0aad"
@@ -23,9 +23,9 @@ Public Class USBUIRT
     End Sub
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
+        pName = pluginName
+        Log = New General.OSAELog(pName)
         Try
-            pName = pluginName
-            Log.Info("Found my Object Name: " & pName)
             mc = New Controller()
         Catch myerror As Exception
             Log.Error("Error Finding USB-UIRT Device: " & myerror.Message)

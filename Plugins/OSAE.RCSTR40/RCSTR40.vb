@@ -33,8 +33,8 @@ Public Class RCSThermostatManager
     Dim FanModes As New Dictionary(Of Integer, String)
     Dim Status As New Dictionary(Of Integer, String)
     Dim MOTMRT As New Dictionary(Of Integer, String)
-
-    Private Shared logging As Logging = logging.GetLogger("RCS Thermostat")
+    Private Log As OSAE.General.OSAELog
+    'Private Shared logging As Logging = logging.GetLogger("RCS Thermostat")
     Private CN As MySqlConnection
     Private Shared dsObjects As DataSet
 
@@ -54,12 +54,11 @@ Public Class RCSThermostatManager
     Private Shared BusyFlag As Boolean
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
-
+        pName = pluginName
+        ThermostatName = pName
+        Log = New General.OSAELog(pName)
         Try
-            logging.AddToLog("Initializing plugin: " & pluginName, True)
-            pName = pluginName
-            ThermostatName = pName
-
+            Log.Info("Initializing plugin: " & pluginName)
             'Create the associative arrays for mode, fan mode, status and MOTMRT
             Modes.Add("O", "Off")
             Modes.Add("H", "Heat")
@@ -90,10 +89,10 @@ Public Class RCSThermostatManager
                 TstatTimer.Start()
 
             Catch ex As Exception
-                logging.AddToLog("Error setting up timer: " & ex.Message, True)
+                Log.Error("Error setting up timer!", ex)
             End Try
         Catch ex As Exception
-            logging.AddToLog("Error setting up plugin: " & ex.Message, True)
+            Log.Error("Error setting up plugin!", ex)
         End Try
 
     End Sub
@@ -116,66 +115,73 @@ Public Class RCSThermostatManager
                     Send("R=1")
 
                 Case "TEMPUP"
-                    logging.EventLogAdd(ThermostatName, "TEMPCHANGE")
-                    logging.AddToLog("Increasing temp set point", False)
+                    OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "TEMPCHANGE", "", "", pName)
+                    'Logging.EventLogAdd(ThermostatName, "TEMPCHANGE")
+                    Log.Debug("Increasing temp set point")
                     Send("SP+ R=1")
 
                 Case "TEMPDOWN"
-                    logging.EventLogAdd(ThermostatName, "TEMPCHANGE")
-                    logging.AddToLog("Decreasing temp set point", False)
+                    OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "TEMPCHANGE", "", "", pName)
+                    'Logging.EventLogAdd(ThermostatName, "TEMPCHANGE")
+                    Log.Debug("Decreasing temp set point")
                     Send("SP- R=1")
 
                 Case "SETHEATSP"
-                    logging.EventLogAdd(ThermostatName, "HEATSPCHANGE")
-                    logging.AddToLog("Setting heating set point to " & Parameter1, False)
+                    OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "HEATSPCHANGE", "", "", pName)
+                    'Logging.EventLogAdd(ThermostatName, "HEATSPCHANGE")
+                    Log.Debug("Setting heating set point to " & Parameter1)
                     Send("SPH=" & Parameter1 & " R=1")
 
                 Case "SETCOOLSP"
-                    logging.EventLogAdd(ThermostatName, "COOLSPCHANGE")
-                    logging.AddToLog("Setting cooling set point to " & Parameter1, False)
+                    OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "COOLSPCHANGE", "", "", pName)
+                    'Logging.EventLogAdd(ThermostatName, "COOLSPCHANGE")
+                    Log.Debug("Setting cooling set point to " & Parameter1)
                     Send("SPC=" & Parameter1 & " R=1")
 
                 Case "SETMODE"
-                    logging.EventLogAdd(ThermostatName, "MODECHANGE")
+                    OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "MODECHANGE", "", "", pName)
+                    'Logging.EventLogAdd(ThermostatName, "MODECHANGE")
                     Mode = Tstat.CurrentMode
-                    logging.AddToLog("Changing mode from " & Modes(Mode) & " to " & Parameter1, False)
+                    Log.Debug("Changing mode from " & Modes(Mode) & " to " & Parameter1)
                     Send("M=" & Parameter1 & " R=1")
 
                 Case "FANON"
-                    logging.EventLogAdd(ThermostatName, "FANON")
-                    logging.AddToLog("Turning fan on", False)
+                    OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "FANON", "", "", pName)
+                    'Logging.EventLogAdd(ThermostatName, "FANON")
+                    Log.Debug("Turning fan on")
                     Send("F=1 R=1")
 
                 Case "FANOFF"
-                    logging.EventLogAdd(ThermostatName, "FANOFF")
+                    OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "FANOFF", "", "", pName)
+                    'Logging.EventLogAdd(ThermostatName, "FANOFF")
                     Mode = If(Tstat.CurrentFanMode = 0, 1, 0)
-                    logging.AddToLog("Turning fan off", False)
+                    Log.Debug("Turning fan off")
                     Send("F=0 R=1")
 
                 Case "TOGGLEFANMODE"
-                    logging.EventLogAdd(ThermostatName, "FANMODECHANGE")
+                    OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "FANMODECHANGE", "", "", pName)
+                    'Logging.EventLogAdd(ThermostatName, "FANMODECHANGE")
                     Mode = If(Tstat.CurrentFanMode = 0, 1, 0)
-                    logging.AddToLog("Changing mode from " & Status(Tstat.CurrentFanMode) & " to " & Status(Mode), False)
+                    Log.Debug("Changing mode from " & Status(Tstat.CurrentFanMode) & " to " & Status(Mode))
                     Send("F=" & Mode & " R=1")
 
                 Case "ON"
-                    logging.AddToLog("Starting thermostat automatic updates", False)
+                    Log.Debug("Starting thermostat automatic updates")
                     TstatTimer.Start()
 
                 Case "OFF"
-                    logging.AddToLog("Stopping thermostat automatic updates", False)
+                    Log.Debug("Stopping thermostat automatic updates")
                     TstatTimer.Stop()
             End Select
         Catch ex As Exception
-            logging.AddToLog("Error Processing Command: " & ex.Message, True)
+            Log.Error("Error Processing Command!", ex)
         End Try
 
     End Sub
 
     Public Overrides Sub Shutdown()
-        logging.AddToLog("Shutting down plugin", True)
         ControllerPort.Close()
-        logging.AddToLog("Finished shutting down plugin", True)
+        Log.Info("Finished shutting down plugin")
     End Sub
 
     Public Sub SetComPort()
@@ -186,12 +192,10 @@ Public Class RCSThermostatManager
             'if it Is different
             If COMPort <> "COM" + Port Then
                 COMPort = "COM" + Port
-
                 ControllerPort = New SerialPort(COMPort, 9600, Parity.None, 8, StopBits.One)
-                logging.AddToLog("Port is set to: " & COMPort, True)
+                Log.Info("Port is set to: " & COMPort)
                 ControllerPort.NewLine = vbCrLf
                 ControllerPort.ReadTimeout = 5
-
                 ControllerPort.Open()
             End If
             'Get the RS-485 address
@@ -202,7 +206,7 @@ Public Class RCSThermostatManager
             AddHandler ControllerPort.DataReceived, New SerialDataReceivedEventHandler(AddressOf UpdateReceived)
 
         Catch ex As Exception
-            logging.AddToLog("Error setting com port: " & ex.Message, True)
+            Log.Error("Error setting com port!", ex)
         End Try
 
     End Sub
@@ -213,9 +217,9 @@ Public Class RCSThermostatManager
         Try
             CN.Open()
             CN.Close()
-            logging.AddToLog("Connected to Database: " & Common.DBName & " @ " & Common.DBConnection & ":" & Common.DBPort, True)
+            Log.Info("Connected to Database: " & Common.DBName & " @ " & Common.DBConnection & ":" & Common.DBPort)
         Catch ex As Exception
-            logging.AddToLog("Error Connecting to Database: " & ex.Message, True)
+            Log.Error("Error Connecting to Database!", ex)
         End Try
     End Sub
 
@@ -229,13 +233,12 @@ Public Class RCSThermostatManager
             CMD.CommandType = CommandType.Text
             CMD.CommandText = "SELECT object_name FROM osae_v_object WHERE object_type='RCS-TR40 THERMOSTAT'"
             dsObjects = OSAESql.RunQuery(CMD)
-
             For Each Row As DataRow In dsObjects.Tables(0).Rows
-                logging.AddToLog("Found object: " & Row("object_name").ToString, True)
+                Log.Info("Found object: " & Row("object_name").ToString)
             Next
 
         Catch ex As Exception
-            logging.AddToLog("Error loading objects: " & ex.Message, True)
+            Log.Error("Error loading objects!", ex)
         End Try
 
     End Sub
@@ -260,9 +263,8 @@ Public Class RCSThermostatManager
     End Sub
 
     Protected Sub UpdateReceived(ByVal sender As Object, ByVal e As SerialDataReceivedEventArgs)
-        logging.AddToLog("Running serial port event handler", False)
+        Log.Debug("Running serial port event handler")
         ProcessReceived()
-
     End Sub
 
     Protected Sub ProcessReceived()
@@ -271,7 +273,7 @@ Public Class RCSThermostatManager
 
         Try
             Message = ControllerPort.ReadExisting()
-            logging.AddToLog("Serial data received: " & Message.TrimEnd, True)
+            Log.Info("Serial data received: " & Message.TrimEnd)
 
             If Message.Length > 0 Then
                 ReceivedMessage += Message
@@ -290,7 +292,7 @@ Public Class RCSThermostatManager
             'Clear the BusyFlag
             BusyFlag = False
         Catch ex As Exception
-            logging.AddToLog("Error receiving on com port: " & ex.Message, True)
+            Log.Error("Error receiving on com port!", ex)
         End Try
 
     End Sub
@@ -304,7 +306,7 @@ Public Class RCSThermostatManager
         Dim Value As String
 
         Try
-            logging.AddToLog("Processing: " & Message, True)
+            Log.Info("Processing: " & Message)
             SetProperty("Received", Message)
 
             'Split the status message into parts
@@ -323,11 +325,11 @@ Public Class RCSThermostatManager
                 End While
             Else
                 'The received response was not formatted properly.  Re-send the command
-                logging.AddToLog("re-sending command: " & LastSent, False)
+                Log.Debug("re-sending command: " & LastSent)
                 Send(LastSent)
             End If
         Catch ex As Exception
-            logging.AddToLog("Error parsing received message: " & ex.Message, True)
+            Log.Error("Error parsing received message!", ex)
         End Try
 
     End Sub
@@ -375,42 +377,48 @@ Public Class RCSThermostatManager
                 Case "H1A"
                     'logging.AddToLog("Heat stage 1: " & Value, True)
                     If Tstat.HeatStage1 <> Value Then
-                        logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
+                        OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "STATUSCHANGE", "", "", pName)
+                        'Logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
                     End If
                     Tstat.HeatStage1 = Value
                     SetProperty("Heat Stage 1", Status(Value))
                 Case "H2A"
                     'logging.AddToLog("Heat stage 2: " & Value, True)
                     If Tstat.HeatStage2 <> Value Then
-                        logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
+                        OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "STATUSCHANGE", "", "", pName)
+                        'Logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
                     End If
                     Tstat.HeatStage2 = Value
                     SetProperty("Heat Stage 2", Status(Value))
                 Case "H3A"
                     'logging.AddToLog("Heat stage 3: " & Value, True)
                     If Tstat.HeatStage1 <> Value Then
-                        logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
+                        OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "STATUSCHANGE", "", "", pName)
+                        'Logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
                     End If
                     Tstat.HeatStage3 = Value
                     SetProperty("Heat Stage 3", Status(Value))
                 Case "C1A"
                     'logging.AddToLog("Cool stage 1: " & Value, True)
                     If Tstat.CoolStage1 <> Value Then
-                        logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
+                        OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "STATUSCHANGE", "", "", pName)
+                        'Logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
                     End If
                     Tstat.CoolStage1 = Value
                     SetProperty("Cool Stage 1", Status(Value))
                 Case "C2A"
                     'logging.AddToLog("Cool stage 2: " & Value, True)
                     If Tstat.CoolStage2 <> Value Then
-                        logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
+                        OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "STATUSCHANGE", "", "", pName)
+                        'Logging.EventLogAdd(ThermostatName, "STATUSCHANGE")
                     End If
                     Tstat.CoolStage2 = Value
                     SetProperty("Cool Stage 2", Status(Value))
                 Case "FA"
                     'logging.AddToLog("Fan status: " & Value, True)
                     If Tstat.CoolStage2 <> Value Then
-                        logging.EventLogAdd(ThermostatName, "FANMODECHANGE")
+                        OSAE.OSAEObjectManager.EventTrigger(ThermostatName, "STATUSCHANGE", "", "", pName)
+                        'Logging.EventLogAdd(ThermostatName, "FANMODECHANGE")
                     End If
                     Tstat.FanStatus = Value
                     SetProperty("Fan Status", FanModes(Value))
@@ -443,18 +451,18 @@ Public Class RCSThermostatManager
                     SetProperty("System Fan", Status(Value))
             End Select
         Catch ex As Exception
-            Logging.AddToLog("Error parsing status data: " & ex.Message, True)
+            Log.Error("Error parsing status data!", ex)
         End Try
     End Sub
 
     Private Sub Send(ByVal Cmd As String)
         Dim Command As String = "A=" & SerialAddr & " O=00 " & Cmd
         Try
-            Logging.AddToLog("Writing to serial port " & COMPort & ": " & Command, False)
+            Log.Debug("Writing to serial port " & COMPort & ": " & Command)
             ControllerPort.Write(Command & vbCr)
             LastSent = Cmd
         Catch
-            Logging.AddToLog("Error sending command to serial port " & COMPort & ": " & Command, False)
+            Log.Error("Error sending command to serial port " & COMPort & ": " & Command)
         End Try
     End Sub
 
@@ -462,7 +470,7 @@ Public Class RCSThermostatManager
         Try
             OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, PropertyName, Data, pName)
         Catch ex As Exception
-            Logging.AddToLog("Error setting property value: " & ex.Message, True)
+            Log.Error("Error setting property value!", ex)
         End Try
     End Sub
 
@@ -472,7 +480,7 @@ Public Class RCSThermostatManager
             val = OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, PropertyName).Value()
             'logging.AddToLog("Fetched value: [" & val & "] from object [" & ThermostatName & "] and from property name[" & PropertyName & "]", False)
         Catch ex As Exception
-            Logging.AddToLog("Error getting property value: " & ex.Message, True)
+            Log.Error("Error getting property value!", ex)
         End Try
         Return val
     End Function
