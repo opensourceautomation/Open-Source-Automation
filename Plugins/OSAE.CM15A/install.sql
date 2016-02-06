@@ -35,3 +35,11 @@ CALL osae_sp_object_type_event_add('X10 RELAY','OFF','Off');
 CALL osae_sp_object_type_method_add('X10 RELAY','ON','On','','','','');
 CALL osae_sp_object_type_method_add('X10 RELAY','OFF','Off','','','','');
 CALL osae_sp_object_type_property_add('X10 RELAY','Off Timer','Integer','','',0);
+
+CALL osae_sp_object_type_add ('X10 SENSOR','X10 Sensor','','SENSOR',0,0,0,0);
+CALL osae_sp_object_type_state_add('X10 SENSOR','ON','On');
+CALL osae_sp_object_type_state_add('X10 SENSOR','OFF','Off');
+CALL osae_sp_object_type_event_add('X10 SENSOR','ON','On');
+CALL osae_sp_object_type_event_add('X10 SENSOR','OFF','Off');
+CALL osae_sp_object_type_property_add('X10 SENSOR','Off Timer','Integer','','',0);
+CALL osae_sp_object_type_property_add('X10 SENSOR','Level','Integer','','',0);

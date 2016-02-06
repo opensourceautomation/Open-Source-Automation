@@ -7,6 +7,9 @@ CALL osae_sp_object_type_method_add ('METER READER','ON','Start','','','','');
 CALL osae_sp_object_type_method_add ('METER READER','OFF','Stop','','','','');
 CALL osae_sp_object_type_property_add ('METER READER','Port','Integer','','1',0);
 CALL osae_sp_object_type_property_add ('METER READER','ReceiveAll','Boolean','','TRUE',0);
+CALL osae_sp_object_type_property_add('INSTEON','Version','String','','',0);
+CALL osae_sp_object_type_property_add('INSTEON','Author','String','','',0);
+CALL osae_sp_object_type_property_add('INSTEON','Trust Level','Integer','','90',0);
 
 CALL osae_sp_object_type_add ('UTILITY METER','Utility Meter','','UTILITY METER',0,1,0,0);
 CALL osae_sp_object_type_state_add ('UTILITY METER','ON','On');

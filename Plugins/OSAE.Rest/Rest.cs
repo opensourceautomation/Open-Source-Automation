@@ -11,7 +11,7 @@
     public class Rest : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new General.OSAELog();
 
         /// <summary>
         /// Hosts the web service
@@ -39,7 +39,8 @@
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-
+            Log = new General.OSAELog(pName);
+            OwnTypes();
             try
             {
                 this.Log.Info("Starting Rest Interface");
@@ -52,20 +53,20 @@
                     try
                     {
                         restPort = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "REST Port").Value);
-                        this.Log.Info("Rest Port read in as: " + restPort);
+                        Log.Info("Rest Port read in as: " + restPort);
                     }
                     catch (FormatException ex)
-                    { this.Log.Error("Error pulling REST port from property (not a valid number)", ex); }
+                    { Log.Error("Error pulling REST port from property (not a valid number)", ex); }
                     catch (OverflowException ex)
-                    { this.Log.Error("Error pulling REST port from property (too large)", ex); }
+                    { Log.Error("Error pulling REST port from property (too large)", ex); }
                     catch (ArgumentNullException ex)
-                    { this.Log.Error("Error pulling REST port from property (null)", ex); }
+                    { Log.Error("Error pulling REST port from property (null)", ex); }
                 }
 
                 String restUrl = "http://localhost:"+restPort.ToString()+"/api";
                 serviceHost = new WebServiceHost(typeof(OSAERest.api), new Uri(restUrl));
                 
-               WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None); 
+                WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None); 
                 binding.CrossDomainScriptAccessEnabled = true;
                 var endpoint = serviceHost.AddServiceEndpoint(typeof(IRestService), binding, "");
 
@@ -73,13 +74,25 @@
                 sdb.HttpHelpPageEnabled = false;
                 if (showHelp) serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
 
-                this.Log.Info("Starting RESTful Interface");
+                Log.Info("Starting RESTful Interface");
                 serviceHost.Open();                                
             }
             catch (Exception ex)
+            { Log.Error("Error starting RESTful web service", ex); }
+        }
+
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("REST");
+
+            if (oType.OwnedBy == "")
             {
-                this.Log.Error("Error starting RESTful web service", ex);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("Jabber Plugin took ownership of the REST Object Type.");
             }
+            else
+                Log.Info("Jabber Plugin correctly owns the REST Object Type.");
         }
 
         /// <summary>

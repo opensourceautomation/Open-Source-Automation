@@ -228,7 +228,7 @@ namespace OSAE.UI.Controls
             if (validateForm("Update"))
             {
                 string sName = txtControlName.Text;
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, 50, 1);
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL PROPERTY LABEL", "", currentScreen, 50, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", cboForeColor.Text, currentUser);

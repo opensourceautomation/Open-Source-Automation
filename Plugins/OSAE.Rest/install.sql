@@ -1,4 +1,4 @@
-CALL osae_sp_object_type_add ('REST','Rest API','','PLUGIN',0,0,0,1);
+CALL osae_sp_object_type_add ('REST','Rest API','Rest','PLUGIN',0,0,0,1);
 CALL osae_sp_object_type_state_add('REST','OFF','Stopped');
 CALL osae_sp_object_type_state_add('REST','ON','Running');
 CALL osae_sp_object_type_event_add('REST','OFF','Stopped');
@@ -8,3 +8,6 @@ CALL osae_sp_object_type_method_add('REST','ON','Start','','','','');
 CALL osae_sp_object_type_property_add('REST','System Plugin','Boolean','','TRUE',0);
 CALL osae_sp_object_type_property_add('REST','Show Help','Boolean','','TRUE',0);
 CALL osae_sp_object_type_property_add('REST','Rest Port','Integer','','8732',0);
+CALL osae_sp_object_type_property_add('REST','Version','String','','',0);
+CALL osae_sp_object_type_property_add('REST','Author','String','','',0);
+CALL osae_sp_object_type_property_add('REST','Trust Level','Integer','','90',0);

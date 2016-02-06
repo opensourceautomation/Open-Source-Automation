@@ -5,7 +5,8 @@ Imports CommStudio.Connections
 
 Public Class MeterReader
     Inherits OSAEPluginBase
-    Private Shared logging As Logging = logging.GetLogger("Meter Reader")
+    Private Log As OSAE.General.OSAELog
+    'Private Shared logging As Logging = logging.GetLogger("Meter Reader")
     Private pName As String
     Private COMPort As String
     Private ControllerPort As SerialConnection
@@ -24,10 +25,11 @@ Public Class MeterReader
     Public Shared MeterDict As New Dictionary(Of Integer, Meter)
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
+        pName = pluginName
+        Log = New General.OSAELog(pName)
 
         Try
-            logging.AddToLog("Initializing plugin: " & pluginName, True)
-            pName = pluginName
+            Log.Info("Initializing plugin: " & pluginName)
 
             ReceiveAll = Boolean.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "ReceiveAll").Value, False)
 
@@ -36,7 +38,7 @@ Public Class MeterReader
             'ComputerName = OSAEApi.ComputerName
             COMPort = "COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "Port").Value
             ControllerPort = New SerialConnection()
-            logging.AddToLog("Port is set to: " & COMPort, True)
+            Log.Info("Port is set to: " & COMPort)
 
             ControllerPort.Break = False
             ControllerPort.DataAvailableThreshold = 1
@@ -48,32 +50,27 @@ Public Class MeterReader
             AddHandler ControllerPort.DataAvailable, New SerialConnection.DataAvailableEventHandler(AddressOf UpdateReceived)
 
         Catch ex As Exception
-            logging.AddToLog("Error setting up plugin: " & ex.Message, True)
+            Log.Error("Error setting up plugin!", ex)
         End Try
-
     End Sub
 
     Public Overrides Sub ProcessCommand(ByVal method As OSAEMethod)
         Try
-
         Catch ex As Exception
-            logging.AddToLog("Error Processing Command " & ex.Message, True)
+            Log.Error("Error Processing Command!", ex)
         End Try
-
     End Sub
 
     Public Overrides Sub Shutdown()
-        logging.AddToLog("Shutting down plugin", True)
+        Log.Debug("Shutting down plugin")
         If ControllerPort.IsOpen Then
             ControllerPort.Close()
         End If
-
-        logging.AddToLog("Finished shutting down plugin", True)
+        Log.Debug("Finished shutting down plugin")
     End Sub
 
     Protected Sub UpdateReceived(ByVal sender As Object, ByVal e As EventArgs)
-
-        logging.AddToLog("Running serial port event handler", False)
+        Log.Info("Running serial port event handler")
         ProcessReceived()
     End Sub
 
@@ -83,7 +80,7 @@ Public Class MeterReader
 
         Try
             Message = ControllerPort.Read(ControllerPort.Available)
-            logging.AddToLog("Received: " & Message.TrimEnd, False)
+            Log.Debug("Received: " & Message.TrimEnd)
 
             If Message.Length > 0 Then
                 ReceivedMessage += Message
@@ -99,10 +96,8 @@ Public Class MeterReader
                 End While
             End If
         Catch ex As Exception
-            logging.AddToLog("Error receiving on com port:" & ex.Message, True)
+            Log.Error("Error receiving on com port!", ex)
         End Try
-
-
     End Sub
 
     Protected Sub ParseMessage(ByVal message As String)
@@ -111,7 +106,7 @@ Public Class MeterReader
         Dim SplitChar = New Char() {","c, "*"}
 
         Try
-            logging.AddToLog("Processing message" & message, False)
+            Log.Debug("Processing message" & message)
             Parts = message.Split(SplitChar)
 
             If Parts(0) = "$UMSCM" Then
@@ -122,14 +117,12 @@ Public Class MeterReader
                     UpdateReading(Address, Type, Reading)
                 End If
             Else
-                logging.AddToLog("Unrecognized message:" & message, True)
+                Log.Info("Unrecognized message:" & message)
             End If
 
         Catch ex As Exception
-            logging.AddToLog("Error parsing message:" & ex.Message, True)
+            Log.Error("Error parsing message!", ex)
         End Try
-
-
     End Sub
 
     Protected Sub UpdateReading(ByVal Address As Integer, ByVal Type As Integer, ByVal Reading As Integer)
@@ -137,11 +130,11 @@ Public Class MeterReader
         Dim MeterToUpdate As New Meter
 
         Try
-            logging.AddToLog("Updating " & Address.ToString & " value=" & Reading.ToString, False)
+            Log.Debug("Updating " & Address.ToString & " value=" & Reading.ToString)
             If Not MeterDict.ContainsKey(Address) Then
                 MeterToUpdate.Name = "M" & Address.ToString
-                logging.AddToLog("Adding new meter: " & MeterToUpdate.Name, True)
-                OSAEObjectManager.ObjectAdd(MeterToUpdate.Name, "", "Utility Meter", "Utility Meter", Address.ToString, "", True)
+                Log.Info("Adding new meter: " & MeterToUpdate.Name)
+                OSAEObjectManager.ObjectAdd(MeterToUpdate.Name, "", "Utility Meter", "Utility Meter", Address.ToString, "", 30, True)
                 OSAEObjectPropertyManager.ObjectPropertySet(MeterToUpdate.Name, "Type", Type.ToString, pName)
                 MeterToUpdate.LastReceived = ReceiveTime
                 MeterToUpdate.LastChange = ReceiveTime
@@ -182,13 +175,10 @@ Public Class MeterReader
             MeterToUpdate.LastReceived = ReceiveTime
             MeterDict.Item(Address) = MeterToUpdate
 
-            logging.AddToLog("Meter " & MeterToUpdate.Name + " Reading=" & Reading.ToString & "  Rate=" & MeterToUpdate.Rate.ToString, True)
-
-
+            Log.Info("Meter " & MeterToUpdate.Name + " Reading=" & Reading.ToString & "  Rate=" & MeterToUpdate.Rate.ToString)
         Catch ex As Exception
-            logging.AddToLog("Error updating reading" & ex.Message, True)
+            Log.Error("Error updating reading!", ex)
         End Try
-
     End Sub
 
     Public Sub GetMeterList()
@@ -221,12 +211,11 @@ Public Class MeterReader
                 End Try
 
                 MeterDict.Add(MeterPointer.Address, MeterInList)
-                logging.AddToLog("Loading meter " & MeterPointer.Name & " address " & MeterPointer.Address, True)
+                Log.Info("Loading meter " & MeterPointer.Name & " address " & MeterPointer.Address)
             Next
 
         Catch ex As Exception
-            logging.AddToLog("Error getting meter list: " & ex.Message, True)
-
+            Log.Error("Error getting meter list!", ex)
         End Try
     End Sub
 

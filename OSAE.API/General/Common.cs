@@ -20,10 +20,7 @@
         /// </summary>
         public static string ComputerName
         {
-            get
-            {
-                return Dns.GetHostName();
-            }
+            get { return Dns.GetHostName(); }
         }
 
         /// <summary>
@@ -88,7 +85,6 @@
             {
                 ModifyRegistry registry = new ModifyRegistry();
                 registry.SubKey = "SOFTWARE\\OSAE\\";
-
                 return registry.Read("WCFSERVER");
             }
         }
@@ -126,7 +122,6 @@
 
                 ModifyRegistry registry = new ModifyRegistry();
                 registry.SubKey = "SOFTWARE\\OSAE\\DBSETTINGS";
-
                 databaseConnection = registry.Read("DBCONNECTION");
 
                 return databaseConnection;
@@ -142,14 +137,10 @@
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(Common.ConnectionString))
-                {
-                    connection.Open();                    
-                }
+                { connection.Open(); }
             }
             catch (Exception ex)
-            {
-                return new DBConnectionStatus(false, ex);
-            }
+            { return new DBConnectionStatus(false, ex); }
 
             return new DBConnectionStatus(true, null);
         }
@@ -171,13 +162,9 @@
                     dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
-                    {
                         return dataset.Tables[0].Rows[0]["vInput"].ToString();
-                    }
                     else
-                    {
                         return pattern;
-                    }
                 }
             }
             catch (Exception ex)
@@ -236,9 +223,9 @@
             return addr[0].ToString();
         }
 
-        public static void CreateComputerObject(string sourceName)
+        public static void CheckComputerObject(string sourceName)
         {
-            Logging.GetLogger().AddToLog("Creating Computer object", true);
+            Logging.GetLogger().AddToLog("Checking for Computer object", true);
             string computerIp = Common.GetComputerIP();
 
             if (OSAEObjectManager.GetObjectByName(Common.ComputerName) == null)
@@ -246,22 +233,27 @@
                 OSAEObject obj = OSAEObjectManager.GetObjectByAddress(computerIp);
                 if (obj == null)
                 {
-                    OSAEObjectManager.ObjectAdd(Common.ComputerName, Common.ComputerName, Common.ComputerName, "COMPUTER", computerIp, string.Empty, obj.MinTrustLevel, true);
+                    Logging.GetLogger().AddToLog("Computer Object not found, creating it...", true);
+                    OSAEObjectManager.ObjectAdd(Common.ComputerName,"", Common.ComputerName, "COMPUTER", computerIp, "", 30, true);
                     OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
+                    Logging.GetLogger().AddToLog("Computer Object created called: " + Common.ComputerName, true);
                 }
                 else if (obj.Type == "COMPUTER")
                 {
+                    Logging.GetLogger().AddToLog("Computer Object found under a different name, updating it...", true);
                     OSAEObjectManager.ObjectUpdate(obj.Name, Common.ComputerName, obj.Alias, obj.Description, "COMPUTER", computerIp, obj.Container, obj.MinTrustLevel, obj.Enabled);
                     OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName, "Host Name", Common.ComputerName, sourceName);
                 }
                 else
                 {
+                    Logging.GetLogger().AddToLog("Computer Object found under a different Name and Object Type, updating it...", true);
                     OSAEObjectManager.ObjectAdd(Common.ComputerName + "." + computerIp, Common.ComputerName, Common.ComputerName, "COMPUTER", computerIp, string.Empty, obj.MinTrustLevel, true);
                     OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName + "." + computerIp, "Host Name", Common.ComputerName, sourceName);
                 }
             }
             else
             {
+                Logging.GetLogger().AddToLog("Computer Object found, updating it...", true);
                 OSAEObject obj = OSAEObjectManager.GetObjectByName(Common.ComputerName);
                 OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, "COMPUTER", computerIp, obj.Container, obj.MinTrustLevel, obj.Enabled);
                 OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Host Name", Common.ComputerName, sourceName);

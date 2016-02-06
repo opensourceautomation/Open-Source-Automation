@@ -16,6 +16,8 @@ CALL osae_sp_object_type_method_add ('ZWAVE','NETWORK UPDATE','Network Update','
 CALL osae_sp_object_type_property_add ('ZWAVE','Port','Integer','','',0);
 CALL osae_sp_object_type_property_add ('ZWAVE','Home ID','String','','',0);
 CALL osae_sp_object_type_property_add ('ZWAVE','Polling Interval','Integer','','',0);
-
+CALL osae_sp_object_type_property_add('ZWAVE','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('ZWAVE','Version','String','','',0);
+CALL osae_sp_object_type_property_add('ZWAVE','Author','String','','',0);
 
 CALL osae_sp_object_type_add ('ZWAVE DEVICE','ZWave Device','','ZWAVE DEVICE',0,0,0,1);

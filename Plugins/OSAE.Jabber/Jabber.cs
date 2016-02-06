@@ -18,14 +18,13 @@ namespace OSAE.Jabber
         string gCurrentAddress = "";
         string gAnswerObject = "";
         string gAnswerProperty = "";
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new General.OSAELog();
         private agsXMPP.protocol.client.Message oldMmsg;
 
         public override void RunInterface(string pluginName)
         {
             gAppName = pluginName;
-            if (OSAEObjectManager.ObjectExists(gAppName))
-                Log.Info("Found the Jabber plugin's Object (" + gAppName + ")");
+            Log = new General.OSAELog(gAppName);
 
             try
             {
@@ -178,9 +177,7 @@ namespace OSAE.Jabber
                 if (objects != null)
                 {
                     foreach (OSAEObject oObj in objects)
-                    {
                         gCurrentUser = oObj.Name;
-                    }
                 }
                 else
                     Log.Info("Message from Unknown address: " + jID);
@@ -365,6 +362,5 @@ namespace OSAE.Jabber
             catch (Exception ex)
             { Log.Error("Error in _SpeechRecognized!", ex); }
         }
-
     }
 }

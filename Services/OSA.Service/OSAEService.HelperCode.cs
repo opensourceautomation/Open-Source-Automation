@@ -16,29 +16,27 @@
 
         private void InitialiseOSAInEventLog()
         {
-            this.Log.Debug("Initializing Event Log");
+            Log.Debug("Initializing Event Log");
             
             try
             {
-                if (!EventLog.SourceExists("OSAE"))
-                    EventLog.CreateEventSource("OSAE", "Application");
-
-                this.Log.Debug("EventLog Source Ensured.");
+                if (!EventLog.SourceExists("OSAE"))  EventLog.CreateEventSource("OSAE", "Application");
+                Log.Debug("EventLog Source Ensured.");
             }
             catch (Exception ex)
-            { this.Log.Error("CreateEventSource error: " + ex.Message, ex); }
+            { Log.Error("CreateEventSource error: " + ex.Message, ex); }
 
-            this.ServiceName = "OSAE";
-            this.EventLog.Source = "OSAE";
-            this.EventLog.Log = "Application";
+            ServiceName = "OSAE";
+            EventLog.Source = "OSAE";
+            EventLog.Log = "Application";
         }        
 
         private void DeleteStoreFiles()
         {
-            this.Log.Debug("Deleting Store Files");
+            Log.Debug("Deleting Store Files");
 
             string[] stores = Directory.GetFiles(Common.ApiPath, "*.store", SearchOption.AllDirectories);
-            this.Log.Debug(stores.Length + " stores to delete.");
+            Log.Debug(stores.Length + " stores to delete.");
 
             foreach (string f in stores)
                 File.Delete(f);
@@ -47,32 +45,41 @@
         /// <summary>
         /// Check if there is an object for the Service running on this machine in OSA, and create one if not.
         /// </summary>
-        private void CreateServiceObject()
+        private string CheckServiceObject()
         {
-            this.Log.Debug("Creating Service Object");
-
             try
             {
-                OSAEObject svcobj = OSAEObjectManager.GetObjectByName("SERVICE-" + Common.ComputerName);
-                if (svcobj == null)
-                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "SERVICE", "", "SYSTEM", 50, true);
+                bool found = OSAEObjectManager.ObjectExists("SERVICE-" + Common.ComputerName);
+                if (!found)
+                {
+                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "", "SERVICE", "SERVICE", "", "SYSTEM", 50, true);
+                    //Log.Debug("Created Service Object called " + "SERVICE-" + Common.ComputerName);
+                }
+                //else
+                   //Log.Debug("Found Service Object called " + "SERVICE-" + Common.ComputerName);
 
-                OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", "OSAE Service");
+                return "SERVICE-" + Common.ComputerName;
+
+                //  OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", "OSAE Service");   This is some kind of hack
             }
             catch (Exception ex)
-            { this.Log.Error("Error creating service object: " + ex.Message, ex); }
+            {
+                //Log.Error("Error creating service object!", ex);
+                return null;
+            }
         }                     
 
         /// <summary>
         /// Starts the various OSA threads that monitors the command Queue, and monitors plugins
         /// </summary>
-        private void StartThreads()
+        private void StartThreads(string serviceName)
         {
-            this.Log.Debug("Starting Threads");
+            Log.Debug("Starting Threads");
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
             QueryCommandQueueThread.Start();
 
-            Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
+         //   Thread loadPluginsThread = new Thread(new ParameterizedThreadStart(LoadPlugins));
+            Thread loadPluginsThread = new Thread(() => LoadPlugins(serviceObject));
             loadPluginsThread.Start();
 
             //checkPlugins.Interval = 60000;
@@ -85,23 +92,23 @@
         /// </summary>
         private void ShutDownSystems()
         {             
-            this.Log.Info("Stopping...");
+            Log.Info("Stopping...");
 
             try
             {                          
                 //checkPlugins.Enabled = false;
                 running = false;
                 
-                this.Log.Debug("Shutting down plugins");
+                Log.Debug("Shutting down plugins");
                 foreach (Plugin p in plugins)
                 {                           
-                    if (p.Enabled)
+                    if (p.Running)
                     {
-                        this.Log.Debug("Shutting down plugin: " + p.PluginName);
+                        Log.Debug("Shutting down plugin: " + p.PluginName);
                         p.Shutdown();
+                        OSAEObjectStateManager.ObjectStateSet(p.PluginName, "OFF", serviceObject);
                     }
                 }
-
             }
             catch { }
         }
@@ -111,111 +118,189 @@
         /// </summary>        
         private void QueryCommandQueue()
         {
-            this.Log.Debug("QueryCommandQueue");
-
-
             while (running)
             {
                 try
                 {
                     foreach (OSAEMethod method in OSAEMethodManager.GetMethodsInQueue())
                     {
-                        this.Log.Debug("Method in Queue, ObjectName: " + method.ObjectName + " MethodLabel: " + method.MethodLabel + " MethodName: " + method.MethodName);
+                        Log.Debug("Method in queue for: " + method.Owner + " Method: " + method.ObjectName + "." + method.MethodName + "," + method.Parameter1 + "," + method.Parameter2);
 
-                        LogMethodInformation(method);
-
-                        if (method.ObjectName == "SERVICE-" + Common.ComputerName)
+                        if (method.ObjectName == "SERVICE-" + Common.ComputerName) // This Service
                         {
                             switch (method.MethodName)
                             {
+                                case "BROADCAST":
+                                    Log.Info("-> UDP: " + method.Parameter1 + ", " + method.Parameter2);
+                                    UDPConnection.SendObject(method.Parameter1, method.Parameter2, new IPEndPoint(IPAddress.Broadcast, 10051));
+                                    break;
                                 case "EXECUTE" : 
-                                    this.Log.Info("Recieved Execute Method Name");
+                                    Log.Info("Received Execute Method");
                                     UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                                     break;
                                 case "START PLUGIN":
-                                    StartPlugin(method);
+                                    StartPlugin(serviceObject, method);
                                     break;
                                 case "STOP PLUGIN":
-                                    StopPlugin(method);
+                                    StopPlugin(serviceObject, method);
                                     break;
                                 case "RELOAD PLUGINS":
-                                    LoadPlugins();
+                                    LoadPlugins(serviceObject);
                                     break;
                             }                                                                            
-
                             OSAEMethodManager.MethodQueueDelete(method.Id);
                         }
-                        else if (method.ObjectName.Split('-')[0] == "SERVICE")
+                        else if (method.ObjectName.Split('-')[0] == "SERVICE") // Client Services
                         {
-                            this.Log.Debug("Method for client service.  Sending Broadcast.");
-                            if(method.MethodName == "EXECUTE")
-                                UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8), new IPEndPoint(IPAddress.Broadcast, 10051));
-
-                            OSAEMethodManager.MethodQueueDelete(method.Id);
-                        }
-                        else
-                        {
-                            bool processed = false;                            
-
-                            foreach (Plugin plugin in plugins)
+                            Log.Debug("Method for client service.  Sending Broadcast.");
+                            switch (method.MethodName)
                             {
-                                if (plugin.Enabled == true && (method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower()))
-                                {
-                                    this.Log.Debug("Removing method from queue with ID: " + method.Id);
-                                    plugin.ExecuteCommand(method);
-                                    processed = true;
+                                case "ON":
+                                    Log.Info("-> UDP " + method.ObjectName + " | ON");
+                                    UDPConnection.SendObject("Manager", method.ObjectName + " | ON", new IPEndPoint(IPAddress.Broadcast, 10052));
                                     break;
-                                }
+                                case "OFF":
+                                    Log.Info("-> UDP " + method.ObjectName + " | OFF");
+                                    UDPConnection.SendObject("Manager", method.ObjectName + " | OFF", new IPEndPoint(IPAddress.Broadcast, 10052));
+                                    break;
+                                case "EXECUTE":
+                                    Log.Info("Recieved Execute Method Name");
+                                    UDPConnection.SendObject("Command", method.Parameter1 + " | " + method.Parameter2 + " | " + method.ObjectName.Substring(8), new IPEndPoint(IPAddress.Broadcast, 10051));
+                                    break;
+                                case "START PLUGIN":
+                                    UDPConnection.SendObject("Plugin", method.ObjectName + " | ON", new IPEndPoint(IPAddress.Broadcast, 10051));
+                                    Log.Info("-> UDP: Plugin, " + method.ObjectName + " | ON");
+                                    //object name | owner | method name | param1 | param 2 | address | from object 
+                                    //StartPlugin(method);
+                                    break;
+                                case "STOP PLUGIN":
+                                    UDPConnection.SendObject("Plugin", method.ObjectName + " | OFF", new IPEndPoint(IPAddress.Broadcast, 10051));
+                                    Log.Info("-> UDP: Plugin, " + method.ObjectName + " | OFF");
+                                    //StopPlugin(method);
+                                    break;
                             }
-
-                            if (!processed)
-                            {
-                                this.Log.Debug("Method found for client service plugin.  Sending Broadcast.");
-                                UDPConnection.SendObject("Method", method.ObjectName + " | " + method.Owner + " | "
-                                    + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | "
-                                    + method.Address + " | " + method.Id, new IPEndPoint(IPAddress.Broadcast, 10051));
-
-                                this.Log.Debug("Removing method from queue with ID: " + method.Id);
-                            }
-
                             OSAEMethodManager.MethodQueueDelete(method.Id);
                         }
+                        else if (method.ObjectName.Split('-')[0] != "SERVICE")
+                        {// THIS IS NOT GOOD ENOUGH.   it intercepts all plugins not just local service ones....
+                            //Look up the basetype, if it is a plugin, THEN you can parse on and off for the intercept. 
+                            //You must also look at the container and see if it is this service like above.
+
+                            OSAEObject tempObj = OSAEObjectManager.GetObjectByName(method.ObjectName);
+                            string isContainerService = tempObj.Container.Split('-')[0];
+                            if (tempObj.BaseType == "PLUGIN" && tempObj.Container == ("SERVICE-" + Common.ComputerName))  // Plugins on the localhost
+                            {
+                                switch (method.MethodName)
+                                {
+                                    case "ON":
+                                        OSAEMethodManager.MethodQueueDelete(method.Id);
+                                        Log.Info("Recieved Start for: " + method.Owner);
+                                        StartPlugin(serviceObject, method);
+                                        break;
+                                    case "OFF":
+                                        OSAEMethodManager.MethodQueueDelete(method.Id);
+                                        Log.Info("Recieved Stop for: " + method.Owner);
+                                        StopPlugin(serviceObject, method);
+                                        break;
+                                    default:
+                                        {
+                                            foreach (Plugin plugin in plugins)
+                                            {
+                                                if (method.ObjectName == plugin.PluginName)
+                                                {
+                                                    plugin.ExecuteCommand(method);
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        }
+                                }
+                                OSAEMethodManager.MethodQueueDelete(method.Id);
+                            }
+                            else if (tempObj.BaseType == "PLUGIN" && isContainerService == "SERVICE")  // Plugins on a remote Client Service
+                            {
+                                //We can translate the the Object from the method to a parameter and just tell the client service to start/stop the plugin
+                                switch (method.MethodName)
+                                {
+                                    case "ON":
+                                        Log.Info("Sending Remote Start for: " + method.Owner);
+                                        UDPConnection.SendObject("Plugin", method.ObjectName + " | ON", new IPEndPoint(IPAddress.Broadcast, 10051));
+                                        Log.Info("-> UDP: Plugin, " + method.ObjectName + " | ON");
+                                        break;
+                                    case "OFF":
+                                        Log.Info("Sending Remote Stop for: " + method.Owner);
+                                        UDPConnection.SendObject("Plugin", method.ObjectName + " | OFF", new IPEndPoint(IPAddress.Broadcast, 10051));
+                                        Log.Info("-> UDP: Plugin, " + method.ObjectName + " | OFF");
+                                        break;
+                                    default:
+                                        {
+                                            Log.Debug("-> UDP: Command, " + method.ObjectName + " | " + method.Owner + " | " + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | " + method.Address + " | " + method.Id);
+                                            UDPConnection.SendObject("Method", method.ObjectName + " | " + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | " + method.Address + " | " + method.Owner + " | " + method.FromObject, new IPEndPoint(IPAddress.Broadcast, 10051));
+                                            break;
+                                        }
+                                }
+                                Log.Debug("Removing method from queue with ID: " + method.Id);
+                                OSAEMethodManager.MethodQueueDelete(method.Id);
+                            }
+                            else
+                            {
+                                bool processed = false;
+                                foreach (Plugin plugin in plugins)
+                                {
+                                    if (string.IsNullOrEmpty(method.Owner) || method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower())
+                                    {
+                                        plugin.ExecuteCommand(method);
+                                        processed = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!processed)
+                                {
+                                    Log.Debug("Method found for client service plugin.  Sending Broadcast.");
+
+
+                                    UDPConnection.SendObject("Plugin", method.ObjectName + " | ON", new IPEndPoint(IPAddress.Broadcast, 10051));
+
+
+
+                                    Log.Debug("-> UDP: Command, " + method.ObjectName + " | " + method.Owner + " | " + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | " + method.Address + " | " + method.Id);
+                                    UDPConnection.SendObject("Command", method.ObjectName + " | " + method.Owner + " | "
+                                        + method.MethodName + " | " + method.Parameter1 + " | " + method.Parameter2 + " | "
+                                        + method.Address + " | " + method.Id, new IPEndPoint(IPAddress.Broadcast, 10051));
+                                    UDPConnection.SendObject("Command", "Testing", new IPEndPoint(IPAddress.Broadcast, 10051));
+                                    UDPConnection.SendObject("Method", "Testing", new IPEndPoint(IPAddress.Broadcast, 10051));
+                                    UDPConnection.SendObject("Plugin", "Testing", new IPEndPoint(IPAddress.Broadcast, 10051));
+                                    Log.Debug("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+                                }
+                                Log.Debug("Removing method from queue with ID: " + method.Id);
+                                OSAEMethodManager.MethodQueueDelete(method.Id);
+                                break;
+                            }
+                       }
                     }
                 }
                 catch (Exception ex)
-                { this.Log.Error("Error in QueryCommandQueue: " + ex.Message, ex); }
+                { Log.Error("Error in QueryCommandQueue!", ex); }
 
-                System.Threading.Thread.Sleep(100);
+                Thread.Sleep(100);
             }
-        }
-
-        /// <summary>
-        /// Logs information about a method found in the Queue
-        /// </summary>
-        /// <param name="method">The method to log</param>
-        private void LogMethodInformation(OSAEMethod method)
-        {
-            this.Log.Debug("Found method in queue: " + method.MethodName);
-            this.Log.Debug("-- object name: " + method.ObjectName);
-            this.Log.Debug("-- param 1: " + method.Parameter1);
-            this.Log.Debug("-- param 2: " + method.Parameter2);
-            this.Log.Debug("-- object owner: " + method.Owner);
         }
 
         /// <summary>
         /// Stops a plugin based on a method
         /// </summary>
         /// <param name="method">The method containing the information of the plugin to stop</param>
-        private void StopPlugin(OSAEMethod method)
+        private void StopPlugin(string serviceName, OSAEMethod method)
         {
             foreach (Plugin p in plugins)
             {
-                if (p.PluginName == method.Parameter1)
+                if (p.PluginName == method.ObjectName)
                 {
                     OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
                     if (obj != null)
                     {
-                        disablePlugin(p);
+                        stopPlugin(serviceName, p);
                         UDPConnection.SendObject("Plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                     }
                 }
@@ -226,15 +311,14 @@
         /// Starts a plugin based on a method
         /// </summary>
         /// <param name="method">The method containing the information of the plugin to stop</param>
-        private void StartPlugin(OSAEMethod method)
+        private void StartPlugin(string serviceName, OSAEMethod method)
         {
             foreach (Plugin p in plugins)
             {
-                if (p.PluginName == method.Parameter1)
+                if (p.PluginName == method.ObjectName)
                 {
                     OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
-                    if (obj != null)
-                        enablePlugin(p);
+                    if (obj != null) startPlugin(serviceName, p);
                 }
             }
         }        

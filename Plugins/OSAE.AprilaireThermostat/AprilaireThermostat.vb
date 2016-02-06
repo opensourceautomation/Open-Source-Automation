@@ -61,7 +61,7 @@ Public Class AprilaireThermostat
 
             ThermostatObjects = OSAEObjectManager.GetObjectsByType("THERMOSTAT")
             If ThermostatObjects.Count = 0 Then
-                OSAEObjectManager.ObjectAdd("THERMOSTAT", "Aprilaire Thermostat", "THERMOSTAT", "1", "", True)
+                OSAEObjectManager.ObjectAdd("THERMOSTAT", "", "Aprilaire Thermostat", "THERMOSTAT", "1", "", 90, True)
                 OSAEObjectPropertyManager.ObjectPropertySet(pName, "IPAddress", "192.168.1.11", pName)
                 OSAEObjectPropertyManager.ObjectPropertySet(pName, "Port", "10001", pName)
                 ThermostatName = "THERMOSTAT"

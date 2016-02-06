@@ -19,7 +19,7 @@
                 command.CommandText = "CALL osae_sp_object_state_set(@ObjectName, @State, @FromObject, @DebugInfo)";
                 command.Parameters.AddWithValue("@ObjectName", ObjectName);
                 command.Parameters.AddWithValue("@State", State);
-                command.Parameters.AddWithValue("@FromObject", PluginManager.GetPluginName(source, Common.ComputerName));
+                command.Parameters.AddWithValue("@FromObject", source);
                 command.Parameters.AddWithValue("@DebugInfo", null);
 
                 try
@@ -27,9 +27,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("ObjectStateSet error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("ObjectStateSet error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }           
 
@@ -88,9 +86,7 @@
                     ds = OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectStateHistoryGet error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectStateHistoryGet error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
             return ds;
         }
@@ -106,12 +102,9 @@
                     ds = OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectStateHistoryGet error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectStateHistoryGet error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
             return ds;
         }
-
     }
 }

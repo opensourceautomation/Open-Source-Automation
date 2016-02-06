@@ -6,11 +6,9 @@ using System.Text;
 using System.Diagnostics;
 using System.Net;
 using System.IO;
-using OSAE;
 
 namespace OSAE.Android
 {
-    
     public class GCMSender
     {
         private const string GCM_URI = "https://android.googleapis.com/gcm/send";
@@ -109,8 +107,6 @@ namespace OSAE.Android
 
             return payload;
         }
-
-        
     }
 
 }

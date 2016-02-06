@@ -10,9 +10,7 @@
 
     public class Bluetooth : OSAEPluginBase
     {
-        #region OSAEPlugin Members
-
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new General.OSAELog();
         BluetoothClient bc;
         BluetoothDeviceInfo[] nearosaeDevices;
         System.Timers.Timer Clock;
@@ -27,10 +25,10 @@
 
         public override void RunInterface(string pluginName)
         {
-            this.Log.Info("*** Running Interface! ***");
             gAppName = pluginName;
-            if (OSAEObjectManager.ObjectExists(gAppName))
-               Log.Info("Found Bluetooth Client's Object (" + gAppName + ")");
+            Log = new General.OSAELog(gAppName);
+            Log.Info("*** Running Interface! ***");
+            OwnTypes();
 
             try
             {
@@ -49,19 +47,18 @@
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
 
-            this.search_thread = new Thread(new ThreadStart(search));
-            this.search_thread.Start();
+            search_thread = new Thread(new ThreadStart(search));
+            search_thread.Start();
             Log.Info("Bluetooth Plugin is now scanning for devices.");
         }
 
         public override void Shutdown()
         {
             Clock.Stop();
+            search_thread.Abort();
             Log.Info("*** Shutting Down ***");
         }
-        
-        #endregion
-
+       
         #region Plugin Specific Code
 
         public void Timer_Tick(object sender, EventArgs eArgs)
@@ -70,10 +67,24 @@
             {
                 if (!search_thread.IsAlive)
                 {
-                    this.search_thread = new Thread(new ThreadStart(search));
-                    this.search_thread.Start();
+                    search_thread = new Thread(new ThreadStart(search));
+                    search_thread.Start();
                 }
             }
+        }
+
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("BLUETOOTH");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("Bluetooth Plugin took ownership of the BLUETOOTH Object Type.");
+            }
+            else
+                Log.Info("Bluetooth Plugin correctly owns the BLUETOOTH Object Type.");
         }
 
         private void search()
@@ -87,7 +98,16 @@
                 bool found = false;
                 int discarded;
 
-                bc = new BluetoothClient();
+                try
+                {
+                    bc = new BluetoothClient();
+                }
+                catch 
+                {
+                    Log.Error("No Bluetooth Adapters found!");
+                    OSAEMethodManager.MethodQueueAdd(gAppName, "OFF","","",gAppName);
+                    return;
+                }
 
                 bc.InquiryLength = new TimeSpan(0, 0, 0, int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Discover Length").Value), 0);
                 nearosaeDevices = bc.DiscoverDevices(10, false, false, true);
@@ -95,7 +115,6 @@
                 for (int j = 0; j < nearosaeDevices.Length; j++)
                 {
                     string addr = nearosaeDevices[j].DeviceAddress.ToString();
-
                     Object obj = OSAEObjectManager.GetObjectByAddress(addr);
 
                     if (obj == null)

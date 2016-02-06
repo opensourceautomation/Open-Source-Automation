@@ -9,3 +9,6 @@ CALL osae_sp_object_type_method_add('SCRIPT PROCESSOR','RUN SCRIPT','Run Script'
 CALL osae_sp_object_type_method_add('SCRIPT PROCESSOR','RUN READERS','Run Readers','','','','');
 CALL osae_sp_object_type_property_add('SCRIPT PROCESSOR','System Plugin','Boolean','','TRUE',0);
 CALL osae_sp_object_type_property_add('SCRIPT PROCESSOR','Debug','Boolean','','FALSE',0);
+CALL osae_sp_object_type_property_add('SCRIPT PROCESSOR','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('SCRIPT PROCESSOR','Version','String','','',0);
+CALL osae_sp_object_type_property_add('SCRIPT PROCESSOR','Author','String','','',0);

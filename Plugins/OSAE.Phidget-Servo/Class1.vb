@@ -2,7 +2,7 @@
 
 Public Class PhidgetServo
     Inherits OSAEPluginBase
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog
     Private pName As String = ""
     Private gAttached As Boolean
     Private gName As String = ""
@@ -17,6 +17,7 @@ Public Class PhidgetServo
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
             pName = pluginName
+            Log = New General.OSAELog(pName)
             Log.Info("Found my Object: " & pName)
             phidgetServo = New Phidgets.Servo
             'gPosition = Val(OSAEApi.GetObjectProperty(gAppName, "Default Position"))
@@ -45,7 +46,7 @@ Public Class PhidgetServo
 
                 bExists = OSAEObjectManager.ObjectExists(gSerial & "-" & i)
                 If bExists = False Then
-                    OSAEObjectManager.ObjectAdd("New Servo - " & gSerial & "-" & i, "New Servo - " & gSerial & "-" & i, "PHIDGET SERVO", gSerial & "-" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("New Servo - " & gSerial & "-" & i, "", "New Servo - " & gSerial & "-" & i, "PHIDGET SERVO", gSerial & "-" & i, "", 30, True)
                 End If
                 Try
                     oObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-" & i)

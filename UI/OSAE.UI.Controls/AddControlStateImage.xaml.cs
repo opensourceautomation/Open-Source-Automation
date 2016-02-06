@@ -506,7 +506,7 @@ namespace OSAE.UI.Controls
             {
                 string sName = txtControlName.Text;
                 //OSAEObjectManager.ObjectAdd(sName, sName, sName, "CONTROL STATE IMAGE", "", currentScreen, true);
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, "", sName, "CONTROL STATE IMAGE", "", currentScreen, 50, 1);
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, "", sName, "CONTROL STATE IMAGE", "", currentScreen, 50, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", cboObject.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "State 1 Name", cboState1.SelectedValue.ToString(), currentUser);
                 if (State1Img1 != null)

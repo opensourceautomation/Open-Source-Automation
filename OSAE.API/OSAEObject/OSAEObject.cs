@@ -17,7 +17,7 @@
         private string _address;             
         private string _container;
         private int _minTrustLevel;
-        private int _enabled;
+        private bool _enabled;
         private string _lastUpd;
         private OSAEObjectState _state;
 
@@ -148,7 +148,7 @@
 
 
         [DataMember]
-        public int Enabled  
+        public bool Enabled  
         {
             get
             {
@@ -194,7 +194,7 @@
         
         #endregion
 
-        public OSAEObject(string name, string alias, string description, string type, string address, string container, int mintrustlevel, int enabled)
+        public OSAEObject(string name, string alias, string description, string type, string address, string container, int mintrustlevel, bool enabled)
         {
             _name = name;
             _alias = alias;

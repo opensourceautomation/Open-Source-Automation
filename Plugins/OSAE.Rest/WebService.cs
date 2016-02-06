@@ -96,7 +96,7 @@
     public class api : IRestService
     {
        // private Logging logging = Logging.GetLogger("Rest");
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("REST");
         SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
      
         public OSAEObject GetObject(string name)
@@ -160,7 +160,7 @@
         public Boolean ExecuteMethod(string name, string method, string param1, string param2)
         {
             // execute a method on an object 
-            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "REST Service");
+            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "REST");
             Log.Debug("Executing Method:  " + name + "." + method + "."+ param1 + "." + param2);
             return true;
         }
@@ -206,7 +206,7 @@
 
         public Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, int mintruestlevel, string enabled)
         {
-            OSAEObjectManager.ObjectUpdate(oldName, newName, alias, description, type, address, container, mintruestlevel, Convert.ToInt32(StringToBoolean(enabled)));
+            OSAEObjectManager.ObjectUpdate(oldName, newName, alias, description, type, address, container, mintruestlevel, Convert.ToBoolean(StringToBoolean(enabled)));
             Log.Debug("Oject Update:  " + oldName + ", " + newName + ", " + alias + ", " + description + ", " + type + ", " + address + ", " + container + ", " + mintruestlevel + ", " + enabled);
 
             return true;
@@ -235,9 +235,7 @@
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByBaseType("plugin");
 
             foreach (OSAEObject oObj in objects)
-            {
                 oObj.Properties = getProperties(oObj.Name);
-            }
 
             return objects;
         }
@@ -248,9 +246,7 @@
 
             DataSet ds = OSAESql.RunSQL("select state_name from osae_v_object_state where object_name = 'SYSTEM'");
             foreach (DataRow dr in ds.Tables[0].Rows)
-            {
                 states.Add(dr["state_name"].ToString());
-            }
 
             return states;
         }
@@ -268,9 +264,7 @@
             DataSet ds = OSAEObjectPropertyManager.ObjectPropertyArrayGetAll(objName, propName);
 
             foreach (DataRow dr in ds.Tables[0].Rows)
-            {
                 list.Add(dr["item_name"].ToString());
-            }
 
             return list;
         }
@@ -294,11 +288,11 @@
             return properties;
         }
 
-        private Boolean StringToBoolean(string passedvalue)
+        private bool StringToBoolean(string passedvalue)
         {
-            Boolean booleanvalue = false;  //if we fail to convert we will just default to false
+            bool booleanvalue = false;  //if we fail to convert we will just default to false
 
-            if (!Boolean.TryParse(passedvalue, out booleanvalue)) //if they passed "true"/"false" this will work and booleanvalue will contain our converted value
+            if (!bool.TryParse(passedvalue, out booleanvalue)) //if they passed "true"/"false" this will work and booleanvalue will contain our converted value
             {
                 // otherwise it is probably a "1" or "0" and we will try to convert that to boolean
                 int intvalue;
@@ -333,7 +327,6 @@
         {
             List<OSAEStateHistory> list = new List<OSAEStateHistory>();
             DataSet ds = OSAEObjectStateManager.ObjectStateHistoryGet(objName, from, to);
-            
 
             foreach (DataRow dr in ds.Tables[0].Rows)
             {

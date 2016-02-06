@@ -13,8 +13,7 @@ Public Class ComputerPower
     Private EventWatcher As ManagementEventWatcher = Nothing
     Private UpdateTimer As Timer
     Private pName As String
-
-    Private Shared logging As Logging = logging.GetLogger("Computer Power")
+    Private Log As OSAE.General.OSAELog ' = New General.OSAELog()
 
     'Initialize plugin
     Public Overrides Sub RunInterface(ByVal pluginName As String)
@@ -23,12 +22,19 @@ Public Class ComputerPower
             ' Bind to local machine
             Dim ManagementScope As New ManagementScope("root\CIMV2")
 
-            logging.AddToLog("Initializing plugin: " & pluginName, True)
-            ComputerName = Common.ComputerName
-            PowerLineStatusLast = OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "PowerLineStatus").Value
+            pName = pluginName
+            Log = New General.OSAELog(pName)
 
-            logging.AddToLog("Initial power status check", False)
+            Log.Info("Initializing plugin: " & pName)
+            ComputerName = Common.ComputerName
+            PowerLineStatusLast = OSAEObjectPropertyManager.GetObjectPropertyValue(ComputerName, "PowerLineStatus").Value
+            If IsDBNull(PowerLineStatusLast) Then
+                Log.Error("Error reading PowerLineStatus")
+            End If
+            Log.Debug("Initial power status check")
             UpdateStatus()
+
+            OwnTypes()
 
             Try
                 EventQuery.EventClassName = "Win32_PowerManagementEvent"
@@ -37,51 +43,64 @@ Public Class ComputerPower
                 AddHandler EventWatcher.EventArrived, AddressOf PowerEventArrived
                 EventWatcher.Start()
             Catch ex As Exception
-                logging.AddToLog("Error Starting Power Event Watcher: " & ex.Message, True)
+                Log.Error("Error Starting Power Event Watcher: ", ex)
             End Try
 
             Try
                 Dim number As Int32
-                If Int32.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "Update Interval").Value, number) And number > 0 Then
+                If Int32.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Update Interval").Value, number) And number > 0 Then
                     UpdateInterval = 1000 * number
                 Else
                     UpdateInterval = 30000
                 End If
 
-                logging.AddToLog("Update Interval set to: " & (UpdateInterval / 1000).ToString, True)
+                Log.Info("Update Interval set to: " & (UpdateInterval / 1000).ToString)
 
                 UpdateTimer = New Timer(UpdateInterval)
                 AddHandler UpdateTimer.Elapsed, New ElapsedEventHandler(AddressOf TimerHandler)
                 UpdateTimer.Enabled = True
             Catch ex As Exception
-                logging.AddToLog("Error setting up interval timer: " & ex.Message, True)
+                Log.Error("Error setting up interval timer: ", ex)
             End Try
 
         Catch
-            logging.AddToLog("Error setting up Computer Power plugin: ", True)
+            Log.Error("Error setting up Computer Power plugin: ")
         End Try
     End Sub
+
+    Public Sub OwnTypes()
+        Dim oType As OSAEObjectType
+        oType = OSAEObjectTypeManager.ObjectTypeLoad("COMPUTER POWER")
+        If oType.OwnedBy = "" Then
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+            Log.Info("Computer Power Plugin took ownership of the COMPUTER POWER Object Type.")
+        Else
+            Log.Info("The Computer Power Plugin correctly owns the COMPUTER POWER Object Type.")
+        End If
+    End Sub
+
+
 
     'Process plugin commands
     Public Overrides Sub ProcessCommand(method As OSAEMethod)
         Try
             If method.MethodName = "UPDATE" Then
-                logging.AddToLog("Manually triggered update", True)
+                Log.Info("Manually triggered update")
                 UpdateStatus()
             End If
         Catch ex As Exception
-            logging.AddToLog("Error Processing Command - " & ex.Message, True)
+            Log.Error("Error Processing Command", ex)
         End Try
     End Sub
 
     'Shutdown plugin
     Public Overrides Sub Shutdown()
         Try
-            logging.AddToLog("Shutting down plugin", True)
+            Log.Info("Shutting down plugin")
             EventWatcher.Stop()
             UpdateTimer.Dispose()
         Catch ex As Exception
-            logging.AddToLog("Error Shutting down - " & ex.Message, True)
+            Log.Error("Error Shutting down", ex)
         End Try
     End Sub
 
@@ -90,22 +109,23 @@ Public Class ComputerPower
         Try
             UpdateTimer.Stop() 'Reset the update timer to zero and start it again
             UpdateTimer.Start()
-            logging.AddToLog("Received power event from the system", False)
+            Log.Debug("Received power event from the system")
             UpdateStatus()
         Catch ex As Exception
-            logging.AddToLog("Error running power event routine - " & ex.Message, True)
+            Log.Error("Error running power event routine", ex)
         End Try
     End Sub
 
     ' Timer event handler.
     Protected Sub TimerHandler(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         Try
-            logging.AddToLog("Timer Update", False)
+            Log.Debug("Timer Update")
             UpdateStatus()
         Catch ex As Exception
-            logging.AddToLog("Error running timer event routine - " & ex.Message, True)
+            Log.Error("Error running timer event routine", ex)
         End Try
     End Sub
+
     ' Update power status
     Protected Sub UpdateStatus()
         Try
@@ -114,8 +134,8 @@ Public Class ComputerPower
             MyBatteryStatus = BatteryStatus.GetStatus()
             PowerLineStatus = MyBatteryStatus.PowerLineStatus.ToString
             OSAEObjectPropertyManager.ObjectPropertySet(ComputerName, "PowerLineStatus", PowerLineStatus, pName)
-            logging.AddToLog("Battery status word = " & Convert.ToInt32(MyBatteryStatus.BatteryChargeStatus).ToString & " String = " & _
-                             MyBatteryStatus.BatteryChargeStatus.ToString, False)
+            Log.Debug("Battery status word = " & Convert.ToInt32(MyBatteryStatus.BatteryChargeStatus).ToString & " String = " &
+                             MyBatteryStatus.BatteryChargeStatus.ToString)
             If MyBatteryStatus.BatteryChargeStatus.ToString = "Charging" Then
                 BatteryChargeStatus = "Medium, Charging"
             Else
@@ -126,15 +146,15 @@ Public Class ComputerPower
             OSAEObjectPropertyManager.ObjectPropertySet(ComputerName, "BatteryLifePercent", MyBatteryStatus.BatteryLifePercent, pName)
             OSAEObjectPropertyManager.ObjectPropertySet(ComputerName, "BatteryLifeRemaining", MyBatteryStatus.BatteryLifeRemaining, pName)
             If PowerLineStatus = "Batteries" And PowerLineStatusLast = "AC_Power" Then
-                logging.EventLogAdd(ComputerName, "PowerLost")
-                logging.AddToLog("Power Lost", True)
+                OSAEObjectManager.EventTrigger(ComputerName, "PowerLost")
+                Log.Info("Power Lost")
             ElseIf PowerLineStatus = "AC_Power" And PowerLineStatusLast = "Batteries" Then
-                logging.EventLogAdd(ComputerName, "PowerRestored")
-                logging.AddToLog("Power Restored", True)
+                OSAEObjectManager.EventTrigger(ComputerName, "PowerRestored")
+                Log.Info("Power Restored")
             End If
             PowerLineStatusLast = PowerLineStatus
         Catch ex As Exception
-            logging.AddToLog("Error updating power status - " & ex.Message, True)
+            Log.Error("Error updating power status", ex)
         End Try
     End Sub
 End Class

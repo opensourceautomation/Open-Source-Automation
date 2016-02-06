@@ -8,8 +8,7 @@
 
     public class OSAEUserControlManager
     {
-
-        public static OSAE.General.OSAELog Log = new General.OSAELog();
+        //public static OSAE.General.OSAELog Log;// = new General.OSAELog();
         /// <summary>
         /// Returns a Dataset with all of the properties and their values for a usercontrol object
         /// </summary>
@@ -17,6 +16,7 @@
         /// <returns></returns>
         public static DataSet GetUserControlSettings(string ObjectName)
         {
+
             using (MySqlCommand command = new MySqlCommand())
             {
                 DataSet dataset = new DataSet();
@@ -30,7 +30,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Log.Debug("API - GetPluginSettings error: " + ex.Message);
+                    //Log.Debug("API - GetPluginSettings error: " + ex.Message);
                     return dataset;
                 }
             }
@@ -55,9 +55,7 @@
                 dataset = OSAESql.RunQuery(command);
 
                 if (dataset.Tables[0].Rows.Count > 0)
-                {
                     return dataset.Tables[0].Rows[0]["object_name"].ToString();
-                }
                 else
                 {
                     command = new MySqlCommand();
@@ -66,18 +64,14 @@
                     dataset = OSAESql.RunQuery(command);
 
                     if (dataset.Tables[0].Rows.Count > 0)
-                    {
                         return objectType;
-                    }
                     else
-                    {
                         return string.Empty;
-                    }
                 }
             }
             catch (Exception ex)
             {
-                Log.Debug("API - GetUserControlName error: " + ex.Message + " - objectType: " + objectType + " | machineName: " + machineName);
+                //Log.Debug("API - GetUserControlName error: " + ex.Message + " - objectType: " + objectType + " | machineName: " + machineName);
                 return string.Empty;
             }
         }

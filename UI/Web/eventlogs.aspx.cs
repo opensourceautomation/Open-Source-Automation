@@ -8,7 +8,7 @@ using OSAE;
 
 public partial class eventlogs : System.Web.UI.Page
 {
-    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("SYSTEM");
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -23,9 +23,7 @@ public partial class eventlogs : System.Web.UI.Page
             eventLogGridView.DataBind();
         }
         catch (Exception ex)
-        {
-            Master.Log.Error("Error retreiving event log", ex);
-        }
+        { Master.Log.Error("Error retreiving event log", ex); }
     }
    
     protected void clearLogButton_Click(object sender, EventArgs e)

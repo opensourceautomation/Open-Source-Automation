@@ -25,6 +25,9 @@ CALL osae_sp_object_type_property_add ('NEST','Client Version','Integer','','',0
 
 
 
+CALL osae_sp_object_type_property_add('NEST','Version','String','','',0);
+CALL osae_sp_object_type_property_add('NEST','Author','String','','',0);
+CALL osae_sp_object_type_property_add('NEST','Trust Level','Integer','','90',0);
 
 CALL osae_sp_object_type_add ('NEST STRUCTURE','Nest Structure','NEST','NEST STRUCTURE',0,0,0,1);
 

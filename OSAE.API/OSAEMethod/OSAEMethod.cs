@@ -53,7 +53,7 @@
 
         }
        
-        public OSAEMethod(string methodName, string methodLabel, string objName, string param1, string param2, string address, string owner, string fromObject)
+        public OSAEMethod(string objName, string methodName, string methodLabel, string param1, string param2, string address, string owner, string fromObject)
         {
             MethodName = methodName;
             MethodLabel = methodLabel;
@@ -80,22 +80,10 @@
 
         public void Run()
         {
-            if (this.Id == 0)
-            {
-                throw new ArgumentException("Cannot invoke run when Id is not available");
-            }
-
-            if(string.IsNullOrEmpty(this.MethodName))
-            {
-                throw new ArgumentException("Cannot invoke run when method name is not available");
-            }    
-      
-            if(string.IsNullOrEmpty(this.ObjectName))
-            {
-                this.ObjectName = GetObjectNameFromMethodId(Id);
-            }
-
-            OSAEMethodManager.MethodQueueAdd(this.ObjectName, this.MethodName, this.Parameter1, this.Parameter2, this.FromObject);                
+            if (Id == 0) throw new ArgumentException("Cannot invoke run when Id is not available");
+            if(string.IsNullOrEmpty(MethodName)) throw new ArgumentException("Cannot invoke run when method name is not available");
+            if(string.IsNullOrEmpty(ObjectName)) ObjectName = GetObjectNameFromMethodId(Id);
+            OSAEMethodManager.MethodQueueAdd(ObjectName, MethodName, Parameter1, Parameter2, FromObject);                
         }
 
         private string GetObjectNameFromMethodId(int methodId)
@@ -108,21 +96,15 @@
 
                 using (MySqlCommand command = new MySqlCommand())
                 {
-
                     command.CommandText = "SELECT object_name FROM  osae_v_method_queue WHERE method_id=@MethodId";
                     command.Parameters.AddWithValue("@MethodId", this.Id);
                     dataset = OSAESql.RunQuery(command);
                 }
 
-                if (dataset.Tables[0].Rows.Count > 0)
-                {
-                    objectName = dataset.Tables[0].Rows[0]["object_name"].ToString();
-                }
+                if (dataset.Tables[0].Rows.Count > 0) objectName = dataset.Tables[0].Rows[0]["object_name"].ToString();
             }
             catch (Exception ex)
-            {
-                Logging.GetLogger().AddToLog("API - GetObjectNameFromMethodId (" + methodId + ")error: " + ex.Message, true);                    
-            }
+            { Logging.GetLogger().AddToLog("API - GetObjectNameFromMethodId (" + methodId + ")error: " + ex.Message, true); }
 
             return ObjectName;
         }

@@ -16,18 +16,8 @@
         /// </summary>
         public string Name
         {
-            set
-            {
-                if (value != this._pluginName)
-                {
-                    this._pluginName = value;
-                }
-            }
-
-            get 
-            { 
-                return _pluginName; 
-            }
+            set { if (value != _pluginName) _pluginName = value; }
+            get { return _pluginName; }
         }
 
         /// <summary>
@@ -40,18 +30,8 @@
         /// </summary>
         public string Type
         {
-            set
-            {
-                if (value != this._pluginType)
-                {
-                    this._pluginType = value;
-                }
-            }
-
-            get 
-            {
-                return _pluginType;
-            }
+            set { if (value != _pluginType) _pluginType = value; }
+            get { return _pluginType; }
         }
 
         /// <summary>
@@ -64,18 +44,8 @@
         /// </summary>
         public string Version
         {
-            set
-            {
-                if (value != this._pluginVersion)
-                {
-                    this._pluginVersion = value;
-                }
-            }
-
-            get
-            {
-                return _pluginVersion; 
-            }
+            set { if (value != _pluginVersion) _pluginVersion = value; }
+            get { return _pluginVersion; }
         }
 
         /// <summary>
@@ -88,18 +58,8 @@
         /// </summary>
         public string Author
         {
-            set
-            {
-                if (value != this._pluginAuthor)
-                {
-                    this._pluginAuthor = value;
-                }
-            }
-
-            get 
-            { 
-                return _pluginAuthor;
-            }
+            set { if (value != _pluginAuthor) _pluginAuthor = value; }
+            get { return _pluginAuthor; }
         }
 
         /// <summary>
@@ -112,18 +72,8 @@
         /// </summary>
         public string WikiUrl
         {
-            set
-            {
-                if (value != this._wikiUrl)
-                {
-                    this._wikiUrl = value;
-                }
-            }
-
-            get 
-            { 
-                return _wikiUrl;
-            }
+            set { if (value != _wikiUrl) _wikiUrl = value; }
+            get { return _wikiUrl; }
         }
 
         /// <summary>
@@ -136,17 +86,8 @@
         /// </summary>
         public string Description
         {
-            set
-            {
-                if (value != this._description)
-                {
-                    this._description = value;
-                }
-            }
-            get 
-            { 
-                return _description;
-            }
+            set { if (value != _description) _description = value; }
+            get { return _description; }
         }
 
         /// <summary>
@@ -159,18 +100,8 @@
         /// </summary>
         public string Status
         {
-            set
-            {
-                if (value != this._status)
-                {
-                    this._status = value;
-                }
-            }
-
-            get 
-            { 
-                return _status; 
-            }
+            set { if (value != _status) _status = value; }
+            get { return _status; }
         }
 
         /// <summary>
@@ -183,18 +114,8 @@
         /// </summary>
         public bool Enabled
         {
-            set
-            {
-                if (value != this._enabled)
-                {
-                    this._enabled = value;
-                }
-            }
-
-            get 
-            { 
-                return _enabled; 
-            }
+            set { if (value != _enabled) _enabled = value; }
+            get { return _enabled; }
         }
 
         /// <summary>
@@ -207,18 +128,8 @@
         /// </summary>
         public string Upgrade
         {
-            set
-            {
-                if (value != this._upgrade)
-                {
-                    this._upgrade = value;
-                }
-            }
-
-            get 
-            { 
-                return _upgrade;
-            }
+            set { if (value != _upgrade) _upgrade = value; }
+            get { return _upgrade; }
         }
 
         /// <summary>
@@ -231,18 +142,18 @@
         /// </summary>
         public string Path
         {
-            set
-            {
-                if (value != this._path)
-                {
-                    this._path = value;
-                }
-            }
+            set { if (value != _path) _path = value; }
+            get { return _path; }
+        }
 
-            get 
-            { 
-                return _path; 
-            }
+        private string _computer;
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Computer
+        {
+            set { if (value != _computer) _computer = value; }
+            get { return _computer; }
         }
 
         /// <summary>
@@ -255,18 +166,8 @@
         /// </summary>
         public string ID
         {
-            set
-            {
-                if (value != this._id)
-                {
-                    this._id = value;
-                }
-            }
-
-            get
-            { 
-                return _id;
-            }
+            set { if (value != _id) _id = value; }
+            get { return _id; }
         }
 
         /// <summary>
@@ -327,21 +228,15 @@
             XmlNodeList childNodes = temp.ChildNodes;
 
             foreach (XmlNode t in childNodes)
-            {
                 _additionalAssemblies.Add(t.InnerText);
-            }
 
             // Check if this plugin supports any x64 Specific Assemblies
             if ((temp = xml.SelectSingleNode("//x64-additional-assemblies")) != null)
             {
                 childNodes = temp.ChildNodes;
-
                 foreach (XmlNode t in childNodes)
-                {
                     _x64Assemblies.Add(t.InnerText);
-                }
             }
-
         }
 
         /// <summary>

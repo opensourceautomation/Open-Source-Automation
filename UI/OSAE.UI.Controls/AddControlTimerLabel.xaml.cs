@@ -135,7 +135,7 @@
         {
             string sName = txtControlName.Text;
             OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(sOriginalName);
-            OSAEObjectManager.ObjectUpdate(sOriginalName, sName, obj.Alias, "CONTROL TIMER LABEL", "CONTROL TIMER LABEL", "", currentScreen, 50, 1);
+            OSAEObjectManager.ObjectUpdate(sOriginalName, sName, obj.Alias, "CONTROL TIMER LABEL", "CONTROL TIMER LABEL", "", currentScreen, 50, true);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Name", txtFont.Text, currentUser);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Font Size", txtSize.Text, currentUser);
             OSAEObjectPropertyManager.ObjectPropertySet(sName, "Fore Color", foreColorComboBox.Text, currentUser);

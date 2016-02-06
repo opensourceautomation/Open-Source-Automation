@@ -97,13 +97,12 @@ namespace OSAE.JWorks
         #endregion
 
         #region implementation variables
-        Logging logging = Logging.GetLogger("JWorks");
+        //Logging logging = Logging.GetLogger("JWorks");
+        private OSAE.General.OSAELog Log;
         private string pName;
         enum Direction { Input, Output };
-        private List<string> JSB383s = new List<string>(),
-            JSB34Xs = new List<string>();
-        private List<ushort> JSB383State = new List<ushort>(),
-            JSB34XState = new List<ushort>();
+        private List<string> JSB383s = new List<string>(), JSB34Xs = new List<string>();
+        private List<ushort> JSB383State = new List<ushort>(), JSB34XState = new List<ushort>();
         private Timer timer = new Timer();
         #endregion
 
@@ -116,13 +115,10 @@ namespace OSAE.JWorks
             if (OSAEObjectManager.GetObjectByAddress(address) == null)
             {
                 if (dir == Direction.Input)
-                {
-                    OSAEObjectManager.ObjectAdd("J-Works-I" + address,"", "J -Works input", "JWORKS INPUT", address, "", true);
-                }
+                    OSAEObjectManager.ObjectAdd("J-Works-I" + address,"", "J -Works input", "JWORKS INPUT", address, "", 30, true);
                 else
-                {
-                    OSAEObjectManager.ObjectAdd("J-Works-0" + address,"", "J-Works output", "JWORKS OUTPUT", address, "", true);
-                }
+                    OSAEObjectManager.ObjectAdd("J-Works-0" + address,"", "J-Works output", "JWORKS OUTPUT", address, "", 30, true);
+
                 OSAEObjectPropertyManager.ObjectPropertySet(address, "Serial", serial, pName);
                 OSAEObjectPropertyManager.ObjectPropertySet(address, "Id", Convert.ToString(id),pName);
                 OSAEObjectPropertyManager.ObjectPropertySet(address, "Invert", "FALSE", pName);
@@ -144,10 +140,7 @@ namespace OSAE.JWorks
                 bool invert = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Invert").Value == "TRUE";
                 bool on = (state != 0) ^ invert;
                 OSAEObjectStateManager.ObjectStateSet(obj.Name, on ? "ON" : "OFF", pName);
-                logging.AddToLog("State change: " + obj.Name
-                    + " (" + address + ")"
-                    + " changed to " + OSAEObjectStateManager.GetObjectStateValue(obj.Name).Value,
-                    true); // false?
+                Log.Debug("State change: " + obj.Name + " (" + address + ")" + " changed to " + OSAEObjectStateManager.GetObjectStateValue(obj.Name).Value);
             }
         }
 
@@ -166,8 +159,7 @@ namespace OSAE.JWorks
                     for (byte relay = max; relay >= 1; --relay)
                     {
                         state <<= 1;
-                        if (Jsb34xIsRelayClosed(serial, relay))
-                            state |= 1;
+                        if (Jsb34xIsRelayClosed(serial, relay)) state |= 1;
                     }
                     if (state != JSB34XState[i])
                     {
@@ -176,15 +168,15 @@ namespace OSAE.JWorks
 
                         for (byte relay = 1; relay <= max; ++relay)
                         {
-                            if (0 != (changes & 1))
-                                StateChange(serial, Direction.Output, relay, state & 1);
+                            if (0 != (changes & 1))  StateChange(serial, Direction.Output, relay, state & 1);
+
                             state >>= 1;
                             changes >>= 1;
                         }
                         for (byte input = 1; changes != 0; ++input)
                         {
-                            if (0 != (changes & 1))
-                                StateChange(serial, Direction.Input, input, state & 1);
+                            if (0 != (changes & 1)) StateChange(serial, Direction.Input, input, state & 1);
+
                             state >>= 1;
                             changes >>= 1;
                         }
@@ -200,8 +192,8 @@ namespace OSAE.JWorks
                         JSB383State[i] = state;
                         for (byte input = 1; changes != 0; ++input)
                         {
-                            if (0 != (changes & 1))
-                                StateChange(serial, Direction.Input, input, state & 1);
+                            if (0 != (changes & 1))  StateChange(serial, Direction.Input, input, state & 1);
+
                             state >>= 1;
                             changes >>= 1;
                         }
@@ -209,9 +201,7 @@ namespace OSAE.JWorks
                 }
             }
             catch (Exception ex)
-            {
-                logging.AddToLog("Polling error: " + ex.Message, true);
-            }
+            { Log.Error("Polling error!", ex); }
         }
 
         public override void ProcessCommand(OSAEMethod method)
@@ -229,33 +219,28 @@ namespace OSAE.JWorks
                     if (command == "ON")
                     {
                         Jsb34xCloseRelay(serial, (byte)n);
-                        logging.AddToLog("Set state: " + name
-                            + " (" + address + ")"
-                            + " to ON", true); // false?
+                        Log.Info("Set state: " + name + " (" + address + ")" + " to ON");
                     }
                     else if (command == "OFF")
                     {
                         Jsb34xOpenRelay(serial, (byte)n);
-                        logging.AddToLog("Set state: " + name
-                            + " (" + address + ")"
-                            + " to OFF", true); // false?
+                        Log.Info("Set state: " + name  + " (" + address + ")" + " to OFF");
                     }
                 }
                 else if (command == "POLL")
-                {
                     Poll(this, new EventArgs());
-                }
             }
             catch (Exception ex)
-            {
-                logging.AddToLog("Error processing command - " + ex.Message + " - " + ex.InnerException, true);
-            }
+            { Log.Error("Error processing command!", ex); }
         }
 
         public override void RunInterface(string pluginName)
         {
-            logging.AddToLog("Starting J-Works plugin", true);
+
+         
             pName = pluginName;
+            Log = new General.OSAELog(pName);
+            Log.Info("Starting J-Works plugin");
             if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Inverval").Value != "")
                 pollInterval = UInt32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value);
 
@@ -286,9 +271,7 @@ namespace OSAE.JWorks
 
                 byte numInputs = Jsb34xMaxInputs(serial);
                 byte numOutputs = Jsb34xMaxRelays(serial);
-                logging.AddToLog("Found JSB34x device " + serial
-                    + " " + driverVersion + " " + DllVersion + " " + firmwareVersion
-                    + " with " + numInputs + " inputs, " + numOutputs + " outputs.", true);
+                Log.Info("Found JSB34x device " + serial + " " + driverVersion + " " + DllVersion + " " + firmwareVersion + " with " + numInputs + " inputs, " + numOutputs + " outputs.");
                 for (byte inp = 1; inp <= numInputs; ++inp)
                     AddIO(serial + "_I" + inp, Direction.Input, serial, inp);
                 for (byte outp = 1; outp <= numOutputs; ++outp)
@@ -316,9 +299,7 @@ namespace OSAE.JWorks
                 JSB383State.Add(0);
 
                 byte numInputs = Jsb383MaxInputs(serial);
-                logging.AddToLog("Found JSB38x / JSB39x device " + serial
-                    + " " + driverVersion + " " + DllVersion + " " + firmwareVersion
-                    + " with " + numInputs + " inputs.", true);
+                Log.Info("Found JSB38x / JSB39x device " + serial + " " + driverVersion + " " + DllVersion + " " + firmwareVersion + " with " + numInputs + " inputs.");
                 for (byte inp = 1; inp <= numInputs; ++inp)
                     AddIO(serial + "_I" + inp, Direction.Input, serial, inp);
             }
@@ -333,7 +314,7 @@ namespace OSAE.JWorks
 
         public override void Shutdown()
         {
-            logging.AddToLog("Stopping J-Works plugin", true);
+            Log.Info("Stopping J-Works plugin");
             timer.Stop();
         }
     }

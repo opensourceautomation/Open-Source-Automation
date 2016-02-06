@@ -4,6 +4,7 @@
     using System.IO;
     using System.Reflection;
     using PluginInterface;
+    using OSAE;
 
 
     /// <summary>
@@ -14,6 +15,8 @@
         /// <summary>
         /// Constructor of the Class
         /// </summary>
+
+        private OSAE.General.OSAELog Log2;// = new OSAE.General.OSAELog();
         public UserControlServices()
         {
             
@@ -43,20 +46,27 @@
         /// <param name="Path">Directory to search for Plugins in</param>
         public void FindPlugins(string Path)
         {
-            //First empty the collection, we're reloading them all
-            colAvailablePlugins.Clear();
+            Log2 = new OSAE.General.OSAELog("Plugins");
+            try {
+                //First empty the collection, we're reloading them all
+                colAvailablePlugins.Clear();
 
-            //Go through all the files in the plugin directory
-            foreach (var fileOn in Directory.GetFiles(Path, "*.dll",SearchOption.AllDirectories))
-            {
-                FileInfo file = new FileInfo(fileOn);
-
-                //Preliminary check, must be .dll
-                if (file.Extension.Equals(".dll"))
+                //Go through all the files in the plugin directory
+                foreach (var fileOn in Directory.GetFiles(Path, "*.dll", SearchOption.AllDirectories))
                 {
-                    //Add the 'plugin'
-                    this.AddPlugin(fileOn);
+                    FileInfo file = new FileInfo(fileOn);
+
+                    //Preliminary check, must be .dll
+                    if (file.Extension.Equals(".dll"))
+                    {
+                        //Add the 'plugin'
+                        AddPlugin(fileOn);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Log2.Error("Find Plugins Error!", ex);
             }
         }
 
@@ -68,8 +78,7 @@
             foreach (Types.AvailablePlugin pluginOn in colAvailablePlugins)
             {
                 //Close all plugin instances
-                //We call the plugins Dispose sub first incase it has to do 
-                //Its own cleanup stuff
+                //We call the plugins Dispose sub first incase it has to do its own cleanup stuff
                 pluginOn.Instance.Dispose();
 
                 //After we give the plugin a chance to tidy up, get rid of it
@@ -82,53 +91,58 @@
 
         private void AddPlugin(string FileName)
         {
+            try
+            { 
             //Create a new assembly from the plugin file we're adding..
             Assembly pluginAssembly = Assembly.Load(File.ReadAllBytes(FileName));
 
-            //Next we'll loop through all the Types found in the assembly
-            foreach (Type pluginType in pluginAssembly.GetTypes())
-            {
-                if (pluginType.IsPublic) //Only look at public types
+                //Next we'll loop through all the Types found in the assembly
+                foreach (Type pluginType in pluginAssembly.GetTypes())
                 {
-                    if (!pluginType.IsAbstract)  //Only look at non-abstract types
+                    if (pluginType.IsPublic) //Only look at public types
                     {
-                        //Gets a type object of the interface we need the plugins to match
-                        Type typeInterface = pluginType.GetInterface("PluginInterface.IPlugin", true);
-
-                        //Make sure the interface we want to use actually exists
-                        if (typeInterface != null)
+                        if (!pluginType.IsAbstract)  //Only look at non-abstract types
                         {
-                            //Create a new available plugin since the type implements the IPlugin interface
-                            Types.AvailablePlugin newPlugin = new Types.AvailablePlugin();
+                            //Gets a type object of the interface we need the plugins to match
+                            Type typeInterface = pluginType.GetInterface("PluginInterface.IPlugin", true);
 
-                            //Set the filename where we found it
-                            newPlugin.AssemblyPath = FileName;
+                            //Make sure the interface we want to use actually exists
+                            if (typeInterface != null)
+                            {
+                                //Create a new available plugin since the type implements the IPlugin interface
+                                Types.AvailablePlugin newPlugin = new Types.AvailablePlugin();
 
-                            //Create a new instance and store the instance in the collection for later use
-                            //We could change this later on to not load an instance.. we have 2 options
-                            //1- Make one instance, and use it whenever we need it.. it's always there
-                            //2- Don't make an instance, and instead make an instance whenever we use it, then close it
-                            //For now we'll just make an instance of all the plugins
-                            newPlugin.Instance = (IPlugin)Activator.CreateInstance(pluginAssembly.GetType(pluginType.ToString()));
-                            //Set the Plugin's host to this class which inherited IPluginHost
-                            newPlugin.Instance.Host = this;
+                                //Set the filename where we found it
+                                newPlugin.AssemblyPath = FileName;
 
-                            //Call the initialization sub of the plugin
-                            //newPlugin.Instance.Initialize(null,null);
+                                //Create a new instance and store the instance in the collection for later use
+                                //We could change this later on to not load an instance.. we have 2 options
+                                //1- Make one instance, and use it whenever we need it.. it's always there
+                                //2- Don't make an instance, and instead make an instance whenever we use it, then close it
+                                //For now we'll just make an instance of all the plugins
+                                newPlugin.Instance = (IPlugin)Activator.CreateInstance(pluginAssembly.GetType(pluginType.ToString()));
+                                //Set the Plugin's host to this class which inherited IPluginHost
+                                newPlugin.Instance.Host = this;
 
-                            //Add the new plugin to our collection here
-                            this.colAvailablePlugins.Add(newPlugin);
+                                //Call the initialization sub of the plugin
+                                //newPlugin.Instance.Initialize(null,null);
 
-                            //cleanup a bit
-                            newPlugin = null;
+                                //Add the new plugin to our collection here
+                                colAvailablePlugins.Add(newPlugin);
+
+                                //cleanup a bit
+                                newPlugin = null;
+                            }
+                            typeInterface = null; //Mr. Clean			
                         }
-
-                        typeInterface = null; //Mr. Clean			
                     }
                 }
+                pluginAssembly = null; //more cleanup
             }
-
-            pluginAssembly = null; //more cleanup
+            catch (Exception ex)
+            {
+                Log2.Error("Error in Add Plugin!", ex);
+            }
         }
 
         /// <summary>
@@ -178,7 +192,7 @@
             /// <param name="pluginToAdd">The Plugin to Add</param>
             public void Add(Types.AvailablePlugin pluginToAdd)
             {
-                this.List.Add(pluginToAdd);
+                List.Add(pluginToAdd);
             }
 
             /// <summary>
@@ -187,7 +201,7 @@
             /// <param name="pluginToRemove">The Plugin to Remove</param>
             public void Remove(Types.AvailablePlugin pluginToRemove)
             {
-                this.List.Remove(pluginToRemove);
+                List.Remove(pluginToRemove);
             }
 
             /// <summary>

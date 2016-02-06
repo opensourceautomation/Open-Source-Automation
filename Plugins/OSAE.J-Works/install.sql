@@ -8,6 +8,9 @@ CALL osae_sp_object_type_method_add ('JWORKS','OFF','Stop','','','','');
 CALL osae_sp_object_type_method_add ('JWORKS','POLL','Poll Devices now','','','','');
 CALL osae_sp_object_type_property_add ('JWORKS','Polling Interval','Integer','','',0);
 CALL osae_sp_object_type_property_add ('JWORKS','Computer Name','String','','',0);
+CALL osae_sp_object_type_property_add('JWORKS','Version','String','','',0);
+CALL osae_sp_object_type_property_add('JWORKS','Author','String','','',0);
+CALL osae_sp_object_type_property_add('JWORKS','Trust Level','Integer','','90',0);
 
 CALL osae_sp_object_type_add ('JWORKS INPUT','J-Works Input','','JWORKS INPUT',0,0,0,1);
 CALL osae_sp_object_type_state_add ('JWORKS INPUT','ON','On');

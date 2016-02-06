@@ -7,12 +7,12 @@ namespace OSAE.COSMUpdater
     
     public class COSMUpdater : OSAEPluginBase
     {
-
         string pName = string.Empty;
         int pollInterval;
         bool enabled = false;
         Thread backgroundThread;
-        Logging logging = Logging.GetLogger("COSM");
+        private OSAE.General.OSAELog Log;
+        //Logging logging = Logging.GetLogger("COSM");
         List<string> RealMonitorItems = new List<string>();
         COSMWriter cosmTest;
         public override void ProcessCommand(OSAEMethod method)
@@ -22,23 +22,23 @@ namespace OSAE.COSMUpdater
             switch (method.MethodName.ToUpper())
             {
                 case "OFF":
-                    logging.AddToLog("COSMUpdater Stopped", true);
+                    Log.Info("COSMUpdater Stopped");
                     enabled = false;
                     break;
                 case "ON":
-                    logging.AddToLog("COSMUpdater Started", true);
+                    Log.Info("COSMUpdater Started");
                     enabled = true;
                     break;
                 case "WRITEDATA":
-                    logging.AddToLog("COSMUpdater DataWrite Forced", true);
+                    Log.Info("COSMUpdater DataWrite Forced");
                     WriteData();
                     break;
                 case "RELOADITEMS":
-                    logging.AddToLog("COSMUpdater ReloadItems", true);
+                    Log.Info("COSMUpdater ReloadItems");
                     GetCurrentList();
                     break;
                 default:
-                    logging.AddToLog(string.Format("COSMUpdater got method of {0} but it is not implemented", method.MethodName), true);
+                    Log.Info(string.Format("COSMUpdater got method of {0} but it is not implemented", method.MethodName));
                     break;
             }
         }
@@ -46,21 +46,20 @@ namespace OSAE.COSMUpdater
         public override void RunInterface(string pluginName)
         {
 
-            logging.AddToLog("Loading COSMUpdater (0.1.1)...", true);
+            Log.Info("Loading COSMUpdater..");
             cosmTest = new COSMWriter();
             pName = pluginName;
+            Log = new General.OSAELog(pName);
             try
             {
                 pollInterval = int.Parse("0" + OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "PollRate").Value);
                 if (!ReportAndCheckUsage()) return;
                 SetUpPoller();
                 enabled = true;
-                logging.AddToLog("Started COSMUpdater (0.1.1)...", true);
+                Log.Info("Started COSMUpdater...");
             }
             catch (Exception ex)
-            {
-                logging.AddToLog("COSMUpdater Exception in RunInterface. " + ex.Message, true);
-            }
+            { Log.Error("COSMUpdater Exception in RunInterface. ", ex); }
         }
 
         private void GetCurrentList()
@@ -74,12 +73,10 @@ namespace OSAE.COSMUpdater
                 var cosmDataStream = OSAEObjectPropertyManager.GetObjectPropertyValue(item.Name, "COSMDataStream");
                 var osaCurrValue = OSAEObjectPropertyManager.GetObjectPropertyValue(osaObj.Value, osaProp.Value);
                 if (osaCurrValue == null || osaCurrValue.Value.Trim() == string.Empty)
-                {
-                    logging.AddToLog(string.Format("*** ERROR {0} monitoring OSA Object {1} Property {2} and sending to COSM Feed {3} and DataStream {4} not found or value is empty", item.Name, osaObj.Value, osaProp.Value, cosmFeed.Value, cosmDataStream.Value), true);
-                }
+                    Log.Info(string.Format("*** ERROR {0} monitoring OSA Object {1} Property {2} and sending to COSM Feed {3} and DataStream {4} not found or value is empty", item.Name, osaObj.Value, osaProp.Value, cosmFeed.Value, cosmDataStream.Value));
                 else
                 {
-                    logging.AddToLog(string.Format("{0} monitoring OSA Object {1} Property {2} and sending to COSM Feed {3} and DataStream {4} and Current Value of {5}", item.Name, osaObj.Value, osaProp.Value, cosmFeed.Value, cosmDataStream.Value, osaCurrValue.Value), true);
+                    Log.Info(string.Format("{0} monitoring OSA Object {1} Property {2} and sending to COSM Feed {3} and DataStream {4} and Current Value of {5}", item.Name, osaObj.Value, osaProp.Value, cosmFeed.Value, cosmDataStream.Value, osaCurrValue.Value));
                     RealMonitorItems.Add(item.Name);
                 }
             }
@@ -95,19 +92,19 @@ namespace OSAE.COSMUpdater
             bool lValid = true;
             try
             {
-                logging.AddToLog("COSMUpdater pollInterval=" + pollInterval, true);
+                Log.Info("COSMUpdater pollInterval=" + pollInterval);
                 if (pollInterval < 30)
                 {
                     lValid = false;
-                    logging.AddToLog("COSMUpdater pollInterval must be greater than or equal to 30 to prevent flooding COSM with updates", true);
+                    Log.Info("COSMUpdater pollInterval must be greater than or equal to 30 to prevent flooding COSM with updates");
                 }
-                logging.AddToLog("COSMUpdater has been setup with the following items to monitor", true);
+                Log.Info("COSMUpdater has been setup with the following items to monitor");
                 GetCurrentList();
-                if (!lValid) logging.AddToLog("COSMUpdater is not started. No updates will be processed.", true);
+                if (!lValid) Log.Info("COSMUpdater is not started. No updates will be processed.");
             }
             catch (Exception ex)
             {
-                logging.AddToLog("COSMUpdater Exception in ReportAndCheckUsage. " + ex.Message, true);
+                Log.Error("COSMUpdater Exception in ReportAndCheckUsage.", ex);
             }
             return lValid;
         }
@@ -123,13 +120,12 @@ namespace OSAE.COSMUpdater
             {
                 if (enabled)
                 {
-                    logging.AddToLog("Running COSMUpdater polling logic", false);
+                    Log.Debug("Running COSMUpdater polling logic");
                     WriteData();
                 }
                 else
-                {
-                    logging.AddToLog("COSMUpdater polling logic currently disabled", false);
-                }
+                    Log.Debug("COSMUpdater polling logic currently disabled");
+
                 Thread.Sleep(pollInterval * 1000);
             }
         }
@@ -146,13 +142,10 @@ namespace OSAE.COSMUpdater
 
                 var osaCurrValue = OSAEObjectPropertyManager.GetObjectPropertyValue(osaObj.Value, osaProp.Value);
                 if (osaCurrValue == null || osaCurrValue.Value.Trim() == string.Empty)
-                {
-                    logging.AddToLog(string.Format("*** ERROR {0} monitoring OSA Object {1} Property {2} and sending to COSM Feed {3} and DataStream {4} not found or value is empty", item, osaObj.Value, osaProp.Value, cosmFeed.Value, cosmDataStream.Value), true);
-                }
+                    Log.Info(string.Format("*** ERROR {0} monitoring OSA Object {1} Property {2} and sending to COSM Feed {3} and DataStream {4} not found or value is empty", item, osaObj.Value, osaProp.Value, cosmFeed.Value, cosmDataStream.Value));
                 else
-                {
-                    logging.AddToLog(string.Format("Sending {0} monitoring OSA Object {1} Property {2} and sending to COSM Feed {3} and DataStream {4} and Current Value of {5}", item, osaObj.Value, osaProp.Value, cosmFeed.Value, cosmDataStream.Value, osaCurrValue.Value), false);
-                }
+                    Log.Debug(string.Format("Sending {0} monitoring OSA Object {1} Property {2} and sending to COSM Feed {3} and DataStream {4} and Current Value of {5}", item, osaObj.Value, osaProp.Value, cosmFeed.Value, cosmDataStream.Value, osaCurrValue.Value));
+
                 var timestamp = DateTime.UtcNow.ToString("s") + "Z";
                 var bulk = string.Format("{0},{1}", timestamp, osaCurrValue.Value);
                 cosmTest.Send(cosmAPIKey.Value, cosmFeed.Value, cosmDataStream.Value, bulk);
@@ -161,7 +154,7 @@ namespace OSAE.COSMUpdater
 
         public override void Shutdown()
         {
-            logging.AddToLog("Running COSMUpdater shutdown logic", true);
+            Log.Info("Running COSMUpdater shutdown logic");
         }
     }
 }

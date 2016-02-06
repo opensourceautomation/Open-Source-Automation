@@ -6,7 +6,7 @@
     public class OSAPSInvoke : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log = new General.OSAELog("POWERSHELL");
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }
@@ -20,14 +20,8 @@
         [Alias("P1")]
         public string Parameter1
         {
-            get
-            {
-                return parameter1;
-            }
-            set
-            {
-                parameter1 = value;
-            }
+            get { return parameter1; }
+            set { parameter1 = value; }
         }
 
         private string parameter2 = string.Empty;
@@ -36,19 +30,13 @@
         [Alias("P2")]
         public string Parameter2
         {
-            get
-            {
-                return parameter2;
-            }
-            set
-            {
-                parameter2 = value;
-            }
+            get { return parameter2; }
+            set { parameter2 = value; }
         }
 
         protected override void ProcessRecord()
         {
-            this.Log.Debug("Invoke-OSA - ProcessRecord - Started");
+            Log.Debug("Invoke-OSA - ProcessRecord - Started");
             OSAEMethodManager.MethodQueueAdd(Name, Method, parameter1, parameter2, "PowerShell");
 
             WriteObject(true);

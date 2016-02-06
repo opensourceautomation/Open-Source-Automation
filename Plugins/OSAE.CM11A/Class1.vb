@@ -5,7 +5,7 @@ Imports OSAE
 Public Class CM11
     Inherits OSAEPluginBase
 
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog '= New General.OSAELog()
     Private pName As String = ""
     Private gPort As Integer
     Private gPollRate As Integer
@@ -228,6 +228,7 @@ Public Class CM11
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
             pName = pluginName
+            Log = New General.OSAELog(pName)
             Log.Info("Found my Object: " & pName)
             gPort = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
             Log.Info("COM Port = " & gPort)

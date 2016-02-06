@@ -53,14 +53,9 @@
         {
             lock (memoryLock)
             {
-                if (privateInstance == null)
-                {
-                    privateInstance = new Logging("Default");
-                }
+                if (privateInstance == null) privateInstance = new Logging("Default");
             }
-            
             Logging.GetConfiguration();
-            
             return privateInstance;
         }
 
@@ -69,17 +64,11 @@
             lock (memoryLock)
             {
                 if (privateInstance == null)
-                {
                     privateInstance = new Logging(requestedLogName);
-                }
                 else
-                {
                     privateInstance.logName = requestedLogName;
-                }
             }
-
             Logging.GetConfiguration();
-
             return privateInstance;
         }
 
@@ -101,10 +90,7 @@
 
                         if (pruneLogs == "TRUE")
                         {
-                            if (file.Length > 1000000)
-                            {
-                                file.Delete();
-                            }
+                            if (file.Length > 1000000) file.Delete();
                         }
                     }
                 }
@@ -121,9 +107,7 @@
                         + ex.Message + " - " + ex.InnerException);
                     sw.Close();
                     if (file.Length > 1000000)
-                    {
                         file.Delete();
-                    }
                 }
             }        
         }
@@ -154,10 +138,7 @@
                     OSAESql.RunQuery(command);
                 }
             }
-            catch
-            {
-                // Not a lot we can do if it fails here
-            }
+            catch { }
         }
 
         /// <summary>
@@ -172,7 +153,7 @@
                 command.CommandText = "CALL osae_sp_event_log_add (@ObjectName, @EventName, @FromObject, @DebugInfo, @Param1, @Param2)";
                 command.Parameters.AddWithValue("@ObjectName", objectName);
                 command.Parameters.AddWithValue("@EventName", eventName);
-                command.Parameters.AddWithValue("@FromObject", PluginManager.GetPluginName(logName, Common.ComputerName));
+                command.Parameters.AddWithValue("@FromObject", logName);
                 command.Parameters.AddWithValue("@DebugInfo", null);
                 command.Parameters.AddWithValue("@Param1", parameter1);
                 command.Parameters.AddWithValue("@Param2", parameter2);
@@ -181,9 +162,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    AddToLog("API - EventLogAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { AddToLog("API - EventLogAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -200,9 +179,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    AddToLog("API - EventLogClear error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { AddToLog("API - EventLogClear error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 

@@ -7,7 +7,7 @@
     public class OSALOG : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log2 = new General.OSAELog();
+        private OSAE.General.OSAELog Log2 = new General.OSAELog("POWERSHELL");
 
         [Parameter(Mandatory = true)]
         public string Message { get; set; }
@@ -20,18 +20,12 @@
             try
             {
                 if (string.IsNullOrEmpty(Log))
-                {
-                    this.Log2.Debug(Message);
-                }
+                    Log2.Debug(Message);
                 else
-                {
-                    this.Log2.Debug(Message);
-                }
+                    Log2.Debug(Message);
             }
             catch (Exception exc)
-            {
-                this.Log2.Error("An error occured while trying to run the command invoke-osalog, details", exc);
-            }
+            { Log2.Error("An error occured while trying to run the command invoke-osalog, details", exc); }
         }      
     }     
 }

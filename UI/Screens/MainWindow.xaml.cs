@@ -21,7 +21,7 @@
     public partial class MainWindow : Window
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new OSAE.General.OSAELog();
         
         public string gAppName = "";
         public int gAppMinTrust = 50;
@@ -49,9 +49,7 @@
         bool editMode = false;
         //bool closing = false;
         System.Timers.Timer _timer;
-
-
-
+        
         #region drag and drop properties
         private Point _startPoint;
         DragAdorner _adorner = null;
@@ -83,7 +81,7 @@
                 GlobalUserControls.OSAEUserControls.FindPlugins(OSAE.Common.ApiPath + @"\UserControls");
             }
             catch (Exception ex)
-            { this.Log.Error("Error starting GUI", ex); }
+            { MessageBox.Show("Error Loading User Controls!"); }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -103,7 +101,7 @@
             menuAddControl.IsEnabled = false;
 
             Load_App_Name();
-
+         
             _timer = new System.Timers.Timer(1000);
             _timer.Elapsed += new ElapsedEventHandler(_timer_Elapsed);
             _timer.Enabled = true; // Enable it
@@ -116,8 +114,8 @@
 
             OSAE.OSAEObjectStateManager.ObjectStateSet(gAppName, "ON", gAppName);
 
-            this.canGUI.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(DragSource_PreviewMouseLeftButtonDown);
-            this.canGUI.Drop += new DragEventHandler(DragSource_Drop);
+            canGUI.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(DragSource_PreviewMouseLeftButtonDown);
+            canGUI.Drop += new DragEventHandler(DragSource_Drop);
         }
 
         void _timer_Elapsed(object sender, ElapsedEventArgs e)
@@ -171,10 +169,9 @@
               //  tvControls
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Failed to load screen: " + sScreen, ex);
-            }
-            this.Log.Info("Loaded Screen:  " + sScreen);
+            { Log.Error("Failed to load screen: " + sScreen, ex); }
+
+            Log.Info("Loaded Screen:  " + sScreen);
             _timer.Start();
         }
 
@@ -188,9 +185,7 @@
 
             OSAEObjectCollection screenObjects = OSAEObjectManager.GetObjectsByContainer(sScreen);
             foreach (OSAE.OSAEObject obj in screenObjects)
-            {
                 LoadControl(obj);
-            }
         }
 
         private void Update_Objects()
@@ -206,7 +201,7 @@
                 if (gDebug) Log.Debug("Checking for updates on:  " + gCurrentScreen);
                 bool oldCtrl = false;
 
-                this.Dispatcher.Invoke((Action)(() =>
+                Dispatcher.Invoke((Action)(() =>
                 {
                     if (screenObjectControl.Visibility == System.Windows.Visibility.Hidden && menuShowControlList.IsChecked) menuShowControlList.IsChecked = false;
                 }));
@@ -215,7 +210,7 @@
                 {
                     gCurrentUser = userSelectorControl._CurrentUser;
                     gCurrentUserTrust = userSelectorControl._CurrentUserTrust;
-                    this.Dispatcher.Invoke((Action)(() =>
+                    Dispatcher.Invoke((Action)(() =>
                     {
                         if (gCurrentUser == "" || gCurrentUserTrust < gAppMinTrust)
                         {
@@ -258,7 +253,7 @@
                                     }
                                     catch
                                     { }
-                                    this.Dispatcher.Invoke((Action)(() =>
+                                    Dispatcher.Invoke((Action)(() =>
                                     {
                                         Canvas.SetLeft(sImage, sImage.Location.X);
                                         Canvas.SetTop(sImage, sImage.Location.Y);
@@ -270,7 +265,7 @@
                                 {
                                     sImage.PropertyLastUpdated = newCtrl.PropertyLastUpdated;
                                     sImage.Update();
-                                    this.Dispatcher.Invoke((Action)(() =>
+                                    Dispatcher.Invoke((Action)(() =>
                                     {
                                         Canvas.SetLeft(sImage, sImage.Location.X);
                                         Canvas.SetTop(sImage, sImage.Location.Y);
@@ -375,7 +370,7 @@
                             {
                                 if (newCtrl.LastUpdated != obj.LastUpdated)
                                 {
-                                    this.Dispatcher.Invoke((Action)(() =>
+                                    Dispatcher.Invoke((Action)(() =>
                                     {
                                         obj.LastUpdated = newCtrl.LastUpdated;
                                         obj.Update();
@@ -432,9 +427,9 @@
 
         private void LoadControl(OSAE.OSAEObject obj)
         {
-            this.Dispatcher.Invoke((Action)(() =>
+            Dispatcher.Invoke((Action)(() =>
             {
-                String sStateMatch = "";
+                string sStateMatch = "";
 
                 #region USER SELECTOR
                 if (obj.Type == "CONTROL USER SELECTOR")
@@ -481,9 +476,7 @@
                         try
                         {
                             if (p.Value.ToLower() == stateImageControl.CurState.ToLower())
-                            {
                                 sStateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
-                            }
                         }
                         catch (Exception ex)
                         {
@@ -510,7 +503,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Log.Error("Error updating screenObject", ex);
+                        Log.Error("Error updating screenObject", ex);
                         return;
                     }
                 }
@@ -537,7 +530,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Log.Error("Error updating PropertyLabelControl", ex);
+                        Log.Error("Error updating PropertyLabelControl", ex);
                         return;
                     }
                 }
@@ -549,21 +542,23 @@
                     if (gDebug) Log.Debug("Loading PropertyLabelControl: " + obj.Name);
                     try
                     {
-                    OSAE.UI.Controls.StaticLabel sl = new OSAE.UI.Controls.StaticLabel(obj);
-                    canGUI.Children.Add(sl);
-                    int dZ = Int32.Parse(obj.Property("ZOrder").Value);
-                    sl.Location.X = Double.Parse(obj.Property("X").Value);
-                    sl.Location.Y = Double.Parse(obj.Property("Y").Value);
-                    Canvas.SetLeft(sl, sl.Location.X);
-                    Canvas.SetTop(sl, sl.Location.Y);
-                    Canvas.SetZIndex(sl, dZ);
-                    staticLabels.Add(sl);
-                    controlTypes.Add(typeof(OSAE.UI.Controls.StaticLabel));
-                    sl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+
+                        OSAE.UI.Controls.StaticLabel sl = new OSAE.UI.Controls.StaticLabel(obj);
+                        canGUI.Children.Add(sl);
+                        int dZ = Int32.Parse(obj.Property("ZOrder").Value);
+                        sl.Location.X = Double.Parse(obj.Property("X").Value);
+                        sl.Location.Y = Double.Parse(obj.Property("Y").Value);
+                        Canvas.SetLeft(sl, sl.Location.X);
+                        Canvas.SetTop(sl, sl.Location.Y);
+                        Canvas.SetZIndex(sl, dZ);
+                        staticLabels.Add(sl);
+                        controlTypes.Add(typeof(OSAE.UI.Controls.StaticLabel));
+                        sl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
+
                     catch (Exception ex)
                     {
-                            this.Log.Error("Error updating PropertyLabelControl", ex);
+                            Log.Error("Error updating PropertyLabelControl", ex);
                             return;
                     }
                 }
@@ -591,7 +586,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Log.Error("Error updating PropertyTimerControl", ex);
+                        Log.Error("Error updating PropertyTimerControl", ex);
                         return;
                     }
                 }
@@ -620,12 +615,9 @@
                         clickImages.Add(ClickImageControl);
                         controlTypes.Add(typeof(ClickImage));
                         ClickImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
-                      
                     }
                     catch (MySqlException myerror)
-                    {
-                        MessageBox.Show("GUI Error Load Click Image: " + myerror.Message);
-                    }
+                    { MessageBox.Show("GUI Error Load Click Image: " + myerror.Message); }
                 }
                 #endregion
 
@@ -656,9 +648,7 @@
                         navImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
                     catch (MySqlException myerror)
-                    {
-                        MessageBox.Show("GUI Error Load Navigation Image: " + myerror.Message);
-                    }
+                    { MessageBox.Show("GUI Error Load Navigation Image: " + myerror.Message); }
                 }
                 #endregion
 
@@ -687,9 +677,7 @@
                         vsv.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
                     catch (MySqlException myerror)
-                    {
-                        MessageBox.Show("GUI Error Load Camera Viewer: " + myerror.Message);
-                    }
+                    { MessageBox.Show("GUI Error Load Camera Viewer: " + myerror.Message); }
                 }
                 #endregion
 
@@ -745,7 +733,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Log.Error("Error updating BrowserControl", ex);
+                        Log.Error("Error updating BrowserControl", ex);
                         return;
                     }
                 }
@@ -760,16 +748,18 @@
             foreach (OSAE.OSAEObject obj in screens)
             {
                 if (obj.Property("Computer Name").Value == Common.ComputerName)
+                {
                     gAppName = obj.Name;
                     gAppLocation = obj.Container;
+                }
             }
             if (gAppName == "")
             {
                 gAppName = "GUI CLIENT-" + Common.ComputerName;
-                OSAEObjectManager.ObjectAdd(gAppName, gAppName, gAppName, "GUI CLIENT", "", "SYSTEM", 30, true);
-                OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", Common.ComputerName, gCurrentUser);
+                OSAEObjectManager.ObjectAdd(gAppName, "", gAppName, "GUI CLIENT", "", Common.ComputerName, 30, true);
             }
-            this.Log.Info("Found this Screen App's Object Name:  " + gAppName);
+            Log = new OSAE.General.OSAELog(gAppName);
+            Log.Info("Found this Screen App's Object Name:  " + gAppName);
     }
 
         private void Set_Default_Screen()
@@ -952,7 +942,6 @@
                     Thread thread = new Thread(() => updateObjectCoordsStateImg(beingDragged.screenObject, beingDragged.StateMatch, newX.ToString(), newY.ToString()));
                     thread.Start();
                 }
-
                 else
                 {
                     Thread thread = new Thread(() => updateObjectCoords(beingDragged.screenObject, newX.ToString(), newY.ToString()));
@@ -981,10 +970,8 @@
 
                             if (
                                     (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
-                                &&
-                                    (sender.Location.X < _startPoint.X && _startPoint.X < (sender.Location.X + sender.ActualWidth))
-                                &&
-                                    (sender.Location.Y < _startPoint.Y && _startPoint.Y < (sender.Location.Y + sender.ActualHeight))
+                                && (sender.Location.X < _startPoint.X && _startPoint.X < (sender.Location.X + sender.ActualWidth))
+                                && (sender.Location.Y < _startPoint.Y && _startPoint.Y < (sender.Location.Y + sender.ActualHeight))
                                )
                             {
                                 beingDragged = (UIElement)sender;
@@ -1035,7 +1022,6 @@
             _layer = AdornerLayer.GetAdornerLayer(DragScope as Visual);
             _layer.Add(_adorner);
 
-
             IsDragging = true;
             _dragHasLeftScope = false;
             //Finally lets drag drop 
@@ -1050,7 +1036,6 @@
             //DragSource.GiveFeedback -= feedbackhandler;
             DragScope.DragLeave -= dragleavehandler;
             DragScope.QueryContinueDrag -= queryhandler;
-
 
             IsDragging = false;
         }
@@ -1072,7 +1057,7 @@
                 Rect r = VisualTreeHelper.GetContentBounds(DragScope);
                 if (!r.Contains(p))
                 {
-                    this._dragHasLeftScope = true;
+                    _dragHasLeftScope = true;
                     e.Handled = true;
                 }
             }
@@ -1080,7 +1065,7 @@
 
         void DragScope_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
         {
-            if (this._dragHasLeftScope)
+            if (_dragHasLeftScope)
             {
                 e.Action = DragAction.Cancel;
                 e.Handled = true;
@@ -1227,7 +1212,6 @@
             addControl.Content = cscr;
             addControl.ShowDialog();
             Load_Screen(cscr.currentScreen);
-          //  Load_Screen(gCurrentScreen);
         }
 
         private void menuInstallUserControl_Click(object sender, RoutedEventArgs e)
@@ -1270,40 +1254,40 @@
 
         private void menuFrameShow_Click(object sender, RoutedEventArgs e)     
         {
-            this.ResizeMode = System.Windows.ResizeMode.CanResize;
-            this.WindowStyle = System.Windows.WindowStyle.ToolWindow;
-            this.ResizeMode = System.Windows.ResizeMode.NoResize;    
+            ResizeMode = System.Windows.ResizeMode.CanResize;
+            WindowStyle = System.Windows.WindowStyle.ToolWindow;
+            ResizeMode = System.Windows.ResizeMode.NoResize;    
         }
 
         private void menuFrameHide_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowStyle = System.Windows.WindowStyle.None;
-            this.ResizeMode = System.Windows.ResizeMode.CanResize;
-            this.Width = canGUI.Width;
-            this.Height = canGUI.Height;
-            this.ResizeMode = System.Windows.ResizeMode.NoResize;        
+            WindowStyle = System.Windows.WindowStyle.None;
+            ResizeMode = System.Windows.ResizeMode.CanResize;
+            Width = canGUI.Width;
+            Height = canGUI.Height;
+            ResizeMode = System.Windows.ResizeMode.NoResize;        
         }
 
         private void menuFrameTopLeft_Click(object sender, RoutedEventArgs e)
         {
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
-            this.Left = desktopWorkingArea.Left;
-            this.Top = desktopWorkingArea.Top;
+            Left = desktopWorkingArea.Left;
+            Top = desktopWorkingArea.Top;
         }
 
         private void menuFrameBottomRight_Click(object sender, RoutedEventArgs e)
         {
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
-            this.Left = desktopWorkingArea.Right - this.Width;
-            this.Top = desktopWorkingArea.Bottom - this.Height;
+            Left = desktopWorkingArea.Right - this.Width;
+            Top = desktopWorkingArea.Bottom - this.Height;
 
         }
 
         private void menuFrameCentre_Click(object sender, RoutedEventArgs e)
         {
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
-            this.Left = (desktopWorkingArea.Width / 2) - (this.Width /2);
-            this.Top = (desktopWorkingArea.Height / 2) - (this.Height / 2);
+            Left = (desktopWorkingArea.Width / 2) - (this.Width /2);
+            Top = (desktopWorkingArea.Height / 2) - (this.Height / 2);
         }
 
         #endregion
@@ -1314,13 +1298,8 @@
             OSAE.OSAEObjectStateManager.ObjectStateSet(gAppName, "OFF", gAppName);
             string remUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "LogOut on Close").Value;
             bool loUser = Convert.ToBoolean(remUser);
-            if (loUser == true)
-            {
-                OSAE.OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current User", "", "SYSTEM");
-            }
+            if (loUser == true) OSAE.OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current User", "", "SYSTEM");
             _timer.Stop();
         }
- 
     }
-    
 }

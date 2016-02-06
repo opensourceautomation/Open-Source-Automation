@@ -8,101 +8,111 @@ namespace OSAE.Android
     [AddIn("Android", Version = "0.0.1")]
     public class Android : OSAEPluginBase
     {
-        //OSAELog
-        private static OSAE.General.OSAELog Log = new General.OSAELog();
-
+        private static OSAE.General.OSAELog Log;// = new General.OSAELog();
         string pName;
         List<AndroidDevice> mdevices = new List<AndroidDevice>();
 
         public override void RunInterface(string pluginName)
         {
-            Log.Info("Starting Android plugin");
             pName = pluginName;
-
-            OSAEObjectTypeManager.ObjectTypeUpdate("Android Device", "Android Device", "Android Device", pluginName, "Android Device", false, false, false, true);
+            Log = new General.OSAELog(pName);
+            Log.Info("Starting Android plugin");
+            OwnTypes();
 
             //connect to devices
-            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("Android Device");
+            OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("ANDROID DEVICE");
 
             foreach (OSAEObject obj in objects)
-            {
                 createdevice(obj);
-            }
 
             Log.Debug("Run Interface Complete");
         }
 
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("ANDROID");
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("Android Plugin took ownership of the ANDROID Object Type.");
+            }
+            else
+                Log.Info("Android Plugin correctly owns the ANDROID Object Type.");
+
+            oType = OSAEObjectTypeManager.ObjectTypeLoad("ANDROID DEVICE");
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("Android Plugin took ownership of the ANDROID DEVICE Object Type.");
+            }
+            else
+                Log.Info("Android Plugin correctly owns the ANDROID DEVICE Object Type.");
+        }
 
         public override void Shutdown()
         {
-
             foreach (AndroidDevice d in mdevices)
-            {
-
-            }
-
+            { }
         }
 
         public override void ProcessCommand(OSAEMethod method)
         {
+            try {
+                string object_name = method.ObjectName;
+                string method_name = method.MethodName;
+                string parameter_1 = method.Parameter1;
+                string parameter_2 = method.Parameter2;
 
-            String object_name = method.ObjectName;
-            String method_name = method.MethodName;
-            String parameter_1 = method.Parameter1;
-            String parameter_2 = method.Parameter2;
+                Log.Debug("Found Command: " + method_name + " | param1: " + parameter_1 + " | param2: " + parameter_2);
 
-            Log.Debug("Found Command: " + method_name + " | param1: " + parameter_1 + " | param2: " + parameter_2);
-
-            if (object_name == pName)
-            {
-
-                switch (method_name)
+                if (object_name == pName)
                 {
+                    switch (method_name)
+                    {
+                        case "NOTIFYALL":
+                            Log.Debug("NOTIFYALL event triggered");
+                            Log.Debug("NOTIFYALL devices to loop:" + mdevices.Count);
 
-                    case "NOTIFYALL":
-                        Log.Debug("NOTIFYALL event triggered");
+                            foreach (AndroidDevice d in mdevices)
+                            {
+                                Log.Debug("NOTIFYALL loop for device:" + d.Name);
+                                d.ProcessCommand("NOTIFY", parameter_1, parameter_2);
+                            }
 
-                        Log.Debug("NOTIFYALL devices to loop:" + mdevices.Count);
+                            break;
 
-                        foreach (AndroidDevice d in mdevices)
-                        {
-                            Log.Debug("NOTIFYALL loop for device:" + d.Name);
-                            d.ProcessCommand("NOTIFY", parameter_1, parameter_2);
-                        }
+                        case "EXECUTEALL":
+                            Log.Debug("EXECUTEALL event triggered");
+                            Log.Debug("EXECUTEALL devices to loop:" + mdevices.Count);
 
-                        break;
+                            foreach (AndroidDevice d in mdevices)
+                            {
+                                Log.Debug("EXECUTEALL loop for device:" + d.Name);
+                                d.ProcessCommand("EXECUTE", parameter_1, parameter_2);
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    AndroidDevice d = getAndroidDevice(object_name);
 
-                    case "EXECUTEALL":
-                        Log.Debug("EXECUTEALL event triggered");
+                    if (d == null)
+                    {
+                        OSAEObject obj = OSAEObjectManager.GetObjectByName(object_name);
+                        createdevice(obj);
+                        d = getAndroidDevice(object_name);
+                    }
 
-                        Log.Debug("EXECUTEALL devices to loop:" + mdevices.Count);
-
-                        foreach (AndroidDevice d in mdevices)
-                        {
-                            Log.Debug("EXECUTEALL loop for device:" + d.Name);
-                            d.ProcessCommand("EXECUTE", parameter_1, parameter_2);
-                        }
-
-                        break;
+                    if (d != null)
+                        d.ProcessCommand(method_name, parameter_1, parameter_2);
 
                 }
             }
-            else
+            catch (Exception ex)
             {
-                AndroidDevice d = getAndroidDevice(object_name);
-
-                if (d == null)
-                {
-                    OSAEObject obj = OSAEObjectManager.GetObjectByName(object_name);
-                    createdevice(obj);
-                    d = getAndroidDevice(object_name);
-                }
-
-                if (d != null)
-                {
-                    d.ProcessCommand(method_name, parameter_1, parameter_2);
-                }
-                
+                Log.Error("Error processing command!",ex);
             }
         }
 
@@ -110,8 +120,6 @@ namespace OSAE.Android
         public void createdevice(OSAEObject obj)
         {
             AndroidDevice d = new AndroidDevice(obj.Name, pName);
-
-            //d.GCMID = obj.Address;
 
             foreach (OSAEObjectProperty prop in obj.Properties)
             {
@@ -125,18 +133,15 @@ namespace OSAE.Android
                         break;
                 }
             }
-
             mdevices.Add(d);
             Log.Info("Added AndroidDevice to list: " + d.Name);
-
         }
 
         public AndroidDevice getAndroidDevice(string name)
         {
             foreach (AndroidDevice d in mdevices)
             {
-                if (d.Name == name)
-                    return d;
+                if (d.Name == name) return d;
             }
             return null;
         }

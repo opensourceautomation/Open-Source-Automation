@@ -1,11 +1,16 @@
-CALL osae_sp_object_type_add ('INSTEON','INSTEON PLM PLUGIN','','PLUGIN',1,1,0,1);
-CALL osae_sp_object_type_state_add('INSTEON','ON','On');
-CALL osae_sp_object_type_state_add('INSTEON','OFF','Off');
-CALL osae_sp_object_type_event_add('INSTEON','ON','On');
-CALL osae_sp_object_type_event_add('INSTEON','OFF','Off');
-CALL osae_sp_object_type_property_add('INSTEON','Port','Integer','','',0);
+CALL osae_sp_object_type_add ('INSTEON','Insteon PLM Plugin','Insteon','PLUGIN',1,1,0,1);
+CALL osae_sp_object_type_state_add('INSTEON','ON','Running');
+CALL osae_sp_object_type_state_add('INSTEON','OFF','Stopped');
+CALL osae_sp_object_type_event_add('INSTEON','ON','Started');
+CALL osae_sp_object_type_event_add('INSTEON','OFF','Stopped');
+CALL osae_sp_object_type_method_add('INSTEON','ON','Start','','','','');
+CALL osae_sp_object_type_method_add('INSTEON','OFF','Stop','','','','');
+CALL osae_sp_object_type_property_add('INSTEON','Port','Integer','','0',0);
 CALL osae_sp_object_type_property_add('INSTEON','System Plugin','Boolean','','FALSE',0);
 CALL osae_sp_object_type_property_add('INSTEON','Debug','Boolean','','FALSE',0);
+CALL osae_sp_object_type_property_add('INSTEON','Version','String','','',0);
+CALL osae_sp_object_type_property_add('INSTEON','Author','String','','',0);
+CALL osae_sp_object_type_property_add('INSTEON','Trust Level','Integer','','90',0);
 
 CALL osae_sp_object_type_add ('INSTEON DIMMER','Insteon Dimmer','Insteon','SWITCH',0,0,0,0);
 CALL osae_sp_object_type_state_add('INSTEON DIMMER','ON','On');

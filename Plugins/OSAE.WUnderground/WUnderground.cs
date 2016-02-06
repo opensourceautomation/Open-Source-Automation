@@ -11,24 +11,24 @@
     {
         string pName;
         bool gDebug = false;
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new General.OSAELog();
         Thread updateConditionsThread, updateForecastThread, updateDayNightThread;
         System.Timers.Timer ConditionsUpdateTimer, ForecastUpdateTimer, DayNightUpdateTimer;
         string latitude ="", longitude="";
         int Conditionsupdatetime, Forecastupdatetime, DayNightupdatetime = 300000;
-        Boolean FirstUpdateRun;
-        Boolean FirstForcastRun;
-        String DayNight, WeatherObjName, pKey, pCity, pState;
-        Boolean Metric;
+        bool FirstUpdateRun, FirstForcastRun, Metric;
+        string DayNight, WeatherObjName, pKey, pCity, pState;
 
         public override void RunInterface(string pluginName)
         {
             try
             {
+                pName = pluginName;
+                Log = new General.OSAELog(pName);
                 FirstUpdateRun = true;
                 FirstForcastRun = true;
                 Log.Info("Running Interface");
-                pName = pluginName;
+                OwnTypes();
 
                 OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("WEATHER");
                 if (objects.Count == 0)
@@ -42,7 +42,7 @@
                 Log.Info("Linked to Weather object to store data.");
                 try
                 {
-                    if (Boolean.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Metric").Value))
+                    if (bool.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Metric").Value))
                     {
                         Metric = true;
                         Log.Info("Using metric units");
@@ -100,8 +100,8 @@
                     ConditionsUpdateTimer.Start();
                     ConditionsUpdateTimer.Elapsed += new ElapsedEventHandler(ConditionsUpdateTime);
 
-                    this.updateConditionsThread = new Thread(new ThreadStart(updateconditions));
-                    this.updateConditionsThread.Start();
+                    updateConditionsThread = new Thread(new ThreadStart(updateconditions));
+                    updateConditionsThread.Start();
 
                   //  Thread.Sleep(10000);
                 }
@@ -125,8 +125,8 @@
                     ForecastUpdateTimer.Start();
                     ForecastUpdateTimer.Elapsed += new ElapsedEventHandler(ForecastUpdateTime);
 
-                    this.updateForecastThread = new Thread(new ThreadStart(updateforecast));
-                    this.updateForecastThread.Start();             
+                    updateForecastThread = new Thread(new ThreadStart(updateforecast));
+                    updateForecastThread.Start();             
                 }
 
                 do
@@ -134,7 +134,7 @@
                     Thread.Sleep(5000);
                 } while (FirstForcastRun);
 
-                this.Log.Info("Updated " + WeatherObjName + ", setting Weather object to Updated.");
+                Log.Info("Updated " + WeatherObjName + ", setting Weather object to Updated.");
                 OSAE.OSAEMethodManager.MethodQueueAdd(WeatherObjName, "Updated", "", "", pName);
 
                 DayNightUpdateTimer = new System.Timers.Timer();
@@ -142,13 +142,13 @@
                 DayNightUpdateTimer.Start();
                 DayNightUpdateTimer.Elapsed += new ElapsedEventHandler(DayNightUpdateTime);
 
-                this.updateDayNightThread = new Thread(new ThreadStart(updateDayNight));
-                this.updateDayNightThread.Start();             
+                updateDayNightThread = new Thread(new ThreadStart(updateDayNight));
+                updateDayNightThread.Start();             
             }
             catch (Exception ex)
-            { this.Log.Error("Error initializing the plugin ", ex); }
+            { Log.Error("Error initializing the plugin ", ex); }
          }
-                
+
         public override void ProcessCommand(OSAEMethod method)
         {
             if (method.MethodName == "UPDATE") update();
@@ -156,12 +156,9 @@
         
         public override void Shutdown()
         {
-            this.Log.Info("Shutting down");
-            if (Forecastupdatetime > 0)
-                ForecastUpdateTimer.Stop();
-
-            if (Conditionsupdatetime > 0)
-                ConditionsUpdateTimer.Stop();
+            Log.Info("Shutting down");
+            if (Forecastupdatetime > 0) ForecastUpdateTimer.Stop();
+            if (Conditionsupdatetime > 0) ConditionsUpdateTimer.Stop();
 
             DayNightUpdateTimer.Stop();
         }
@@ -172,8 +169,8 @@
             {
                 if (!updateConditionsThread.IsAlive)
                 {
-                    this.updateConditionsThread = new Thread(new ThreadStart(updateconditions));
-                    this.updateConditionsThread.Start();
+                    updateConditionsThread = new Thread(new ThreadStart(updateconditions));
+                    updateConditionsThread.Start();
                 }
             }
         }
@@ -184,8 +181,8 @@
             {
                 if (!updateForecastThread.IsAlive)
                 {
-                    this.updateForecastThread = new Thread(new ThreadStart(updateforecast));
-                    this.updateForecastThread.Start();
+                    updateForecastThread = new Thread(new ThreadStart(updateforecast));
+                    updateForecastThread.Start();
                 }
             }
         }
@@ -196,8 +193,8 @@
             {
                 if (!updateDayNightThread.IsAlive)
                 {
-                    this.updateDayNightThread = new Thread(new ThreadStart(updateDayNight));
-                    this.updateDayNightThread.Start();
+                    updateDayNightThread = new Thread(new ThreadStart(updateDayNight));
+                    updateDayNightThread.Start();
                 }
             }
         }
@@ -322,7 +319,7 @@
                 }
             }
             catch (Exception ex)
-            { this.Log.Error("Error updating sunset - " + ex.Message); }
+            { Log.Error("Error updating sunset - " + ex.Message); }
 
             try
             {
@@ -373,7 +370,6 @@
                     GetFieldFromXmlAndReport(xml, "Night1 Summary", @"response/forecast/txt_forecast/forecastdays/forecastday[period=3]/fcttext");
                     GetFieldFromXmlAndReport(xml, "Night1 Image", @"response/forecast/txt_forecast/forecastdays/forecastday[period=3]/icon_url");
                     #endregion
-
 
                     #region Period3/4-5
                     GetFieldFromXmlAndReport(xml, "Day2 Precip", @"response/forecast/txt_forecast/forecastdays/forecastday[period=4]/pop");
@@ -558,7 +554,7 @@
                     DuskStart = Sunset - TimeSpan.FromMinutes(DuskPre);
                     DuskEnd = Sunset + TimeSpan.FromMinutes(DuskPost);
 
-                String John = " " + " " + Convert.ToString(DuskStart);
+                string John = " " + " " + Convert.ToString(DuskStart);
 
                     if (gDebug) Log.Debug("Checking for Dawn/Dusk (Dawn start: " + Convert.ToString(DawnStart) + ", Dawn end: " + Convert.ToString(DawnEnd) + " Dusk start: " + Convert.ToString(DuskStart) + " Dusk end: " + Convert.ToString(DuskEnd)+ ")");
                 }
@@ -581,7 +577,7 @@
                             OSAE.OSAEObjectManager.EventTrigger(WeatherObjName, "Day");
 
                         DayNight = "Day";
-                        this.Log.Debug("Day event Triggered");
+                        Log.Debug("Day event Triggered");
                     }
                 }
                 else if (Now >= DuskEnd | Now < DawnStart)
@@ -593,7 +589,7 @@
                             OSAE.OSAEObjectManager.EventTrigger(WeatherObjName, "Night");
 
                         DayNight = "Night";
-                        this.Log.Info("Night event Triggered");
+                        Log.Info("Night event Triggered");
                     }
                 }
                 else if (Now >= DawnStart & Now < DawnEnd)
@@ -602,7 +598,7 @@
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Dawn", pName);
                         DayNight = "Dawn";
-                        this.Log.Info("Dawn");
+                        Log.Info("Dawn");
                     }
                 }
 
@@ -612,7 +608,7 @@
                     {
                         OSAEObjectPropertyManager.ObjectPropertySet(WeatherObjName, "DayNight", "Dusk", pName);
                         DayNight = "Dusk";
-                        this.Log.Info("Dusk");
+                        Log.Info("Dusk");
                     }
                 }
             }

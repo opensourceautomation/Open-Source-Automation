@@ -10,11 +10,13 @@ CALL osae_sp_object_type_method_add('W800RF','SET PORT','Set ComPort','ComPort',
 CALL osae_sp_object_type_method_add('W800RF','SET DEBOUNCE','Set Debounce','Inteval in ms','','90','');
 CALL osae_sp_object_type_method_add('W800RF','SET LEARNING MODE','Set Learning Mode','True/False','','TRUE','');
 CALL osae_sp_object_type_property_add('W800RF','Port','Integer','','',0);
-CALL osae_sp_object_type_property_add('W800RF','Computer Name','Object','','',0);
 CALL osae_sp_object_type_property_add('W800RF','Learning Mode','Boolean','','FALSE',0);
 CALL osae_sp_object_type_property_add('W800RF','Debounce','Integer','','800',0);
 CALL osae_sp_object_type_property_add('W800RF','System Plugin','Boolean','','FALSE',0);
 CALL osae_sp_object_type_property_add('W800RF','Debug','Boolean','','FALSE',0);
+CALL osae_sp_object_type_property_add('W800RF','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('W800RF','Version','String','','',0);
+CALL osae_sp_object_type_property_add('W800RF','Author','String','','',0);
 
 CALL osae_sp_object_type_add ('X10 DS10A','X10 DS10A OC','','SENSOR',0,0,0,1);
 CALL osae_sp_object_type_state_add('X10 DS10A','ON','Opened');
@@ -49,4 +51,11 @@ CALL osae_sp_object_type_method_add('X10 RELAY','ON','On','','','100','');
 CALL osae_sp_object_type_method_add('X10 RELAY','OFF','Off','','','','');
 CALL osae_sp_object_type_property_add('X10 RELAY','Off Timer','Integer','','',0);
 
+CALL osae_sp_object_type_add ('X10 SENSOR','X10 Sensor','','SENSOR',0,0,0,0);
+CALL osae_sp_object_type_state_add('X10 SENSOR','ON','On');
+CALL osae_sp_object_type_state_add('X10 SENSOR','OFF','Off');
+CALL osae_sp_object_type_event_add('X10 SENSOR','ON','On');
+CALL osae_sp_object_type_event_add('X10 SENSOR','OFF','Off');
+CALL osae_sp_object_type_property_add('X10 SENSOR','Off Timer','Integer','','',0);
+CALL osae_sp_object_type_property_add('X10 SENSOR','Level','Integer','','',0);
 

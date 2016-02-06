@@ -8,7 +8,7 @@
     public class OSANMA : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log = new General.OSAELog("POWERSHELL");
 
         [Parameter(Mandatory = true)]
         public string APIKey { get; set; }
@@ -26,14 +26,12 @@
         {
             try
             {
-                this.Log.Info("Invoke-OSANMA - ProcessRecord - Started");
+                Log.Info("Invoke-OSANMA - ProcessRecord - Started");
 
                 var notification =
                     new NMANotification
                     {
-                        Description = this.Description,
-                        Event = this.Event,
-                        Priority = (NMANotificationPriority)Priority
+                        Description = Description, Event = Event, Priority = (NMANotificationPriority)Priority
                     };
 
                 NMAClientConfiguration config = new NMAClientConfiguration();
@@ -48,9 +46,7 @@
                 WriteObject(true);
             }
             catch (Exception exc)
-            {
-                this.Log.Error("An error occured while trying to run the command invoke-osanma, details", exc);
-            }                
+            { Log.Error("An error occured while trying to run the command invoke-osanma, details", exc); }                
         }        
     }
 }

@@ -7,3 +7,5 @@ CALL osae_sp_object_type_method_add('WEB SERVER','ON','Start','','','','');
 CALL osae_sp_object_type_method_add('WEB SERVER','OFF','Stop','','','','');
 CALL osae_sp_object_type_property_add('WEB SERVER','System Plugin','Boolean','','TRUE',0);
 CALL osae_sp_object_type_property_add('WEB SERVER','Timeout','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Version','String','','',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Author','String','','',0);

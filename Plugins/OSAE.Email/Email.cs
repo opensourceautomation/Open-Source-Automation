@@ -8,7 +8,7 @@
     {
         string gAppName;
 
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new General.OSAELog();
         
         public override void ProcessCommand(OSAEMethod method)
         {
@@ -20,15 +20,9 @@
                 string subject = string.Empty;
                 string body = string.Empty;
                 OSAEObjectProperty prop = OSAEObjectPropertyManager.GetObjectPropertyValue(method.Parameter1, "Email Address");
-                if (prop != null)
-                {
-                    to = prop.Value;
-                }
 
-                if (to == string.Empty)
-                {
-                    to = method.Parameter1;
-                }
+                if (prop != null) to = prop.Value;
+                if (to == string.Empty) to = method.Parameter1;
 
                 // To
                 MailMessage mailMsg = new MailMessage();
@@ -44,10 +38,7 @@
                 parameter2 = Common.PatternParse(method.Parameter2);
 
                 // Make sure there is a body of text.
-                if (parameter2.Equals(string.Empty))
-                {
-                    throw new ArgumentOutOfRangeException("Message body missing.");
-                }
+                if (parameter2.Equals(string.Empty)) throw new ArgumentOutOfRangeException("Message body missing.");
 
                 // See if there is a subject.
                 // Opening delimiter in first char is good indication of subject.
@@ -76,13 +67,9 @@
                 // Init SmtpClient and send
                 SmtpClient smtpClient = new SmtpClient(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "SMTP Server").Value, int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "SMTP Port").Value));
                 if (OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "ssl").Value == "TRUE")
-                {
                     smtpClient.EnableSsl = true;
-                }
                 else
-                {
                     smtpClient.EnableSsl = false;
-                }
 
                 smtpClient.Timeout = 20000;
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -102,9 +89,7 @@
                 smtpClient.Send(mailMsg);
             }
             catch (Exception ex)
-            {
-                Log.Error("Error Sending email" , ex);
-            }
+            { Log.Error("Error Sending email" , ex); }
         }
 
         /// <summary>
@@ -117,11 +102,11 @@
 
         public override void RunInterface(string pluginName)
         {
-            this.Log.Info("Email Plugin is Starting...");
             gAppName = pluginName;
-            if (OSAEObjectManager.ObjectExists(gAppName))
-                Log.Info("Found Email Plugin's Object (" + gAppName + ")");
-            
+            Log = new General.OSAELog(gAppName);
+
+            Log.Info("Email Plugin is Starting...");
+
             OwnTypes();
         }
 
@@ -136,9 +121,7 @@
                 Log.Info("Email Plugin took ownership of the EMAIL Object Type.");
             }
             else
-            {
                 Log.Info("EMail Plugin correctly owns the EMAIL Object Type.");
-            }
         }
     }
 }

@@ -10,7 +10,7 @@
     public class OSAPSSet : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log = new General.OSAELog("POWERSHELL");
 
         /// <summary>
         /// Used in logs to determine where an event occured from or where log messages should go to
@@ -35,7 +35,7 @@
                 
         protected override void ProcessRecord()
         {
-            this.Log.Debug("Set-OSA - ProcessRecord - Started");
+            Log.Debug("Set-OSA - ProcessRecord - Started");
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
             OSAEObjectPropertyManager.ObjectPropertySet(Name, Property, Value, source);
 
@@ -47,14 +47,14 @@
     public class OSAPSShow : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log = new General.OSAELog("POWERSHELL");
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }
         
         protected override void ProcessRecord()
         {
-            this.Log.Debug("Show-OSA - ProcessRecord - Started");
+            Log.Debug("Show-OSA - ProcessRecord - Started");
             OSAEObject obj = OSAEObjectManager.GetObjectByName(Name);
 
             WriteObject("Name: " + obj.Name);
@@ -63,27 +63,19 @@
             WriteObject("Container: " + obj.Container);
             WriteObject("Address: " + obj.Address);
 
-            if (obj.Enabled == 0)
-            {
+            if (obj.Enabled == false)
                 WriteObject("Enabled: FALSE");
-            }
             else
-            {
                 WriteObject("Enabled: TRUE");
-            }
 
             WriteObject("Base Type: " + obj.BaseType);
             WriteObject("Type: " + obj.Type);
 
             foreach (OSAEMethod method in obj.Methods)
-            {
                 WriteObject("Method: " + method.MethodName);
-            }
 
             foreach (OSAEObjectProperty prop in obj.Properties)
-            {
                 WriteObject("Property (" + prop.DataType + "): " + prop.Name + " Value = " + prop.Value);
-            }
 
             WriteObject("Updated: " + obj.LastUpd);
         }
@@ -93,7 +85,7 @@
     public class OSAPSInvokeScript : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log = new General.OSAELog("POWERSHELL");
 
         [Parameter(Mandatory = true)]
         public string Name { get; set; }
@@ -108,13 +100,9 @@
         protected override void ProcessRecord()
         {
             if (!string.IsNullOrEmpty(Nested) & Nested == "TRUE")
-            {
                 RunNested();
-            }
             else
-            {
                 RunNormal();
-            }           
         }
 
         private void RunNormal()
@@ -144,23 +132,16 @@
 
                 StringBuilder stringBuilder = new StringBuilder();
                 foreach (PSObject obj in results)
-                {
                     stringBuilder.AppendLine(obj.ToString());
-                }
 
-                this.Log.Debug("Script return: \r\n" + stringBuilder.ToString());
+                Log.Debug("Script return: \r\n" + stringBuilder.ToString());
 
             }
             catch (Exception ex)
-            {
-                this.Log.Error("An error occured while trying to run the script, details", ex);
-            }
+            { Log.Error("An error occured while trying to run the script, details", ex); }
             finally
             {
-                if (pipeline != null)
-                {
-                    pipeline.Dispose();
-                }
+                if (pipeline != null) pipeline.Dispose();
                 if (runspace != null)
                 {
                     runspace.Close();
@@ -177,7 +158,7 @@
             {
                 pipeline = Runspace.DefaultRunspace.CreateNestedPipeline();
                 string script = OSAEScriptManager.GetScriptByName(Name);
-                Command psCommand = new Command(script, true);               
+                Command psCommand = new Command(script, true);
                 pipeline.Commands.Add(psCommand);
 
                 pipeline.Commands.Add("Out-String");
@@ -186,23 +167,14 @@
 
                 StringBuilder stringBuilder = new StringBuilder();
                 foreach (PSObject obj in results)
-                {
                     stringBuilder.AppendLine(obj.ToString());
-                }
 
-                this.Log.Debug("Script return: \r\n" + stringBuilder.ToString());
+                Log.Debug("Script return: \r\n" + stringBuilder.ToString());
             }
             catch (Exception ex)
-            {
-                this.Log.Error("An error occured while trying to run the script, details", ex);
-            }
+            { Log.Error("An error occured while trying to run the script, details", ex); }
             finally
-            {
-                if (pipeline != null)
-                {
-                    pipeline.Dispose();
-                }
-            }
+            { if (pipeline != null) pipeline.Dispose(); }
         }
     }
 }

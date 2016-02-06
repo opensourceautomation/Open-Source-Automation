@@ -12,7 +12,7 @@ Public Class CM15A
         Dim Current_Command As String
     End Structure
 
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog ' = New General.OSAELog()
     Private pName As String = ""
     Private gTransmitOnly As String
     Private gTransmiRF As String
@@ -218,13 +218,16 @@ Public Class CM15A
     End Sub
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
+        pName = pluginName
+        Log = New General.OSAELog(pName)
+
         Try
             AHObject = New ActiveHomeScriptLib.ActiveHome
         Catch ex As Exception
             Log.Error("FAILED to load ActiveHome SDK: " & ex.Message)
             Shutdown()
         End Try
-        pName = pluginName
+
         Try
             gTransmitOnly = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Transmit Only").Value().ToUpper()
             Log.Info("Transmit Only is set to: " & gTransmitOnly)

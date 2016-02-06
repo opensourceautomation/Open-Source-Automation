@@ -9,7 +9,7 @@ namespace OSAE.NetworkMonitor
     public class NetworkMonitor : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new General.OSAELog();
 
         System.Timers.Timer Clock = new System.Timers.Timer();
         Thread updateThread;
@@ -26,8 +26,8 @@ namespace OSAE.NetworkMonitor
         public override void RunInterface(string pluginName)
         {
             gAppName = pluginName;
-            if (OSAEObjectManager.ObjectExists(gAppName))
-                Log.Info("Found the Network Monitor plugin's Object (" + gAppName + ")");
+            Log = new General.OSAELog(gAppName);
+            OwnTypes();
 
             try
             {
@@ -44,11 +44,26 @@ namespace OSAE.NetworkMonitor
                 Clock.Interval = interval * 1000;
             else
                 Clock.Interval = 30000;
+
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
 
             updateThread = new Thread(new ThreadStart(update));
             updateThread.Start();
+        }
+
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("NETWORK MONITOR");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("Network Monitor Plugin took ownership of the NETWORK MONITOR Object Type.");
+            }
+            else
+                Log.Info("Network Monitor Plugin correctly owns the NETWORK MONITOR Object Type.");
         }
 
         public override void Shutdown()

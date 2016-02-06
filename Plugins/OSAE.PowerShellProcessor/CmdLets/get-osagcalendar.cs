@@ -1,19 +1,18 @@
 ﻿namespace OSAE.PowerShellProcessor.CmdLets
 {
-    
-    using Google.GData.Client;
+
     using Google.GData.Calendar;
     using System;
     using System.Collections.Generic;
-    using Google.GData.Extensions;
-
     using System.Management.Automation;
+    using Google.GData.Client;
+    using Google.GData.Extensions;
 
     [Cmdlet(VerbsCommon.Get, "OSAGCalendar")]
     public class OSAGetGCalendar : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log = new General.OSAELog("POWERSHELL");
 
         [Parameter(
             Mandatory = true)]
@@ -29,14 +28,8 @@
             Mandatory = false)]
         public DateTime FromDate
         {
-            get
-            {
-                return fromDate;
-            }
-            set
-            {
-                fromDate = value;
-            }
+            get { return fromDate; }
+            set { fromDate = value; }
         }
 
         private DateTime toDate = DateTime.MinValue;
@@ -45,14 +38,8 @@
             Mandatory = false)]
         public DateTime ToDate
         {
-            get
-            {
-                return toDate;
-            }
-            set
-            {
-                toDate = value;
-            }
+            get { return toDate; }
+            set { toDate = value; }
         }
 
         private bool ? futureEvents = null;
@@ -63,50 +50,35 @@
         {
             get
             {
-                if (futureEvents == null)
-                {
-                    return false;
-                }
+                if (futureEvents == null) return false;
                 return (bool)futureEvents;
             }
-            set
-            {
-                futureEvents = value;
-            }
+            set { futureEvents = value; }
         }
 
         protected override void ProcessRecord()
         {
-            this.Log.Debug("Get-OSAGCalendar - ProcessRecord - Started");
+            Log.Debug("Get-OSAGCalendar - ProcessRecord - Started");
 
             CalendarService service = new CalendarService("OSA");
             service.setUserCredentials(Username, Password);
 
             EventQuery query = new EventQuery();
-            query.Uri = new Uri("http://www.google.com/calendar/feeds/" +
-                  Username + "/private/full");
+            query.Uri = new Uri("http://www.google.com/calendar/feeds/" + Username + "/private/full");
 
-            if (FromDate != DateTime.MinValue)
-            {
-                query.StartTime = fromDate;
-            }
+            if (FromDate != DateTime.MinValue) query.StartTime = fromDate;
 
             query.RecurrenceStart = DateTime.Now;
 
-            if (ToDate != DateTime.MinValue)
-            {
-                query.EndTime = ToDate;
-            }
+            if (ToDate != DateTime.MinValue) query.EndTime = ToDate;
 
             if (FutureEvents)
             {
-                this.Log.Debug("Only looking for future events");
+                Log.Debug("Only looking for future events");
                 query.FutureEvents = true;
             }
             else
-            {
                 query.FutureEvents = false;
-            }
 
             query.SortOrder = CalendarSortOrder.ascending;
             query.ExtraParameters = "orderby=starttime";
@@ -118,13 +90,13 @@
 
             foreach (var entry in calFeed.Entries)
             {
-               this.Log.Debug("Found Entry: " + entry.ToString());
+               Log.Debug("Found Entry: " + entry.ToString());
                EventEntry eventEntry = entry as Google.GData.Calendar.EventEntry;
                if (eventEntry != null)
                {                   
                    if (!eventEntry.Status.Value.Contains("event.canceled"))
                    {
-                       this.Log.Debug("Entry is an EventEntry");
+                       Log.Debug("Entry is an EventEntry");
                        CalendarEvent c = new CalendarEvent();
                        c.Title = eventEntry.Title.Text;
                        c.Content = eventEntry.Content.Content;

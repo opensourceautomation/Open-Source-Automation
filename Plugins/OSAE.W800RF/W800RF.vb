@@ -4,7 +4,7 @@ Imports System.IO.Ports
 
 Public Class W800RF
     Inherits OSAEPluginBase
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog ' = New General.OSAELog()
     Private gAppName As String = ""
     Private _baudRate As String = "4800"
     Private _parity As String = "None"
@@ -22,6 +22,7 @@ Public Class W800RF
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         gAppName = pluginName
+        Log = New General.OSAELog(gAppName)
         If OSAEObjectManager.ObjectExists(gAppName) Then
             Log.Info("Found the W800RF plugin's Object (" & gAppName & ")")
         Else

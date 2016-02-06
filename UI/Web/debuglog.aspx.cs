@@ -9,14 +9,11 @@ using OSAE;
 public partial class debuglog : System.Web.UI.Page
 {
     //OSAELog
-    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("WebUI");
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!IsPostBack)
-        {
-            BindData();
-        }
+        if (!IsPostBack) BindData();
     }
 
     private void BindData()
@@ -27,9 +24,7 @@ public partial class debuglog : System.Web.UI.Page
             debugLogGridView.DataBind();
         }
         catch (Exception ex)
-        {
-            Master.Log.Error("Error retreiving debug log", ex);
-        }
+        { Master.Log.Error("Error retreiving debug log", ex); }
     }
    
     protected void clearLogButton_Click(object sender, EventArgs e)

@@ -8,7 +8,7 @@
     Private gAppName As String = ""
     Private gPort As Integer
     Private gDebug As Boolean
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog ' = New General.OSAELog()
 
     Private Sub Start_PLM()
         Dim data(2) As Byte
@@ -1245,7 +1245,7 @@ PLMerror:
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         gAppName = pluginName
-
+        Log = New General.OSAELog(gAppName)
         gPort = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Port").Value
         Log.Info("COM Port is set to: " & gPort)
 

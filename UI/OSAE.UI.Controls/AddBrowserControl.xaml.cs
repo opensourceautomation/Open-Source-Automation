@@ -86,7 +86,7 @@
             if (validateForm("Update"))
             {
                 string sName = txtName.Text;
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL BROWSER", "", currentScreen, 30, 1);
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, sName, sName, "CONTROL BROWSER", "", currentScreen, 30, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "URI", txtURI.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Height", txtHeight.Text, currentUser);

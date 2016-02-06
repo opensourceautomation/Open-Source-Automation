@@ -14,7 +14,7 @@
     public class PowerShellPlugin : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new General.OSAELog("POWERSHELL");
 
         /// <summary>
         /// The plugin name
@@ -33,25 +33,16 @@
 
                 int scriptId;
                 if (int.TryParse(method.Parameter1, out scriptId))
-                {
                     script = OSAEScriptManager.GetScript(method.Parameter1);
-                }
                 else
-                {
                     script = OSAEScriptManager.GetScriptByName(method.Parameter1);                    
-                }                
 
-                this.Log.Debug("running script: " + script);
+                Log.Debug("running script: " + script);
 
-                if(!string.IsNullOrEmpty(script))
-                {                    
-                    RunScript(script, method);
-                }
+                if (!string.IsNullOrEmpty(script)) RunScript(script, method);
             }
             catch (Exception exc)
-            {
-                this.Log.Error("Error Processing Command ", exc);
-            }
+            { Log.Error("Error Processing Command ", exc); }
         }
 
         /// <summary>
@@ -60,16 +51,15 @@
         /// <param name="pluginName"></param>
         public override void RunInterface(string pluginName)
         {
-            this.Log.Info("Running Interface!");
             pName = pluginName;
+            Log = new General.OSAELog(pName);
+            Log.Info("Running Interface!");
 
             if (PluginRegistered())
-            {
-                this.Log.Debug("Powershell Plugin already registered");
-            }
+                Log.Debug("Powershell Plugin already registered");
             else
             {
-                this.Log.Debug("Powershell Plugin needs registering");
+                Log.Debug("Powershell Plugin needs registering");
                 Register(false);
             }
             OwnTypes();
@@ -86,9 +76,7 @@
                 Log.Info("Powershell Plugin took ownership of the POWERSHELL Object Type.");
             }
             else
-            {
                 Log.Info("Powershell Plugin correctly owns the POWERSHELL Object Type.");
-            }
         }
 
         private bool PluginRegistered()
@@ -108,13 +96,9 @@
                 ps.AddParameter("Name", "OSA");
                 var result = ps.Invoke();
                 if (result.Count == 0)
-                {
                     return false;                    
-                }
                 else
-                {
                     return true;                    
-                }
             }
         }
 
@@ -143,7 +127,7 @@
                 runConfig.AddPSSnapIn("OSA", out psEx);                
                 runspace = RunspaceFactory.CreateRunspace(runConfig);
                 runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
-               
+              
                 runspace.Open();
                 
                 runspace.SessionStateProxy.SetVariable("parameter2", method.Parameter2);
@@ -156,23 +140,17 @@
 
                 StringBuilder stringBuilder = new StringBuilder();
                 foreach (PSObject obj in results)
-                {
                     stringBuilder.AppendLine(obj.ToString());
-                }
 
-                this.Log.Debug("Script return: " + stringBuilder.ToString());
+                Log.Debug("Script return: " + stringBuilder.ToString());
 
             }
             catch (Exception ex)
-            {
-                this.Log.Error("An error occured while trying to run the script, details",  ex);
-            }
+            { Log.Error("An error occured while trying to run the script, details",  ex); }
             finally
             {
-                if (pipeline != null)
-                {
-                    pipeline.Dispose();
-                }
+                if (pipeline != null) pipeline.Dispose();
+
                 if (runspace != null)
                 {
                     runspace.Close();
@@ -183,7 +161,7 @@
 
         private void Register(bool undo)
         {
-            this.Log.Debug("Registering Poweshell Plugin");
+            Log.Debug("Registering Poweshell Plugin");
             var core = Common.ApiPath + @"\Plugins\PowerShell\OSAE.PowerShellProcessor.dll";
             using (var install = new AssemblyInstaller(core, null))
             {
@@ -193,9 +171,7 @@
                 try
                 {
                     if (undo)
-                    {
                         install.Uninstall(state);
-                    }
                     else
                     {
                         install.Install(state);
@@ -203,19 +179,13 @@
                     }
                 }
                 catch
-                {
-                    install.Rollback(state);
-                }
+                { install.Rollback(state); }
             }
 
             if (PluginRegistered())
-            {
-                this.Log.Debug("Powershell Plugin successfully registered");
-            }
+                Log.Debug("Powershell Plugin successfully registered");
             else
-            {
-                this.Log.Debug("Powershell Plugin failed to register");
-            }
+                Log.Debug("Powershell Plugin failed to register");
         }        
     }
 }

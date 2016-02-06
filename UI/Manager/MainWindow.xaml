@@ -38,7 +38,7 @@
             <Label Content="OSAE service is:" Height="28" HorizontalAlignment="Left" Margin="105,10,0,0" x:Name="label2" VerticalAlignment="Top" />
             <Label Content="RUNNING" Height="28" HorizontalAlignment="Left" Margin="208,10,0,0" x:Name="lbl_isRunning" VerticalAlignment="Top" />
             <Button Content="Start" Height="23" HorizontalAlignment="Left" Margin="13,47,0,0" x:Name="btnWebService" VerticalAlignment="Top" Width="78" Click="btnWebService_Click" />
-            <Label Content="UWS services are:" Height="28" HorizontalAlignment="Left" Margin="105,45,0,0" x:Name="label2_Copy" VerticalAlignment="Top" />
+            <Label Content="UWS services are:" Height="28" HorizontalAlignment="Left" Margin="105,45,0,0" x:Name="lblUWS" VerticalAlignment="Top" />
             <Label Content="RUNNING" Height="28" HorizontalAlignment="Left" Margin="208,45,0,0" x:Name="lbl_isWebRunning" VerticalAlignment="Top" />
         </Grid>
     </DockPanel>

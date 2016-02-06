@@ -2,17 +2,17 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Windows;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using System.IO;
+    using System.Windows.Shapes;
     using System.Linq;
     using System.Text;
-    using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Data;
     using System.Windows.Documents;
     using System.Windows.Input;
-    using System.Windows.Media;
-    using System.Windows.Media.Imaging;
-    using System.Windows.Shapes;
-    using System.IO;
     //using ICSharpCode.SharpZipLib.Zip;
     using OSAE;
 
@@ -21,15 +21,11 @@
     /// </summary>
     public partial class InstallPlugin : Window
     {
-        #region variables
-
         private string filename = string.Empty;
         //private int s = 5;
         private PluginDescription desc = new PluginDescription();
         //private Image MyPluginImage = null;
         public bool install = false;
-
-        #endregion
 
         public InstallPlugin(string Sendfilename)
         {
@@ -38,7 +34,7 @@
             filename = Sendfilename;
 
             // Unzip osapp to find plugin description
-            if (!UnzipOSA(filename)) this.DialogResult = true;
+            if (!UnzipOSA(filename)) DialogResult = true;
 
             // Show Plugin Image
             string exePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -113,13 +109,13 @@
         private void btnInstall_Click(object sender, RoutedEventArgs e)
         {
             install = true;
-            this.Close();
+            Close();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             install = false;
-            this.Close();
+            Close();
         }
 
         #endregion

@@ -23,12 +23,12 @@ namespace OSAE.General
         private Type logSource;
         private Boolean bDebug = false;
         private Boolean bPrune = false;
-        public OSAELog()
+        public OSAELog(string source)
         {
             StackFrame frame = new StackFrame(1);
             MethodBase method = frame.GetMethod();
             logSource = method.DeclaringType;
-            Log = LogManager.GetLogger(logSource);
+            Log = LogManager.GetLogger(source);
             bPrune = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value);
             bDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value);
             var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;

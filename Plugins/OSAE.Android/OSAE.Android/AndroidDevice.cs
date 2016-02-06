@@ -13,7 +13,7 @@ namespace OSAE.Android
         private string _gcmid;
 
         //OSAELog
-        private static OSAE.General.OSAELog Log = new General.OSAELog();
+        private static OSAE.General.OSAELog Log = new General.OSAELog("Android");
                 
         private GCMSender gcmsender = new GCMSender(null,"AIzaSyAXrHDNsYhU-nQowJzLB-YeMyOG74jjjVs");
 
@@ -36,17 +36,14 @@ namespace OSAE.Android
                 }
         }
 
-
         public AndroidDevice(string name, string pluginname)
         {
             _name = name;
             pName = pluginname;
-
         }
 
         public void ProcessCommand(String method_name, String parameter_1, String parameter_2)
         {
-
             string category;
             string level;
             string osaid; //eventually we will use this to keep track on osa side to handle removing notification once it is seen on one of the devices with the same owner, but for now it is not used
@@ -60,21 +57,16 @@ namespace OSAE.Android
             if (OSAEObjectPropertyManager.GetObjectPropertyValue(_name, "GCMID").Value != null)
             {
                 if (!OSAEObjectPropertyManager.GetObjectPropertyValue(_name, "GCMID").Value.Equals(""))
-                {
                     _gcmid = OSAEObjectPropertyManager.GetObjectPropertyValue(_name, "GCMID").Value;
-                }
             }
 
             gcmsender.DeviceToken = _gcmid;
 
-
             switch (method_name)
             {
                 case "NOTIFY":
-
                     Log.Info("NOTIFY event triggered (" + _name + "), parameter_1=" + parameter_1 + ", parameter_2=" + parameter_2);
                     Log.Debug("address = " + _gcmid);
-
                     category = "default";
                     level = "5";
                     osaid = "-1"; //eventually we will use this to keep track on osa side to handle removing notification once it is seen on one of the devices with the same owner, but for now it is not used
@@ -82,38 +74,24 @@ namespace OSAE.Android
                     if (parameter_2 != "")
                     {
                         string[] parts = parameter_2.Split(',');
-
                         if (parts.Length > 0) { category = parts[0]; }
                         if (parts.Length > 1) { level = parts[1]; }
                     }
-
-
                     payload = "\"type\" : \"notification\" \"message\" : \"" + parameter_1 + "\" \"category\" : \"" + category + "\" \"level\" : \"" + level + "\" \"osaid\" : \"" + osaid + "\" \"messagedate\" : \"" + messagedate + "\" ";
-
                     strResponse = gcmsender.Send(payload);
                     Log.Debug("GCM response new version = " + strResponse);
-
                     break;
-
                 case "EXECUTE":
-
                     Log.Info("EXECUTE event triggered (" + _name + "), parameter_1=" + parameter_1 + ", parameter_2=" + parameter_2);
                     Log.Debug("address = " + _gcmid);
-
                     category = "#taskertask#";
                     level = "5";
                     osaid = "-1"; //eventually we will use this to keep track on osa side to handle removing notification once it is seen on one of the devices with the same owner, but for now it is not used
-
                     payload = "\"type\" : \"taskertask\" \"message\" : \"" + parameter_1 + "\" \"category\" : \"" + category + "\" \"level\" : \"" + level + "\" \"osaid\" : \"" + osaid + "\" \"messagedate\" : \"" + messagedate + "\" ";
-                    
                     strResponse = gcmsender.Send(payload);
                     Log.Debug("GCM response new version = " + strResponse);
-
                     break;
             }
-
         }
-
-
     }
 }

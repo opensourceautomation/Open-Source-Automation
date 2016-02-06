@@ -15,7 +15,7 @@ namespace OSAE.Sony
     public class Sony : OSAEPluginBase
     {
         sonyDevice mySonyDevice = new sonyDevice();
-        OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+        OSAE.General.OSAELog Log;
 
         string sMethod;
         string objName;
@@ -107,6 +107,7 @@ namespace OSAE.Sony
         #region RunInterface
         public override void RunInterface(string pluginName)
         {
+            Log = new OSAE.General.OSAELog(pluginName);
             //throw new NotImplementedException();
             this.Log.Info("Found Plugin Object: " + pluginName);
             this.Log.Info(pluginName + " is starting...");

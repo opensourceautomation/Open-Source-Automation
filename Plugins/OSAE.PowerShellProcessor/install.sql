@@ -8,3 +8,6 @@ CALL osae_sp_object_type_method_add ('OFF','Stop','PowerShell','','','','');
 CALL osae_sp_object_type_method_add ('RUN SCRIPT','RUN SCRIPT','PowerShell','','','','');
 CALL osae_sp_script_processor_add ('PowerShell','PowerShell');
 CALL osae_sp_object_type_property_add ('System Plugin','Boolean','TRUE','PowerShell',0);
+CALL osae_sp_object_type_property_add('POWERSHELL','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('POWERSHELL','Version','String','','',0);
+CALL osae_sp_object_type_property_add('POWERSHELL','Author','String','','',0);

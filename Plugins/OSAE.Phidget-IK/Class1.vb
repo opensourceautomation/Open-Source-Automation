@@ -1,7 +1,7 @@
 ﻿Public Class PhidgetIK
     Inherits OSAEPluginBase
     Dim WithEvents phidgetIFK As Phidgets.InterfaceKit
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog
     Private gAppName As String = ""
     Private gAttached As Boolean
     Private gName As String = ""
@@ -55,6 +55,7 @@
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         gAppName = pluginName
+        Log = New General.OSAELog(gAppName)
         If OSAEObjectManager.ObjectExists(gAppName) Then
             Log.Info("Found Phidget-IK Plugin's Object (" + gAppName + ")")
         Else
@@ -136,7 +137,7 @@
             Try
                 Dim bExists = OSAEObjectManager.ObjectExists(gSerial & "-DI" & i)
                 If Not bExists = True Then
-                    OSAEObjectManager.ObjectAdd("Phidget " & gSerial & "-DI" & i, "", "Phidget " & gSerial & "-DI" & i, "PHIDGET DIGITAL INPUT", gSerial & "-DI" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("Phidget " & gSerial & "-DI" & i, "", "Phidget " & gSerial & "-DI" & i, "PHIDGET DIGITAL INPUT", gSerial & "-DI" & i, "", 30, True)
                 End If
                 Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-DI" & i)
                 gDINames(i) = oObject.Name.ToString()
@@ -150,7 +151,7 @@
             Try
                 Dim bExists = OSAEObjectManager.ObjectExists(gSerial & "-DO" & i)
                 If Not bExists = True Then
-                    OSAEObjectManager.ObjectAdd("Phidget " & gSerial & "-DO" & i, "", "Phidget " & gSerial & "-DO" & i, "PHIDGET DIGITAL OUTPUT", gSerial & "-DO" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("Phidget " & gSerial & "-DO" & i, "", "Phidget " & gSerial & "-DO" & i, "PHIDGET DIGITAL OUTPUT", gSerial & "-DO" & i, "", 30, True)
                 End If
                 Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-DO" & i)
                 gDONames(i) = oObject.Name.ToString()
@@ -164,7 +165,7 @@
             Try
                 Dim bExists = OSAEObjectManager.ObjectExists(gSerial & "-AI" & i)
                 If Not bExists = True Then
-                    OSAEObjectManager.ObjectAdd("Phidget " & gSerial & "-AI" & i, "", "Phidget " & gSerial & "-AI" & i, "PHIDGET ANALOG INPUT", gSerial & "-AI" & i, "", True)
+                    OSAEObjectManager.ObjectAdd("Phidget " & gSerial & "-AI" & i, "", "Phidget " & gSerial & "-AI" & i, "PHIDGET ANALOG INPUT", gSerial & "-AI" & i, "", 30, True)
                 End If
                 Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(gSerial & "-AI" & i)
                 gAINames(i) = oObject.Name.ToString()

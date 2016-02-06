@@ -10,7 +10,7 @@ Imports System.Text
 
 Public Class GlobalCache
     Inherits OSAEPluginBase
-    Private Shared logging As Logging = logging.GetLogger("Global Cache")
+    Private Log As OSAE.General.OSAELog
     Private Shared pName As String
 
     'Private Shared client_socket As Socket
@@ -38,19 +38,19 @@ Public Class GlobalCache
     End Class
     Public Shared GCDeviceCollection As New List(Of GCDevice)
 
-
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Dim GCDeviceIndex As Integer = 0
         Try
             pName = pluginName
-            logging.AddToLog("Initializing plugin: " & pName, True)
+            Log = New General.OSAELog(pName)
+            Log.Info("Initializing plugin: " & pName)
 
             GlobalCacheObjects = OSAEObjectManager.GetObjectsByType("GC-100")
 
             If GlobalCacheObjects.Count = 0 Then
-                logging.AddToLog("Creating object GC-100", True)
+                Log.Info("Creating object GC-100")
 
-                OSAEObjectManager.ObjectAdd("GC-100", "", "GC-100", "GC-100", "192.168.1.70", "", True)
+                OSAEObjectManager.ObjectAdd("GC-100", "", "GC-100", "GC-100", "192.168.1.70", "", 30, True)
                 GCDeviceCollection.Add(New GCDevice)
                 GCDeviceCollection(0).IPAddress = "192.168.1.70"
                 GCDeviceCollection(0).Name = "GC-100"
@@ -63,15 +63,12 @@ Public Class GlobalCache
             End If
 
             For Each GlobalCacheObjectEach In GlobalCacheObjects
-                logging.AddToLog("Found object " & GlobalCacheObjectEach.Name & " model " _
-                                 & GlobalCacheObjectEach.Properties("Model").Value _
-                                 & " and IP address " & GlobalCacheObjectEach.Address, True)
+                Log.Info("Found object " & GlobalCacheObjectEach.Name & " model " & GlobalCacheObjectEach.Properties("Model").Value & " and IP address " & GlobalCacheObjectEach.Address)
 
                 GCDeviceCollection.Add(New GCDevice)
                 GCDeviceCollection(GCDeviceIndex).IPAddress = GlobalCacheObjectEach.Address
                 GCDeviceCollection(GCDeviceIndex).Name = GlobalCacheObjectEach.Name
                 GCDeviceCollection(GCDeviceIndex).Model = GlobalCacheObjectEach.Properties("Model").Value
-
 
                 If Boolean.TryParse(GlobalCacheObjectEach.Properties("INPUT4:1").Value, vbNull) Then
                     GCDeviceCollection(GCDeviceIndex).Inputs("4:1") = Boolean.Parse(GlobalCacheObjectEach.Properties("INPUT4:1").Value)
@@ -106,7 +103,7 @@ Public Class GlobalCache
                 GCDeviceIndex = GCDeviceIndex + 1
             Next
 
-            logging.AddToLog("Finished getting object properties", False)
+            Log.Debug("Finished getting object properties")
 
             For Each GCDeviceEach In GCDeviceCollection
                 InitSocket(GCDeviceEach)
@@ -114,15 +111,12 @@ Public Class GlobalCache
                 GetInputOutputValues(GCDeviceEach)
             Next
 
-
             CheckStatusTimer = New Timers.Timer(60000)
             AddHandler CheckStatusTimer.Elapsed, New ElapsedEventHandler(AddressOf TimerHandler)
             CheckStatusTimer.Enabled = True
-
         Catch ex As Exception
-            logging.AddToLog("Error setting up plugin: " & ex.Message, True)
+            Log.Error("Error setting up plugin!", ex)
         End Try
-
     End Sub
 
     Public Overrides Sub ProcessCommand(method As OSAEMethod)
@@ -133,30 +127,29 @@ Public Class GlobalCache
         GCDeviceName = method.ObjectName
         Parameter1 = method.Parameter1
 
-        logging.AddToLog("Received " & Command & " for device " & GCDeviceName & " from OSA with parameter " & Parameter1, False)
+        Log.Debug("Received " & Command & " for device " & GCDeviceName & " from OSA with parameter " & Parameter1)
 
         Try
             GCDeviceIndex = GCDeviceCollection.FindIndex(Function(p) p.Name = GCDeviceName)
             If GCDeviceCollection(GCDeviceIndex).Model = "06" Then
-                logging.AddToLog(GCDeviceName & " model " & GCDeviceCollection(GCDeviceIndex).Model & " does not have outputs", True)
+                Log.Info(GCDeviceName & " model " & GCDeviceCollection(GCDeviceIndex).Model & " does not have outputs")
             Else
                 Select Case Command
                     Case "OUTPUTON"
                         SendString(GCDeviceCollection(GCDeviceIndex), "setstate," & Parameter1 & ",1")
-                        logging.AddToLog("Turn " & GCDeviceName & " output " & Parameter1 & " on", True)
+                        Log.Info("Turn " & GCDeviceName & " output " & Parameter1 & " on")
                     Case "OUTPUTOFF"
                         SendString(GCDeviceCollection(GCDeviceIndex), "setstate," & Parameter1 & ",0")
-                        logging.AddToLog("Turn " & GCDeviceName & "output " & Parameter1 & " off", True)
+                        Log.Info("Turn " & GCDeviceName & "output " & Parameter1 & " off")
                 End Select
             End If
         Catch ex As Exception
-            logging.AddToLog("Error Processing Command for " & GCDeviceName & " - " & ex.Message, True)
+            Log.Error("Error Processing Command for " & GCDeviceName & "!", ex)
         End Try
-
     End Sub
 
     Overrides Sub Shutdown()
-        logging.AddToLog("Starting Shutdown", True)
+        Log.Info("Starting Shutdown")
         ShutdownNow = True
         Try
             'ReceiveThead.Abort()
@@ -185,15 +178,15 @@ Public Class GlobalCache
 
 
         Catch ex As Exception
-            logging.AddToLog("Error during shutdown " & ex.ToString, True)
+            Log.Error("Error during shutdown!", ex)
         End Try
 
-        logging.AddToLog("Shutdown complete", True)
+        Log.Info("Shutdown complete")
 
     End Sub
 
     Protected Sub TimerHandler(ByVal sender As Object, ByVal e As ElapsedEventArgs)
-        logging.AddToLog("Timer Update", False)
+        Log.Debug("Timer Update")
 
         For Each MyGCDevice In GCDeviceCollection
             If MyGCDevice.CommDown Then
@@ -205,7 +198,7 @@ Public Class GlobalCache
                 'Sleep(100)
                 'End While
 
-                logging.AddToLog("Poll Global Cache " & MyGCDevice.Name, False)
+                Log.Debug("Poll Global Cache " & MyGCDevice.Name)
                 GetInputOutputValues(MyGCDevice)
                 Sleep(500)
                 If InitNeeded Then
@@ -223,7 +216,7 @@ Public Class GlobalCache
         Dim Message, Command, ConnectorAddress, ErrorNumber, StateString As String
         Dim GCDeviceIndex As Integer
         Dim OnOff As String
-        logging.AddToLog("Processing message", False)
+        Log.Debug("Processing message")
 
         GCDeviceIndex = GCDeviceCollection.FindIndex(Function(p) p.Name = GlobalCacheName)
 
@@ -240,38 +233,38 @@ Public Class GlobalCache
             OnOff = "OFF"
         End If
 
-
         If Strings.Left(Command, 14) = "unknowncommand" Then
             Command = "unknowncommand"
             ErrorNumber = Message.Substring(14)
-            logging.AddToLog("Unknown command number " & ErrorNumber & " received", True)
+            Log.Info("Unknown command number " & ErrorNumber & " received")
 
         ElseIf Command = "version" Then
-            logging.AddToLog("Version " & Message.Substring(10), True)
+            Log.Info("Version " & Message.Substring(10))
             OSAEObjectPropertyManager.ObjectPropertySet(GlobalCacheName, "Version", Message.Substring(10), pName)
 
         ElseIf Command = "state" Or Command = "statechange" Then
-            logging.AddToLog("Command = " & Command & "  Address = " & ConnectorAddress & "  State " & StateString, False)
+            Log.Debug("Command = " & Command & "  Address = " & ConnectorAddress & "  State " & StateString)
             If ConnectorAddress.Substring(0, 1) = "3" Then
                 OSAEObjectPropertyManager.ObjectPropertySet(GlobalCacheName, "OUTPUT" & ConnectorAddress, State.ToString.ToUpper, pName)
-                logging.AddToLog(GlobalCacheName & " OUTPUT " & ConnectorAddress & " " & OnOff, False)
+                Log.Debug(GlobalCacheName & " OUTPUT " & ConnectorAddress & " " & OnOff)
             Else
 
                 If GCDeviceCollection(GCDeviceIndex).Inputs(ConnectorAddress) <> State Then
                     OSAEObjectPropertyManager.ObjectPropertySet(GlobalCacheName, "INPUT" & ConnectorAddress, State.ToString.ToUpper, pName)
-                    logging.EventLogAdd(GlobalCacheName, "INPUT" & ConnectorAddress & OnOff)
-                    logging.AddToLog(GlobalCacheName & " INPUT " & ConnectorAddress & " " & OnOff, True)
+
+                    ' vaughn commented this out, seldom should we have to write an event, but I can't test
+                    ' if I am wrong, use the TriggerEvent api
+                    'logging.EventLogAdd(GlobalCacheName, "INPUT" & ConnectorAddress & OnOff)
+                    Log.Info(GlobalCacheName & " INPUT " & ConnectorAddress & " " & OnOff)
                     GCDeviceCollection(GCDeviceIndex).Inputs(ConnectorAddress) = State
                 Else
-                    logging.AddToLog(GlobalCacheName & " INPUT " & ConnectorAddress & " " & OnOff, False)
+                    Log.Debug(GlobalCacheName & " INPUT " & ConnectorAddress & " " & OnOff)
                 End If
             End If
         Else
-            logging.AddToLog("Unrecognized string received " & Message, True)
+            Log.Error("Unrecognized string received!")
         End If
-
     End Sub
-
 
     Sub SendString(ByRef MyGCDevice As GCDevice, ByVal StringToSend As String)
         'LastSendTime = UtcNow()
@@ -282,12 +275,11 @@ Public Class GlobalCache
     End Sub
 
     Sub InitSocket(ByRef MyGCDevice As GCDevice)
-        logging.AddToLog("Init socket for " & MyGCDevice.Name, False)
+        Log.Debug("Init socket for " & MyGCDevice.Name)
 
         Try
             If Not MyGCDevice.Socket Is Nothing Then
                 MyGCDevice.Socket.Dispose()
-
             End If
 
             MyGCDevice.Socket = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
@@ -296,24 +288,20 @@ Public Class GlobalCache
             MyGCDevice.Socket.Connect(MyGCDevice.IPAddress, Port)
             'client_socket.ReceiveTimeout = 200
 
-            logging.AddToLog("Connection made", False)
+            Log.Debug("Connection made")
 
             SetupReceive(MyGCDevice)
-            logging.AddToLog("Receive routine complete", False)
+            Log.Debug("Receive routine complete")
             MyGCDevice.CommDown = False
-
         Catch ex As Exception
-            logging.AddToLog("Error init socket " & ex.Message, True)
+            Log.Error("Error init socket!", ex)
             MyGCDevice.CommDown = True
         End Try
-
-
     End Sub
 
     Sub InitGlobalCache(ByRef MyGCDevice As GCDevice)
         SendString(MyGCDevice, "getversion")
         Sleep(200)
-
     End Sub
 
     Sub GetInputOutputValues(ByRef MyGCDevice As GCDevice)
@@ -351,12 +339,12 @@ Public Class GlobalCache
             MyGCDevice.Socket.BeginReceive(state.buffer, 0, state.BufferSize, 0, _
                 New AsyncCallback(AddressOf ReceiveCallback), state)
         Catch ex As Exception
-            logging.AddToLog("Error setting up receive buffer " & ex.Message, True)
+            Log.Error("Error setting up receive buffer!", ex)
         End Try
     End Sub 'Receive
 
     Private Sub ReceiveCallback(ByVal ar As IAsyncResult)
-        logging.AddToLog("Starting Receive Callback", False)
+        Log.Debug("Starting Receive Callback")
         Dim MyGCDevice As New GCDevice
         Dim GCDeviceIndex As Integer
 
@@ -380,12 +368,12 @@ Public Class GlobalCache
 
             If bytesRead > 0 Then
                 ' There might be more data, so store the data received so far.
-                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, _
+                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0,
                     bytesRead))
 
                 'If bytesRead = state.buffer.Length And client.Available > 0 Then
                 '  Get the rest of the data.
-                client.BeginReceive(state.buffer, 0, state.BufferSize, 0, _
+                client.BeginReceive(state.buffer, 0, state.BufferSize, 0,
                     New AsyncCallback(AddressOf ReceiveCallback), state)
             Else
                 ' All the data has arrived; put it in response.
@@ -399,12 +387,10 @@ Public Class GlobalCache
             End If
 
         Catch ex As Exception
-            logging.AddToLog("Error receiving data " & ex.Message, True)
+            Log.Error("Error receiving data!", ex)
             GCDeviceCollection(GCDeviceIndex).CommDown = True
-
         End Try
     End Sub 'ReceiveCallback
-
 
 End Class
 

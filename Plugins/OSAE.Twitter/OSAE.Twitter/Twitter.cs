@@ -5,25 +5,22 @@ namespace OSAE.Twitter
 {
     public class Twitter : OSAEPluginBase
     {
-        //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog("Twitter");
+        private OSAE.General.OSAELog Log;
         private oAuthTwitter _oAuth = new oAuthTwitter();
         private string pName = "";
 
         public override void ProcessCommand(OSAEMethod method)
         {
-            this.Log.Debug("Received command: " + method.MethodName);
+            Log.Debug("Received command: " + method.MethodName);
             if (method.MethodName == "TWEET")
-            {
                 SendTweet(Common.PatternParse(method.Parameter1));
-            }
             else if (method.MethodName == "AUTHENTICATE")
             {
                 string pin = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Pin").Value;
 
                 if (pin != "")
                 {
-                    this.Log.Info("Found pin: " + pin + ". Attempting to authorize");
+                    Log.Info("Found pin: " + pin + ". Attempting to authorize");
                     try
                     {
                         // Now that the application's been authenticated, let's get the (permanent)
@@ -35,20 +32,17 @@ namespace OSAE.Twitter
                         this.Log.Info("Success! You're ready to start tweeting!");
                     }
                     catch (Exception ex)
-                    {
-                        this.Log.Error("An error occurred during authorization", ex);
-                    }
+                    { Log.Error("An error occurred during authorization", ex); }
                 }
                 else
-                {
-                    this.Log.Info("No pin found.  Please enter the pin from twitter into the Twitter object property.");
-                }
+                    Log.Info("No pin found.  Please enter the pin from twitter into the Twitter object property.");
             }
         }
 
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
+            Log = new General.OSAELog(pName);
 
             _oAuth.OAuthToken = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Auth Token").Value;
             _oAuth.PIN = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Pin").Value;
@@ -62,7 +56,7 @@ namespace OSAE.Twitter
                 if (_oAuth.Token != "" && _oAuth.TokenSecret != "" && _oAuth.PIN != "" && _oAuth.OAuthToken != "")
                 {
                     //We are already authenticated
-                    this.Log.Info("Acount authenticated.  Ready for tweeting");
+                    Log.Info("Acount authenticated.  Ready for tweeting");
                 }
                 else
                 {
@@ -71,14 +65,11 @@ namespace OSAE.Twitter
                     // call obtains the URL to that page. Authorization link will look something like this:
                     // http://twitter.com/oauth/authorize?oauth_token=c8GZ6vCDdgKO4gTx0ZZXzvjZ76auuvlD1hxoLeiWc
                     string authLink = _oAuth.AuthorizationLinkGet();
-                    this.Log.Info("Here is the Twitter Authorization Link.  Copy and paste into your browser to authorize OSA to use your twitter account.  \nCopy the PIN you are given and put it into the PIN property for the Twitter plugin object and then execute the Authorize method: \n" + authLink);
-
+                    Log.Info("Here is the Twitter Authorization Link.  Copy and paste into your browser to authorize OSA to use your twitter account.  \nCopy the PIN you are given and put it into the PIN property for the Twitter plugin object and then execute the Authorize method: \n" + authLink);
                 }
             }
             catch(Exception ex)
-            {
-                this.Log.Error("Error running interface", ex);
-            }
+            { Log.Error("Error running interface", ex); }
         }
 
         public override void Shutdown()
@@ -90,32 +81,28 @@ namespace OSAE.Twitter
         {
             if (tweet.Length == 0)
             {
-                this.Log.Info("Your tweet must be at least 1 character long!");
+                Log.Info("Your tweet must be at least 1 character long!");
                 return;
             }
             else if (tweet.Length > 140)
             {
-                this.Log.Info("Your tweet must less than 140 characters long!");
+                Log.Info("Your tweet must less than 140 characters long!");
                 return;
             }
             else
             {
-
                 try
                 {
                     // URL-encode the tweet...
                     string tweetEnc = HttpUtility.UrlEncode(tweet);
 
                     // And send it off...
-                    string xml = _oAuth.oAuthWebRequest(
-                        oAuthTwitter.Method.POST,
-                        "http://api.twitter.com/1/statuses/update.xml",
-                        "status=" + tweetEnc);
-                    this.Log.Info("Tweet posted successfully: " + tweet);
+                    string xml = _oAuth.oAuthWebRequest(oAuthTwitter.Method.POST,"http://api.twitter.com/1/statuses/update.xml","status=" + tweetEnc);
+                    Log.Info("Tweet posted successfully: " + tweet);
                 }
                 catch (Exception ex)
                 {
-                    this.Log.Error("An error occurred while posting your tweet", ex);
+                    Log.Error("An error occurred while posting your tweet", ex);
                     return;
                 }
             }

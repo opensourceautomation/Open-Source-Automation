@@ -53,9 +53,7 @@
                 }
             }
             catch (Exception ex)
-            {
-                throw new Exception("API - GetObjectPropertyValue error: " + ex.Message, ex);
-            }
+            { throw new Exception("API - GetObjectPropertyValue error: " + ex.Message, ex); }
         }
 
         /// <summary>
@@ -72,16 +70,14 @@
                 command.Parameters.AddWithValue("@ObjectName", objectName);
                 command.Parameters.AddWithValue("@PropertyName", propertyName);
                 command.Parameters.AddWithValue("@PropertyValue", propertyValue);
-                command.Parameters.AddWithValue("@FromObject", PluginManager.GetPluginName(source, Common.ComputerName));
+                command.Parameters.AddWithValue("@FromObject", source);
                 command.Parameters.AddWithValue("@DebugInfo", null);
                 try
                 {
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertySet error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -132,7 +128,7 @@
                 {
                     DataSet dataset = new DataSet();
 
-                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE UPPER(object_name) = UPPER('" + ObjectName + "') OR UPPER(object_alias) = UPPER('" + ObjectName + "') ORDER BY property_name";
+                    command.CommandText = "SELECT object_property_id, property_name, property_value, property_datatype, last_updated FROM osae_v_object_property WHERE UPPER(object_name) = UPPER(@ObjectName) OR UPPER(object_alias) = UPPER(@ObjectName) ORDER BY property_name";
                     command.Parameters.AddWithValue("@ObjectName", ObjectName);
                     dataset = OSAESql.RunQuery(command);
 
@@ -168,15 +164,10 @@
                     ds = OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertyListGet error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertyListGet error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
             return ds;
         }
-
-
-
 
         /// <summary>
         /// propertyLabel is usually left null
@@ -199,9 +190,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -228,9 +217,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertyArrayUpdate error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -308,9 +295,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertyArrayDelete error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -331,9 +316,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayDeleteAll error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertyArrayDeleteAll error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -362,9 +345,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -394,9 +375,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertyScraperID error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertyScraperID error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -419,9 +398,7 @@
                     OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertyArrayAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -436,9 +413,7 @@
                     ds = OSAESql.RunQuery(command);
                 }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectPropertyHistoryGet error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectPropertyHistoryGet error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
             return ds;
         }

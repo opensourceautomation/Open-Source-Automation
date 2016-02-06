@@ -19,8 +19,8 @@ namespace VR2
         Boolean gVRMuted = false;
         Boolean gVREnabled = true;
         String gWakePattern = "VR Wake";
-        List<string> wakeList = new List<string>();
         String gSleepPattern = "Thanks";
+        List<string> wakeList = new List<string>();
         List<string> sleepList = new List<string>();
         List<string> userList = new List<string>();
         String gSpeechPlugin = "";
@@ -78,9 +78,7 @@ namespace VR2
                     oRecognizer.SetInputToDefaultAudioDevice();
                     oRecognizer.RecognizeAsync(RecognizeMode.Multiple);
                     while (!gAppClosing)
-                    {
                         Thread.Sleep(333);
-                    }
                 });
                 t1.Start();
             }
@@ -99,7 +97,7 @@ namespace VR2
 
         void MyNotifyIcon_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            this.WindowState = WindowState.Normal;
+            WindowState = WindowState.Normal;
         }
 
         private void AddToLog(string message)
@@ -110,23 +108,22 @@ namespace VR2
                 txtLog.Text += Environment.NewLine;
                 txtLog.ScrollToEnd();
             }
-            catch 
-            { //AddToLog("Error in AddToLog: " + ex.Message); 
-            }
+            catch { }
         }
 
         private void Load_App_Name()
         {
             try
             {
-                gAppName = PluginManager.GetPluginName("VR CLIENT", OSAE.Common.ComputerName);
-                if (gAppName == "")
+                gAppName = "VR CLIENT-" + OSAE.Common.ComputerName;
+                bool found = OSAEObjectManager.ObjectExists(gAppName);
+                if (!found)
                 {
-                    gAppName = "VR CLIENT-" + OSAE.Common.ComputerName;
-                    OSAEObjectManager.ObjectAdd(gAppName, gAppName, gAppName, "VR CLIENT", "", "SYSTEM", 30, true);
-                    OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Computer Name", OSAE.Common.ComputerName, "VR");
+                    OSAEObjectManager.ObjectAdd(gAppName, "", gAppName, "VR CLIENT", "", OSAE.Common.ComputerName, 30, true);
+                    AddToLog("Object Name: " + gAppName + " not found, so I created it.");
                 }
-                OSAEObjectStateManager.ObjectStateSet(gAppName, "ON", OSAE.Common.ComputerName);
+
+                OSAEObjectStateManager.ObjectStateSet(gAppName, "ON", gAppName);
             }
             catch (Exception ex)
             { AddToLog("Error messaging host: " + ex.Message); }
@@ -138,7 +135,7 @@ namespace VR2
             {
                 AddToLog("OSA Settings:");
                 AddToLog("--  Object Name: " + gAppName);
-                String temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "VR Input Muted").Value.ToString();
+                string temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "VR Input Muted").Value.ToString();
                 if (temp == "FALSE")
                 {
                     gVRMuted = false;
@@ -200,11 +197,7 @@ namespace VR2
                 }
             }
             catch (Exception ex)
-            {
-                AddToLog("Error in Load Settings: " + ex.Message);
-            }
-
-            
+            { AddToLog("Error in Load Settings: " + ex.Message); }
         }
 
         private void oRecognizer_SpeechRecognized(object sender, System.Speech.Recognition.SpeechRecognizedEventArgs e)
@@ -258,10 +251,10 @@ namespace VR2
                     lblStatus.Content = "I am sleeping. Zzzz";
                 }
                 else if (sleepList.Contains(sInput) && gVRMuted == true)
-                { return; }
+                    return;
 
                 // gSpeechPlugin;
-                String temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gSpeechPlugin, "Speaking").Value.ToString().ToLower();
+                string temp = OSAEObjectPropertyManager.GetObjectPropertyValue(gSpeechPlugin, "Speaking").Value.ToString().ToLower();
 
                 if (temp.ToLower() == "false")
                 {
@@ -325,22 +318,6 @@ namespace VR2
 
         private void oRecognizer_StateChanged(object sender, System.Speech.Recognition.AudioStateChangedEventArgs e)
         {
-            /*
-            //System.Speech.Recognition.AudioState state = oRecognizer.AudioState;
-            try
-            {
-                if (oRecognizer.AudioState == 0 && gRunningManual == false)
-                {
-                    oRecognizer.RecognizeAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                AddToLog("Error trying to Restart Recognition!");
-                AddToLog("Errord: " + ex.Message);
-            }
-             */
-
             switch (oRecognizer.AudioState.ToString())
             {
                 case "Stopped":  
@@ -360,26 +337,5 @@ namespace VR2
                     break;
             }
         }
-
-        /*
-        private static string MatchPattern(string str, string ScriptParameter, string sUser)
-        {
-            //MOVE TO API
-
-
-            DataSet dataset = new DataSet();
-            dataset = OSAESql.RunSQL("SELECT pattern FROM osae_v_pattern_match WHERE `match`='" + str.Replace("'", "''") + "'");
-            if (dataset.Tables[0].Rows.Count > 0)
-            {
-                //Since we have a match, lets execute the scripts
-                OSAEScriptManager.RunPatternScript(dataset.Tables[0].Rows[0]["pattern"].ToString(), ScriptParameter, sUser);
-                return dataset.Tables[0].Rows[0]["pattern"].ToString();
-            }
-            else
-            {
-                return "Sorry!";
-            }
-        }
-         */
     }
 }

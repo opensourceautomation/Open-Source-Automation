@@ -14,7 +14,9 @@ CALL osae_sp_object_type_property_add ('PHIDGET-RFID', 'LED Enabled','Boolean','
 CALL osae_sp_object_type_property_add ('PHIDGET-RFID', 'Output 1 ON','Boolean','FALSE','',0);
 CALL osae_sp_object_type_property_add ('PHIDGET-RFID', 'Output 2 ON','Boolean','FALSE','',0);
 CALL osae_sp_object_type_property_add ('PHIDGET-RFID', 'Last Tag Read','String','','',0);
-
+CALL osae_sp_object_type_property_add('PHIDGET-RFID','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('PHIDGET-RFID','Version','String','','',0);
+CALL osae_sp_object_type_property_add('PHIDGET-RFID','Author','String','','',0);
 
 CALL osae_sp_object_type_add ('PHIDGET RFID TAG','Phidget RFID Tag','','THING',0,0,0,0);
 CALL osae_sp_object_type_state_add ('PHIDGET RFID TAG', 'ON','Detected');

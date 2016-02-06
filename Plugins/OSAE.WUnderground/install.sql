@@ -124,6 +124,9 @@ CALL osae_sp_object_type_property_add('WUNDERGROUND','DawnPost','Integer','','0'
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Key','String','','',0);
 CALL osae_sp_object_type_property_add('WUNDERGROUND','City','String','','Ellis',0);
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Conditions Interval','Integer','','15',0);
-CALL osae_sp_object_type_property_add('WUNDERGROUND','Trust Level','Integer','','50',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','Trust Level','Integer','','90',0);
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Debug','Boolean','','FALSE',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','Version','String','','',0);
+CALL osae_sp_object_type_property_add('WUNDERGROUND','Author','String','','',0);
+
 

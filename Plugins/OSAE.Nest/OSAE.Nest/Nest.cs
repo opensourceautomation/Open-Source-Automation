@@ -14,7 +14,7 @@
     public class Nest : OSAEPluginBase
     {
         //OSAELog
-        private static OSAE.General.OSAELog Log = new General.OSAELog();
+        private static OSAE.General.OSAELog Log;// = new General.OSAELog();
 
         /// <summary>
         /// Plugin name
@@ -32,6 +32,7 @@
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
+            Log = new General.OSAELog(pName);
 
             //make sure object types are owned by the Nest Plugin
             OSAEObjectTypeManager.ObjectTypeUpdate("NEST STRUCTURE", "NEST STRUCTURE", "Nest Structure", pluginName, "NEST STRUCTURE", false, false, false, true);
@@ -469,11 +470,9 @@
                             OSAEObject _nameObject = OSAEObjectManager.GetObjectByName(structure.name);
                             //OSAEObjectManager.GetObjectByAddress(structure.structure_id)
                             if (_nameObject != null)
-                            {
                                 Log.Error("Object with name: " + _nameObject.Name + " exists but it's address doesn't match - objects address: " + _nameObject.Address + ". - device_id from nest:" + structure.structure_id + ".");
-                            }
 
-                            OSAEObjectManager.ObjectAdd(structure.name,"", structure.name, "NEST STRUCTURE", structure.structure_id, "", true);
+                            OSAEObjectManager.ObjectAdd(structure.name,"", structure.name, "NEST STRUCTURE", structure.structure_id, "",30, true);
   
                         }
 
@@ -491,11 +490,8 @@
                             List<Variance> variances = structure.DetailedCompare(currentdata);
 
                             foreach (Variance v in variances)
-                            {
                                 Log.Debug(v.Prop + " value changed from " + v.valB.ToString() + " to " + v.valA.ToString());
-                            }
                         }
-
 
                         //update structure data
 
@@ -514,7 +510,6 @@
                 catch (Exception e)
                 {
                     string[] lines = e.ToString().Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-
                     Log.Error("error getting structure data. " + lines[0]);
                 }
 
@@ -526,9 +521,7 @@
                     dynamic data = JsonConvert.DeserializeObject<dynamic>(thermostatData);
                     var myThermostats = new List<Thermostat>();
                     foreach (var itemDynamic in data)
-                    {
                         myThermostats.Add(JsonConvert.DeserializeObject<Thermostat>(((JProperty)itemDynamic).Value.ToString()));
-                    }
 
                     foreach (Thermostat thermostat in myThermostats)
                     {
@@ -539,11 +532,9 @@
 
                             OSAEObject _nameObject = OSAEObjectManager.GetObjectByName(thermostat.name);
                             if (_nameObject != null)
-                            {
                                 Log.Error("Object with name: " + _nameObject.Name + " exists but it's address doesn't match - objects address: " + _nameObject.Address + ". - device_id from nest:" + thermostat.structure_id + ".");
-                            }
 
-                            OSAEObjectManager.ObjectAdd(thermostat.name,"", thermostat.name_long, "NEST THERMOSTAT", thermostat.device_id, "", true);
+                            OSAEObjectManager.ObjectAdd(thermostat.name,"", thermostat.name_long, "NEST THERMOSTAT", thermostat.device_id, "", 30, true);
                         }
 
                         String objectName = OSAEObjectManager.GetObjectByAddress(thermostat.device_id).Name;
@@ -563,21 +554,14 @@
                             List<Variance> variances = thermostat.DetailedCompare(currentdata);
                             Log.Debug("Number of fields changed: " + variances.Count);
                             foreach (Variance v in variances)
-                            {
                                 Log.Debug(v.Prop + " value changed from " + v.valB.ToString() + " to " + v.valA.ToString());
-                            }
-
                         }
 
                         //update structure data
                         if (thermostat.is_online)
-                        {
                             OSAEObjectStateManager.ObjectStateSet(objectName, thermostat.hvac_mode, pName);
-                        }
                         else
-                        {
                             OSAEObjectStateManager.ObjectStateSet(objectName, "Offline", pName);
-                        }
 
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Id", thermostat.device_id, pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Name", thermostat.name, pName);
@@ -602,14 +586,11 @@
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Has Fan", thermostat.has_fan.ToString(), pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Fan Timer Active", thermostat.fan_timer_active.ToString(), pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Fan Timer Timeout", thermostat.fan_timer_timeout, pName);
-
                     }
                 }
                 catch (Exception e)
                 {
-
                     string[] lines = e.ToString().Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-
                     Log.Error("error getting thermostat data. " + lines[0]);
                 }
 
@@ -621,9 +602,7 @@
                     dynamic data = JsonConvert.DeserializeObject<dynamic>(smokeData);
                     var mySmokeAlarms = new List<SmokeAlarm>();
                     foreach (var itemDynamic in data)
-                    {
                         mySmokeAlarms.Add(JsonConvert.DeserializeObject<SmokeAlarm>(((JProperty)itemDynamic).Value.ToString()));
-                    }
 
                     foreach (SmokeAlarm smokealarm in mySmokeAlarms)
                     {
@@ -634,14 +613,12 @@
 
                             OSAEObject _nameObject = OSAEObjectManager.GetObjectByName(smokealarm.name);
                             if (_nameObject != null)
-                            {
                                 Log.Error("Object with name: " + _nameObject.Name + " exists but it's address doesn't match - objects address: " + _nameObject.Address + ". - device_id from nest:" + smokealarm.structure_id + ".");
-                            }
 
-                            OSAEObjectManager.ObjectAdd(smokealarm.name,"", smokealarm.name_long, "NEST PROTECT", smokealarm.device_id, "", true);
+                            OSAEObjectManager.ObjectAdd(smokealarm.name,"", smokealarm.name_long, "NEST PROTECT", smokealarm.device_id, "", 30, true);
                         }
 
-                        String objectName = OSAEObjectManager.GetObjectByAddress(smokealarm.device_id).Name;
+                        string objectName = OSAEObjectManager.GetObjectByAddress(smokealarm.device_id).Name;
 
                         //load current data into smokealarm object
                         SmokeAlarm currentdata = new SmokeAlarm();
@@ -656,45 +633,27 @@
                             List<Variance> variances = smokealarm.DetailedCompare(currentdata);
                             Log.Debug("Number of fields changed: " + variances.Count);
                             foreach (Variance v in variances)
-                            {
                                 Log.Debug(v.Prop + " value changed from " + v.valB.ToString() + " to " + v.valA.ToString());
-                            }
-
                         }
 
                         //update structure data
                         if (smokealarm.is_online)
                         {
                             if (smokealarm.smoke_alarm_state.Equals("emergency"))
-                            {
                                 OSAEObjectStateManager.ObjectStateSet(objectName, "Smoke Emergency", pName);
-                            }
                             else if (smokealarm.co_alarm_state.Equals("emergency"))
-                            {
                                 OSAEObjectStateManager.ObjectStateSet(objectName, "CO Emergency", pName);
-                            }
                             else if (smokealarm.smoke_alarm_state.Equals("warning"))
-                            {
                                 OSAEObjectStateManager.ObjectStateSet(objectName, "Smoke Warning", pName);
-                            }
                             else if (smokealarm.co_alarm_state.Equals("warning"))
-                            {
                                 OSAEObjectStateManager.ObjectStateSet(objectName, "CO Warning", pName);
-                            }
                             else if (smokealarm.battery_health.Equals("replace"))
-                            {
                                 OSAEObjectStateManager.ObjectStateSet(objectName, "Battery Replace", pName);
-                            }
                             else
-                            {
                                 OSAEObjectStateManager.ObjectStateSet(objectName, "Online", pName);
-                            }
-
                         }
                         else
-                        {
                             OSAEObjectStateManager.ObjectStateSet(objectName, "Offline", pName);
-                        }
 
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Id", smokealarm.device_id, pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Name", smokealarm.name, pName);
@@ -710,14 +669,11 @@
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Structure ID", smokealarm.structure_id, pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Last Connection", smokealarm.last_connection, pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Is Online", smokealarm.is_online.ToString(), pName);
-
                     }
                 }
                 catch (Exception e)
                 {
-
                     string[] lines = e.ToString().Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-
                     Log.Debug("error getting smokealarm data. " + lines[0]);
                 }
                 firebaseClient.Dispose();
@@ -740,54 +696,40 @@
                     {
                         if (!e.Data.Equals(e.OldData) || e.Data == null || e.OldData == null)
                         {
-                            String[] parts = e.Path.Split('/');
+                            string[] parts = e.Path.Split('/');
 
                             string deviceid = parts[parts.Count() - 2];
                             string dataelement = parts[parts.Count() - 1];
 
-
                             Log.Debug("device(" + deviceid + ") " + dataelement + " changed from " + e.OldData + " to " + e.Data + ".");
 
-                            String objectName = OSAEObjectManager.GetObjectByAddress(deviceid).Name;
+                            string objectName = OSAEObjectManager.GetObjectByAddress(deviceid).Name;
 
                             if (dataelement.Equals("away"))
-                            {
                                 OSAEObjectStateManager.ObjectStateSet(objectName, e.Data, pName);
-                            }
 
                             if (dataelement.Equals("name"))
-                            {
                                 OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Name", e.Data, pName);
-                            }
-                            if (dataelement.Equals("country_code"))
-                            {
-                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Country Code", e.Data, pName);
-                            }
-                            if (dataelement.Equals("postal_code"))
-                            {
-                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Postal Code", e.Data, pName);
-                            }
-                            if (dataelement.Equals("time_zone"))
-                            {
-                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Time Zone", e.Data, pName);
-                            }
-                            if (dataelement.Equals("peak_period_start_time"))
-                            {
-                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Peak Start Time", e.Data, pName);
-                            }
-                            if (dataelement.Equals("peak_period_end_time"))
-                            {
-                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Peak End Time", e.Data, pName);
-                            }
 
+                            if (dataelement.Equals("country_code"))
+                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Country Code", e.Data, pName);
+
+                            if (dataelement.Equals("postal_code"))
+                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Postal Code", e.Data, pName);
+
+                            if (dataelement.Equals("time_zone"))
+                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Time Zone", e.Data, pName);
+
+                            if (dataelement.Equals("peak_period_start_time"))
+                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Peak Start Time", e.Data, pName);
+
+                            if (dataelement.Equals("peak_period_end_time"))
+                                OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Peak End Time", e.Data, pName);
                         }
                     });
-
                 }
                 catch (Exception)
-                {
-                    Log.Error("error getting structure updates");
-                }
+                { Log.Error("error getting structure updates"); }
 
                 //suscribe to device data
                 try
@@ -797,252 +739,189 @@
                     {
                         if (!e.Data.Equals(e.OldData) || e.Data == null || e.OldData == null)
                         {
-                            String[] parts = e.Path.Split('/');
+                            string[] parts = e.Path.Split('/');
 
                             string deviceid = parts[parts.Count() - 2];
                             string dataelement = parts[parts.Count() - 1];
 
                             Log.Debug("device(" + deviceid + ") " + dataelement + " changed from " + e.OldData + " to " + e.Data + ".");
 
-                            String objectName = OSAEObjectManager.GetObjectByAddress(deviceid).Name;
-                            String objectType = OSAEObjectManager.GetObjectByAddress(deviceid).Type;
-                            String tempScale = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Temperature Scale").Value;
+                            string objectName = OSAEObjectManager.GetObjectByAddress(deviceid).Name;
+                            string objectType = OSAEObjectManager.GetObjectByAddress(deviceid).Type;
+                            string tempScale = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Temperature Scale").Value;
                             if (objectType.Equals("NEST THERMOSTAT"))
                             {
                                 if (dataelement.Equals("hvac_mode"))
-                                {
                                     OSAEObjectStateManager.ObjectStateSet(objectName, e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("is_online") && e.Data.Equals("False"))
-                                {
                                     OSAEObjectStateManager.ObjectStateSet(objectName, "OFFLINE", pName);
-                                }
 
                                 if (dataelement.Equals("name"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Name", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("name_long"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Name Long", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("device_id"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "ID", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("locale"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Locale", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("software_version"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Software Version", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("structure_id"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Structure ID", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("last_connection"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Last Connection", convertDate(e.Data), pName);
-                                }
+
                                 if (dataelement.Equals("is_online"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Is Online", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("can_cool"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Can Cool", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("can_heat"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Can Heat", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("is_using_emergency_heat"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Using Emergency Heat", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("has_fan"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Has Fan", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("fan_timer_active"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Fan Timer Active", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("fan_timer_timeout"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Fan Timer Timeout", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("has_leaf"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Has Leaf", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("temperature_scale"))
                                 {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Temperature Scale", e.Data, pName);
                                     GetNestData(accessToken); // redownload all data so temps will be displayed in new scale
                                 }
                                 if (dataelement.Equals("target_temperature_f") && tempScale.Equals("F"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Target Temperature", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("target_temperature_c") && tempScale.Equals("C"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Target Temperature", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("target_temperature_high_f") && tempScale.Equals("F"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Target Temperature High", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("target_temperature_high_c") && tempScale.Equals("C"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Target Temperature High", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("target_temperature_low_f") && tempScale.Equals("F"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Target Temperature Low", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("target_temperature_low_c") && tempScale.Equals("C"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Target Temperature Low", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("away_temperature_high_f") && tempScale.Equals("F"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Away Temperature High", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("away_temperature_high_c") && tempScale.Equals("C"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Away Temperature High", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("away_temperature_low_f") && tempScale.Equals("F"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Away Temperature Low", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("away_temperature_low_c") && tempScale.Equals("C"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Away Temperature Low", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("ambient_temperature_f"))
                                 {
                                     if (tempScale.Equals("F"))
-                                    {
                                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Ambient Temperature", e.Data, pName);
-                                    }
                                 }
                                 if (dataelement.Equals("ambient_temperature_c"))
                                 {
                                     if (tempScale.Equals("C"))
-                                    {
                                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Ambient Temperature", e.Data, pName);
-                                    }
                                 }
                                 if (dataelement.Equals("humidity"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Humidity", e.Data, pName);
-                                }
-
                             }
 
                             if (objectType.Equals("NEST PROTECT"))
                             {
                                 if (dataelement.Equals("smoke_alarm_state") && e.Data.Equals("emergency"))
-                                {
                                     OSAEObjectStateManager.ObjectStateSet(objectName, "SMOKE EMERGENCY", pName);
-                                }
+
                                 if (dataelement.Equals("smoke_alarm_state") && e.Data.Equals("warning"))
-                                {
                                     OSAEObjectStateManager.ObjectStateSet(objectName, "SMOKE WARNING", pName);
-                                }
+
                                 if (dataelement.Equals("co_alarm_state") && e.Data.Equals("emergency"))
-                                {
                                     OSAEObjectStateManager.ObjectStateSet(objectName, "CO EMERGENCY", pName);
-                                }
+
                                 if (dataelement.Equals("co_alarm_state") && e.Data.Equals("warning"))
-                                {
                                     OSAEObjectStateManager.ObjectStateSet(objectName, "CO WARNING", pName);
-                                }
+
                                 if (dataelement.Equals("battery_health") && e.Data.Equals("replace"))
-                                {
                                     OSAEObjectStateManager.ObjectStateSet(objectName, "BATTERY REPLACE", pName);
-                                }
+
                                 if (dataelement.Equals("is_online") && e.Data.Equals("False"))
-                                {
                                     OSAEObjectStateManager.ObjectStateSet(objectName, "OFFLINE", pName);
-                                }
 
                                 if (dataelement.Equals("device_id"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "ID", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("locale"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Locale", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("software_version"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Software Version", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("structure_id"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Structure ID", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("name"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Name", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("name_long"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Name Long", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("last_connection"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Last Connection", convertDate(e.Data), pName);
-                                }
+
                                 if (dataelement.Equals("is_online"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Is Online", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("battery_health"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Battery Health", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("co_alarm_state"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "CO Alarm State", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("smoke_alarm_state"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Smoke Alarm State", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("is_manual_test_active"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Manual Test Active", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("last_manual_test_time"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Last Manual Test", e.Data, pName);
-                                }
+
                                 if (dataelement.Equals("ui_color_state"))
-                                {
                                     OSAEObjectPropertyManager.ObjectPropertySet(objectName, "UI Color State", e.Data, pName);
-                                }
 
                                 //set state to online if no waring state is active and device is not offline
                                 if (OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Smoke Alarm State").Value.Equals("ok") && OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "CO Alarm State").Value.Equals("ok") && OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Battery Health").Value.Equals("ok") && OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Is Online").Value.Equals("True"))
-                                {
                                     OSAEObjectStateManager.ObjectStateSet(objectName, "ONLINE", pName);
-                                }
                             }
-
                         }
                     });
-
                 }
                 catch (Exception)
-                {
-                    Log.Error("error getting device updates");
-                }
+                { Log.Error("error getting device updates"); }
             }
         }
 
@@ -1076,29 +955,22 @@
             string mystructure = myobject.Property("Structure ID").Value;
 
             if (OSAEObjectManager.GetObjectByAddress(mystructure).State.Value.ToUpper().Equals("HOME"))
-            {
                 ishome = true;
-            }
             else
-            {
                 ishome = false;
-            }
 
             return ishome;
         }
 
         public string convertDate(string last_connection)
         {
-
             //for testing 
             //last_connection = "2015-02-06T20:43:16.772Z";
 
             DateTime _lastConnection;
 
             if (!DateTime.TryParse(last_connection, out _lastConnection))
-            {
                 last_connection = "";
-            }
             else
             {
                 //last_connection = _lastConnection.ToLocalTime().ToString("G"); 
@@ -1126,22 +998,16 @@
                 if (Int32.TryParse(temp, out convertedtemp))
                 {
                     if (convertedtemp < 50 || convertedtemp > 90)
-                    {
                         tempisok = false;
-                    }
+
                     if (temptype.Equals("high") && convertedtemp < mylowtemp)
-                    {
                         tempisok = false;
-                    }
+
                     if (temptype.Equals("low") && convertedtemp > myhightemp)
-                    {
                         tempisok = false;
-                    }
                 }
                 else
-                {
                     tempisok = false;
-                }   
             }
             else
             {
@@ -1149,22 +1015,16 @@
                 if (float.TryParse(temp, out convertedtemp))
                 {
                     if (convertedtemp < 9 || convertedtemp > 32)
-                    {
                         tempisok = false;
-                    }
+
                     if (temptype.Equals("high") && convertedtemp < mylowtemp)
-                    {
                         tempisok = false;
-                    }
+
                     if (temptype.Equals("low") && convertedtemp > myhightemp)
-                    {
                         tempisok = false;
-                    }
                 }
                 else
-                {
                     tempisok = false;
-                } 
             }
 
             return tempisok;

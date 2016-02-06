@@ -354,10 +354,7 @@ public partial class home : System.Web.UI.Page
             ddlState.SelectedValue = obj.State.Value;
 
         ddlType.SelectedValue = obj.Type;
-        if (obj.Enabled == 1)
-            chkEnabled.Checked = true;
-        else
-            chkEnabled.Checked = false;
+        chkEnabled.Checked = obj.Enabled;
             
         OSAEObjectType objtype = OSAEObjectTypeManager.ObjectTypeLoad(obj.Type);
         txtOwned.Text = objtype.OwnedBy;
@@ -383,7 +380,7 @@ public partial class home : System.Web.UI.Page
     protected void btnAdd_Click(object sender, EventArgs e)
     {
         OSAEObjectManager.ObjectAdd(txtName.Text,txtAlias.Text, txtDescr.Text, ddlType.SelectedItem.Value, txtAddress.Text, ddlContainer.SelectedValue,Convert.ToInt16(txtTrustLevel.Text), chkEnabled.Checked);
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name");
         gvObjects.DataBind();
         txtName.Text = "";
         txtDescr.Text = "";
@@ -396,7 +393,7 @@ public partial class home : System.Web.UI.Page
     protected void btnDelete_Click(object sender, EventArgs e)
     {
         OSAEObjectManager.ObjectDelete(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString());
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name");
         gvObjects.DataBind();
         txtName.Text = "";
         txtDescr.Text = "";
@@ -409,11 +406,8 @@ public partial class home : System.Web.UI.Page
 
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
-        int enabled = 0;
-        if(chkEnabled.Checked)
-            enabled = 1;
-        OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), txtName.Text, txtAlias.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, Convert.ToInt16(txtTrustLevel.Text), enabled);
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object order by container_name, object_name");
+        OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), txtName.Text, txtAlias.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, Convert.ToInt16(txtTrustLevel.Text), chkEnabled.Checked);
+        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name");
         gvObjects.DataBind();
     }
 

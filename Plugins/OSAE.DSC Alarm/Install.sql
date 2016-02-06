@@ -10,6 +10,8 @@ CALL osae_sp_object_type_property_add ('DSC ALARM','Code','Integer','','0',0);
 CALL osae_sp_object_type_property_add ('DSC ALARM','Password','String','','',0);
 CALL osae_sp_object_type_property_add ('DSC ALARM','Ethernet','Boolean','','FALSE',0);
 CALL osae_sp_object_type_property_add ('DSC ALARM','Keybus','String','','',0);
+CALL osae_sp_object_type_property_add('DSC ALARM','Version','String','','',0);
+CALL osae_sp_object_type_property_add('DSC ALARM','Author','String','','',0);
 
 CALL osae_sp_object_type_add ('DSC ALARM PARTITION','DSC Alarm Partition','DSC Alarm','DSC ALARM PARTITION',0,0,0,0);
 CALL osae_sp_object_type_state_add ('DSC ALARM PARTITION','READY','Ready');

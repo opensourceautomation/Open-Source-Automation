@@ -10,6 +10,7 @@
                 GridLines="None"  
                 CssClass="mGrid"  
                 AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvPlugins_RowDataBound">  
+<AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
                 <Columns>
                     <asp:TemplateField HeaderText="Enabled" Visible="True">
                         <ItemTemplate>
@@ -17,6 +18,11 @@
                             <asp:Label ID="lblEnabled" runat="server" Text='<%# Eval("Enabled") %>' Visible="false"></asp:Label>
                         </ItemTemplate>
                         <ItemStyle HorizontalAlign="Center" />
+                    </asp:TemplateField>
+                    <asp:TemplateField HeaderText="Computer">
+                        <ItemTemplate>
+                            <asp:Label ID="lblComputer" runat="server" Text='<%# Eval("Computer") %>'></asp:Label>
+                        </ItemTemplate>
                     </asp:TemplateField>
                     <asp:TemplateField HeaderText="Plugin" Visible="True">
                         <ItemTemplate>
@@ -26,7 +32,6 @@
                         </ItemTemplate>
                     </asp:TemplateField>
                     <asp:BoundField DataField="Status" HeaderText="Status" />  
-                    <asp:BoundField DataField="Author" HeaderText="Author" /> 
                     <asp:TemplateField HeaderText="OSA Object" Visible="True">
                         <ItemTemplate>
                             <asp:Label ID="lblObject" runat="server" Text='<%# Eval("Name") %>'></asp:Label>

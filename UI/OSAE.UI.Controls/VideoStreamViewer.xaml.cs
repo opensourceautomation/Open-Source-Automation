@@ -14,7 +14,7 @@ namespace OSAE.UI.Controls
         MjpegDecoder _mjpeg;
         public Point Location;
         public OSAEObject screenObject = new OSAEObject();
-        private OSAE.General.OSAELog Log = new General.OSAELog();     
+        private OSAE.General.OSAELog Log;// = new General.OSAELog();     
         string newData;
         double imgWidth = 400;
         double imgHeight = 300;
@@ -23,6 +23,7 @@ namespace OSAE.UI.Controls
         public VideoStreamViewer(string url, OSAEObject obj)
         {
             InitializeComponent();
+            Log = new General.OSAELog("SYSTEM");
             screenObject = obj;
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;

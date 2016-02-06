@@ -121,7 +121,7 @@
 
                 if (dataset.Tables[0].Rows.Count > 0)
                 {
-                    OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                    OSAEObject obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), (dataset.Tables[0].Rows[0]["enabled"].ToString() != "0"));
                     obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                     obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                     obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
@@ -162,7 +162,7 @@
 
                     if (dataset.Tables[0].Rows.Count > 0)
                     {
-                        obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                        obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Convert.ToInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), (dataset.Tables[0].Rows[0]["enabled"].ToString() != "0"));
                         obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                         obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
@@ -209,7 +209,7 @@
                 {
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
-                        obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dr["enabled"].ToString()));
+                        obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), (dataset.Tables[0].Rows[0]["enabled"].ToString() != "0"));
                         obj.State.Value = dr["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                         obj.BaseType = dr["base_type"].ToString();
@@ -248,7 +248,7 @@
                     {
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
-                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dr["enabled"].ToString()));
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), (dataset.Tables[0].Rows[0]["enabled"].ToString() != "0"));
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
@@ -293,7 +293,7 @@
                     {
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
-                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dr["enabled"].ToString()));
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dr["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), (dataset.Tables[0].Rows[0]["enabled"].ToString() != "0"));
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
@@ -338,7 +338,7 @@
                     {
                         foreach (DataRow dr in dataset.Tables[0].Rows)
                         {
-                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dr["enabled"].ToString()));
+                            obj = new OSAEObject(dr["object_name"].ToString(), dr["object_alias"].ToString(), dr["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dr["address"].ToString(), dr["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), (dataset.Tables[0].Rows[0]["enabled"].ToString() != "0"));
                             obj.State.Value = dr["state_name"].ToString();
                             obj.State.TimeInState = Convert.ToInt64(dr["time_in_state"]);
                             obj.BaseType = dr["base_type"].ToString();
@@ -382,7 +382,7 @@
                 {
                     foreach (DataRow dr in dataset.Tables[0].Rows)
                     {
-                        obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), int.Parse(dataset.Tables[0].Rows[0]["enabled"].ToString()));
+                        obj = new OSAEObject(dataset.Tables[0].Rows[0]["object_name"].ToString(), dataset.Tables[0].Rows[0]["object_alias"].ToString(), dataset.Tables[0].Rows[0]["object_description"].ToString(), dataset.Tables[0].Rows[0]["object_type"].ToString(), dataset.Tables[0].Rows[0]["address"].ToString(), dataset.Tables[0].Rows[0]["container_name"].ToString(), Convert.ToUInt16(dataset.Tables[0].Rows[0]["min_trust_level"].ToString()), (dataset.Tables[0].Rows[0]["enabled"].ToString() != "0"));
                         obj.State.Value = dataset.Tables[0].Rows[0]["state_name"].ToString();
                         obj.State.TimeInState = Convert.ToInt64(dataset.Tables[0].Rows[0]["time_in_state"]);
                         obj.BaseType = dataset.Tables[0].Rows[0]["base_type"].ToString();
@@ -522,7 +522,7 @@
         /// <param name="Address"></param>
         /// <param name="Container"></param>
         /// <param name="Enabled"></param>
-        public static void ObjectUpdate(string oldName, string newName, string alias, string description, string objectType, string address, string container, int minTrustLevel, int enabled)
+        public static void ObjectUpdate(string oldName, string newName, string alias, string description, string objectType, string address, string container, int minTrustLevel, bool enabled)
         {
             using (MySqlCommand command = new MySqlCommand())
             {

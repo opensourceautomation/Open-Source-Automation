@@ -15,7 +15,7 @@
     public partial class UserControlInstallerHelper
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("SYSTEM");
 
         public void InstallPlugin(string filepath)
         {

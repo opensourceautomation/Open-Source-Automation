@@ -102,7 +102,7 @@ namespace OSAE.UI.Controls
             if (validateForm("Update"))
             {
                 string sName = txtControlName.Text;
-                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, "", sName, "CONTROL CAMERA VIEWER", "", currentScreen, 50, 1);
+                OSAEObjectManager.ObjectUpdate(sOriginalName, sName, "", sName, "CONTROL CAMERA VIEWER", "", currentScreen, 50, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);

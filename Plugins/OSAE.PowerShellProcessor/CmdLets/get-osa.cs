@@ -8,7 +8,7 @@
     public class OSAPS : Cmdlet
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log = new General.OSAELog("POWERSHELL");
 
         [Parameter(
             Mandatory = true,

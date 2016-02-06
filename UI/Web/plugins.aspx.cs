@@ -19,53 +19,73 @@ public partial class plugins : System.Web.UI.Page
     private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
 
     //OSAELog
-    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("WebUI");
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!Page.IsPostBack)
-            loadPlugins();
+        if (!Page.IsPostBack) loadPlugins();
     }    
 
     private void loadPlugins()
     {
         pluginList = new BindingList<PluginDescription>();
-        List<string> osapdFiles = new List<string>();
-        string[] pluginFile = Directory.GetFiles(Common.ApiPath + "\\Plugins", "*.osapd", SearchOption.AllDirectories);
-        osapdFiles.AddRange(pluginFile);
-
-        foreach (string path in osapdFiles)
+        OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByBaseType("PLUGIN");
+        foreach (OSAEObject o in objs)
         {
-            if (!string.IsNullOrEmpty(path))
+            PluginDescription desc = new PluginDescription();
+
+            desc.Name = o.Name;
+            desc.Computer = o.Container;
+            desc.Enabled = o.Enabled;
+            if (o.State.Value == "ON")
+                desc.Status = "Running";
+            else
+                desc.Status = "Stopped";
+
+            pluginList.Add(desc);
+            Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
+        }
+
+        /*
+    pluginList = new BindingList<PluginDescription>();
+    List<string> osapdFiles = new List<string>();
+    string[] pluginFile = Directory.GetFiles(Common.ApiPath + "\\Plugins", "*.osapd", SearchOption.AllDirectories);
+    osapdFiles.AddRange(pluginFile);
+
+
+    foreach (string path in osapdFiles)
+    {
+        if (!string.IsNullOrEmpty(path))
+        {
+            PluginDescription desc = new PluginDescription();
+
+            desc.Deserialize(path);
+            desc.Status = "No Object";
+            desc.Enabled = false;
+
+            if (desc.WikiUrl.Trim() == "")
+                desc.WikiUrl = "http://www.opensourceautomation.com/wiki/index.php?title=Plugins";
+
+            OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
+            foreach (OSAEObject o in objs)
             {
-                PluginDescription desc = new PluginDescription();
-
-                desc.Deserialize(path);
-                desc.Status = "No Object";
-                desc.Enabled = false;
-                
-                if (desc.WikiUrl.Trim() == "")
-                    desc.WikiUrl = "http://www.opensourceautomation.com/wiki/index.php?title=Plugins";
-                
-                OSAEObjectCollection objs = OSAEObjectManager.GetObjectsByType(desc.Type);
-                foreach (OSAEObject o in objs)
+                if (OSAEObjectPropertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
                 {
-                    if (OSAEObjectPropertyManager.GetObjectPropertyValue(o.Name, "Computer Name").Value == Common.ComputerName || desc.Type == o.Name)
-                    {
-                        desc.Name = o.Name;
-                        if (o.Enabled == 1)
-                            desc.Enabled = true;
-                        if (o.State.Value == "ON")
-                            desc.Status = "Running";
-                        else
-                            desc.Status = "Stopped";
+                    desc.Name = o.Name;
+                    if (o.Enabled == 1)
+                        desc.Enabled = true;
+                    if (o.State.Value == "ON")
+                        desc.Status = "Running";
+                    else
+                        desc.Status = "Stopped";
 
-                        pluginList.Add(desc);
-                        Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
-                    }
+                    pluginList.Add(desc);
+                    Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
                 }
             }
         }
+    }
+    */
 
         // TODO: Load all other objects with base type of PLUGIN.  These objects represent plugins on client instances.  Maybe make a separate grid since it wont be able to load the osapd files on the clients
 
@@ -129,13 +149,11 @@ public partial class plugins : System.Web.UI.Page
             }
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName(pluginName);
-            OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 1);
+            OSAEObjectManager.ObjectUpdate(obj.Name, obj.Name, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, true);
             loadPlugins();
         }
         catch (Exception ex)
-        {
-            Log.Info("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException);
-        }
+        { Log.Info("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException); }
     }
 
 
@@ -181,8 +199,7 @@ public partial class plugins : System.Web.UI.Page
                 response.Close();
             }            
         }
-        catch (Exception ex)
-        { }
+        catch { }
     }
 
     protected void btnGetMorePlugins_Click(object sender, EventArgs e)

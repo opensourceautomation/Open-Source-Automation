@@ -10,7 +10,7 @@
     Private gLED As Boolean
     Private gOutput1 As Boolean
     Private gOutput2 As Boolean
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog
 
     Private Sub phidgetRFID_Attach(ByVal sender As Object, ByVal e As Phidgets.Events.AttachEventArgs) Handles phidgetRFID.Attach
         gAttached = sender.Attached.ToString
@@ -53,7 +53,7 @@
             oObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
             If IsNothing(oObject) Then
                 Log.Info("Adding new RFID Tag: " & e.Tag)
-                OSAEObjectManager.ObjectAdd("RFID-" & e.Tag, "RFID-" & e.Tag, "Unknown RFID Tag", "PHIDGET RFID TAG", e.Tag, "", True)
+                OSAEObjectManager.ObjectAdd("RFID-" & e.Tag, "RFID-" & e.Tag, "Unknown RFID Tag", "PHIDGET RFID TAG", e.Tag, "", 30, True)
             End If
             oObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
             OSAEObjectStateManager.ObjectStateSet(oObject.Name, "ON", pName)
@@ -107,7 +107,7 @@
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
             pName = pluginName
-            Log.Info("Found my Object: " & pName)
+            Log = New General.OSAELog(pName)
             gAntenna = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Antenna Enabled").Value)
             Log.Info("Antenna Enabled = " & gAntenna)
             gLED = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "LED Enabled").Value)

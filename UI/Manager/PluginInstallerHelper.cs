@@ -15,9 +15,9 @@
     public partial class PluginInstallerHelper
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("SYSTEM");
 
-        public  void InstallPlugin(string filepath)
+        public void InstallPlugin(string filepath)
         {
             try
             {
@@ -29,21 +29,11 @@
                 if (pi.install)
                 {
                     if (!InstallPlugin(filepath, ref ErrorText))
-                    {
                         MessageBox.Show("Package was not successfully installed.");
-                    }
-
                     else if (!string.IsNullOrEmpty(ErrorText))
-                    {
                         MessageBox.Show("Package installed.");
-
-                    }
-
                     else
-                    {
                         MessageBox.Show("Package installed.");
-
-                    }
                 }
             }
             catch (Exception ex)
@@ -55,10 +45,7 @@
         public bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
             string exePath = Path.GetDirectoryName(Application.ExecutablePath);
-            if (Directory.Exists(exePath + "/tempDir/"))
-            {
-                Directory.Delete(exePath + "/tempDir/", true);
-            }
+            if (Directory.Exists(exePath + "/tempDir/")) Directory.Delete(exePath + "/tempDir/", true);
 
             PluginDescription desc = new PluginDescription();
             string tempfolder = exePath + "/tempDir/";
@@ -91,11 +78,9 @@
                     MessageBox.Show("More than one plugin description file found.");
                     return false;
                 }
-                if (osapdFiles.Count == 1)
-                {
 
+                if (osapdFiles.Count == 1)
                     DescPath = osapdFiles[0];
-                }
 
                 if (!string.IsNullOrEmpty(DescPath))
                 {
@@ -121,14 +106,11 @@
                             {
                                 try
                                 {
-
                                     MySql.Data.MySqlClient.MySqlScript script = new MySql.Data.MySqlClient.MySqlScript(connection, File.ReadAllText(s));
                                     script.Execute();
                                 }
                                 catch (Exception ex)
-                                {
-                                    this.Log.Error("Error running sql script: " + s, ex);
-                                }
+                                { Log.Error("Error running sql script: " + s, ex); }
                             }
 
                             System.IO.Directory.Move(tempfolder, exePath + "/Plugins/" + pluginFolder);
@@ -166,8 +148,7 @@
                             foreach (string str in delfiles)
                                 System.IO.File.Delete(str);
 
-                            this.Log.Info("Sending message to service to load plugin.");
-                            
+                            Log.Info("Sending message to service to load plugin.");
                         }
                     }
                     else
@@ -179,10 +160,7 @@
                 MessageBox.Show("catch: " + ex.Message);
                 return false;
             }
-                if (Directory.Exists(exePath + "/tempDir/"))
-                {
-                    deleteFolder(exePath + "/tempDir/");
-                }
+                if (Directory.Exists(exePath + "/tempDir/")) deleteFolder(exePath + "/tempDir/");
 
                 OSAEMethodManager.MethodQueueAdd("SERVICE-" + Common.ComputerName, "RELOAD PLUGINS", "", "", "Plugin Installer");
             return NoError;
@@ -199,8 +177,8 @@
 
             string ip = "localhost";
            
-            if (ip == "localhost")
-                ip = Common.LocalIPAddress();
+            if (ip == "localhost") ip = Common.LocalIPAddress();
+
             NetworkComms.SendObject("Plugin", ip, 10051, desc.Type + "|False");
 
             Thread.Sleep(2000);
@@ -214,8 +192,7 @@
                 else
                     returnValue = false;
 
-                if (Directory.Exists(pluginFolder))
-                    returnValue = false;
+                if (Directory.Exists(pluginFolder)) returnValue = false;
             }
             else
                 returnValue = true;
@@ -232,24 +209,16 @@
             {
                 DirectoryInfo dir = new DirectoryInfo(FolderName);
                 foreach (FileInfo fi in dir.GetFiles())
-                {
                     fi.Delete();
-                }
 
                 foreach (DirectoryInfo di in dir.GetDirectories())
-                {
                     deleteFolder(di.FullName);
-
-                }
 
                 dir.Delete(true);
                 return true;
             }
             catch
-            {
-                return false;
-            }
+            { return false; }
         }
-
     }
 }

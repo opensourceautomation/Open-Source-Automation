@@ -6,18 +6,19 @@ namespace OSAE.ClientService
 
     using OSAE;
     using System;
-    using System.Collections.Generic;
-    using System.ServiceModel;
     using System.ServiceProcess;
     using System.Diagnostics;
     using System.Threading;
     using System.Security;
-    using System.Data;
     using NetworkCommsDotNet;
+    using System.Net;
     using log4net.Config;
     using log4net;
     using System.Reflection;
     using System.Windows.Forms;
+    using System.Collections.Generic;
+    using System.ServiceModel;
+    using System.Data;
 
     #endregion
 
@@ -27,19 +28,16 @@ namespace OSAE.ClientService
     public partial class ClientService : ServiceBase
 #endif
     {
-        private const string sourceName = "Client Service";
         private OSAEPluginCollection plugins = new OSAEPluginCollection();
         //System.Timers.Timer Clock = new System.Timers.Timer();
-
-        //OSAELog
         private OSAE.General.OSAELog Log;
+        private string serviceObject = "";
 
         static void Main(string[] args)
         {
           //  if (args.Length > 0)
           //  {
                 //REPLACE WITH GRAMMAR
-
                 //string pattern = Common.MatchPattern(args[0],"");
                 //this.Log.Info("Processing command: " + args[0] + ", Named Script: " + pattern);
                // if (pattern != string.Empty)
@@ -67,9 +65,16 @@ namespace OSAE.ClientService
 
         public ClientService()
         {
-            Log = new OSAE.General.OSAELog();
+            bool found = OSAEObjectManager.ObjectExists("SERVICE-" + Common.ComputerName);
+            if (!found)
+                OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "", "SERVICE", "SERVICE", "", "SYSTEM", 50, true);
 
-            this.Log.Info("ClientService Starting");
+            serviceObject = "SERVICE-" + Common.ComputerName;
+            OSAE.OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
+
+            Log = new OSAE.General.OSAELog(serviceObject);
+
+            Log.Info("ClientService Starting");
 
             try
             {
@@ -77,62 +82,48 @@ namespace OSAE.ClientService
                     EventLog.CreateEventSource("OSAEClient", "Application");
             }
             catch (Exception ex)
-            {
-                this.Log.Error("CreateEventSource error", ex);
-            }
-            this.ServiceName = "OSAEClient";
-            this.EventLog.Source = "OSAEClient";
-            this.EventLog.Log = "Application";
+            { Log.Error("CreateEventSource error", ex); }
+            ServiceName = "OSAEClient";
+            EventLog.Source = "OSAEClient";
+            EventLog.Log = "Application";
 
             // These Flags set whether or not to handle that specific
             //  type of event. Set to true if you need it, false otherwise.
-
-            this.CanStop = true;
+            CanStop = true;
         }
 
         protected override void OnStart(string[] args)
         {
             Common.InitialiseLogFolder();
-
-            this.Log.Info("OnStart");
+            Log.Info("OnStart");
 
             try
             {
-                this.Log.Debug("Starting UDP listener");
+                Log.Debug("Starting UDP listener");
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Plugin", PluginMessageReceived);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Commmand", MethodMessageReceived);
+                NetworkComms.AppendGlobalIncomingPacketHandler<string>("Method", MethodMessageReceived);
                 //Start listening for incoming UDP data
-                UDPConnection.StartListening(true);
-                this.Log.Debug("UPD Listener started");
+                UDPConnection.StartListening(new IPEndPoint(IPAddress.Any, 10051));
+                Log.Debug("UPD Listener started");
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error starting listener", ex);
-            }
+            { Log.Error("Error starting listener", ex); }
 
-            Common.CreateComputerObject(sourceName);
+            Common.CheckComputerObject(serviceObject);
 
-            try
-            {
-                this.Log.Info("Creating Service object");
-                OSAEObject svcobj = OSAEObjectManager.GetObjectByName("SERVICE-" + Common.ComputerName);
-                if (svcobj == null)
-                {
-                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE-" + Common.ComputerName, "SERVICE", "", "SYSTEM",90, true);
-                }
-                OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", sourceName);
-            }
-            catch (Exception ex)
-            {
-                this.Log.Error("Error creating service object", ex);
-            }
-
-            Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
+            Thread loadPluginsThread = new Thread(() => LoadPlugins(serviceObject));
             loadPluginsThread.Start();
+
+
+          //  Thread loadPluginsThread = new Thread(new ThreadStart(LoadPlugins));
+           // loadPluginsThread.Start();
 
             //Clock.Interval = 5000;
             //Clock.Start();
             //Clock.Elapsed += new System.Timers.ElapsedEventHandler(checkConnection);
+            Log.Info("OnStart Completed");
+            OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
         }
 
         protected override void OnStop()
@@ -140,172 +131,152 @@ namespace OSAE.ClientService
             try
             {
                 foreach (Plugin p in plugins)
-                {
-                    if (p.Enabled)
-                        p.Shutdown();
-                }
+                    if (p.Enabled) p.Shutdown();
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error occured during stop, details", ex);
-            }
+            { Log.Error("Error occured during stop, details", ex); }
 
             NetworkComms.Shutdown();
+            OSAEObjectStateManager.ObjectStateSet(serviceObject,"OFF", serviceObject);
             OSAE.General.OSAELog.FlushBuffers();
         }
 
-        public void LoadPlugins()
+        public void LoadPlugins(string name)
         {
-            this.Log.Info("Entered LoadPlugins");
-
+            //Log.Info("Entered LoadPlugins");
             var types = PluginFinder.FindPlugins();
-
-            this.Log.Info("Loading Plugins");
+            Log.Info("Loading Plugins");
 
             foreach (var type in types)
             {
-                this.Log.Debug("type.TypeName: " + type.TypeName);
-                this.Log.Debug("type.AssemblyName: " + type.AssemblyName);
+                Log.Debug("type.TypeName: " + type.TypeName);
+                Log.Debug("type.AssemblyName: " + type.AssemblyName);
 
                 var domain = Common.CreateSandboxDomain("Sandbox Domain", type.Location, SecurityZone.Internet, typeof(ClientService));
 
-                plugins.Add(new Plugin(type.AssemblyName, type.TypeName, domain, type.Location));
+                plugins.Add(new Plugin(type.AssemblyName, type.TypeName, domain, type.Location, Common.ComputerName));
             }
 
-            this.Log.Info("Found " + plugins.Count.ToString() + " plugins");
+            Log.Info("Found " + plugins.Count.ToString() + " plugins");
 
             foreach (Plugin plugin in plugins)
             {
                 try
                 {
-                    this.Log.Info("---------------------------------------");
-                    this.Log.Info("plugin name: " + plugin.PluginName);
-                    this.Log.Info("plugin type: " + plugin.PluginType);
+                    Log.Info("---------------------------------------");
+                    Log.Info("plugin name: " + plugin.PluginName);
+                    Log.Info("plugin type: " + plugin.PluginType);
 
-                    if (plugin.PluginName != string.Empty)
+                    if (plugin.PluginName != "")
                     {
                         OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
 
-                        this.Log.Info("setting found: " + obj.Name + " - " + obj.Enabled.ToString());
-                        bool isSystemPlugin = false;
-                        foreach (OSAEObjectProperty p in obj.Properties)
+                        if (obj == null)
                         {
-                            if (p.Name == "System Plugin")
-                            {
-                                if (p.Value == "TRUE")
-                                    isSystemPlugin = true;
-                                break;
-                            }
+                            OSAEObjectManager.ObjectAdd(plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", name, 50, true);
+                            Log.Info(obj.Name + ":  Plugin Object Not found.  Plugin Object Created.");
+                            obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
+                            if (obj == null) Log.Info(obj.Name + ":  I failed to create the Plugin Object!");
                         }
-                        this.Log.Info("isSystemPlugin?: " + isSystemPlugin.ToString());
-                        if (!isSystemPlugin)
+
+                        if (obj != null)
                         {
-                            if (obj.Enabled == 1)
+                            Log.Info("Plugin Object found: " + plugin.PluginName);
+                            bool isSystemPlugin = false;
+                            foreach (OSAEObjectProperty p in obj.Properties)
                             {
-                                try
+                                if (p.Name == "System Plugin")
                                 {
-                                    enablePlugin(plugin);
-                                }
-                                catch (Exception ex)
-                                {
-                                    this.Log.Error("Error activating plugin (" + plugin.PluginName + ")", ex);
+                                    if (p.Value == "TRUE") isSystemPlugin = true;
+                                    break;
                                 }
                             }
-                            else
+                            Log.Info("isSystemPlugin?: " + isSystemPlugin.ToString());
+                            if (!isSystemPlugin)
                             {
-                                plugin.Enabled = false;
+                                if (obj.Enabled == true)
+                                {
+                                    try
+                                    {
+                                        startPlugin(plugin);
+                                    }
+                                    catch (Exception ex)
+                                    { Log.Error("Error activating plugin (" + plugin.PluginName + ")", ex); }
+                                }
+                                else
+                                    plugin.Enabled = false;
+
+                                Log.Info("status: " + plugin.Enabled.ToString());
+                                Log.Info("PluginName: " + plugin.PluginName);
+                                Log.Info("PluginVersion: " + plugin.PluginVersion);
+                                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Version", plugin.PluginVersion, name);
+                                OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Author", plugin.PluginAuthor, name);
+
+                                //NetworkComms.SendObject("Plugin", Common.WcfServer, 10051, plugin.PluginName + "|" + plugin.Status + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
+                                UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                             }
-
-                            this.Log.Info("status: " + plugin.Enabled.ToString());
-                            this.Log.Info("PluginName: " + plugin.PluginName);
-                            this.Log.Info("PluginVersion: " + plugin.PluginVersion);
-
-                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10051, plugin.PluginName + "|" + plugin.Status + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
                         }
                     }
                     else
                     {
-                        //add code to create the object.  We need the plugin to specify the type though
-                        this.Log.Info("Plugin object doesn't exist");
-                        DataSet dataset = OSAESql.RunSQL("SELECT * FROM osae_object_type_property p inner join osae_object_type t on p.object_type_id = t.object_type_id WHERE object_type='" + plugin.PluginType + "' AND property_name='Computer Name'");
-                        this.Log.Info("dataset count: " + dataset.Tables[0].Rows.Count.ToString());
-
-                        // if object type has a property called 'Computer Name' we know it is not a System Plugin
-                        if (dataset.Tables[0].Rows.Count > 0)
-                        {
-                            plugin.PluginName = plugin.PluginType + "-" + Common.ComputerName;
-
-                            this.Log.Info("Plugin object does not exist in DB: " + plugin.PluginName);
-                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System",50, false);
-                            OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Computer Name", Common.ComputerName, "Client Service");
-
-                            this.Log.Info("Plugin added to DB: " + plugin.PluginName);
-                            NetworkComms.SendObject("Plugin", Common.WcfServer, 10051, plugin.PluginName + "|" + plugin.Status
-                                + "|" + plugin.PluginVersion + "|" + plugin.Enabled);
-                        }
-
+                        Log.Info("Plugin object does not exist in DB: " + plugin.PluginName);
+                        OSAEObjectManager.ObjectAdd(plugin.PluginName, "", plugin.PluginName, plugin.PluginType, "", "System",50, true);
+                        Log.Info("Plugin added to DB: " + plugin.PluginName);
+                        UDPConnection.SendObject("Plugin", plugin.PluginName + " | ON | " + plugin.PluginVersion + " | Started | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                     }
                 }
                 catch (Exception ex)
-                {
-                    this.Log.Error("Error loading plugin", ex);
-                }
+                { Log.Error("Error loading plugin!", ex); }
             }
-            this.Log.Info("Done loading plugins");
+            Log.Info("Done loading plugins");
         }
 
         private void PluginMessageReceived(PacketHeader header, Connection connection, string message)
         {
+            Log.Info("<- Plugin Message: " + message);
             string[] arguments = message.Split('|');
-
-            if (arguments[1] == "True")
-                OSAEObjectStateManager.ObjectStateSet(arguments[0], "ON", sourceName);
-            else if (arguments[1] == "False")
-                OSAEObjectStateManager.ObjectStateSet(arguments[0], "OFF", sourceName);
 
             foreach (Plugin p in plugins)
             {
-                if (p.PluginName == arguments[0])
+                if (p.PluginName == arguments[0].Trim())
                 {
+                    Log.Info("Found Plugin: " + arguments[0].Trim() + " on " + serviceObject);
                     OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
-
                     if (obj != null)
                     {
+                        Log.Info("Found Plugin Object for: " + arguments[0].Trim() + " on " + serviceObject);
                         bool isSystemPlugin = false;
                         foreach (OSAEObjectProperty p2 in obj.Properties)
                         {
                             if (p2.Name == "System Plugin")
                             {
-                                if (p2.Value == "TRUE")
-                                    isSystemPlugin = true;
+                                if (p2.Value == "TRUE") isSystemPlugin = true;
                                 break;
                             }
                         }
-                        if (arguments[1] == "True" && !p.Enabled && !isSystemPlugin)
+                        Log.Info("Plugin " + arguments[0].Trim() + " SystemPlugin = " + isSystemPlugin);
+                        if (arguments[1].Trim() == "ON" && !isSystemPlugin)
                         {
-                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 1);
+                            //We are only stoppeng and starting, leave enabled alone
+                            //OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, true);
                             try
                             {
-                                enablePlugin(p);
-                                this.Log.Debug("Activated plugin: " + p.PluginName);
+                                startPlugin(p);
+                                Log.Debug("Started plugin: " + p.PluginName);
                             }
                             catch (Exception ex)
-                            {
-                                this.Log.Error("Error activating plugin (" + p.PluginName + ")", ex);
-                            }
+                            { Log.Error("Error Starting plugin (" + p.PluginName + ")", ex); }
                         }
-                        else if (arguments[1] == "False" && p.Enabled && !isSystemPlugin)
+                        else if (arguments[1].Trim() == "OFF" && !isSystemPlugin)
                         {
-                            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 0);
+                            //OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, false);
                             try
                             {
-                                disablePlugin(p);
-                                this.Log.Debug("Deactivated plugin: " + p.PluginName);
+                                stopPlugin(p);
+                                Log.Debug("Stopped plugin: " + p.PluginName);
                             }
                             catch (Exception ex)
-                            {
-                                this.Log.Error("Error stopping plugin (" + p.PluginName + ")", ex);
-                            }
+                            { Log.Error("Error stopping plugin (" + p.PluginName + ")", ex); }
                         }
                     }
                 }
@@ -314,10 +285,12 @@ namespace OSAE.ClientService
 
         private void MethodMessageReceived(PacketHeader header, Connection connection, string message)
         {
+            Log.Info("<- Command: " + message);
             string[] items = message.Split('|');
+            //ObjectName + " | " + MethodName + " | " + Parameter1 + " | " + Parameter2 + " | " + Address + " | " + Owner + " | " +From, new IPEndPoint(IPAddress.Broadcast, 10051));
 
-            OSAEMethod method = new OSAEMethod(items[2].Trim(), "", items[0].Trim(), items[3].Trim(), items[4].Trim(), items[5].Trim(), items[1].Trim(), items[6].Trim());
-
+            OSAEMethod method = new OSAEMethod(items[0].Trim(), items[1].Trim(), "", items[2].Trim(), items[3].Trim(), items[4].Trim(), items[5].Trim(), items[6].Trim());
+            Log.Info("Created Method object." + method.ObjectName);
             if (method.ObjectName == "SERVICE-" + Common.ComputerName)
             {
                 if (method.MethodName == "RESTART PLUGIN")
@@ -326,66 +299,89 @@ namespace OSAE.ClientService
                     {
                         if (p.PluginName == method.Parameter1)
                         {
-                            OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
-
-                            if (obj != null)
+                            bool found = OSAEObjectManager.ObjectExists(p.PluginName);
+                            if (found)
                             {
-                                disablePlugin(p);
-                                enablePlugin(p);
+                                stopPlugin(p);
+                                startPlugin(p);
                             }
+                        }
+                    }
+                }
+                else if (method.MethodName == "START PLUGIN")
+                {
+                    foreach (Plugin p in plugins)
+                    {
+                        if (p.PluginName == method.Parameter1)
+                        {
+                            bool found = OSAEObjectManager.ObjectExists(p.PluginName);
+                            if (found) startPlugin(p);
+                        }
+                    }
+                }
+                else if (method.MethodName == "STOP PLUGIN")
+                {
+                    foreach (Plugin p in plugins)
+                    {
+                        if (p.PluginName == method.Parameter1)
+                        {
+                            bool found = OSAEObjectManager.ObjectExists(p.PluginName);
+                            if (found) stopPlugin(p);
                         }
                     }
                 }
             }
             else
             {
+                Log.Info("Passing Method to: " + method.ObjectName);
                 foreach (Plugin plugin in plugins)
                 {
-                    if (plugin.Enabled == true && (method.Owner.ToLower() == plugin.PluginName.ToLower() || method.ObjectName.ToLower() == plugin.PluginName.ToLower()))
+                    //This exposes a flaw in the Ownership of distributed plugins.   
+                    Log.Info("does " + method.ObjectName + " = " + plugin.PluginName);
+                    if (plugin.Running && method.ObjectName == plugin.PluginName)
                     {
                         plugin.ExecuteCommand(method);
+                        Log.Info("Passed Method to: " + method.ObjectName);
                     }
                 }
             }
         }
 
-        private void enablePlugin(Plugin plugin)
+        private void startPlugin(Plugin plugin)
         {
-            OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
-
-            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 1);
+            //OSAEObject obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
+            //OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, true);
             try
             {
                 if (plugin.ActivatePlugin())
                 {
-                    plugin.RunInterface();
-                    OSAEObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", sourceName);
-                    this.Log.Info("Plugin enabled: " + plugin.PluginName);
+                    plugin.RunInterface(serviceObject);
+                    OSAEObjectStateManager.ObjectStateSet(plugin.PluginName, "ON", serviceObject);
+                    Log.Info("Plugin started: " + plugin.PluginName);
                 }
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error activating plugin (" + plugin.PluginName + ")", ex);
+                Log.Error("Error starting plugin (" + plugin.PluginName + ")", ex);
+                plugin.Running = false;
             }
         }
 
-        private void disablePlugin(Plugin p)
+        private void stopPlugin(Plugin p)
         {
-            OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
-
-            OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, 0);
+            //OSAEObject obj = OSAEObjectManager.GetObjectByName(p.PluginName);
+            //OSAEObjectManager.ObjectUpdate(p.PluginName, p.PluginName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, false);
             try
             {
                 p.Shutdown();
-                p.Enabled = false;
+                p.Running = false;
+               // p.Enabled = false;
                 p.Domain = Common.CreateSandboxDomain("Sandbox Domain", p.Location, SecurityZone.Internet, typeof(ClientService));
+                OSAEObjectStateManager.ObjectStateSet(p.PluginName, "OFF", serviceObject);
 
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error stopping plugin (" + p.PluginName + ")", ex);
-            }
+            { Log.Error("Error stopping plugin (" + p.PluginName + ")", ex); }
         }
-
     }
 }

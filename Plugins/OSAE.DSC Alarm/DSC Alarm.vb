@@ -8,7 +8,8 @@ Imports System.Text
 Public Class DSCAlarm
     Inherits OSAEPluginBase
     Shared IPPort As Integer = 4025
-    Shared logging As OSAE.General.OSAELog = New General.OSAELog()
+    'Shared logging As OSAE.General.OSAELog ' = New General.OSAELog()
+    Shared Log As OSAE.General.OSAELog
     Shared pName As String
     Shared COMPort As String
     Shared PortNum As Integer
@@ -187,21 +188,20 @@ Public Class DSCAlarm
         Dim PartitionNum As Integer
         Dim Address As String
 
-
+        pName = pluginName
+        Log = New General.OSAELog(pName)
         Try
-            logging.Info("Initializing plugin: " & pluginName)
-            pName = pluginName
-
+            Log.Info("Initializing plugin: " & pluginName)
             Address = OSAEObjectManager.GetObjectByName(pName).Address
             Integer.TryParse(Address, ParseResult)
 
             If ParseResult AndAlso (1 <= Integer.Parse(Address) <= 99) Then
                 EthernetCom = False
                 PortNum = ParseResult
-                logging.Info("Using Serial communications")
+                Log.Info("Using Serial communications")
             Else
                 EthernetCom = True
-                logging.Info("Using Ethernet communications")
+                Log.Info("Using Ethernet communications")
             End If
 
 
@@ -215,7 +215,7 @@ Public Class DSCAlarm
 
             Select Case Code.Length
                 Case Is < 4
-                    logging.Info("Warning, numeric security code is not set or too short!")
+                    Log.Info("Warning, numeric security code is not set or too short!")
                 Case 4
                     Code = Code & "00"
                 Case 5
@@ -223,50 +223,50 @@ Public Class DSCAlarm
                 Case 6
                     ' Six digit code
                 Case Else
-                    logging.Info("Warning, numeric security code is too long!")
+                    Log.Info("Warning, numeric security code is too long!")
                     Code = Left(Code, 6)
             End Select
 
             'Check if alarm partition 1 object exists
             If OSAEObjectManager.GetObjectsByType("DSC ALARM PARTITION").Count = 0 Then
-                logging.Info("Creating DSC Alarm Partion 1")
-                OSAEObjectManager.ObjectAdd("DSC Alarm Partition", "", "DSC Alarm Partion", "DSC ALARM PARTITION", "1", "", True)
+                Log.Info("Creating DSC Alarm Partion 1")
+                OSAEObjectManager.ObjectAdd("DSC Alarm Partition", "", "DSC Alarm Partion", "DSC ALARM PARTITION", "1", "", 30, True)
                 If OSAEObjectManager.GetObjectsByType("DSC ALARM PARTITION").Count = 0 Then
-                    logging.Info("Problem creating DSC Alarm Partion, most likely you already have an object with address 1")
+                    Log.Info("Problem creating DSC Alarm Partion, most likely you already have an object with address 1")
                 End If
             End If
 
             For Each OSAEObject In OSAEObjectManager.GetObjectsByType("DSC ALARM PARTITION")
                 PartitionNum = CInt(OSAEObject.Address)
-                logging.Info("Initializing partion: " & OSAEObject.Name & " with partition number: " & OSAEObject.Address)
+                Log.Info("Initializing partion: " & OSAEObject.Name & " with partition number: " & OSAEObject.Address)
                 If 1 <= PartitionNum <= 8 Then
                     Partition(PartitionNum) = New DSCPartition
                     Partition(PartitionNum).Name = OSAEObject.Name
                     Partition(PartitionNum).State = OSAEObject.State.Value
                     'Partition(PartitionNum).StateLabel = StateToStateLabel(Partition(PartitionNum).State)
-                    logging.Info("State equals: " & OSAEObject.State.Value)
+                    Log.Info("State equals: " & OSAEObject.State.Value)
                     'Partition(PartitionNum).Status = OSAEObject.Property("Status").Value
                     If PartitionNum > MaxPartition Then
                         MaxPartition = PartitionNum
                     End If
                 Else
-                    logging.Info("Partition " & OSAEObject.Name & " has invalid address " & OSAEObject.Address)
+                    Log.Info("Partition " & OSAEObject.Name & " has invalid address " & OSAEObject.Address)
                 End If
             Next
-            logging.Info("Finished loading partitions")
+            Log.Info("Finished loading partitions")
 
             For Each OSAEObject In OSAEObjectManager.GetObjectsByType("DSC ALARM ZONE")
                 ZoneNum = Integer.Parse(OSAEObject.Address)
-                logging.Info("Initializing zone: " & ZoneNum.ToString)
+                Log.Info("Initializing zone: " & ZoneNum.ToString)
                 Zone(ZoneNum) = New DSCZone
                 Zone(ZoneNum).Name = OSAEObject.Name
                 Zone(ZoneNum).State = OSAEObject.State.Value
             Next
 
             UpdateTime = CInt(OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "Update Time").Value)
-            logging.Info("Update time set to " & UpdateTime & " sec")
+            Log.Info("Update time set to " & UpdateTime & " sec")
 
-            logging.Info("Finished loading settings")
+            Log.Info("Finished loading settings")
 
             If EthernetCom Then
                 Dim ColonPosition As Integer
@@ -283,7 +283,7 @@ Public Class DSCAlarm
                 COMPort = "COM" + PortNum.ToString
                 BaudRate = CInt(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Baud").Value)
                 ControllerPort = New SerialPort(COMPort)
-                logging.Info("Port is set to " & COMPort & " and baud to " & BaudRate.ToString)
+                Log.Info("Port is set to " & COMPort & " and baud to " & BaudRate.ToString)
                 ControllerPort.BaudRate = BaudRate
                 ControllerPort.Parity = Parity.None
                 ControllerPort.DataBits = 8
@@ -308,7 +308,7 @@ Public Class DSCAlarm
             UpdateTimer.Enabled = True
 
         Catch ex As Exception
-            logging.Info("Error setting up plugin: " & ex.Message)
+            Log.Error("Error setting up plugin!", ex)
         End Try
     End Sub
 
@@ -322,34 +322,34 @@ Public Class DSCAlarm
             Select Case MethodCommand
                 Case "ARMAWAY"
                     SendCommand(CommandToString(Command.PartitionArmControlAway) & PartitionNum)
-                    logging.Info("Sent command for partition " & PartitionNum.ToString & " Arm Away")
+                    Log.Info("Sent command for partition " & PartitionNum.ToString & " Arm Away")
                 Case "ARMAWAYWITHCODE"
                     SendCommand(CommandToString(Command.PartitionArmControlWithCode) & PartitionNum & method.Parameter1.ToString)
-                    logging.Info("Sent command for partition " & PartitionNum.ToString & " Arm Away with code " & method.Parameter1.ToString)
+                    Log.Info("Sent command for partition " & PartitionNum.ToString & " Arm Away with code " & method.Parameter1.ToString)
                 Case "ARMSTAY"
                     SendCommand(CommandToString(Command.PartitionArmControlStay) & PartitionNum)
-                    logging.Info("Sent command for partition " & PartitionNum.ToString & " Arm Stay")
+                    Log.Info("Sent command for partition " & PartitionNum.ToString & " Arm Stay")
                 Case "ARMNOENTRYDELAY"
                     SendCommand(CommandToString(Command.PartitionArmControlNoEntryDelay) & PartitionNum)
-                    logging.Info("Sent command for partition " & PartitionNum.ToString & " Arm No Entry Delay")
+                    Log.Info("Sent command for partition " & PartitionNum.ToString & " Arm No Entry Delay")
                 Case "DISARM"
                     SendCommand(CommandToString(Command.PartitionDisarmControl) & PartitionNum & Code)
-                    logging.Info("Sent command for partition " & PartitionNum.ToString & " Disarm")
+                    Log.Info("Sent command for partition " & PartitionNum.ToString & " Disarm")
                 Case "DISARMWITHCODE"
                     SendCommand(CommandToString(Command.PartitionDisarmControl) & PartitionNum & method.Parameter1.ToString)
-                    logging.Info("Sent command for partition " & PartitionNum.ToString & " Disarm with code " & method.Parameter1.ToString)
+                    Log.Info("Sent command for partition " & PartitionNum.ToString & " Disarm with code " & method.Parameter1.ToString)
                 Case "DLSDOWNLOAD"
                     SendCommand(CommandToString(Command.SendKeysString) & "*8")
                     SendCommand(CommandToString(Command.SendKeysString) & Parameter1.ToString)
                     SendCommand(CommandToString(Command.SendKeysString) & "499")
                     SendCommand(CommandToString(Command.SendKeysString) & Parameter1.ToString)
                     SendCommand(CommandToString(Command.SendKeysString) & "499")
-                    logging.Info("Sent command for DLS Download")
+                    Log.Info("Sent command for DLS Download")
                 Case Else
-                    logging.Info("Unrecognized command received by plugin")
+                    Log.Info("Unrecognized command received by plugin")
             End Select
         Catch ex As Exception
-            logging.Info("Error Processing Command " & ex.Message)
+            Log.Error("Error Processing Command! ", ex)
         End Try
 
     End Sub
@@ -359,7 +359,7 @@ Public Class DSCAlarm
         ShutdownNow = True
 
         Try
-            logging.Info("Shutting down plugin")
+            Log.Info("Shutting down plugin")
             If EthernetCom Then
 
                 If client_socket.Connected Then
@@ -378,37 +378,37 @@ Public Class DSCAlarm
 
             UpdateTimer.Dispose()
 
-            logging.Info("Finished shutting down plugin")
+            Log.Info("Finished shutting down plugin")
 
         Catch ex As Exception
-            logging.Info("Error shutting down: " & ex.Message)
+            Log.Error("Error shutting down!", ex)
         End Try
     End Sub
 
     Protected Sub UpdateReceived(ByVal sender As Object, ByVal e As SerialDataReceivedEventArgs)
         Try
-            logging.Info("Running serial port event handler")
+            Log.Info("Running serial port event handler")
             ProcessReceived()
         Catch ex As Exception
-            logging.Info("Error in UpdateReceived " & ex.Message)
+            Log.Error("Error in UpdateReceived! ", ex)
         End Try
     End Sub
 
     Protected Sub TimerHandler(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         Try
-            logging.Info("Timer Update")
+            Log.Debug("Timer Update")
             If CommDown Then
                 InitSocket()
             End If
             SendString = CommandToString(Command.StatusRequest)
             SendCommand(SendString)
         Catch ex As Exception
-            logging.Info("Error in TimerHandler " & ex.Message)
+            Log.Error("Error in TimerHandler!", ex)
         End Try
     End Sub
 
     Protected Shared Sub SendCommand(message As String)
-        logging.Info("Sending message: " & message)
+        Log.Info("Sending message: " & message)
 
         message &= CalcChecksum(message) & vbCrLf
         If EthernetCom Then
@@ -416,33 +416,33 @@ Public Class DSCAlarm
                 client_socket.Send(Encoding.ASCII.GetBytes(message))
 
             Catch ex As Exception
-                logging.Info("Error in socket sending command " & ex.Message)
+                Log.Error("Error in socket sending command!", ex)
                 CommDown = True
             End Try
         Else
             Try
                 ControllerPort.Write(message)
             Catch ex As Exception
-                logging.Info("Error in com port sending command " & ex.Message)
+                Log.Error("Error in com port sending command!", ex)
             End Try
-
         End If
-        logging.Info("Sending message:" & message.TrimEnd & "| Message Lenght= " & message.Length.ToString)
+        Log.Info("Sending message:" & message.TrimEnd & "| Message Lenght= " & message.Length.ToString)
     End Sub
+
     Sub InitSocket()
         Try
             If Not client_socket Is Nothing Then
                 client_socket.Dispose()
             End If
 
-            logging.Info("Attempting to connect to IP Addresss " & IPAddress & " and port " & IPPort)
+            Log.Info("Attempting to connect to IP Addresss " & IPAddress & " and port " & IPPort)
             client_socket = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
             client_socket.Connect(IPAddress, IPPort)
 
-            logging.Info("Connection made")
+            Log.Info("Connection made")
 
             SetupReceive(client_socket)
-            logging.Info("Receive routine complete")
+            Log.Info("Receive routine complete")
             CommDown = False
             Threading.Thread.Sleep(500)
             If LoginNeeded Then
@@ -456,7 +456,7 @@ Public Class DSCAlarm
             End If
 
         Catch ex As Exception
-            logging.Info("Error init socket " & ex.Message)
+            Log.Error("Error init socket!", ex)
             CommDown = True
         End Try
     End Sub
@@ -466,7 +466,7 @@ Public Class DSCAlarm
         Dim MyIndex As Integer
         Try
             Message = ControllerPort.ReadExisting()
-            logging.Info("Received: " & Message.TrimEnd)
+            Log.Info("Received: " & Message.TrimEnd)
 
             If Message.Length > 0 Then
                 ReceivedMessage += Message
@@ -483,7 +483,7 @@ Public Class DSCAlarm
             End If
 
         Catch ex As Exception
-            logging.Info("Error receiving on com port:" & ex.Message)
+            Log.Error("Error receiving on com port!", ex)
         End Try
     End Sub
 
@@ -499,12 +499,12 @@ Public Class DSCAlarm
 
 
         MessageParts = message.Split(ControlChars.CrLf.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
-        logging.Info("Processing message:" & message)
+        Log.Info("Processing message:" & message)
 
         Try
             For Each mymessage As String In MessageParts
 
-                logging.Info("Processing string:" & mymessage)
+                Log.Info("Processing string:" & mymessage)
                 RecCommand = CInt(mymessage.Substring(0, 3))
 
                 'If Not Command.IsDefined(GetType(Command), RecCommand) Then
@@ -522,27 +522,27 @@ Public Class DSCAlarm
 
                 Select Case RecCommand
                     Case Command.CommandAcknowledge
-                        logging.Info("Command Acknowleged by Alarm")
+                        Log.Info("Command Acknowleged by Alarm")
 
                     Case Command.LoginInteraction
                         LoginResponse = CInt(mymessage.Substring(3, 1))
                         Select Case LoginResponse
                             Case 0
-                                logging.Info("Password provided was incorrect")
+                                Log.Info("Password provided was incorrect")
                             Case 1
-                                logging.Info("Password Correct, session established")
+                                Log.Info("Password Correct, session established")
                             Case 2
-                                logging.Info("Time out. You did not send a password within 10 seconds")
+                                Log.Info("Time out. You did not send a password within 10 seconds")
                             Case 3
-                                logging.Info("Request for password, sent after socket setup")
+                                Log.Info("Request for password, sent after socket setup")
                                 LoginNeeded = True
                             Case Else
-                                logging.Info("Unrecognized Login Response")
+                                Log.Info("Unrecognized Login Response")
                         End Select
                     Case Command.CodeRequired
-                        logging.Info("Request for security code")
+                        Log.Info("Request for security code")
                         CodeNeeded = True
-                        'Partion State
+                    'Partion State
                     Case Command.PartitionReady
                         PartitionState = "Ready"
                         SetPartitionState(PartitionState, FirstValue)
@@ -562,7 +562,7 @@ Public Class DSCAlarm
                                 PartitionState = "ArmedStayNoDelay"
                             Case Else
                                 PartitionState = "Armed"
-                                logging.Info("Unrecognized ArmedMode")
+                                Log.Info("Unrecognized ArmedMode")
                         End Select
                         SetPartitionState(PartitionState, FirstValue)
                     Case Command.PartitionReadyForceArming
@@ -582,30 +582,30 @@ Public Class DSCAlarm
                         SetPartitionState(PartitionState, FirstValue)
                     Case Command.KeypadLockout
                         KeypadStatus = "KeypadLockout"
-                        logging.Info("Keypad Lockout")
+                        Log.Info("Keypad Lockout")
                     Case Command.KeypadBlanking
                         KeypadStatus = "KeypadBlanking"
-                        logging.Info("Keypad Blanking")
+                        Log.Info("Keypad Blanking")
                     Case Command.CommandOutputInProgress
                         KeypadStatus = "CommandOutputInProgress"
-                        logging.Info("Command Output In Progress")
+                        Log.Info("Command Output In Progress")
                     Case Command.InvalidAccessCode
                         KeypadStatus = "InvalidAccessCode"
-                        logging.Info("Invalid Acess Code")
+                        Log.Info("Invalid Acess Code")
                     Case Command.FunctionNotAvailable
                         KeypadStatus = "FunctionNotAvailable"
-                        logging.Info("Function Not Available")
+                        Log.Info("Function Not Available")
                     Case Command.FailedToArm
                         KeypadStatus = "FailedToArm"
-                        logging.Info("Failed To Arm")
+                        Log.Info("Failed To Arm")
                     Case Command.PartitionBusy
                         PartitionState = "Busy"
                         SetPartitionState(PartitionState, FirstValue)
                     Case Command.CodeRequired
                         KeypadStatus = "CodeRequired"
-                        logging.Info("Code Required")
+                        Log.Info("Code Required")
 
-                        'Trouble LED Commands
+                    'Trouble LED Commands
                     Case Command.TroubleLEDOn
                         If FirstValue <= MaxPartition Then
                             OSAEObjectPropertyManager.ObjectPropertySet(Partition(FirstValue).Name, "TroubleLED", "On", pName)
@@ -615,13 +615,13 @@ Public Class DSCAlarm
                             OSAEObjectPropertyManager.ObjectPropertySet(Partition(FirstValue).Name, "TroubleLED", "Off", pName)
                         End If
 
-                        'Keybus
+                    'Keybus
                     Case Command.KeybusFault
                         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Keybus", "Fault", pName)
                     Case Command.KeybusFaultRestore
                         OSAEObjectPropertyManager.ObjectPropertySet(pName, "Keybus", "Restore", pName)
 
-                        'LCDUpdate
+                    'LCDUpdate
                     Case Command.LCDUpdate
                         'Do nothing
 
@@ -631,31 +631,31 @@ Public Class DSCAlarm
                         Select Case LEDNum
                             Case 1
                                 LED = "Ready"
-                                logging.Info("LED Ready")
+                                Log.Info("LED Ready")
                             Case 2
                                 LED = "Armed"
-                                logging.Info("LED Armed")
+                                Log.Info("LED Armed")
                             Case 3
                                 LED = "Memory"
-                                logging.Info("LED Memory")
+                                Log.Info("LED Memory")
                             Case 4
                                 LED = "Bypass"
-                                logging.Info("LED Bypass")
+                                Log.Info("LED Bypass")
                             Case 5
                                 LED = "Trouble"
-                                logging.Info("LED Trouble")
+                                Log.Info("LED Trouble")
                             Case 6
                                 LED = "Program"
-                                logging.Info("LED Program")
+                                Log.Info("LED Program")
                             Case 7
                                 LED = "Fire"
-                                logging.Info("LED Fire")
+                                Log.Info("LED Fire")
                             Case 8
                                 LED = "Backlight"
-                                logging.Info("LED Backlight")
+                                Log.Info("LED Backlight")
                             Case 9
                                 LED = "AC"
-                                logging.Info("LED AC")
+                                Log.Info("LED AC")
                         End Select
 
                         LEDStatusNum = CInt(mymessage.Substring(4, 1))
@@ -671,75 +671,75 @@ Public Class DSCAlarm
                         OSAEObjectPropertyManager.ObjectPropertySet(Partition(1).Name, "LED" & LED, LEDStatus, pName)
 
                     Case Command.KeypadLEDState
-                        logging.Info("Keypad LED State: " & mymessage.Substring(3, 2))
+                        Log.Info("Keypad LED State: " & mymessage.Substring(3, 2))
                         LEDNum = Convert.ToByte(mymessage.Substring(3, 2))
                         LED = ""
                         If LEDNum And 1 Then
                             LED += "Ready"
-                            logging.Info("LED Ready")
+                            Log.Info("LED Ready")
                         End If
 
                         If LEDNum And 2 Then
                             LED += "Armed"
-                            logging.Info("LED Armed")
+                            Log.Info("LED Armed")
                         End If
                         If LEDNum And 4 Then
                             LED += "Memory"
-                            logging.Info("LED Memory")
+                            Log.Info("LED Memory")
                         End If
 
                         If LEDNum And 8 Then
                             LED += "Bypass"
-                            logging.Info("LED Bypass")
+                            Log.Info("LED Bypass")
                         End If
                         If LEDNum And 16 Then
                             LED += "Trouble"
-                            logging.Info("LED Trouble")
+                            Log.Info("LED Trouble")
                         End If
                         If LEDNum And 32 Then
                             LED += "Program"
-                            logging.Info("LED Program")
+                            Log.Info("LED Program")
                         End If
 
                         If LEDNum And 64 Then
                             LED += "Fire"
-                            logging.Info("LED Fire")
+                            Log.Info("LED Fire")
                         End If
                         If LEDNum And 128 Then
                             LED += "Backlight"
-                            logging.Info("LED Backlight")
+                            Log.Info("LED Backlight")
                         End If
 
                         OSAEObjectPropertyManager.ObjectPropertySet(Partition(1).Name, "LED" & LED, LEDStatus, pName)
 
                     Case Command.KeypadLEDFlashState
-                        logging.Info("Keypad LED Flash State: " & Convert.ToString(Asc(mymessage.Substring(3, 1)), 16) & " " & Convert.ToString(Asc(mymessage.Substring(4, 1)), 16))
+                        Log.Info("Keypad LED Flash State: " & Convert.ToString(Asc(mymessage.Substring(3, 1)), 16) & " " & Convert.ToString(Asc(mymessage.Substring(4, 1)), 16))
                         LEDNum = CInt(mymessage.Substring(3, 2))
                         Select Case LEDNum
                             Case LEDNum And 1
                                 LED = "Ready"
-                                logging.Info("LED Ready Flashing")
+                                Log.Info("LED Ready Flashing")
                             Case LEDNum And 2
                                 LED = "Armed"
-                                logging.Info("LED Armed Flashing")
+                                Log.Info("LED Armed Flashing")
                             Case LEDNum And 4
                                 LED = "Memory"
-                                logging.Info("LED Memory Flashing")
+                                Log.Info("LED Memory Flashing")
                             Case LEDNum And 8
                                 LED = "Bypass"
-                                logging.Info("LED Bypass Flashing")
+                                Log.Info("LED Bypass Flashing")
                             Case LEDNum And 16
                                 LED = "Trouble"
-                                logging.Info("LED Trouble Flashing")
+                                Log.Info("LED Trouble Flashing")
                             Case LEDNum And 32
                                 LED = "Program"
-                                logging.Info("LED Program Flashing")
+                                Log.Info("LED Program Flashing")
                             Case LEDNum And 64
                                 LED = "Fire"
-                                logging.Info("LED Fire Flashing")
+                                Log.Info("LED Fire Flashing")
                             Case LEDNum And 128
                                 LED = "Backlight"
-                                logging.Info("LED Backlight Flashing")
+                                Log.Info("LED Backlight Flashing")
                         End Select
 
                         OSAEObjectPropertyManager.ObjectPropertySet(Partition(1).Name, "LED" & LED, LEDStatus, pName)
@@ -750,14 +750,14 @@ Public Class DSCAlarm
                         If Not Zone(ZoneInt) Is Nothing Then
                             If RecCommand = Command.ZoneOpen Then
                                 If Zone(ZoneInt).State.ToUpper <> "OPEN" Then
-                                    logging.Info("Zone " & ZoneString & " Open")
+                                    Log.Info("Zone " & ZoneString & " Open")
                                     OSAEObjectStateManager.ObjectStateSet(Zone(ZoneInt).Name, "Open", pName)
                                     'logging.EventLogAdd(Partition(1).Name, "Zone" & ZoneString & " Open", ZoneString, "Open")
                                     Zone(ZoneInt).State = "Open"
                                 End If
                             Else
                                 If Zone(ZoneInt).State.ToUpper <> "CLOSED" Then
-                                    logging.Info("Zone " & ZoneString & " Closed")
+                                    Log.Info("Zone " & ZoneString & " Closed")
                                     OSAEObjectStateManager.ObjectStateSet(Zone(ZoneInt).Name, "Closed", pName)
                                     'logging.EventLogAdd(Partition(1).Name, "Zone" & ZoneString & " Closed", ZoneString, "Closed")
                                     Zone(ZoneInt).State = "Closed"
@@ -766,72 +766,64 @@ Public Class DSCAlarm
                         End If
 
                     Case Command.CommandError
-                        logging.Info("Response from alarm 'Command Error'")
-
+                        Log.Error("Response from alarm 'Command Error'")
                     Case Command.SystemError
                         ErrorCode = CInt(mymessage.Substring(3, 3))
-
-                        logging.Info("Response from alarm 'System Error' code " & ErrorCode.ToString)
-
+                        Log.Info("Response from alarm 'System Error' code " & ErrorCode.ToString)
                     Case Command.SoftwareVersion
                         SoftwareVersion = mymessage.Substring(3, 6)
                         OSAEObjectPropertyManager.ObjectPropertySet(pName, "SoftwareVersion", SoftwareVersion, pName)
-                        logging.Info("Software Version " & SoftwareVersion)
-
+                        Log.Info("Software Version " & SoftwareVersion)
                     Case Command.VerboseTroubleStatus
                         UserNumber = CInt(mymessage.Substring(3, 3))
-                        logging.Info("Verbose Trouble Status: " & Convert.ToString(Asc(mymessage.Substring(3, 1)), 16) & " " & Convert.ToString(Asc(mymessage.Substring(4, 1)), 16))
+                        Log.Info("Verbose Trouble Status: " & Convert.ToString(Asc(mymessage.Substring(3, 1)), 16) & " " & Convert.ToString(Asc(mymessage.Substring(4, 1)), 16))
 
                     Case Command.UserOpening
                         UserNumber = CInt(mymessage.Substring(4, 4))
-                        logging.Info("User " & "User number turned off partion " & "partion alarm active")
+                        Log.Info("User " & "User number turned off partion " & "partion alarm active")
                         OSAE.OSAEObjectPropertyManager.ObjectPropertySet(Partition(FirstValue).Name, "OpenUser", UserNumber.ToString, pName)
                         OSAEObjectManager.EventTrigger(Partition(FirstValue).Name, "UserOpening", UserNumber.ToString, vbNull)
                     Case Command.UserClosing
                         'Parse for users number
                         UserNumber = CInt(mymessage.Substring(4, 4))
-                        logging.Info("User " & "User number set partion " & "partion alarm active")
+                        Log.Info("User " & "User number set partion " & "partion alarm active")
                         OSAE.OSAEObjectPropertyManager.ObjectPropertySet(Partition(FirstValue).Name, "OpenUser", UserNumber.ToString, pName)
                         OSAEObjectManager.EventTrigger(Partition(FirstValue).Name, "UserClosing", UserNumber.ToString, vbNull)
-
                     Case Else
-                        logging.Info("Command not configured for message:" & mymessage)
+                        Log.Info("Command not configured for message:" & mymessage)
                 End Select
                 'End If
-
             Next
-
         Catch ex As Exception
-            logging.Info("Error parsing message:" & ex.Message)
+            Log.Error("Error parsing message!", ex)
         End Try
     End Sub
 
     Shared Sub SetPartitionState(PartitionState As String, PartitionNumber As Integer)
         Try
             If Not Partition(PartitionNumber) Is Nothing AndAlso PartitionState.ToUpper <> Partition(PartitionNumber).State.ToUpper Then
-                logging.Info("Partition " & PartitionNumber.ToString & " State changed to " & PartitionState)
+                Log.Info("Partition " & PartitionNumber.ToString & " State changed to " & PartitionState)
                 OSAEObjectStateManager.ObjectStateSet(Partition(PartitionNumber).Name, PartitionState, pName)
                 'logging.EventLogAdd(Partition(PartitionNumber).Name, "Partition " & PartitionState, PartitionState)
                 Partition(PartitionNumber).State = PartitionState
                 'Partition(PartitionNumber).StateLabel = StateToStateLabel(PartitionState)
             End If
         Catch ex As Exception
-            logging.Info("Error updating partition State: " & ex.Message)
+            Log.Error("Error updating partition State!", ex)
         End Try
-
     End Sub
 
     Shared Sub SetPartitionStatus(PartitionStatus As String, PartitionNumber As Integer)
         Try
-            logging.Info("Partition Status: " & PartitionStatus & " Partition Number: " & PartitionNumber.ToString)
+            Log.Info("Partition Status: " & PartitionStatus & " Partition Number: " & PartitionNumber.ToString)
             If Not Partition(PartitionNumber) Is Nothing AndAlso PartitionStatus.ToUpper <> Partition(PartitionNumber).Status.ToUpper Then
-                logging.Info("Partition " & PartitionNumber.ToString & " Status changed to " & PartitionStatus)
+                Log.Info("Partition " & PartitionNumber.ToString & " Status changed to " & PartitionStatus)
                 OSAEObjectPropertyManager.ObjectPropertySet(Partition(PartitionNumber).Name, "Status", PartitionStatus, pName)
                 'logging.EventLogAdd(Partition(PartitionNumber).Name, "Partition " & PartitionState, PartitionState)
                 Partition(PartitionNumber).Status = PartitionStatus
             End If
         Catch ex As Exception
-            logging.Info("Error updating partition Status: " & ex.Message)
+            Log.Error("Error updating partition Status!", ex)
         End Try
 
     End Sub
@@ -849,7 +841,7 @@ Public Class DSCAlarm
             Return (CheckSum >> 4).ToString("X") & (CheckSum And &HF).ToString("X")
 
         Catch ex As Exception
-            logging.Info("Error in CalcChecksum " & ex.Message)
+            Log.Error("Error in CalcChecksum!", ex)
             Return "00"
         End Try
     End Function
@@ -911,12 +903,12 @@ Public Class DSCAlarm
             client.BeginReceive(state.buffer, 0, state.BufferSize, 0,
                 New AsyncCallback(AddressOf ReceiveCallback), state)
         Catch ex As Exception
-            logging.Info("Error setting up receive buffer " & ex.Message)
+            Log.Error("Error setting up receive buffer!", ex)
         End Try
     End Sub 'Receive
 
     Private Shared Sub ReceiveCallback(ByVal ar As IAsyncResult)
-        logging.Info("Starting Receive Callback")
+        Log.Error("Starting Receive Callback")
 
         'ReceiveThead = Thread.CurrentThread
         Try
@@ -948,11 +940,8 @@ Public Class DSCAlarm
             If Not ShutdownNow Then
                 SetupReceive(client_socket)
             End If
-
-            'End If
-
         Catch ex As Exception
-            logging.Info("Error receiving data " & ex.Message)
+            Log.Error("Error receiving data!", ex)
             CommDown = True
         End Try
     End Sub 'ReceiveCallback

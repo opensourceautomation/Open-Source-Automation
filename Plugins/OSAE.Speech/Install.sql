@@ -15,7 +15,6 @@ CALL osae_sp_object_type_method_add('SPEECH','MUTEVR','Mute the Microphone','','
 CALL osae_sp_object_type_method_add('SPEECH','SETVOICE','Set Voice','Voice','','Anna','');
 CALL osae_sp_object_type_method_add('SPEECH','SETTTSRATE','Set TTS Rate','Rate','','0','');
 CALL osae_sp_object_type_method_add('SPEECH','SETTTSVOLUME','Set TTS Volume','Volume','','100','');
-CALL osae_sp_object_type_property_add('SPEECH','Computer Name','Object','','',0);
 CALL osae_sp_object_type_property_add('SPEECH','Voice','String','','',0);
 CALL osae_sp_object_type_property_add('SPEECH','Voices','List','','',0);
 CALL osae_sp_object_type_property_add('SPEECH','System Plugin','Boolean','','FALSE',0);
@@ -23,3 +22,6 @@ CALL osae_sp_object_type_property_add('SPEECH','TTS Rate','Integer','','',0);
 CALL osae_sp_object_type_property_add('SPEECH','TTS Volume','Integer','','',0);
 CALL osae_sp_object_type_property_add('SPEECH','Speaking','Boolean','','FALSE',0);
 CALL osae_sp_object_type_property_add('SPEECH','Debug','Boolean','','FALSE',0);
+CALL osae_sp_object_type_property_add('SPEECH','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('SPEECH','Version','String','','',0);
+CALL osae_sp_object_type_property_add('SPEECH','Author','String','','',0);

@@ -14,8 +14,7 @@ namespace OSAE.Service
     {
         private void StartNetworkListener()
         {
-            this.Log.Info("Starting TCP Listener");
-
+            Log.Info("Starting TCP Listener");
             try
             {
                 string ip = Common.LocalIPAddress();
@@ -26,28 +25,22 @@ namespace OSAE.Service
                 //TCPConnection.StartListening(true);
 
                 foreach (System.Net.IPEndPoint localEndPoint in TCPConnection.ExistingLocalListenEndPoints()) 
-                    this.Log.Info("Service listening for TCP connection on: " + localEndPoint.Address + ":" + localEndPoint.Port);
+                    Log.Info("Service listening for TCP connection on: " + localEndPoint.Address + ":" + localEndPoint.Port);
             }
             catch (Exception ex)
-            {
-                this.Log.Error("Error starting TCP Listener: " + ex.Message, ex);
-            }
+            { Log.Error("Error starting TCP Listener: " + ex.Message, ex); }
         }
 
         private void PluginMessageReceived(PacketHeader header, Connection connection, string message)
         {
-            this.Log.Info("A message was recieved from " + connection.ToString() + " which said '" + message + "'.");
+            Log.Info("A message was recieved from " + connection.ToString() + " which said '" + message + "'.");
 
             string[] arguments = message.Split('|');
             bool local = false;
             if (arguments[1] == "True")
-            {
-                OSAEObjectStateManager.ObjectStateSet(arguments[0], "ON", sourceName);
-            }
+                OSAEObjectStateManager.ObjectStateSet(arguments[0], "ON", "SYSTEM");
             else if (arguments[1] == "False")
-            {
-                OSAEObjectStateManager.ObjectStateSet(arguments[0], "OFF", sourceName);
-            }
+                OSAEObjectStateManager.ObjectStateSet(arguments[0], "OFF", "SYSTEM");
 
             foreach (Plugin p in plugins)
             {
@@ -60,26 +53,25 @@ namespace OSAE.Service
                     {
                         if (arguments[1] == "True")
                         {
-                            enablePlugin(p);
+                            // enablePlugin(p);
+                            // maybe this call should be enable/disable, not sure, moving on
+                            startPlugin("SYSTEM", p);
                             UDPConnection.SendObject("Plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Running | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                         }
                         else if (arguments[1] == "False")
                         {
-                            disablePlugin(p);
+                            stopPlugin("SYSTEM", p);
                             UDPConnection.SendObject("Plugin", p.PluginName + " | " + p.Enabled.ToString() + " | " + p.PluginVersion + " | Stopped | " + p.LatestAvailableVersion + " | " + p.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                         }
                     }
                 }
             }
-            if (!local)
-            {
-                UDPConnection.SendObject("Plugin", message, new IPEndPoint(IPAddress.Broadcast, 10051));
-            }
+            if (!local) UDPConnection.SendObject("Plugin", message, new IPEndPoint(IPAddress.Broadcast, 10051));
         }
 
         private void MethodMessageReceived(PacketHeader header, Connection connection, string message)
         {
-            this.Log.Info("A message was recieved from " + connection.ToString() + " which said '" + message + "'.");
+            Log.Info("A message was recieved from " + connection.ToString() + " which said '" + message + "'.");
         }
     }
 }

@@ -46,7 +46,7 @@
         private string _latestAvailableVersion;
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("SYSTEM");
 
         private AppDomain _domain;
 
@@ -113,7 +113,7 @@
             }
 
             _userControlType = desc.Type;
-            _userControlName = PluginManager.GetPluginName(_userControlType, Common.ComputerName);
+            _userControlName = _userControlType;
             _assemblyType = assemblyType;
             _assemblyName = assemblyName;
             _domain = domain;
@@ -124,12 +124,11 @@
         public OSAEUserControl()
         {
             _latestAvailableVersion = string.Empty;
-            
         }
 
         private void Domain_UnhandledException(object source, System.UnhandledExceptionEventArgs e)
         {
-            this.Log.Fatal(UserControlName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString());
+            Log.Fatal(UserControlName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString());
             AppDomain.Unload(_domain);            
         }
 
@@ -137,16 +136,15 @@
         {
             try
             {
-                this.Log.Info("Shutting down " + UserControlName);
+                Log.Info("Shutting down " + UserControlName);
                 AppDomain.Unload(_domain);
                 return true;
             }
             catch (Exception ex)
             {
-                this.Log.Error(UserControlName + " - Shutdown Error", ex);
+                Log.Error(UserControlName + " - Shutdown Error", ex);
                 return false;
             }
         }
-
     }
 }

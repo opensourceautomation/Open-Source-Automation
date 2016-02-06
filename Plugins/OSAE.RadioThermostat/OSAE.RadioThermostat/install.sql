@@ -6,6 +6,9 @@ CALL osae_sp_object_type_event_add ('OFF','Stopped','RADIO THERMOSTAT');
 CALL osae_sp_object_type_method_add ('ON','Start','RADIO THERMOSTAT','','','','');
 CALL osae_sp_object_type_method_add ('OFF','Stop','RADIO THERMOSTAT','','','','');
 CALL osae_sp_object_type_property_add('Poll Interval', 'Integer', '', 'RADIO THERMOSTAT', 0);
+CALL osae_sp_object_type_property_add('RADIO THERMOSTAT','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('RADIO THERMOSTAT','Version','String','','',0);
+CALL osae_sp_object_type_property_add('RADIO THERMOSTAT','Author','String','','',0);
 
 CALL osae_sp_object_type_add ('RADIO THERMOSTAT DEVICE','Radio Thermostat Device','','',0,0,0,1);
 CALL osae_sp_object_type_state_add ('ON','On','RADIO THERMOSTAT DEVICE');

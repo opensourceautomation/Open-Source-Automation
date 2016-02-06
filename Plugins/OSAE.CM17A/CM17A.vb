@@ -6,7 +6,7 @@ Imports System.Threading.Thread
 
 Public Class CM17A
     Inherits OSAEPluginBase
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog ' = New General.OSAELog()
     Private COMPort As String
     Private ControllerPort As SerialPort
     Dim HouseByte As New Dictionary(Of String, Byte)
@@ -17,6 +17,7 @@ Public Class CM17A
     Public Overrides Sub RunInterface(ByVal pluginName As String)
         Try
             pName = pluginName
+            Log = New General.OSAELog(pName)
             Log.Info("Initializing plugin: " & pluginName)
             'ComputerName = OSAEApi.ComputerName
             COMPort = "COM" + OSAEObjectPropertyManager.GetObjectPropertyValue(pluginName, "Port").Value.ToString

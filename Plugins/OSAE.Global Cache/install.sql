@@ -5,6 +5,9 @@ CALL osae_sp_object_type_event_add ('GLOBAL CACHE','ON','Started');
 CALL osae_sp_object_type_event_add ('GLOBAL CACHE','OFF','Stopped');
 CALL osae_sp_object_type_method_add ('GLOBAL CACHE','ON','Start','','','','');
 CALL osae_sp_object_type_method_add ('GLOBAL CACHE','OFF','Stop','','','','');
+CALL osae_sp_object_type_property_add('GLOBAL CACHE','Trust Level','Integer','','90',0);
+CALL osae_sp_object_type_property_add('GLOBAL CACHE','Version','String','','',0);
+CALL osae_sp_object_type_property_add('GLOBAL CACHE','Author','String','','',0);
 
 CALL osae_sp_object_type_add ('GC-100','Global Cache GC-100','','Global Cache',0,0,0,1);
 CALL osae_sp_object_type_event_add ('GC-100','INPUT4:1ON','Input 4:1 On');

@@ -13,7 +13,7 @@ namespace OSAE.XBMC
     public class XBMC : OSAEPluginBase
     {
         //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new General.OSAELog();
         private List<XBMCSystem> Systems = new List<XBMCSystem>();
         private string gAppName;
         Boolean gDebug = false;
@@ -48,6 +48,7 @@ namespace OSAE.XBMC
         {
             Log.Info("Running interface");
             gAppName = pluginName;
+            Log = new General.OSAELog(gAppName);
             if (OSAEObjectManager.ObjectExists(gAppName))
                 Log.Info("Found the XBMC plugin's Object (" + gAppName + ")");
             else
@@ -58,9 +59,7 @@ namespace OSAE.XBMC
                 gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
             }
             catch
-            {
-                Log.Info("The XBMC Object Type seems to be missing the Debug Property!");
-            }
+            { Log.Info("The XBMC Object Type seems to be missing the Debug Property!"); }
             Log.Info("Debug Mode Set to " + gDebug);
 
 
@@ -102,9 +101,7 @@ namespace OSAE.XBMC
                     }
                 }
                 catch (Exception ex)
-                {
-                    Log.Error("Error connecting to XBMC system",ex);
-                }
+                { Log.Error("Error connecting to XBMC system",ex); }
             }
 
             try
@@ -134,9 +131,7 @@ namespace OSAE.XBMC
                 Log.Info("XBMC Plugin took ownership of the XBMC Object Type.");
             }
             else
-            {
                 Log.Info("XBMC Plugin correctly owns the XBMC Object Type.");
-            }
 
             oType = OSAEObjectTypeManager.ObjectTypeLoad("XBMC SYSTEM");
             if (oType.OwnedBy == "")
@@ -152,8 +147,7 @@ namespace OSAE.XBMC
         {
             foreach (XBMCSystem r in Systems)
             {
-                if (r.Name == name)
-                    return r;
+                if (r.Name == name) return r;
             }
             return null;
         }
@@ -180,8 +174,7 @@ namespace OSAE.XBMC
                 {
                     foreach (XBMCSystem r in Systems)
                     {
-                        if (obj.Name == r.Name)
-                            XBMCInstances.Remove(obj);
+                        if (obj.Name == r.Name) XBMCInstances.Remove(obj);
                     }
                 }
                 foreach (OSAEObject obj in XBMCInstances)
@@ -211,16 +204,13 @@ namespace OSAE.XBMC
                     XBMCSystem system = new XBMCSystem(obj.Name, ip, port, username, password);
                     try
                     {
-                        if (system.Connect())
-                            Systems.Add(system);
+                        if (system.Connect()) Systems.Add(system);
                     }
                     catch { }
                 }
             }
             catch (Exception ex)
-            {
-                Log.Error("Error on timer tick", ex);
-            }
+            { Log.Error("Error on timer tick", ex); }
         }
     }
 
@@ -237,7 +227,7 @@ namespace OSAE.XBMC
         private bool _pinging;
         private bool _Debug = false;
         private Client _xbmcSystem;
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log = new General.OSAELog("XBMC Device");
 
         public string Name
         {
@@ -346,9 +336,7 @@ namespace OSAE.XBMC
                         _Debug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(Name, "Debug").Value);
                     }
                     catch
-                    {
-                        Log.Info("The XBMC Object Type seems to be missing the Debug Property!");
-                    }
+                    { Log.Info("The XBMC Object Type seems to be missing the Debug Property!"); }
                     Log.Info("Debug Mode Set to " + _Debug);
 
                     _xbmcSystem.Player.OnPlay += Player_OnPlay;

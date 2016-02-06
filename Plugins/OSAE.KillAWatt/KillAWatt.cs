@@ -175,7 +175,7 @@
             }
             pcList.Add(new PowerCollection(address));
             if(OSAEObjectManager.GetObjectByAddress("KAW" + address.ToString()) == null)
-                OSAEObjectManager.ObjectAdd("KillAWatt - " + address.ToString(),"", "Kill-A-Watt device", "KILLAWATT MODULE", "KAW" + address.ToString(), "", true);
+                OSAEObjectManager.ObjectAdd("KillAWatt - " + address.ToString(),"", "Kill-A-Watt device", "KILLAWATT MODULE", "KAW" + address.ToString(), "", 50, true);
 
             return GetPowerCollection(address);
         }

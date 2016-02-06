@@ -8,7 +8,7 @@ Imports System.Data
 
 Public Class ScriptProcessor
     Inherits OSAEPluginBase
-    Private Log As OSAE.General.OSAELog = New General.OSAELog()
+    Private Log As OSAE.General.OSAELog ' = New General.OSAELog()
     Private gAppName As String = ""
     Private scriptArray() As String
     Private gDebug As Boolean = False
@@ -35,6 +35,7 @@ Public Class ScriptProcessor
 
     Public Overrides Sub RunInterface(ByVal sName As String)
         gAppName = sName
+        Log = New General.OSAELog(gAppName)
         If OSAEObjectManager.ObjectExists(gAppName) Then
             Log.Info("Found the Script Processor plugin's Object (" & gAppName & ")")
         End If

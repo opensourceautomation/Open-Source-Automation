@@ -6,7 +6,7 @@
 
     public class SPEECH : OSAEPluginBase
     {
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new General.OSAELog();
 
         SpeechSynthesizer oSpeech = new SpeechSynthesizer();
         WMPLib.WindowsMediaPlayer wmPlayer = new WMPLib.WindowsMediaPlayer();
@@ -17,6 +17,7 @@
         public override void RunInterface(string pluginName)
         {
             gAppName = pluginName;
+            Log = new General.OSAELog(gAppName);
             OwnTypes();
             Load_Settings();
             oSpeech.Speak("speech client started");
@@ -192,9 +193,9 @@
             }
         }
 
-          public override void Shutdown()
+        public override void Shutdown()
         {
-            this.Log.Info("Recieved Shutdown Order.");
+            Log.Info("Recieved Shutdown Order.");
         }
     }
 }

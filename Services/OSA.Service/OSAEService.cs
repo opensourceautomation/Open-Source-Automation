@@ -2,21 +2,15 @@
 
 namespace OSAE.Service
 {
-    #region Usings
-
     using System;
-    using System.Collections.Generic;
-    using System.ServiceModel;
-    using System.ServiceProcess;
-    using System.Diagnostics;
     using System.Timers;
     using NetworkCommsDotNet;
-    using log4net.Config;
-    using log4net;
-    using System.Reflection;
     using System.Windows.Forms;
-
-    #endregion
+    //using System.Collections.Generic;
+    //using System.ServiceModel;
+    //using System.ServiceProcess;
+    //using System.Diagnostics;
+    //using System.Reflection;
 
     /// <summary>
     /// The primary server used in the OSA infrastructure to process information
@@ -27,28 +21,16 @@ namespace OSAE.Service
     partial class OSAEService : ServiceBase
 #endif
     {
-        #region Member Variables
         /// <summary>
         /// Used when generating messages to identify where the message came from
         /// </summary>
-        private const string sourceName = "OSAE Service";
 
         private OSAEPluginCollection plugins = new OSAEPluginCollection();
         private OSAEPluginCollection masterPlugins = new OSAEPluginCollection();
-
-        private bool goodConnection = false;
-
         private bool running = true;
-
-        /// <summary>
-        /// Timer used to periodically check log to prune
-        /// </summary>
+        private string serviceObject = "";
         private static System.Timers.Timer checkLog;
-
-        //OSAELog
-        private OSAE.General.OSAELog Log = new General.OSAELog();
-        #endregion
-
+        private OSAE.General.OSAELog Log;// = new General.OSAELog("SERVICE");
 
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
@@ -57,12 +39,13 @@ namespace OSAE.Service
         {
             if (args.Length > 0)
             {
-               // string pattern = Common.MatchPattern(args[0],"");
-                //this.Log.Info("Processing command: " + args[0] + ", Named Script: " + pattern);
-             //   if (pattern != string.Empty)
-             //   {
-                //    OSAEScriptManager.RunPatternScript(pattern, "", "OSACL");
-              //  }
+                // replace with Speech emualation!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // string pattern = Common.MatchPattern(args[0],"");
+                // Log.Info("Processing command: " + args[0] + ", Named Script: " + pattern);
+                // if (pattern != string.Empty)
+                // {
+                //     OSAEScriptManager.RunPatternScript(pattern, "", "OSACL");
+                // }
             }
             else
             {
@@ -88,15 +71,28 @@ namespace OSAE.Service
         /// </summary>
         public OSAEService()
         {
-            this.Log.Info("Service Starting");
+            serviceObject = CheckServiceObject();
+            if (serviceObject == null)
+            {
+                Log = new General.OSAELog("Faulted Service");
+                Log.Fatal("Failed to retrieve Service's Object!");
+            }
+            else
+                OSAE.OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
+
+            Log = new General.OSAELog(serviceObject);
+            Log.Info("Service Starting");
+
+            Common.CheckComputerObject(serviceObject);
+            OSAEObject obj = OSAEObjectManager.GetObjectByName(serviceObject);
+            OSAEObjectManager.ObjectUpdate(serviceObject, serviceObject, "", obj.Description, obj.Type, "", Common.ComputerName, obj.MinTrustLevel, obj.Enabled);
 
             InitialiseOSAInEventLog();
 
-            // These Flags set whether or not to handle that specific
-            // type of event. Set to true if you need it, false otherwise.
+            // These Flags set whether or not to handle that specific type of event. Set to true if you need it, false otherwise.
 
-            this.CanStop = true;
-            this.CanShutdown = true;
+            CanStop = true;
+            CanShutdown = true;
         }
 
         #region Standard Windows Service Methods
@@ -107,17 +103,16 @@ namespace OSAE.Service
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
+            Log.Debug("OnStart subroutine Starting...");
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptions);
 
             var dbConnectionStatus = Common.TestConnection();
             if (dbConnectionStatus.Success)
-            {
-                this.Log.Info("Verified successful connection to database.");
-            }
+                Log.Info("Verified successful connection to database.");
             else
             {
-                this.Log.Fatal("Unable to connect to database: " + dbConnectionStatus.CaughtException.Message);
+                Log.Fatal("Unable to connect to database: " + dbConnectionStatus.CaughtException.Message);
                 return;
             }
 
@@ -127,25 +122,18 @@ namespace OSAE.Service
                 DeleteStoreFiles();
             }
             catch (Exception ex)
-            {
-                this.Log.Fatal("Error getting registry settings and/or deleting logs: " + ex.Message, ex);
-            }
+            { Log.Fatal("Error getting registry settings and/or deleting logs: " + ex.Message, ex); }
 
-            this.Log.Info("OnStart");
-
-            this.Log.Info("Removing Orphaned Methods");
+            Log.Info("Removing Orphaned Methods");
             OSAEMethodManager.ClearMethodQueue();
 
-            Common.CreateComputerObject(sourceName);
-            CreateServiceObject();
             try
             {
                 OSAE.OSAESql.RunSQL("SET GLOBAL event_scheduler = ON;");
             }
             catch (Exception ex)
-            {
-                this.Log.Fatal("Error setting the event scheduler: " + ex.Message, ex);
-            }
+            { Log.Fatal("Error setting the event scheduler: " + ex.Message, ex); }
+
             checkLog = new System.Timers.Timer(60000);
             checkLog.Elapsed += checkLogEvent;
             checkLog.Enabled = true;
@@ -153,11 +141,11 @@ namespace OSAE.Service
             // Start the network service so messages can be  
             // received by the service
             StartNetworkListener();
-
-
+            
             // Start the threads that monitor the plugin 
             // updates check the method queue and so on
-            StartThreads();
+            StartThreads(serviceObject);
+            OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
         }
 
         /// <summary>
@@ -165,7 +153,8 @@ namespace OSAE.Service
         /// </summary>
         protected override void OnStop()
         {
-            this.Log.Info("OnStop Invoked");
+            Log.Info("OnStop Invoked");
+            OSAE.OSAEObjectStateManager.ObjectStateSet(serviceObject, "OFF", serviceObject);
             NetworkComms.Shutdown();
             ShutDownSystems();
             OSAE.General.OSAELog.FlushBuffers();
@@ -176,19 +165,19 @@ namespace OSAE.Service
         /// </summary>
         protected override void OnShutdown()
         {
-            this.Log.Info("OnShutdown Invoked");
+            Log.Info("OnShutdown Invoked");
             ShutDownSystems();
         }
 
         void UnhandledExceptions(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
-            this.Log.Fatal("UnhandledExceptions caught : " + e.Message, e);
+            Log.Fatal("UnhandledExceptions caught : " + e.Message, e);
         }
 
         private void checkLogEvent(Object source, ElapsedEventArgs e)
         {
-            this.Log.PruneLogs();
+            Log.PruneLogs();
         }
 
         #endregion

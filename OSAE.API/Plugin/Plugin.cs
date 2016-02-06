@@ -25,6 +25,11 @@
         /// <summary>
         /// 
         /// </summary>
+        private string _pluginAuthor;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private string _assemblyName;
 
         /// <summary>
@@ -40,6 +45,11 @@
         /// <summary>
         /// 
         /// </summary>
+        private bool _running;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _enabled;
         
         /// <summary>
@@ -48,7 +58,7 @@
         private string _latestAvailableVersion;
 
         //OSAELog
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+        private OSAE.General.OSAELog Log;// = new OSAE.General.OSAELog("Plugin");
 
         private AppDomain _domain;
         private OSAEPluginBase _plugin;
@@ -73,6 +83,12 @@
             set { _pluginVersion = value; }
         }
 
+        public string PluginAuthor
+        {
+            get { return _pluginAuthor; }
+            set { _pluginAuthor = value; }
+        }
+
         public string Location
         {
             get { return _location; }
@@ -83,6 +99,12 @@
         {
             get { return _latestAvailableVersion; }
             set { _latestAvailableVersion = value; }
+        }
+
+        public bool Running
+        {
+            get { return _running; }
+            set { _running = value; }
         }
 
         public bool Enabled
@@ -104,7 +126,7 @@
 
         #endregion
 
-        public Plugin(string assemblyName, string assemblyType, AppDomain domain, string location)
+        public Plugin(string assemblyName, string assemblyType, AppDomain domain, string location, string clientAppendage = "")
         {
             PluginDescription desc = new PluginDescription();
             List<string> osapdFiles = new List<string>();
@@ -118,39 +140,43 @@
                     desc = new PluginDescription();
                     desc.Deserialize(path);
                     _pluginVersion = desc.Version;
+                    _pluginAuthor = desc.Author;
                 }
             }
 
             _pluginType = desc.Type;
-            _pluginName = PluginManager.GetPluginName(_pluginType, Common.ComputerName);
+            //the following won't work, it is just whether it is a cient or not
+            _pluginName = _pluginType;
+            if (clientAppendage.Length > 0) _pluginName = _pluginName + "-" + clientAppendage;
             _assemblyType = assemblyType;
             _assemblyName = assemblyName;
             _domain = domain;
             _location = location;
 
-            _latestAvailableVersion = string.Empty;
+            _latestAvailableVersion = "";
         }
 
         public Plugin()
         {
-            _latestAvailableVersion = string.Empty;
-            
+            _latestAvailableVersion = "";
         }
 
         public bool ActivatePlugin()
         {
+            Log = new OSAE.General.OSAELog(PluginName);
             try
             {
-                this.Log.Info(PluginName + ":  Activating Plugin...");
+                Log.Info(PluginName + ":  Starting Plugin...");
                 _plugin = (OSAEPluginBase)_domain.CreateInstanceAndUnwrap(_assemblyName, _assemblyType);
                 _plugin.InitializeLifetimeService();
+                _running = true;
 
                 _domain.UnhandledException += Domain_UnhandledException;
                 return true;
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error activating plugin (" + PluginName + ")", ex);
+                Log.Error("Error Starting Plugin (" + PluginName + ")", ex);
                 _enabled = false;
                 return false;
             }           
@@ -158,7 +184,7 @@
 
         private void Domain_UnhandledException(object source, System.UnhandledExceptionEventArgs e)
         {
-            this.Log.Fatal(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString());
+            Log.Fatal(PluginName + " plugin has fatally crashed. ERROR: \n" + e.ExceptionObject.ToString());
             AppDomain.Unload(_domain);            
         }
 
@@ -166,30 +192,32 @@
         {
             try
             {
-                this.Log.Info(PluginName + ":  Shutting down...");
+                Log.Info(PluginName + ":  Shutting down...");
                 _plugin.Shutdown();
+                _running = false;
                 AppDomain.Unload(_domain);
                 return true;
             }
             catch (Exception ex)
             {
-                this.Log.Error(PluginName + " - Shutdown Error", ex);
+                Log.Error(PluginName + " - Shutdown Error", ex);
                 return false;
             }
         }
 
-        public void RunInterface()
+        public void RunInterface(string serviceName)
         {
-            this.Log.Debug(PluginName + " - Running interface.");
+            Log = new OSAE.General.OSAELog(serviceName);
+            Log.Debug(PluginName + " - Running interface.");
             try
             {
                 _plugin.RunInterface(PluginName);
+                _running = true;
             }
             catch (Exception ex)
-            {
-                this.Log.Error(PluginName + " - Run Interface Error", ex);
-            }
-            this.Log.Debug(PluginName + " - Moving on...");
+            { Log.Error(PluginName + " - Run Interface Error", ex); }
+
+            Log.Debug(PluginName + " - Moving on...");
         }
 
         public void ExecuteCommand(OSAEMethod method)
@@ -199,9 +227,7 @@
                 _plugin.ProcessCommand(method);
             }
             catch (Exception ex)
-            {
-                this.Log.Error(PluginName + " - Process Command Error", ex);
-            }
+            { Log.Error(PluginName + " - Process Command Error", ex); }
         }
     }
 }

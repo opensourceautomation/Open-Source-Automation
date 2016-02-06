@@ -178,7 +178,7 @@ namespace MYStateButton
                 //We call an object update here in case the Name was changed, then perform the updates against the New name
                 OSAEObjectManager.ObjectUpdate(sOriginalName, sWorkingName, obj.Alias, obj.Description, obj.Type, obj.Address, obj.Container, obj.MinTrustLevel, obj.Enabled);
                 string sName = cntrlName.Text;
-                OSAEObjectManager.ObjectUpdate(sOriginalName,sName, sName,sName, osaeControlType + " " + _pluginName, "", currentScreen, 30, 1);
+                OSAEObjectManager.ObjectUpdate(sOriginalName,sName, "",sName, osaeControlType + " " + _pluginName, "", currentScreen, 30, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Control Type", osaeControlType + " " + _pluginName, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Object Name", objectsComboBox.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", cntrlX.Text, currentUser);
