@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Global Cache</plugin-name>
 <plugin-id>79bf4099-6e19-4ad0-b559-cbd15eca61c8</plugin-id>
-<plugin-version>0.4.7</plugin-version>
+<plugin-version>0.4.8</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Global Cache</short-description>
 <author>Automate</author>
