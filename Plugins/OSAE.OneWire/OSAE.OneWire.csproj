@@ -35,6 +35,9 @@
     <Reference Include="OneWireAPI.NET">
       <HintPath>.\OneWireAPI.NET.dll</HintPath>
     </Reference>
+    <Reference Include="OSAE.API">
+      <HintPath>..\..\output\OSAE.API.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -60,13 +63,6 @@
     <Content Include="Screenshot.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
-      <Project>{022f45f1-c988-41a1-a203-39e97be928b6}</Project>
-      <Name>OSAE.API</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

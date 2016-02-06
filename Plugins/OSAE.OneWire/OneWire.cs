@@ -3,7 +3,6 @@
     using System;
     using System.IO;
     using System.Runtime.InteropServices;
-
     using com.dalsemi.onewire;
     using com.dalsemi.onewire.adapter;
     using com.dalsemi.onewire.container;

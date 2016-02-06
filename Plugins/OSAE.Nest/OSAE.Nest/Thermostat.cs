@@ -62,28 +62,17 @@ namespace OSAE.Nest
         }
 
         public void convertLastConnection(){
-            
-            //for testing 
-            //last_connection = "2015-02-10T20:43:16.772Z";
-
+            //for testing  last_connection = "2015-02-10T20:43:16.772Z";
             DateTime _lastConnection;
-
             if (!DateTime.TryParse(last_connection, out _lastConnection))
-            {
                 last_connection = "";
-            }
             else
-            {
-                //last_connection = _lastConnection.ToLocalTime().ToString("G"); 
                 last_connection = _lastConnection.ToString("G"); 
-            }
         }
 
         public void loadData(string objectName)
         {
-                                    
             hvac_mode = OSAEObjectStateManager.GetObjectStateValue(objectName).Value.ToLower();
-
             device_id = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Id").Value;
             name = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Name").Value;
             name_long = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Name Long").Value;
@@ -98,37 +87,26 @@ namespace OSAE.Nest
             last_connection = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Last Connection").Value;
 
             if (!DateTime.TryParse(last_connection, out _lastConnection))
-            {
                 last_connection = "";
-            }
             else
-            {
                 last_connection = _lastConnection.ToString("G"); // 1/29/2015 8:43:16 PM 
-            }
 
-            Boolean _has_leaf;
-            Boolean _is_online;
-            Boolean _can_cool;
-            Boolean _can_heat;
-            Boolean _has_fan;
-            Boolean _is_using_emergency_heat;
-            Boolean _fan_timer_active;
+            bool _has_leaf, _is_online, _can_cool, _can_heat, _has_fan, _is_using_emergency_heat, _fan_timer_active;
 
-            Boolean.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Has Leaf").Value, out _has_leaf);
+            bool.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Has Leaf").Value, out _has_leaf);
             has_leaf = _has_leaf;
-            Boolean.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Is Online").Value, out _is_online);
+            bool.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Is Online").Value, out _is_online);
             is_online = _is_online;
-            Boolean.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Can Cool").Value, out _can_cool);
+            bool.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Can Cool").Value, out _can_cool);
             can_cool = _can_cool;
-            Boolean.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Can Heat").Value, out _can_heat);
+            bool.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Can Heat").Value, out _can_heat);
             can_heat = _can_heat;
-            Boolean.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Has Fan").Value, out _has_fan);
+            bool.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Has Fan").Value, out _has_fan);
             has_fan = _has_fan;
-            Boolean.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Using Emergency Heat").Value, out _is_using_emergency_heat);
+            bool.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Using Emergency Heat").Value, out _is_using_emergency_heat);
             is_using_emergency_heat = _is_using_emergency_heat;
-            Boolean.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Fan Timer Active").Value, out _fan_timer_active);
+            bool.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Fan Timer Active").Value, out _fan_timer_active);
             fan_timer_active = _fan_timer_active;
-
 
             float _ambient_temperature;
             float _humidity;
@@ -158,7 +136,6 @@ namespace OSAE.Nest
             float.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Away Temperature Low").Value, out _away_temperature_low);
             away_temperature_low_f = _away_temperature_low;
             away_temperature_low_c = _away_temperature_low;
-
         }
     }
 

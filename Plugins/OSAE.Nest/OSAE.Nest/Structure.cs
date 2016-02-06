@@ -18,9 +18,7 @@ namespace OSAE.Nest
 
         public void loadData(string objectName)
         {
-
             away = OSAEObjectStateManager.GetObjectStateValue(objectName).Value.ToLower();
-
             structure_id=OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Id").Value;
             name = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Name").Value;
             country_code = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Country Code").Value;
@@ -28,7 +26,6 @@ namespace OSAE.Nest
             peak_period_start_time = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Peak Start Time").Value;
             peak_period_end_time = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Peak End Time").Value;
             time_zone = OSAEObjectPropertyManager.GetObjectPropertyValue(objectName, "Time Zone").Value;
-
         }
     }
 }

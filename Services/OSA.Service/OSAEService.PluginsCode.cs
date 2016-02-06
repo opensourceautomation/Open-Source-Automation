@@ -135,7 +135,7 @@
                                 if (obj == null) Log.Info(obj.Name + ":  I failed to create the Plugin Object!");
                             }
                             else
-                                Log.Info(":  Plugin Object Type Not found.  Plugin Object Cannot be Created.");
+                                Log.Info(":  Plugin Object Type Not found for: " + plugin.PluginType + ".  Plugin Object Cannot be Created.");
                         }
 
                         if (obj != null)
@@ -154,7 +154,7 @@
                                 OSAEObjectStateManager.ObjectStateSet(obj.Name, "OFF", serviceObject);
                             }
 
-                            Log.Info(obj.Name + ":  Plugin Enabled =  " + plugin.Enabled.ToString());
+                            Log.Info(obj.Name + ":  Plugin Enabled = " + plugin.Enabled.ToString());
                             Log.Info(obj.Name + ":  Plugin Version = " + plugin.PluginVersion);
                             OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", serviceName, 50, plugin.Enabled);
                             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Version", plugin.PluginVersion, serviceName);
@@ -175,7 +175,7 @@
                             UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                         }
                         else
-                            Log.Info(":  Plugin Object Type Not found.  Plugin Object Cannot be Created.");
+                            Log.Info(":  Plugin Object Type Not found for: " + plugin.PluginType + ".  Plugin Object Cannot be Created!");
                     }
                     plugins.Add(plugin);
                     masterPlugins.Add(plugin);

@@ -7,23 +7,19 @@
 
     public class OSAPUBNUB : OSAEPluginBase
     {
-        private OSAE.General.OSAELog Log = new General.OSAELog();
+        private OSAE.General.OSAELog Log;
         // PubNub publish and subscribe keys
         private Pubnub pubnub = new Pubnub("pub-c-45d27cdb-5675-4a00-8065-5e6347a9bd57", "sub-c-acd9fce4-4958-11e5-b316-0619f8945a4f");
-
-        String gAppName = "";
-        Boolean gDebug = false;
+        string gAppName = "";
+        bool gDebug = false;
 
         public override void RunInterface(string pluginName)
         {
             gAppName = pluginName;
-
+            Log = new General.OSAELog(gAppName);
             OwnTypes();
-
             Load_Settings();
-
             SubscribePubNubMessages();
-
         }
 
         // Subscribe PubNub messages
@@ -40,13 +36,9 @@
         private void PubNubSubscribeSuccess(string publishResult)
         {
             Log.Info("Message: " + publishResult);
-
             JArray message = JArray.Parse(publishResult);
-
             string text = message[0]["speak"].ToString();
-
             Log.Info("Text Length: " + text.Length);
-
         }
 
         private void DisplaySubscribeConnectStatusMessage(string publishResult)
@@ -71,9 +63,7 @@
                 Log.Info("PubNub Plugin took ownership of the PubNub Object Type.");
             }
             else
-            {
                 Log.Info("The PubNub Plugin correctly owns the PubNub Object Type.");
-            }
         }
 
         public override void ProcessCommand(OSAEMethod method)
@@ -102,24 +92,14 @@
                     gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
                 }
                 catch
-                {
-                    Log.Error("I think the Debug property is missing from the PubNub object type!");
-                }
+                { Log.Error("I think the Debug property is missing from the PubNub object type!"); }
                 Log.Info("Debug Mode Set to " + gDebug);
             }
             catch (Exception ex)
-            {
-                Log.Error("Error in Load_Settings!", ex);
-            }
-
-
-
-
+            { Log.Error("Error in Load_Settings!", ex); }
         }
 
         public override void Shutdown()
-        {
-            this.Log.Info("Recieved Shutdown Order.");
-        }
+        { Log.Info("Recieved Shutdown Order."); }
     }
 }

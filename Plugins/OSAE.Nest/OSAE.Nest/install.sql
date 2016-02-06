@@ -230,5 +230,5 @@ CALL osae_sp_object_type_property_add ('NEST PROTECT','Is Online','Boolean','','
 
 
 
-CALL osae_sp_object_add ('Nest','','Nest','NEST','','SYSTEM',1,@out_results);
+CALL osae_sp_object_add ('Nest','','Nest','NEST','','SYSTEM',30,1,@out_results);
 

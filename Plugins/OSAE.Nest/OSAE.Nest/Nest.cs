@@ -13,8 +13,7 @@
 
     public class Nest : OSAEPluginBase
     {
-        //OSAELog
-        private static OSAE.General.OSAELog Log;// = new General.OSAELog();
+        private static OSAE.General.OSAELog Log;
 
         /// <summary>
         /// Plugin name
@@ -50,13 +49,12 @@
             //bool isNum = Int32.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Poll Interval").Value, out interval);
             Clock = new System.Timers.Timer();
             //if (isNum)
-                Clock.Interval = interval * 60 * 1000;
+            Clock.Interval = interval * 60 * 1000;
             //else
             //    Clock.Interval = 60000;
             Clock.Start();
             Clock.Elapsed += new ElapsedEventHandler(Timer_Tick);
-
-            this.updateThread = new Thread(new ThreadStart(update));
+            updateThread = new Thread(new ThreadStart(update));
         }
 
         private void Ititialize(string calledfrom)
@@ -69,13 +67,11 @@
             if (accessToken.Equals(""))
             {
                 if (code.Equals("")) //&& calledfrom.Equals("method")
-                {
                     Log.Info("No pin provided. Please visit https://home.nest.com/login/oauth2?client_id=ff5f73fb-2fd9-472f-ba3d-73cb236a1808&state=STATE to get a pin code. Update PIN property on Nest Plugin object and run method Get Access Token. ");
-                }
+
                 accessToken = GetAccessToken(code);
                 OSAEObjectPropertyManager.ObjectPropertySet(pName, "Access Token", accessToken, pName);
             }
-
             GetNestData(accessToken);
             SubscribeToNestDataUpdates(accessToken);
         }
@@ -87,8 +83,8 @@
             {
                 if (!updateThread.IsAlive)
                 {
-                    this.updateThread = new Thread(new ThreadStart(update));
-                    this.updateThread.Start();
+                    updateThread = new Thread(new ThreadStart(update));
+                    updateThread.Start();
                 }
             }
         }
@@ -116,7 +112,7 @@
             OSAEObject methodObject = OSAEObjectManager.GetObjectByName(method.ObjectName);
             string returndata = "returndata=Method Name " + method.MethodName + " not found"; //will get logged if no method is matched below
             string warningdata = "";
-            Boolean abortcommand = false;
+            bool abortcommand = false;
 
             if (method.MethodName.Equals("SEARCH FOR NEW DEVICES"))
             {
@@ -136,19 +132,15 @@
                 returndata = "returndata=Requested Access Token";
             }
 
-            
-
             if (methodObject.Type.Equals("NEST STRUCTURE"))
             {
                 string type = "structures";
                 if (method.MethodName.Equals("AWAY"))
-                {
                     returndata = "returndata="+UpdateNestData(type, methodObject.Address, "{\"away\":\"away\"}", accessToken);
-                }
+
                 if (method.MethodName.Equals("HOME"))
-                {
                     returndata = "returndata=" + UpdateNestData(type, methodObject.Address, "{\"away\":\"home\"}", accessToken);
-                }
+
                 if (method.MethodName.Equals("SET ETA"))
                 {
                     if (methodObject.State.Value.ToUpper().Equals("HOME"))
@@ -159,9 +151,9 @@
                     }
                     
 
-                    String tripid = method.Parameter1;
-                    String arrivalbegin;
-                    String arrivalend;
+                    string tripid = method.Parameter1;
+                    string arrivalbegin;
+                    string arrivalend;
 
                     string[] parts = method.Parameter2.Split(',');
 
@@ -169,14 +161,13 @@
 
                     DateTime arrivalbeginDate;
                     DateTime arrivalendDate;
-                    Boolean invalidDate = false;
+                    bool invalidDate = false;
 
                     if (!DateTime.TryParse(arrivalbegin, out arrivalbeginDate))
                     {
                         invalidDate = true;
                         Log.Error("invalid date entered for eta: " + arrivalbegin);
                     }
-
 
                     if (parts.Length >= 2)
                     {
@@ -195,8 +186,8 @@
 
                     Log.Debug("about to send these dates - arrival begin: " + arrivalbeginDate.ToString() + ", arrival end: " + arrivalendDate.ToString());
 
-                    String UTCarrivalbeginDate = arrivalbeginDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fff") + "Z";
-                    String UTCarrivalendDate = arrivalendDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fff") + "Z";
+                    string UTCarrivalbeginDate = arrivalbeginDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fff") + "Z";
+                    string UTCarrivalendDate = arrivalendDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fff") + "Z";
 
                     if (invalidDate && !abortcommand)
                     {
@@ -214,8 +205,7 @@
 
                 if (method.MethodName.Equals("CANCEL ETA"))
                 {
-                    String tripid = method.Parameter1;
-
+                    string tripid = method.Parameter1;
                     string data = "{\"trip_id\": \"" + tripid + "\",\"estimated_arrival_window_begin\": 0}";
                     //string data = "{\"estimated_arrival_window_begin\": 0}";
                     returndata = "returndata=" + UpdateNestData(type, methodObject.Address + "/eta", data, accessToken);
@@ -226,21 +216,17 @@
             {
                 string type = "devices/thermostats";
                 if (method.MethodName.Equals("HEAT"))
-                {
                     returndata = "returndata=" + UpdateNestData(type, methodObject.Address, "{\"hvac_mode\":\"heat\"}", accessToken);
-                }
+
                 if (method.MethodName.Equals("COOL"))
-                {
                     returndata = "returndata=" + UpdateNestData(type, methodObject.Address, "{\"hvac_mode\":\"cool\"}", accessToken);
-                }
+
                 if (method.MethodName.Equals("HEAT-COOL"))
-                {
                     returndata = "returndata=" + UpdateNestData(type, methodObject.Address, "{\"hvac_mode\":\"heat-cool\"}", accessToken);
-                }
+
                 if (method.MethodName.Equals("OFF"))
-                {
                     returndata = "returndata=" + UpdateNestData(type, methodObject.Address, "{\"hvac_mode\":\"off\"}", accessToken);
-                }
+
                 if (method.MethodName.Equals("SET TARGET"))
                 {
                     if (!methodObject.State.Value.ToUpper().Equals("HEAT") && !methodObject.State.Value.ToUpper().Equals("COOL"))
@@ -390,11 +376,8 @@
                     }
                 }
             }
-
             Log.Info(returndata);
-
         }
-
         
         /// <summary>
         /// OSA Plugin Interface - The plugin has been asked to shut down
@@ -402,37 +385,25 @@
         public override void Shutdown()
         {
 			Log.Info("Stopping Nest...");
-            
-			// Place any code required to shut down your plugin here leave empty if no action is required
         }
 
         private string UpdateNestData(string type, string id, string data, string accessToken)
         {
-
             string r="";
-
             if (!accessToken.Equals(""))
             {
-
                 string path = type + "/" + id;
-
                 Log.Debug("about to send update to nest: path=" + path + ", value=" + data + "");
-
                 var firebaseClient = new Firebase("https://developer-api.nest.com", accessToken);
-
-                
-
                 try
                 {
                     r = firebaseClient.Put(path, data);
                 }
                 catch (Exception e)
                 {
-
                     string[] lines = e.ToString().Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                     r = "Error updating firebase: " + lines[0];
                 }
-
                 firebaseClient.Dispose();
             }
             return r;
@@ -441,24 +412,18 @@
         //returns true if data has changed (used to try to determine when data streaming has stopped working)
         private Boolean GetNestData(string accessToken)
         {
-            Boolean datachanged = false;
-
+            bool datachanged = false;
             if (!accessToken.Equals(""))
             {
-
                 var firebaseClient = new Firebase("https://developer-api.nest.com", accessToken);
-
                 //get structure data
                 try
                 {
                     string structureData = firebaseClient.Get("structures");
-
                     dynamic data = JsonConvert.DeserializeObject<dynamic>(structureData);
                     var myStructures = new List<Structure>();
                     foreach (var itemDynamic in data)
-                    {
                         myStructures.Add(JsonConvert.DeserializeObject<Structure>(((JProperty)itemDynamic).Value.ToString()));
-                    }
 
                     foreach (Structure structure in myStructures)
                     {
@@ -466,18 +431,14 @@
                         if (!OSAEObjectManager.ObjectExists(structure.structure_id))
                         {
                             Log.Debug("about to add structure: " + structure.name + " address: " + structure.structure_id + ".");
-
                             OSAEObject _nameObject = OSAEObjectManager.GetObjectByName(structure.name);
                             //OSAEObjectManager.GetObjectByAddress(structure.structure_id)
                             if (_nameObject != null)
                                 Log.Error("Object with name: " + _nameObject.Name + " exists but it's address doesn't match - objects address: " + _nameObject.Address + ". - device_id from nest:" + structure.structure_id + ".");
 
                             OSAEObjectManager.ObjectAdd(structure.name,"", structure.name, "NEST STRUCTURE", structure.structure_id, "",30, true);
-  
                         }
-
-                        String objectName = OSAEObjectManager.GetObjectByAddress(structure.structure_id).Name;
-
+                        string objectName = OSAEObjectManager.GetObjectByAddress(structure.structure_id).Name;
                         //load current data into structure object
                         Structure currentdata = new Structure();
                         currentdata.loadData(objectName);
@@ -485,18 +446,13 @@
                         if (!structure.SameData(currentdata))
                         {
                             datachanged = true;
-
                             // list the changes temporarily to see how it is working
                             List<Variance> variances = structure.DetailedCompare(currentdata);
-
                             foreach (Variance v in variances)
                                 Log.Debug(v.Prop + " value changed from " + v.valB.ToString() + " to " + v.valA.ToString());
                         }
-
                         //update structure data
-
                         OSAEObjectStateManager.ObjectStateSet(objectName, structure.away, pName);
-
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Id", structure.structure_id, pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Name", structure.name, pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Country Code", structure.country_code, pName);
@@ -504,7 +460,6 @@
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Peak Start Time", structure.peak_period_start_time, pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Peak End Time", structure.peak_period_end_time, pName);
                         OSAEObjectPropertyManager.ObjectPropertySet(objectName, "Time Zone", structure.time_zone, pName);
-
                     }
                 }
                 catch (Exception e)
@@ -529,15 +484,13 @@
                         if (!OSAEObjectManager.ObjectExists(thermostat.device_id))
                         {
                             Log.Debug("about to add thermostat: " + thermostat.name_long + " address: " + thermostat.device_id);
-
                             OSAEObject _nameObject = OSAEObjectManager.GetObjectByName(thermostat.name);
                             if (_nameObject != null)
                                 Log.Error("Object with name: " + _nameObject.Name + " exists but it's address doesn't match - objects address: " + _nameObject.Address + ". - device_id from nest:" + thermostat.structure_id + ".");
 
                             OSAEObjectManager.ObjectAdd(thermostat.name,"", thermostat.name_long, "NEST THERMOSTAT", thermostat.device_id, "", 30, true);
                         }
-
-                        String objectName = OSAEObjectManager.GetObjectByAddress(thermostat.device_id).Name;
+                        string objectName = OSAEObjectManager.GetObjectByAddress(thermostat.device_id).Name;
 
                         //load current data into thermostat object
                         Thermostat currentdata = new Thermostat();
@@ -549,7 +502,6 @@
                         if (!thermostat.SameData(currentdata))
                         {
                             datachanged = true;
-
                             // list the changes temporarily to see how it is working
                             List<Variance> variances = thermostat.DetailedCompare(currentdata);
                             Log.Debug("Number of fields changed: " + variances.Count);
@@ -617,7 +569,6 @@
 
                             OSAEObjectManager.ObjectAdd(smokealarm.name,"", smokealarm.name_long, "NEST PROTECT", smokealarm.device_id, "", 30, true);
                         }
-
                         string objectName = OSAEObjectManager.GetObjectByAddress(smokealarm.device_id).Name;
 
                         //load current data into smokealarm object
@@ -628,7 +579,6 @@
                         if (!smokealarm.SameData(currentdata))
                         {
                             datachanged = true;
-
                             // list the changes temporarily to see how it is working
                             List<Variance> variances = smokealarm.DetailedCompare(currentdata);
                             Log.Debug("Number of fields changed: " + variances.Count);
@@ -685,9 +635,7 @@
         {
             if (!accessToken.Equals(""))
             {
-
                 var firebaseClient = new Firebase("https://developer-api.nest.com", accessToken);
-
                 //suscribe to structure data
                 try
                 {
@@ -697,14 +645,10 @@
                         if (!e.Data.Equals(e.OldData) || e.Data == null || e.OldData == null)
                         {
                             string[] parts = e.Path.Split('/');
-
                             string deviceid = parts[parts.Count() - 2];
                             string dataelement = parts[parts.Count() - 1];
-
                             Log.Debug("device(" + deviceid + ") " + dataelement + " changed from " + e.OldData + " to " + e.Data + ".");
-
                             string objectName = OSAEObjectManager.GetObjectByAddress(deviceid).Name;
-
                             if (dataelement.Equals("away"))
                                 OSAEObjectStateManager.ObjectStateSet(objectName, e.Data, pName);
 
@@ -939,19 +883,17 @@
                 new KeyValuePair<string, string>("client_secret", "cunKFYT3UqaRbseJWAPOr5PbI"),
                 new KeyValuePair<string, string>("grant_type", "authorization_code")
             });
-
                 var result = client.PostAsync("/oauth2/access_token", content).Result;
                 string resultContent = result.Content.ReadAsStringAsync().Result;
-
                 var accessToken = JsonConvert.DeserializeObject(resultContent);
 
                 return (accessToken as dynamic).access_token;
             }
         }
 
-        private Boolean IsMyStructureHome(OSAEObject myobject)
+        private bool IsMyStructureHome(OSAEObject myobject)
         {
-            Boolean ishome;
+            bool ishome;
             string mystructure = myobject.Property("Structure ID").Value;
 
             if (OSAEObjectManager.GetObjectByAddress(mystructure).State.Value.ToUpper().Equals("HOME"))
@@ -964,27 +906,21 @@
 
         public string convertDate(string last_connection)
         {
-            //for testing 
-            //last_connection = "2015-02-06T20:43:16.772Z";
-
+            //for testing last_connection = "2015-02-06T20:43:16.772Z";
             DateTime _lastConnection;
 
             if (!DateTime.TryParse(last_connection, out _lastConnection))
                 last_connection = "";
             else
-            {
-                //last_connection = _lastConnection.ToLocalTime().ToString("G"); 
                 last_connection = _lastConnection.ToString("G");
-            }
 
             return last_connection;
         }
 
-        private Boolean IsTempOK(string temptype,string temp,OSAEObject myobject)
+        private bool IsTempOK(string temptype,string temp,OSAEObject myobject)
         {
-            Boolean tempisok = true;
-            float mylowtemp = -1;
-            float myhightemp = 100;
+            bool tempisok = true;
+            float mylowtemp = -1, myhightemp = 100;
             string tempscale;
 
             float.TryParse(myobject.Property("Target Temperature Low").Value, out mylowtemp);
@@ -994,17 +930,11 @@
             if (tempscale.ToLower().Equals("f"))
             {
                 int convertedtemp;
-            
                 if (Int32.TryParse(temp, out convertedtemp))
                 {
-                    if (convertedtemp < 50 || convertedtemp > 90)
-                        tempisok = false;
-
-                    if (temptype.Equals("high") && convertedtemp < mylowtemp)
-                        tempisok = false;
-
-                    if (temptype.Equals("low") && convertedtemp > myhightemp)
-                        tempisok = false;
+                    if (convertedtemp < 50 || convertedtemp > 90) tempisok = false;
+                    if (temptype.Equals("high") && convertedtemp < mylowtemp) tempisok = false;
+                    if (temptype.Equals("low") && convertedtemp > myhightemp) tempisok = false;
                 }
                 else
                     tempisok = false;
@@ -1014,19 +944,15 @@
                 float convertedtemp;
                 if (float.TryParse(temp, out convertedtemp))
                 {
-                    if (convertedtemp < 9 || convertedtemp > 32)
-                        tempisok = false;
+                    if (convertedtemp < 9 || convertedtemp > 32) tempisok = false;
 
-                    if (temptype.Equals("high") && convertedtemp < mylowtemp)
-                        tempisok = false;
+                    if (temptype.Equals("high") && convertedtemp < mylowtemp) tempisok = false;
 
-                    if (temptype.Equals("low") && convertedtemp > myhightemp)
-                        tempisok = false;
+                    if (temptype.Equals("low") && convertedtemp > myhightemp) tempisok = false;
                 }
                 else
                     tempisok = false;
             }
-
             return tempisok;
         }
     }

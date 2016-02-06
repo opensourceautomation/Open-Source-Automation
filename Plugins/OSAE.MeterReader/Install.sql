@@ -16,6 +16,6 @@ CALL osae_sp_object_type_state_add ('UTILITY METER','ON','On');
 CALL osae_sp_object_type_state_add ('UTILITY METER','OFF','Off');
 CALL osae_sp_object_type_event_add ('UTILITY METER','ON','On');
 CALL osae_sp_object_type_event_add ('UTILITY METER','OFF','Off');
-CALL osae_sp_object_type_property_add ('UTILITY METER','Reading','Integer','','',1);
-CALL osae_sp_object_type_property_add ('UTILITY METER','Rate','Float','','',1);
+CALL osae_sp_object_type_property_add ('UTILITY METER','Reading','Integer','','0',1);
+CALL osae_sp_object_type_property_add ('UTILITY METER','Rate','Float','','0.0',1);
 CALL osae_sp_object_type_property_add ('UTILITY METER','Type','String','','',0);

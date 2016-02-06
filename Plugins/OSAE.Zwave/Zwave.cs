@@ -8,7 +8,7 @@ namespace OSAE.Zwave
 {
     public class Zwave : OSAEPluginBase
     {
-        private static OSAE.General.OSAELog Log;// = new General.OSAELog();
+        private static OSAE.General.OSAELog Log;
         static private ManagedControllerStateChangedHandler m_controllerStateChangedHandler = new ManagedControllerStateChangedHandler(Zwave.MyControllerStateChangedHandler);
         static private ZWManager m_manager = null;
         ZWOptions m_options = null;

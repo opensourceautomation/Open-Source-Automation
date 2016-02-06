@@ -34,8 +34,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>.\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\output\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="OSAE.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
