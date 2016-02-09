@@ -20,9 +20,7 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        //OSAELog
-        private OSAE.General.OSAELog Log;// = new OSAE.General.OSAELog();
-        
+        private OSAE.General.OSAELog Log;
         public string gAppName = "";
         public int gAppMinTrust = 50;
         public string gAppLocation = "";
@@ -86,6 +84,8 @@
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Load_App_Name();
+            Log = new OSAE.General.OSAELog(gAppName);
             Uri uri = new Uri("pack://siteoforigin:,,,/OSA.png");
             var bitmapImage = new BitmapImage(uri);
             
@@ -100,7 +100,7 @@
             menuCreateScreen.IsEnabled = false;
             menuAddControl.IsEnabled = false;
 
-            Load_App_Name();
+
          
             _timer = new System.Timers.Timer(1000);
             _timer.Elapsed += new ElapsedEventHandler(_timer_Elapsed);
@@ -231,7 +231,6 @@
                        
                     }));
                 }
-
                 List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
                 foreach (OSAE.OSAEScreenControl newCtrl in controls)
                 {
@@ -383,7 +382,7 @@
                     #endregion
 
                     #region CONTROL BROWSER
-                    if (newCtrl.ControlType == "CONTROL BROWSER")
+                    else if (newCtrl.ControlType == "CONTROL BROWSER")
                     {
                         foreach (BrowserFrame oBrowser in browserFrames)
                         {
@@ -421,7 +420,7 @@
                 }
             }
             catch (Exception ex)
-            { this.Log.Error("Error in Update!", ex); }
+            { Log.Error("Error in Update!", ex); }
             updatingScreen = false;
         }
 
@@ -743,24 +742,15 @@
 
         private void Load_App_Name()
         {
+            gAppName = "GUI CLIENT-" + Common.ComputerName;
+            gAppLocation = Common.ComputerName;
 
-            OSAEObjectCollection screens = OSAEObjectManager.GetObjectsByType("GUI CLIENT");
-            foreach (OSAE.OSAEObject obj in screens)
-            {
-                if (obj.Property("Computer Name").Value == Common.ComputerName)
-                {
-                    gAppName = obj.Name;
-                    gAppLocation = obj.Container;
-                }
-            }
-            if (gAppName == "")
-            {
-                gAppName = "GUI CLIENT-" + Common.ComputerName;
+            OSAEObject obj = OSAEObjectManager.GetObjectByName("GUI CLIENT-" + Common.ComputerName);
+            if (obj == null)
                 OSAEObjectManager.ObjectAdd(gAppName, "", gAppName, "GUI CLIENT", "", Common.ComputerName, 30, true);
-            }
-            Log = new OSAE.General.OSAELog(gAppName);
-            Log.Info("Found this Screen App's Object Name:  " + gAppName);
-    }
+            else
+                OSAEObjectManager.ObjectUpdate(obj.Name, gAppName, "", gAppName, "GUI CLIENT", "", Common.ComputerName, 30, true);
+        }
 
         private void Set_Default_Screen()
         {
