@@ -47,7 +47,6 @@ namespace OSAE.UI.Controls
             InitializeComponent();
 
             OSAEImageManager imgMgr = new OSAEImageManager();
-
             gAppName = appName;
             screenObject = sObject;
             ObjectName = screenObject.Property("Object Name").Value;
@@ -57,10 +56,8 @@ namespace OSAE.UI.Controls
             try
             {
                 string propertyCheck = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value;
-                if (propertyCheck != "")
-                    LightLevel = Convert.ToUInt16(propertyCheck);
-                else
-                    LightLevel = 100;
+                if (propertyCheck != "") LightLevel = Convert.ToUInt16(propertyCheck);
+                else LightLevel = 100;
             }
             catch
             { }
@@ -85,18 +82,15 @@ namespace OSAE.UI.Controls
                 string imgName4 = screenObject.Property(StateMatch + " Image 4").Value;
 
                 try
-                {
-                    repeatAnimation = Convert.ToBoolean(screenObject.Property("Repeat Animation").Value);
-                }
+                { repeatAnimation = Convert.ToBoolean(screenObject.Property("Repeat Animation").Value); }
                 catch
                 {
                     OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Repeat Animation", "TRUE", gAppName);
                     repeatAnimation = true;
                 }
+
                 try
-                {
-                    frameDelay = Convert.ToInt16(screenObject.Property("Frame Delay").Value);
-                }
+                { frameDelay = Convert.ToInt16(screenObject.Property("Frame Delay").Value); }
                 catch
                 {
                     frameDelay = 100;
@@ -167,10 +161,8 @@ namespace OSAE.UI.Controls
 
         void timer_Tick(object sender, EventArgs e)
         {
-            if (currentFrame < imageFrames)
-                currentFrame += 1;
-            else if (currentFrame == imageFrames)
-                currentFrame = 1;
+            if (currentFrame < imageFrames)  currentFrame += 1;
+            else if (currentFrame == imageFrames) currentFrame = 1;
             MemoryStream imageStream = new MemoryStream();
             
             switch (currentFrame)
@@ -202,9 +194,7 @@ namespace OSAE.UI.Controls
                 Image.Visibility = System.Windows.Visibility.Visible;
             }
             catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            { MessageBox.Show(ex.Message); }
         }
 
         public void Update()
@@ -237,13 +227,11 @@ namespace OSAE.UI.Controls
                 try
                 {
                     string propertyCheck = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value;
-                    if (propertyCheck != "")
-                        LightLevel = Convert.ToUInt16(propertyCheck);
-                    else
-                        LightLevel = 100;
+
+                    if (propertyCheck != "") LightLevel = Convert.ToUInt16(propertyCheck);
+                    else LightLevel = 100;
                 }
-                catch
-                { }
+                catch { }
 
                 if (sliderVisible && updatingSlider == false)
                 {
@@ -252,19 +240,15 @@ namespace OSAE.UI.Controls
                         CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
                     }
                     catch { CurLevel = "0"; }
-                    this.Dispatcher.Invoke((Action)(() =>
+                    Dispatcher.Invoke((Action)(() =>
                     {
                         sldSlider.ToolTip = CurLevel + "%";
                     sldSlider.Value = Convert.ToUInt16(CurLevel);
-                    if (CurLevel != "")
-                        Image.ToolTip = ObjectName + "\n" + CurStateLabel + " (" + CurLevel + "%) since: " + LastStateChange;
-                    else
-                        Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
+
+                    if (CurLevel != "") Image.ToolTip = ObjectName + "\n" + CurStateLabel + " (" + CurLevel + "%) since: " + LastStateChange;
+                    else Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
                     }));
                 }
-
-
-
 
                 if (stateChanged)
                 {
@@ -281,7 +265,7 @@ namespace OSAE.UI.Controls
                             ms1 = new MemoryStream(img1.Data);
                             imageFrames = 1;
                             currentFrame = 1;
-                            this.Dispatcher.Invoke((Action)(() =>
+                            Dispatcher.Invoke((Action)(() =>
                             {
                                 BitmapImage bitmapImage = new BitmapImage();
                                 bitmapImage.BeginInit();
@@ -322,10 +306,9 @@ namespace OSAE.UI.Controls
                     }
                     else
                     {
-                        this.Dispatcher.Invoke((Action)(() =>
+                        Dispatcher.Invoke((Action)(() =>
                         {
-                            Image.Source = null;
-                           // Image.Visibility = System.Windows.Visibility.Hidden;
+                            Image.Source = null; // Image.Visibility = System.Windows.Visibility.Hidden;
                         }));
                     }
               
@@ -340,6 +323,25 @@ namespace OSAE.UI.Controls
         {
             string currentUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Current User").Value;
             if (currentUser == "") return;
+
+
+            if (StateMatch == "State 1")
+            {
+                string newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(),"State 2").ToString();
+                OSAEMethodManager.MethodQueueAdd(ObjectName, newState, "0", "", currentUser);
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", currentUser);
+            }
+            else
+            {
+                string newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(), "State 1").ToString();
+                OSAEMethodManager.MethodQueueAdd(ObjectName, newState, "0", "", currentUser);
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, newState, currentUser);
+            }
+
+
+            // TODO: replace ON/OFF with state1/2
+            // Check if method is present and only run either Method or State NOT BOTH
+            /*
             if (CurState == "ON")
             {
                 OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "0", "", currentUser);
@@ -349,7 +351,8 @@ namespace OSAE.UI.Controls
             {
                 OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "100", "", currentUser);
                 OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", currentUser);
-            }        
+            }     
+            */   
         }
 
         private void Slider_ValueChanged_1(object sender, RoutedPropertyChangedEventArgs<double> e)

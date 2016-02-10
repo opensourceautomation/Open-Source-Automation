@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Timers;
 
 namespace OSAE.UI.Controls
@@ -44,7 +35,7 @@ namespace OSAE.UI.Controls
             OSAEObjectState os = OSAEObjectStateManager.GetObjectStateValue(ObjectName);
             CurrentState = os.Value;
 
-            OffTimer = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName,"OFF TIMER").Value);
+            OffTimer = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName,"OFF TIMER").Value);
             TimeInState = (int)os.TimeInState;
 
             string sValue;
@@ -71,9 +62,7 @@ namespace OSAE.UI.Controls
                         SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
                         timerLabel.Background = brush;
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
                 if (sForeColor != "")
                 {
@@ -83,26 +72,19 @@ namespace OSAE.UI.Controls
                         SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
                         timerLabel.Foreground = brush;
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
                 if (iFontSize != "")
                 {
                     try
-                    {
-                        timerLabel.FontSize = Convert.ToDouble(iFontSize);
-                    }
-                    catch
-                    {
-                    }
+                    { timerLabel.FontSize = Convert.ToDouble(iFontSize); }
+                    catch { }
                 }
                 timerLabel.Content = sValue;
             }
             else
-            {
                 timerLabel.Content = "";
-            }
+
             timer.Interval = 1000;
             timer.Enabled = true;
             timer.Elapsed += new ElapsedEventHandler(timer_tick);
@@ -110,7 +92,7 @@ namespace OSAE.UI.Controls
 
         public void Update()
         {
-            this.Dispatcher.Invoke((Action)(() =>
+            Dispatcher.Invoke((Action)(() =>
             {
                 string sValue;
                 OSAEObjectState os = OSAEObjectStateManager.GetObjectStateValue(ObjectName);
@@ -135,7 +117,7 @@ namespace OSAE.UI.Controls
         {
             if (CurrentState != "OFF")
             {
-                this.Dispatcher.Invoke((Action)(() =>
+                Dispatcher.Invoke((Action)(() =>
                 {
                     span = span.Subtract(new TimeSpan(0, 0, 1));
                     timerLabel.Content = span.ToString(@"mm\:ss");

@@ -95,7 +95,7 @@
                 {
                     DataSet dataset = new DataSet();
 
-                    command.CommandText = "SELECT object_property_id FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@PropertyName)";
+                    command.CommandText = "SELECT object_property_id FROM osae_v_object_property WHERE object_name=@ObjectName AND property_name=@PropertyName";
                     command.Parameters.AddWithValue("@ObjectName", objectName);
                     command.Parameters.AddWithValue("@PropertyName", propertyName);
                     dataset = OSAESql.RunQuery(command);
