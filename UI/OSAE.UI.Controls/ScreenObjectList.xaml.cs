@@ -1,18 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.IO;
-using OSAE;
 using System.Data;
 
 namespace OSAE.UI.Controls
@@ -22,6 +9,7 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class ScreenObjectList : UserControl
     {
+        public OSAEObject screenObject { get; set; }
         public Point Location;
         public string currentUser = "";
         public string _AppName = "";
@@ -29,24 +17,21 @@ namespace OSAE.UI.Controls
         public string currentProperty = "";
         public string currentPropertyType = "";
         public string currentScreen = "";
-        public ScreenObjectList(string screen,string user)
+        public ScreenObjectList(OSAEObject sObject, string screen,string user)
         {
             InitializeComponent();
             currentUser = user;
             currentScreen = screen;
+            screenObject = sObject;
             OSAEObjectCollection _objs = OSAEObjectManager.GetObjectsByContainer(currentScreen);
             foreach (OSAEObject _obj in _objs)
-            {
                 lbControls.Items.Add(_obj.Name);
-            }
         }
 
         private void lbControls_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DataSet dsControls = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated,source_name, trust_level,interest_level,property_object_type FROM osae_v_object_property where object_name='" + lbControls.SelectedValue.ToString() + "' ORDER BY property_name");
             dgProperties.ItemsSource = dsControls.Tables[0].DefaultView;
-            // dgProperties.SelectedIndex = 0;
-
         }
 
         private void dgProperties_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -55,7 +40,6 @@ namespace OSAE.UI.Controls
             DataGridRow row = (DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(dataGrid.SelectedIndex);
             if (row != null)
             {
-
                 dataGrid.Columns[2].Visibility = System.Windows.Visibility.Visible;
                 DataGridCell RowColumn = dataGrid.Columns[1].GetCellContent(row).Parent as DataGridCell;
                 txtValue.Text = ((TextBlock)RowColumn.Content).Text;
@@ -92,10 +76,8 @@ namespace OSAE.UI.Controls
                 value = ddlPropValue.SelectedValue.ToString();
             else
             {
-                if (ddlPropValue.IsVisible)
-                    value = ddlPropValue.SelectedValue.ToString();
-                else
-                    value = txtValue.Text;
+                if (ddlPropValue.IsVisible) value = ddlPropValue.SelectedValue.ToString();
+                else value = txtValue.Text;
             }
             OSAEObjectPropertyManager.ObjectPropertySet(lbControls.SelectedValue.ToString(), currentProperty, value, currentUser);
             DataSet dsControls = OSAESql.RunSQL("SELECT property_name, property_value, property_datatype, object_property_id, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated,source_name, trust_level,interest_level,property_object_type FROM osae_v_object_property where object_name='" + lbControls.SelectedValue.ToString() + "' ORDER BY property_name");
@@ -104,7 +86,7 @@ namespace OSAE.UI.Controls
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            this.Visibility = System.Windows.Visibility.Hidden;
+            Visibility = System.Windows.Visibility.Hidden;
         }
     }
 }

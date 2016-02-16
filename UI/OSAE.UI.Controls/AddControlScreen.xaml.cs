@@ -72,7 +72,7 @@ namespace OSAE.UI.Controls
                 OSAEObjectManager.ObjectAdd(tempName, "", tempName, "SCREEN", "", tempName, 50, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(tempName, "Background Image", img.Name, currentUser);
                 currentScreen = txtScreenName.Text;
-                OSAEObjectManager.ObjectAdd(tempName + " User Selector", "", tempName + " User Selector", "CONTROL USER SELECTOR", "", tempName, 50, true);
+                OSAEObjectManager.ObjectAdd(tempName + " - User Selector", "", tempName + " - User Selector", "CONTROL USER SELECTOR", "", tempName, 50, true);
                 NotifyParentFinished();
             }
         }

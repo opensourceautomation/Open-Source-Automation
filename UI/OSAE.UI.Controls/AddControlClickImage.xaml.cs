@@ -127,7 +127,7 @@ namespace OSAE.UI.Controls
             if (validateForm("Add"))
             {
                 sWorkingName = txtControlName.Text;
-                OSAEObjectManager.ObjectAdd(sWorkingName, sWorkingName, sWorkingName, "CONTROL CLICK IMAGE", "", currentScreen,50, true);
+                OSAEObjectManager.ObjectAdd(sWorkingName, "", sWorkingName, "CONTROL CLICK IMAGE", "", currentScreen,50, true);
                 if (imgNormalRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", imgNormalRaw.Name, currentUser);
                 else OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Normal Image", "", currentUser);
                 if (imgPressedRaw != null) OSAEObjectPropertyManager.ObjectPropertySet(sWorkingName, "Pressed Image", imgPressedRaw.Name, currentUser);

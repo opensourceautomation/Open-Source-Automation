@@ -33,7 +33,7 @@
                 OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType("WEATHER");
                 if (objects.Count == 0)
                 {
-                    OSAEObjectManager.ObjectAdd("Weather", "Weather", "Weather Data", "WEATHER", "", "", 30, true);
+                    OSAEObjectManager.ObjectAdd("Weather", "", "Weather Data", "WEATHER", "", "", 30, true);
                     WeatherObjName = "Weather";
                 }
                 else

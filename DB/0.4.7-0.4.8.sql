@@ -1183,6 +1183,7 @@ CALL osae_sp_object_type_property_add('SPEECH','Version','String','','',0);
 CALL osae_sp_object_type_property_add('SPEECH','Author','String','','',0);
 CALL osae_sp_object_type_property_delete('Computer Name','SPEECH');
 
+CALL osae_sp_object_type_property_add('WEB SERVER','Hide Controls','Boolean','','FALSE',0);
 CALL osae_sp_object_type_property_add('WEB SERVER','Timeout','Integer','','60',0);
 CALL osae_sp_object_type_property_add('WEB SERVER','Version','String','','',0);
 CALL osae_sp_object_type_property_add('WEB SERVER','Author','String','','',0);

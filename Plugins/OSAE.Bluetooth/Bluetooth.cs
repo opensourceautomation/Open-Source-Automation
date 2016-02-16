@@ -121,7 +121,7 @@
                     {
                         if (OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Learning Mode").Value == "TRUE")
                         {
-                            OSAEObjectManager.ObjectAdd(nearosaeDevices[j].DeviceName, nearosaeDevices[j].DeviceName, nearosaeDevices[j].DeviceName, "BLUETOOTH DEVICE", nearosaeDevices[j].DeviceAddress.ToString(), string.Empty, 50, true);
+                            OSAEObjectManager.ObjectAdd(nearosaeDevices[j].DeviceName, "", nearosaeDevices[j].DeviceName, "BLUETOOTH DEVICE", nearosaeDevices[j].DeviceAddress.ToString(), string.Empty, 50, true);
                             OSAEObjectPropertyManager.ObjectPropertySet(nearosaeDevices[j].DeviceName, "Discover Type", "0", gAppName);
                             if (gDebug) Log.Debug(addr + " - " + nearosaeDevices[j].DeviceName + ": added to OSA");
                         }

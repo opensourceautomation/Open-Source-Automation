@@ -10,6 +10,7 @@ using OSAE;
 public partial class home : System.Web.UI.Page
 {
     //private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
+    string objectSQL = "";
 
     public void RaisePostBackEvent(string eventArgument)
     {
@@ -58,7 +59,7 @@ public partial class home : System.Web.UI.Page
                 ddlPropValue.Items.Clear(); 
                 ddlPropValue.Items.Add(new ListItem("TRUE", "TRUE"));
                 ddlPropValue.Items.Add(new ListItem("FALSE", "FALSE"));
-                if (!String.IsNullOrEmpty(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString()) && ddlPropValue.Items.FindByValue(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString()) != null)
+                if (!string.IsNullOrEmpty(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString()) && ddlPropValue.Items.FindByValue(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString()) != null)
                     ddlPropValue.SelectedValue = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString();
                 
                 txtPropValue.Visible = false;
@@ -75,9 +76,7 @@ public partial class home : System.Web.UI.Page
                 ddlPropValue.Items.Clear();
                 DataSet options = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_type NOT IN ('CONTROL','SCREEN') ORDER BY object_name");
                 foreach (DataRow dr in options.Tables[0].Rows)
-                {
                     ddlPropValue.Items.Add(new ListItem(dr["object_name"].ToString()));
-                }
 
                 txtPropValue.Visible = false;
                 btnPropSave.Visible = true;
@@ -93,9 +92,7 @@ public partial class home : System.Web.UI.Page
                 ddlPropValue.Items.Clear();
                 DataSet options = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_type ='" + gvProperties.DataKeys[gvProperties.SelectedIndex]["property_object_type"].ToString() + "' ORDER BY object_name");
                 foreach (DataRow dr in options.Tables[0].Rows)
-                {
                     ddlPropValue.Items.Add(new ListItem(dr["object_name"].ToString()));
-                }
 
                 txtPropValue.Visible = false;
                 btnPropSave.Visible = true;
@@ -115,9 +112,8 @@ public partial class home : System.Web.UI.Page
                 if (options.Tables[0].Rows.Count > 0)
                 {
                     foreach (DataRow dr in options.Tables[0].Rows)
-                    {
                         ddlPropValue.Items.Add(new ListItem(dr["option_name"].ToString(), dr["option_name"].ToString()));
-                    }
+
                     if (!string.IsNullOrEmpty(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString()) && ddlPropValue.Items.FindByValue(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString()) != null)
                         ddlPropValue.SelectedValue = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString();
 
@@ -140,8 +136,14 @@ public partial class home : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["Username"] == null)
-            Response.Redirect("~/Default.aspx");
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+
+        bool hideControls = Convert.ToBoolean(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Hide Controls").Value);
+        if (hideControls)
+            objectSQL = "SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name";
+        else
+            objectSQL = "SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object order by container_name, object_name";
+
         if (!IsPostBack)  
         {
             ViewState["sortOrder"] = "";  
@@ -152,6 +154,8 @@ public partial class home : System.Web.UI.Page
             panelPropForm.Visible = false;
             divParameters.Visible = false;
             //hdnSelectedObjectName.Text = gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString();
+
+
             loadDDLs();
             loadProperties();
             loadDetails();
@@ -161,16 +165,15 @@ public partial class home : System.Web.UI.Page
 
     public void bindGridView(string sortExp,string sortDir)  
     {
-        DataSet myDataSet = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name");
+        DataSet myDataSet = OSAESql.RunSQL(objectSQL);
         DataView myDataView = new DataView();
         myDataView = myDataSet.Tables[0].DefaultView;
 
-        if (sortExp != string.Empty)
-            myDataView.Sort = string.Format("{0} {1}", sortExp, sortDir);
+        if (sortExp != string.Empty) myDataView.Sort = string.Format("{0} {1}", sortExp, sortDir);
 
         gvObjects.DataSource = myDataView;
         gvObjects.DataBind();
-        if (!this.IsPostBack) loadDDLs();
+        if (!IsPostBack) loadDDLs();
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
@@ -194,17 +197,13 @@ public partial class home : System.Web.UI.Page
     {  
         get  
         {  
-            if (ViewState["sortOrder"].ToString() == "desc")  
-                ViewState["sortOrder"] = "asc";  
-            else  
-                ViewState["sortOrder"] = "desc";  
+            if (ViewState["sortOrder"].ToString() == "desc") ViewState["sortOrder"] = "asc";  
+            else ViewState["sortOrder"] = "desc";  
  
             return ViewState["sortOrder"].ToString();  
         }  
         set  
-        {  
-            ViewState["sortOrder"] = value;  
-        }  
+        { ViewState["sortOrder"] = value; }  
     }  
     
     protected void gvProperties_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -213,7 +212,6 @@ public partial class home : System.Web.UI.Page
         {
             //e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.originalcolor=this.style.backgroundColor;this.style.background='lightblue';");
            // e.Row.Attributes.Add("onmouseout", "this.style.background=this.originalcolor;");
-
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvProperties_" + e.Row.RowIndex.ToString()));
         }
     }
@@ -250,9 +248,9 @@ public partial class home : System.Web.UI.Page
                 divParameters.Visible = true;
                 txtParam1.Text = dt.Rows[0]["param_1_default"].ToString();
                 txtParam2.Text = dt.Rows[0]["param_2_default"].ToString();
-                if (!String.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
+                if (!string.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
                     lblParam1.Text = "(" + dt.Rows[0]["param_1_label"].ToString() + ")";
-                if (!String.IsNullOrEmpty(dt.Rows[0]["param_2_label"].ToString()))
+                if (!string.IsNullOrEmpty(dt.Rows[0]["param_2_label"].ToString()))
                     lblParam2.Text = "(" + dt.Rows[0]["param_2_label"].ToString() + ")";
             }
             else
@@ -289,42 +287,36 @@ public partial class home : System.Web.UI.Page
     {
         ddlState.DataSource = OSAESql.RunSQL("SELECT state_label as Text, state_name as Value FROM osae_object_type_state ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString().Replace("'", "''") + "' ORDER BY state_label");
         ddlState.DataBind();
-        if (ddlState.Items.Count == 0)
-            divState.Visible = false;
-        else
-            divState.Visible = true;
+        if (ddlState.Items.Count == 0) divState.Visible = false;
+        else divState.Visible = true;
 
         ddlMethod.DataSource = OSAESql.RunSQL("SELECT method_label as Text, method_name as Value FROM osae_object_type_method ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString().Replace("'", "''") + "' ORDER BY method_label");
         ddlMethod.DataBind();
-        if (ddlMethod.Items.Count == 0)
-            divMethod.Visible = false;
-        else
-            divMethod.Visible = true;
-        ddlMethod.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+        if (ddlMethod.Items.Count == 0) divMethod.Visible = false;
+        else divMethod.Visible = true;
+
+        ddlMethod.Items.Insert(0, new ListItem(string.Empty, string.Empty));
 
         ddlEvent.DataSource = OSAESql.RunSQL("SELECT event_label as Text, event_name as Value FROM osae_object_type_event ts INNER JOIN osae_object o ON o.object_type_id = ts.object_type_id where object_name = '" + gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString().Replace("'", "''") + "' ORDER BY event_label");
         ddlEvent.DataBind();
-        if (ddlEvent.Items.Count == 0)
-            divEvent.Visible = false;
-        else
-            divEvent.Visible = true;
-        ddlEvent.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+        if (ddlEvent.Items.Count == 0) divEvent.Visible = false;
+        else divEvent.Visible = true;
+
+        ddlEvent.Items.Insert(0, new ListItem(string.Empty, string.Empty));
 
         ddlType.DataSource = OSAESql.RunSQL("SELECT object_type as Text, object_type as Value FROM osae_object_type ORDER BY object_type");
         ddlType.DataBind();
-        if (ddlType.Items.Count == 0)
-            ddlType.Visible = false;
-        else
-            ddlType.Visible = true;
-        ddlType.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+        if (ddlType.Items.Count == 0) ddlType.Visible = false;
+        else ddlType.Visible = true;
+
+        ddlType.Items.Insert(0, new ListItem(string.Empty, string.Empty));
 
         ddlContainer.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_name as Value FROM osae_v_object where container = 1 ORDER BY object_name"); ;
         ddlContainer.DataBind();
-        if (ddlContainer.Items.Count == 0)
-            ddlContainer.Visible = false;
-        else
-            ddlContainer.Visible = true;
-        ddlContainer.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+        if (ddlContainer.Items.Count == 0) ddlContainer.Visible = false;
+        else ddlContainer.Visible = true;
+
+        ddlContainer.Items.Insert(0, new ListItem(string.Empty, string.Empty));
     }
 
     private void loadProperties()
@@ -350,8 +342,7 @@ public partial class home : System.Web.UI.Page
         txtAddress.Text = obj.Address;
         txtTrustLevel.Text = obj.MinTrustLevel.ToString();
         ddlContainer.SelectedValue = obj.Container;
-        if (obj.State.Value != "")
-            ddlState.SelectedValue = obj.State.Value;
+        if (obj.State.Value != "") ddlState.SelectedValue = obj.State.Value;
 
         ddlType.SelectedValue = obj.Type;
         chkEnabled.Checked = obj.Enabled;
@@ -367,10 +358,8 @@ public partial class home : System.Web.UI.Page
             value = ddlPropValue.SelectedValue;
         else
         {
-            if (ddlPropValue.Visible)
-                value = ddlPropValue.SelectedValue;
-            else
-                value = txtPropValue.Text;
+            if (ddlPropValue.Visible) value = ddlPropValue.SelectedValue;
+            else value = txtPropValue.Text;
         }
 
         OSAEObjectPropertyManager.ObjectPropertySet(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), hdnSelectedPropName.Text, value, Session["Username"].ToString());
@@ -380,7 +369,7 @@ public partial class home : System.Web.UI.Page
     protected void btnAdd_Click(object sender, EventArgs e)
     {
         OSAEObjectManager.ObjectAdd(txtName.Text,txtAlias.Text, txtDescr.Text, ddlType.SelectedItem.Value, txtAddress.Text, ddlContainer.SelectedValue,Convert.ToInt16(txtTrustLevel.Text), chkEnabled.Checked);
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL(objectSQL);
         gvObjects.DataBind();
         txtName.Text = "";
         txtDescr.Text = "";
@@ -393,7 +382,7 @@ public partial class home : System.Web.UI.Page
     protected void btnDelete_Click(object sender, EventArgs e)
     {
         OSAEObjectManager.ObjectDelete(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString());
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL(objectSQL);
         gvObjects.DataBind();
         txtName.Text = "";
         txtDescr.Text = "";
@@ -407,7 +396,7 @@ public partial class home : System.Web.UI.Page
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
         OSAEObjectManager.ObjectUpdate(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), txtName.Text, txtAlias.Text, txtDescr.Text, ddlType.SelectedValue, txtAddress.Text, ddlContainer.SelectedValue, Convert.ToInt16(txtTrustLevel.Text), chkEnabled.Checked);
-        gvObjects.DataSource = OSAESql.RunSQL("SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name");
+        gvObjects.DataSource = OSAESql.RunSQL(objectSQL);
         gvObjects.DataBind();
     }
 

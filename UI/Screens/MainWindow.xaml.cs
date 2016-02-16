@@ -99,8 +99,6 @@
             menuShowControlList.IsEnabled = false;
             menuCreateScreen.IsEnabled = false;
             menuAddControl.IsEnabled = false;
-
-
          
             _timer = new System.Timers.Timer(1000);
             _timer.Elapsed += new ElapsedEventHandler(_timer_Elapsed);
@@ -178,10 +176,20 @@
         private void Load_Objects(String sScreen)
         {
             bool FoundUserControl = OSAEObjectManager.ObjectExists(sScreen + " - User Selector");
-            if (!FoundUserControl) OSAEObjectManager.ObjectAdd(sScreen + " - User Selector", "", sScreen + " - User Selector", "CONTROL USER SELECTOR", "", sScreen, 50, true);
+            if (!FoundUserControl)
+            {
+                OSAEObjectManager.ObjectAdd(sScreen + " - User Selector", "", sScreen + " - User Selector", "CONTROL USER SELECTOR", "", sScreen, 50, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sScreen + " - User Selector", "X", (canGUI.Width - userSelectorControl.Width).ToString(),gAppName);
+                OSAEObjectPropertyManager.ObjectPropertySet(sScreen + " - User Selector", "Y", "0", gAppName);
+            }
 
             bool FoundObjectList = OSAEObjectManager.ObjectExists(sScreen + " - Screen Objects");
-            if (!FoundObjectList) OSAEObjectManager.ObjectAdd(sScreen + " - Screen Objects", "", sScreen + " - Screen Objects", "CONTROL SCREEN OBJECTS", "", sScreen, 50, true);
+            if (!FoundObjectList)
+            {
+                OSAEObjectManager.ObjectAdd(sScreen + " - Screen Objects", "", sScreen + " - Screen Objects", "CONTROL SCREEN OBJECTS", "", sScreen, 50, true);
+                OSAEObjectPropertyManager.ObjectPropertySet(sScreen + " - Screen Objects", "X", "0", gAppName);
+                OSAEObjectPropertyManager.ObjectPropertySet(sScreen + " - Screen Objects", "Y", "0", gAppName);
+            }
 
             OSAEObjectCollection screenObjects = OSAEObjectManager.GetObjectsByContainer(sScreen);
             foreach (OSAE.OSAEObject obj in screenObjects)
@@ -433,10 +441,10 @@
                 #region USER SELECTOR
                 if (obj.Type == "CONTROL USER SELECTOR")
                 {
-                    userSelectorControl = new UserSelector(gAppName);
-                    userSelectorControl.MouseRightButtonDown += new MouseButtonEventHandler(State_Image_MouseRightButtonDown);
-                    userSelectorControl.Location.X = canGUI.Width - userSelectorControl.Width;
-                    userSelectorControl.Location.Y = 0;
+                    userSelectorControl = new UserSelector(obj, gAppName);
+                  //  userSelectorControl.MouseRightButtonDown += new MouseButtonEventHandler(State_Image_MouseRightButtonDown);
+                    userSelectorControl.Location.X = Double.Parse(obj.Property("X").Value);
+                    userSelectorControl.Location.Y = Double.Parse(obj.Property("Y").Value);
                     userSelectorControl._ScreenLocation = gAppLocation;
                     canGUI.Children.Add(userSelectorControl);
                     Canvas.SetLeft(userSelectorControl, userSelectorControl.Location.X);
@@ -450,18 +458,18 @@
                 #region SCREEN OBJECTS
                 if (obj.Type == "CONTROL SCREEN OBJECTS")
                 {
-                    screenObjectControl = new ScreenObjectList(gCurrentScreen,gCurrentUser);
-                    screenObjectControl.MouseRightButtonDown += new MouseButtonEventHandler(State_Image_MouseRightButtonDown);
-                    screenObjectControl.Location.X = 0;
-                    screenObjectControl.Location.Y = 0;
+                    screenObjectControl = new ScreenObjectList(obj,gCurrentScreen,gCurrentUser);
+              //      screenObjectControl.MouseRightButtonDown += new MouseButtonEventHandler(State_Image_MouseRightButtonDown);
+                    screenObjectControl.Location.X = Double.Parse(obj.Property("X").Value);
+                    screenObjectControl.Location.Y = Double.Parse(obj.Property("Y").Value);
                     screenObjectControl._ScreenLocation = gAppLocation;
                     screenObjectControl.Visibility = System.Windows.Visibility.Hidden;
                     canGUI.Children.Add(screenObjectControl);
                     Canvas.SetLeft(screenObjectControl, screenObjectControl.Location.X);
                     Canvas.SetTop(screenObjectControl, screenObjectControl.Location.Y);
                     Canvas.SetZIndex(screenObjectControl, 5);
-                    controlTypes.Add(typeof(ObjectList));
-                  //  screenObjectControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
+                    controlTypes.Add(typeof(ScreenObjectList));
+                    screenObjectControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
                 #endregion
 
@@ -746,10 +754,8 @@
             gAppLocation = Common.ComputerName;
 
             OSAEObject obj = OSAEObjectManager.GetObjectByName("GUI CLIENT-" + Common.ComputerName);
-            if (obj == null)
-                OSAEObjectManager.ObjectAdd(gAppName, "", gAppName, "GUI CLIENT", "", Common.ComputerName, 30, true);
-            else
-                OSAEObjectManager.ObjectUpdate(obj.Name, gAppName, "", gAppName, "GUI CLIENT", "", Common.ComputerName, 30, true);
+            if (obj == null) OSAEObjectManager.ObjectAdd(gAppName, "", gAppName, "GUI CLIENT", "", Common.ComputerName, 50, true);
+            else OSAEObjectManager.ObjectUpdate(obj.Name, gAppName, "", gAppName, "GUI CLIENT", "", Common.ComputerName, 50, true);
         }
 
         private void Set_Default_Screen()
@@ -760,10 +766,10 @@
                 gCurrentScreen = screens[0].Name;
                 OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Default Screen", gCurrentScreen, gCurrentUser);
             }
+            else menuCreateScreen.IsEnabled = true;
         }
 
         #region CONTROL CLICK EVENTS
-        #region  CLICK IMAGE RIGHT CLICK
         private void Click_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -779,9 +785,7 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
-        #endregion
 
-        #region STATE IMAGE RIGHT CLICK
         private void State_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -797,9 +801,7 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
-        #endregion
 
-        #region BROWSER RIGHT CLICK
         private void Broswer_Control_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -814,9 +816,7 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
-        #endregion
 
-        #region NAVIGATION IMAGE RIGHT CLICK
         private void Navigaton_Image_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -831,9 +831,7 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
-        #endregion
 
-        #region PROPERTY LABLE RIGHT CLICK
         private void Property_Label_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -848,9 +846,7 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
-        #endregion
 
-        #region NAVIGATION IMAGE LEFT CLICK
         private void Navigaton_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
         {
             _timer.Stop();
@@ -858,9 +854,7 @@
             gCurrentScreen = navCtrl.screenName;
             Load_Screen(gCurrentScreen);
         }
-        #endregion
 
-        #region TIMER LABLE RIGHT CLICK
         private void Timer_Label_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -875,9 +869,7 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
-        #endregion
 
-        #region VIDEO STREAM VIEWER RIGHT CLICK
         private void VideoStreamViewer_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -892,9 +884,7 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
-        #endregion
 
-        #region USER CONTROL RIGHT CLICK
         private void UserControl_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
             if (editMode == false || gCurrentUser == "") return;
@@ -909,7 +899,6 @@
             addControl.ShowDialog();
             Load_Screen(gCurrentScreen);
         }
-        #endregion
         #endregion
 
         #region DRAG EVENTS
@@ -1218,7 +1207,7 @@
             // Process open file dialog box results 
             if (result == true)
             {
-                this.Log.Info("Plugin file selected: " + dlg.FileName + ".  Installing...");
+                Log.Info("Plugin file selected: " + dlg.FileName + ".  Installing...");
                 // Open Plugin Package
                 GUI.UserControlInstallerHelper pInst = new GUI.UserControlInstallerHelper();
                 pInst.InstallPlugin(dlg.FileName);

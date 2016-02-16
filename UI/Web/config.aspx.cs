@@ -14,13 +14,9 @@ public partial class config : System.Web.UI.Page
         {
             lblVersion.Text = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value;
             if (OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value == "TRUE")
-            {
                 ddlDebug.SelectedIndex = 0;
-            }
             else
-            {
                 ddlDebug.SelectedIndex = 1;
-            }
             CheckServiceStatus();
             GetDBSize();
             GetTableSizes();
@@ -61,9 +57,7 @@ public partial class config : System.Web.UI.Page
             }
         }
         catch (Exception exc)
-        {
-            serviceLabel.Text = "Could not find service";
-        }
+        { serviceLabel.Text = "Could not find service"; }
     }
 
     private void GetDBSize()
@@ -116,17 +110,13 @@ public partial class config : System.Web.UI.Page
 
             string latest = svc.Element("major").Value + "." + svc.Element("minor").Value + "." + svc.Element("revision").Value;
 
-            if (latest != lblVersion.Text)
-                hypUpgrade.Visible = true;
-            else
-                hypUpgrade.Visible = false;
+            if (latest != lblVersion.Text) hypUpgrade.Visible = true;
+            else hypUpgrade.Visible = false;
 
             response.Close();
         }
         catch (Exception ex)
-        {
-
-        }
+        { }
     }
     protected void scriptsExportButton_Click(object sender, EventArgs e)
     {
@@ -139,13 +129,9 @@ public partial class config : System.Web.UI.Page
         // d.WriteXml(s);
         foreach (DataTable tab in d.Tables)
         {
-
             foreach (DataRow drow in tab.Rows)
-            {
                 Response.Write(drow[0].ToString());
-            }
         }
-
 
       //  Response.BinaryWrite(s.ToArray());
         Response.ContentType = "text/sql";
@@ -163,11 +149,8 @@ public partial class config : System.Web.UI.Page
         // d.WriteXml(s);
         foreach (DataTable tab in d.Tables)
         {
-
             foreach (DataRow drow in tab.Rows)
-            {
-                        Response.Write(drow[0].ToString());
-            }
+                Response.Write(drow[0].ToString());
         }
         Response.ContentType = "text/sql";
         Response.AddHeader("Content-Disposition", "attachment; filename=Objects.sql");

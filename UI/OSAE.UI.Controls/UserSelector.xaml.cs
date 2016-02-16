@@ -20,6 +20,7 @@ namespace OSAE.UI.Controls
     /// </summary>
     public partial class UserSelector : UserControl
     {
+        public OSAEObject screenObject { get; set; }
         public Point Location;
         public string _CurrentUser = "";
         public int _CurrentUserTrust = 0;
@@ -29,11 +30,12 @@ namespace OSAE.UI.Controls
         private string _pwbuff = "";
         private string _usersPIN = "";
         private bool loadingFlag = true;
-        public UserSelector(string appName)
+        public UserSelector(OSAEObject sObject, string appName)
         {
             InitializeComponent();
             userGrid.Height = 25;
             _AppName = appName;
+            screenObject = sObject;
             cboUsers.Items.Add("Log In/Out");
             cboUsers.SelectedIndex = 1;
 

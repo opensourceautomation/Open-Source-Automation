@@ -168,7 +168,7 @@
                         {
                             plugin.PluginName = plugin.PluginType;
                             Log.Info(plugin.PluginName + ":  Plugin object does not exist in DB!");
-                            OSAEObjectManager.ObjectAdd(plugin.PluginName, plugin.PluginName, plugin.PluginName, plugin.PluginType, "", "System", 50, false);
+                            OSAEObjectManager.ObjectAdd(plugin.PluginName, "", plugin.PluginName, plugin.PluginType, "", "System", 50, false);
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Version", plugin.PluginVersion, serviceName);
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Author", plugin.PluginAuthor, serviceName);
                             Log.Info(plugin.PluginName + ":  Plugin added to DB.");

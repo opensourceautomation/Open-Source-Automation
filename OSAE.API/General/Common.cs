@@ -247,7 +247,7 @@
                 else
                 {
                     Logging.GetLogger().AddToLog("Computer Object found under a different Name and Object Type, updating it...", true);
-                    OSAEObjectManager.ObjectAdd(Common.ComputerName + "." + computerIp, Common.ComputerName, Common.ComputerName, "COMPUTER", computerIp, string.Empty, obj.MinTrustLevel, true);
+                    OSAEObjectManager.ObjectAdd(Common.ComputerName, "", Common.ComputerName, "COMPUTER", computerIp, string.Empty, obj.MinTrustLevel, true);
                     OSAEObjectPropertyManager.ObjectPropertySet(Common.ComputerName + "." + computerIp, "Host Name", Common.ComputerName, sourceName);
                 }
             }
