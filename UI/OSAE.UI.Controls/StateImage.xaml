@@ -4,13 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" d:DesignWidth="27.833">
-    <Grid>
+    <Grid Margin="0,0,-20,0">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="0*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Image Name="Image" Grid.Column="0"/>
-        <Slider Name="sldSlider" HorizontalAlignment="Left" Orientation="Vertical" Grid.Column="1" ValueChanged="Slider_ValueChanged_1" PreviewMouseDown="Slider_MouseDown" PreviewMouseUp="Slider_MouseUp" Maximum="100" LargeChange="10" SmallChange="5" TickFrequency="10"/>
+        <Image Name="Image" Grid.Column="0" Stretch="Fill" Margin="0,0,20,0"/>
+        <Slider Name="sldSlider" Orientation="Vertical" ValueChanged="Slider_ValueChanged_1" PreviewMouseDown="Slider_MouseDown" PreviewMouseUp="Slider_MouseUp" Maximum="100" LargeChange="10" SmallChange="5" TickFrequency="10" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Right" Width="20"/>
 
     </Grid>
 </UserControl>

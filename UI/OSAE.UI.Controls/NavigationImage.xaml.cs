@@ -23,7 +23,8 @@ namespace OSAE.UI.Controls
         public string screenName { get; set; }
         public Point Location;
         public OSAEObject screenObject { get; set; }
-
+        public double ImageWidth;
+        public double ImageHeight;
 
         private OSAEImageManager imgMgr = new OSAEImageManager();
 
@@ -46,6 +47,9 @@ namespace OSAE.UI.Controls
                 bitmapImage.BeginInit();
                 bitmapImage.StreamSource = imageStream;
                 bitmapImage.EndInit();
+                ImageWidth = bitmapImage.Width;
+                ImageHeight = bitmapImage.Height;
+
                 Image.Source = bitmapImage;
                 Image.Visibility = System.Windows.Visibility.Visible;
             }

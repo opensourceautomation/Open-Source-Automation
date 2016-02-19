@@ -24,6 +24,10 @@
         public string gAppName = "";
         public int gAppMinTrust = 50;
         public string gAppLocation = "";
+        public double gCurrentScreenHeight = 1;
+        public double gCurrentScreenWidth = 1;
+        public double gHeightRatio;
+        public double gWidthRatio;
         public string gCurrentScreen = "";
         public string gCurrentUser = "";
         public int gCurrentUserTrust = 0;
@@ -131,6 +135,7 @@
                 if (updatingScreen)
                 {
                     System.Threading.Thread.Sleep(1000);
+                    //The next line sucks an should not be done, but it was getting stuck in this loop sometimes
                     updatingScreen = false;
                 }
                 stateImages.Clear();
@@ -148,21 +153,36 @@
                 OSAE.OSAEImageManager imgMgr = new OSAE.OSAEImageManager();
                 string imgID = OSAEObjectPropertyManager.GetObjectPropertyValue(sScreen, "Background Image").Value;
                 OSAE.OSAEImage img = imgMgr.GetImage(imgID);
-
+                bool isMax = (this.WindowState == WindowState.Maximized);
+                //this.WindowState = WindowState.Normal;
                 if (img.Data != null)
                 {
                     var imageStream = new MemoryStream(img.Data);
                     var bitmapImage = new BitmapImage();
-
                     bitmapImage.BeginInit();
                     bitmapImage.StreamSource = imageStream;
                     bitmapImage.EndInit();
+
+                    gCurrentScreenHeight = bitmapImage.Height;
+                    gCurrentScreenWidth = bitmapImage.Width;
+
                     canGUI.Background = new ImageBrush(bitmapImage);
-                    canGUI.Height = bitmapImage.Height;
-                    canGUI.Width = bitmapImage.Width;
+                    if (isMax)
+                    {
+                        gHeightRatio = this.ActualHeight / gCurrentScreenHeight;
+                        gWidthRatio = this.ActualWidth / gCurrentScreenWidth;
+                    }
+                    else
+                    {
+                        this.Height = bitmapImage.Height;
+                        this.Width = bitmapImage.Width;
+                        gHeightRatio = 1;
+                        gWidthRatio = 1;
+                    }
                 }
 
                 Load_Objects(sScreen);
+                if (isMax) this.WindowState = WindowState.Maximized;
                 loadingScreen = false;
               //  tvControls
             }
@@ -236,16 +256,32 @@
                             menuCreateScreen.IsEnabled = true;
                             menuAddControl.IsEnabled = true;
                         }
-                       
                     }));
                 }
+
                 List<OSAE.OSAEScreenControl> controls = OSAEScreenControlManager.GetScreenControls(gCurrentScreen);
                 foreach (OSAE.OSAEScreenControl newCtrl in controls)
                 {
                     oldCtrl = false;
-
-                    #region CONTROL STATE IMAGE
-                    if (newCtrl.ControlType == "CONTROL STATE IMAGE")
+                    if (newCtrl.ControlType == "CONTROL USER SELECTOR")
+                    {
+                        oldCtrl = true;
+                        Dispatcher.Invoke((Action)(() =>
+                        {
+                            Canvas.SetLeft(userSelectorControl, userSelectorControl.Location.X * gWidthRatio);
+                            Canvas.SetTop(userSelectorControl, userSelectorControl.Location.Y * gHeightRatio);
+                        }));
+                    }
+                    else if (newCtrl.ControlType == "CONTROL SCREEN OBJECTS")
+                    {
+                        oldCtrl = true;
+                        Dispatcher.Invoke((Action)(() =>
+                        {
+                            Canvas.SetLeft(screenObjectControl, screenObjectControl.Location.X * gWidthRatio);
+                            Canvas.SetTop(screenObjectControl, screenObjectControl.Location.Y * gHeightRatio);
+                        }));
+                    }
+                    else if (newCtrl.ControlType == "CONTROL STATE IMAGE")
                     {
                         foreach (StateImage sImage in stateImages)
                         {
@@ -255,37 +291,29 @@
                                 {
                                     sImage.LastUpdated = newCtrl.LastUpdated;
                                     try
-                                    {
-                                        sImage.Update();
-                                    }
+                                    { sImage.Update(); }
                                     catch
                                     { }
-                                    Dispatcher.Invoke((Action)(() =>
-                                    {
-                                        Canvas.SetLeft(sImage, sImage.Location.X);
-                                        Canvas.SetTop(sImage, sImage.Location.Y);
-                                        sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
-                                    }));
                                     if (gDebug) Log.Debug("Updated:  " + newCtrl.ControlName);
                                 }
                                 if (newCtrl.PropertyLastUpdated != sImage.PropertyLastUpdated)
                                 {
                                     sImage.PropertyLastUpdated = newCtrl.PropertyLastUpdated;
                                     sImage.Update();
-                                    Dispatcher.Invoke((Action)(() =>
-                                    {
-                                        Canvas.SetLeft(sImage, sImage.Location.X);
-                                        Canvas.SetTop(sImage, sImage.Location.Y);
-                                        sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
-                                    }));
                                 }
+                                Dispatcher.Invoke((Action)(() =>
+                                {
+                                    Canvas.SetLeft(sImage, sImage.Location.X * gWidthRatio);
+                                    Canvas.SetTop(sImage, sImage.Location.Y * gHeightRatio);
+                                    sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
+                                    sImage.Width = sImage.ImageWidth * gWidthRatio;
+                                    sImage.Height = sImage.ImageHeight * gHeightRatio;
+
+                                }));
                                 oldCtrl = true;
                             }
                         }
                     }
-                    #endregion
-
-                    #region CONTROL PROPERTY LABEL
                     else if (newCtrl.ControlType == "CONTROL PROPERTY LABEL")
                     {
                         foreach (PropertyLabel pl in propLabels)
@@ -304,12 +332,14 @@
                                     pl.Update("Refresh");
                                     oldCtrl = true;
                                 }
+                                Dispatcher.Invoke((Action)(() =>
+                                {
+                                    Canvas.SetLeft(pl, pl.Location.X * gWidthRatio);
+                                    Canvas.SetTop(pl, pl.Location.Y * gHeightRatio);
+                                }));
                             }
                         }
                     }
-                    #endregion
-
-                    #region CONTROL TIMER LABEL
                     else if (newCtrl.ControlType == "CONTROL TIMER LABEL")
                     {
                         foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
@@ -326,9 +356,6 @@
                             }
                         }
                     }
-                    #endregion
-
-                    #region CONTROL STATIC LABEL
                     else if (newCtrl.ControlType == "CONTROL STATIC LABEL")
                     {
                         foreach (OSAE.UI.Controls.StaticLabel sl in staticLabels)
@@ -336,29 +363,41 @@
                             if (newCtrl.ControlName == sl.screenObject.Name) oldCtrl = true;
                         }
                     }
-                    #endregion
-
-                    #region CONTROL NAVIGATION IMAGE
                     else if (newCtrl.ControlType == "CONTROL NAVIGATION IMAGE")
                     {
                         foreach (OSAE.UI.Controls.NavigationImage nav in navImages)
                         {
-                            if (newCtrl.ControlName == nav.screenObject.Name) oldCtrl = true;
+                            if (newCtrl.ControlName == nav.screenObject.Name)
+                            {
+                                oldCtrl = true;
+                                Dispatcher.Invoke((Action)(() =>
+                                {
+                                    Canvas.SetLeft(nav, nav.Location.X * gWidthRatio);
+                                    Canvas.SetTop(nav, nav.Location.Y * gHeightRatio);
+                                    nav.Width = nav.ImageWidth * gWidthRatio;
+                                    nav.Height = nav.ImageHeight * gHeightRatio;
+
+                                }));
+                            }
                         }
                     }
-                    #endregion
-
-                    #region CONTROL CLICK IMAGE
-                    else if (newCtrl.ControlType == "CONTROL METHOD IMAGE")
+                    else if (newCtrl.ControlType == "CONTROL CLICK IMAGE")
                     {
                         foreach (OSAE.UI.Controls.ClickImage method in clickImages)
                         {
-                            if (newCtrl.ControlName == method.screenObject.Name) oldCtrl = true;
+                            if (newCtrl.ControlName == method.screenObject.Name)
+                            {
+                                oldCtrl = true;
+                                Dispatcher.Invoke((Action)(() =>
+                                {
+                                    Canvas.SetLeft(method, method.Location.X * gWidthRatio);
+                                    Canvas.SetTop(method, method.Location.Y * gHeightRatio);
+                                    method.Width = method.ImageWidth * gWidthRatio;
+                                    method.Height = method.ImageHeight * gHeightRatio;
+                                }));
+                            }
                         }
                     }
-                    #endregion
-
-                    #region CONTROL CAMERA VIEWER
                     else if (newCtrl.ControlType == "CONTROL CAMERA VIEWER")
                     {
                         foreach (OSAE.UI.Controls.VideoStreamViewer vsv in cameraViewers)
@@ -366,9 +405,6 @@
                             if (newCtrl.ControlName == vsv.screenObject.Name) oldCtrl = true;
                         }
                     }
-                    #endregion
-
-                    #region CONTROL USER CONTROL
                     else if (newCtrl.ControlType.Contains("USER CONTROL"))
                     {
                         foreach (dynamic obj in userControls)
@@ -387,9 +423,6 @@
                             }
                         }
                     }
-                    #endregion
-
-                    #region CONTROL BROWSER
                     else if (newCtrl.ControlType == "CONTROL BROWSER")
                     {
                         foreach (BrowserFrame oBrowser in browserFrames)
@@ -417,8 +450,6 @@
                             }
                         }
                     }
-                    #endregion
-
                     if (!oldCtrl)
                     {
                         OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(newCtrl.ControlName);
@@ -438,7 +469,6 @@
             {
                 string sStateMatch = "";
 
-                #region USER SELECTOR
                 if (obj.Type == "CONTROL USER SELECTOR")
                 {
                     userSelectorControl = new UserSelector(obj, gAppName);
@@ -447,16 +477,13 @@
                     userSelectorControl.Location.Y = Double.Parse(obj.Property("Y").Value);
                     userSelectorControl._ScreenLocation = gAppLocation;
                     canGUI.Children.Add(userSelectorControl);
-                    Canvas.SetLeft(userSelectorControl, userSelectorControl.Location.X);
-                    Canvas.SetTop(userSelectorControl, userSelectorControl.Location.Y);
+                    Canvas.SetLeft(userSelectorControl, userSelectorControl.Location.X * gWidthRatio);
+                    Canvas.SetTop(userSelectorControl, userSelectorControl.Location.Y * gHeightRatio);
                     Canvas.SetZIndex(userSelectorControl, 5);
                     controlTypes.Add(typeof(UserSelector));
                     userSelectorControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
-                #endregion
-
-                #region SCREEN OBJECTS
-                if (obj.Type == "CONTROL SCREEN OBJECTS")
+                else if (obj.Type == "CONTROL SCREEN OBJECTS")
                 {
                     screenObjectControl = new ScreenObjectList(obj,gCurrentScreen,gCurrentUser);
               //      screenObjectControl.MouseRightButtonDown += new MouseButtonEventHandler(State_Image_MouseRightButtonDown);
@@ -471,10 +498,7 @@
                     controlTypes.Add(typeof(ScreenObjectList));
                     screenObjectControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
-                #endregion
-
-                #region CONTROL STATE IMAGE
-                if (obj.Type == "CONTROL STATE IMAGE")
+                else if (obj.Type == "CONTROL STATE IMAGE")
                 {
                     StateImage stateImageControl = new StateImage(obj, gAppName);
 
@@ -501,9 +525,11 @@
                         //Opacity is new and unknow in 044
                         stateImageControl.Opacity = dOpacity;
                         canGUI.Children.Add(stateImageControl);
-                        Canvas.SetLeft(stateImageControl, stateImageControl.Location.X);
-                        Canvas.SetTop(stateImageControl, stateImageControl.Location.Y);
+                        Canvas.SetLeft(stateImageControl, stateImageControl.Location.X * gWidthRatio);
+                        Canvas.SetTop(stateImageControl, stateImageControl.Location.Y * gHeightRatio);
                         Canvas.SetZIndex(stateImageControl, dZ);
+                        stateImageControl.Width = stateImageControl.ImageWidth * gWidthRatio;
+                        stateImageControl.Height = stateImageControl.ImageHeight * gHeightRatio;
                         stateImages.Add(stateImageControl);
                         controlTypes.Add(typeof(StateImage));
                         stateImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
@@ -514,9 +540,6 @@
                         return;
                     }
                 }
-                #endregion
-
-                #region CONTROL PROPERTY LABEL
                 else if (obj.Type == "CONTROL PROPERTY LABEL")
                 {
                     if (gDebug) Log.Debug("Loading PropertyLabelControl: " + obj.Name);
@@ -541,9 +564,6 @@
                         return;
                     }
                 }
-                #endregion
-
-                #region CONTROL STATIC LABEL
                 else if (obj.Type == "CONTROL STATIC LABEL")
                 {
                     if (gDebug) Log.Debug("Loading PropertyLabelControl: " + obj.Name);
@@ -562,16 +582,12 @@
                         controlTypes.Add(typeof(OSAE.UI.Controls.StaticLabel));
                         sl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                     }
-
                     catch (Exception ex)
                     {
                             Log.Error("Error updating PropertyLabelControl", ex);
                             return;
                     }
                 }
-                #endregion
-
-                #region CONTROL TIMER LABEL
                 else if (obj.Type == "CONTROL TIMER LABEL")
                 {
                     if (gDebug) Log.Debug("Loading PropertyTimerControl: " + obj.Name);
@@ -597,9 +613,6 @@
                         return;
                     }
                 }
-                #endregion
-
-                #region CONTROL CLICK IMAGE
                 else if (obj.Type == "CONTROL CLICK IMAGE")
                 {
                     try
@@ -608,17 +621,16 @@
                         ClickImageControl.MouseRightButtonDown += new MouseButtonEventHandler(Click_Image_MouseRightButtonDown);
                         canGUI.Children.Add(ClickImageControl);
 
-                        OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.OSAEObjectProperty pX = obj.Property("X");
-                        OSAE.OSAEObjectProperty pY = obj.Property("Y");
-                        Double dX = Convert.ToDouble(pX.Value);
-                        Canvas.SetLeft(ClickImageControl, dX);
-                        Double dY = Convert.ToDouble(pY.Value);
-                        Canvas.SetTop(ClickImageControl, dY);
-                        int dZ = Convert.ToInt32(pZOrder.Value);
+                        double dX = Convert.ToDouble(obj.Property("X").Value);
+                        double dY = Convert.ToDouble(obj.Property("Y").Value);
+                        int dZ = Convert.ToInt32(obj.Property("ZOrder").Value);
+                        Canvas.SetLeft(ClickImageControl, dX * gWidthRatio);
+                        Canvas.SetTop(ClickImageControl, dY * gHeightRatio);
                         Canvas.SetZIndex(ClickImageControl, dZ);
                         ClickImageControl.Location.X = dX;
                         ClickImageControl.Location.Y = dY;
+                        ClickImageControl.Width = ClickImageControl.ImageWidth * gWidthRatio;
+                        ClickImageControl.Height = ClickImageControl.ImageHeight * gHeightRatio;
                         clickImages.Add(ClickImageControl);
                         controlTypes.Add(typeof(ClickImage));
                         ClickImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
@@ -626,9 +638,6 @@
                     catch (MySqlException myerror)
                     { MessageBox.Show("GUI Error Load Click Image: " + myerror.Message); }
                 }
-                #endregion
-
-                #region CONTROL NAVIGATION IMAGE
                 else if (obj.Type == "CONTROL NAVIGATION IMAGE")
                 {
                     try
@@ -639,17 +648,16 @@
                         
                         canGUI.Children.Add(navImageControl);
 
-                        OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.OSAEObjectProperty pX = obj.Property("X");
-                        OSAE.OSAEObjectProperty pY = obj.Property("Y");
-                        Double dX = Convert.ToDouble(pX.Value);
-                        Canvas.SetLeft(navImageControl, dX);
-                        Double dY = Convert.ToDouble(pY.Value);
-                        Canvas.SetTop(navImageControl, dY);
-                        int dZ = Convert.ToInt32(pZOrder.Value);
+                        double dX = Convert.ToDouble(obj.Property("X").Value);
+                        double dY = Convert.ToDouble(obj.Property("Y").Value);
+                        int dZ = Convert.ToInt32(obj.Property("ZOrder").Value);
+                        Canvas.SetLeft(navImageControl, dX * gWidthRatio);
+                        Canvas.SetTop(navImageControl, dY * gHeightRatio);
                         Canvas.SetZIndex(navImageControl, dZ);
                         navImageControl.Location.X = dX;
                         navImageControl.Location.Y = dY;
+                        navImageControl.Width = navImageControl.ImageWidth * gWidthRatio;
+                        navImageControl.Height = navImageControl.ImageHeight * gHeightRatio;
                         navImages.Add(navImageControl);
                         controlTypes.Add(typeof(NavigationImage));
                         navImageControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
@@ -657,9 +665,6 @@
                     catch (MySqlException myerror)
                     { MessageBox.Show("GUI Error Load Navigation Image: " + myerror.Message); }
                 }
-                #endregion
-
-                #region CONTROL CAMERA VIEWER
                 else if (obj.Type == "CONTROL CAMERA VIEWER")
                 {
                     try
@@ -686,9 +691,6 @@
                     catch (MySqlException myerror)
                     { MessageBox.Show("GUI Error Load Camera Viewer: " + myerror.Message); }
                 }
-                #endregion
-
-                #region USER CONTROL
                 else if (obj.BaseType == "USER CONTROL")
                 {
                     string sUCType = obj.Property("Control Type").Value;
@@ -713,9 +715,6 @@
                     userControls.Add(uc);
                     controlTypes.Add(uc.GetType());
                 }
-                #endregion
-
-                #region CONTROL BROWSER
                 else if (obj.Type == "CONTROL BROWSER")
                 {
                     if (gDebug) Log.Debug("Loading BrowserControl: " + obj.Name);
@@ -744,7 +743,6 @@
                         return;
                     }
                 }
-                #endregion
             }));
         }
 
@@ -940,18 +938,13 @@
                         if (t == sender.GetType())
                         {
                             Point position = e.GetPosition(null);
-
                             double width = sender.ActualWidth;
                             double height = sender.ActualHeight;
                             double x = sender.Location.X;
                             double y = sender.Location.Y;
-                            
 
-                            if (
-                                    (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
-                                && (sender.Location.X < _startPoint.X && _startPoint.X < (sender.Location.X + sender.ActualWidth))
-                                && (sender.Location.Y < _startPoint.Y && _startPoint.Y < (sender.Location.Y + sender.ActualHeight))
-                               )
+                            if ((Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+                                && (sender.Location.X < _startPoint.X && _startPoint.X < (sender.Location.X + sender.ActualWidth)) && (sender.Location.Y < _startPoint.Y && _startPoint.Y < (sender.Location.Y + sender.ActualHeight)))
                             {
                                 beingDragged = (UIElement)sender;
                                 StartDragInProcAdorner(e, sender);
@@ -967,9 +960,8 @@
             _startPoint = e.GetPosition(DragScope);
         }
 
-           private void StartDragInProcAdorner(MouseEventArgs e, dynamic sender)
+        private void StartDragInProcAdorner(MouseEventArgs e, dynamic sender)
         {
-
             // Let's define our DragScope .. In this case it is every thing inside our main window .. 
             DragScope = this.canGUI as FrameworkElement;
             System.Diagnostics.Debug.Assert(DragScope != null);
@@ -1015,7 +1007,6 @@
             //DragSource.GiveFeedback -= feedbackhandler;
             DragScope.DragLeave -= dragleavehandler;
             DragScope.QueryContinueDrag -= queryhandler;
-
             IsDragging = false;
         }
 
@@ -1068,8 +1059,7 @@
             obj.Property(state + " X").Value = X; 
             obj.Property(state + " Y").Value = Y;
         }
-
-       
+      
         #endregion
                
         #region MENU EVENTS
@@ -1077,11 +1067,19 @@
         private void menuEditMode_Checked(object sender, RoutedEventArgs e)
         {
             editMode = true;
+
+            gHeightRatio = 1;
+            gWidthRatio = 1;
+            this.Width = gCurrentScreenWidth;
+            this.Height = gCurrentScreenHeight;
+            this.WindowState = WindowState.Normal;
+            this.ResizeMode = ResizeMode.NoResize;
         }
 
         private void menuEditMode_Unchecked(object sender, RoutedEventArgs e)
         {
             editMode = false;
+            this.ResizeMode = ResizeMode.CanResize;
         }
 
         private void menuAddStateImage_Click(object sender, RoutedEventArgs e)
@@ -1234,8 +1232,7 @@
         private void menuFrameShow_Click(object sender, RoutedEventArgs e)     
         {
             ResizeMode = System.Windows.ResizeMode.CanResize;
-            WindowStyle = System.Windows.WindowStyle.ToolWindow;
-            ResizeMode = System.Windows.ResizeMode.NoResize;    
+            WindowStyle = System.Windows.WindowStyle.SingleBorderWindow;
         }
 
         private void menuFrameHide_Click(object sender, RoutedEventArgs e)
@@ -1244,7 +1241,6 @@
             ResizeMode = System.Windows.ResizeMode.CanResize;
             Width = canGUI.Width;
             Height = canGUI.Height;
-            ResizeMode = System.Windows.ResizeMode.NoResize;        
         }
 
         private void menuFrameTopLeft_Click(object sender, RoutedEventArgs e)
@@ -1259,7 +1255,6 @@
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
             Left = desktopWorkingArea.Right - this.Width;
             Top = desktopWorkingArea.Bottom - this.Height;
-
         }
 
         private void menuFrameCentre_Click(object sender, RoutedEventArgs e)
@@ -1268,7 +1263,6 @@
             Left = (desktopWorkingArea.Width / 2) - (this.Width /2);
             Top = (desktopWorkingArea.Height / 2) - (this.Height / 2);
         }
-
         #endregion
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -1279,6 +1273,24 @@
             bool loUser = Convert.ToBoolean(remUser);
             if (loUser == true) OSAE.OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Current User", "", "SYSTEM");
             _timer.Stop();
+        }
+
+        private void update_size(object sender, EventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal)
+            {
+                canGUI.Width = this.Width;
+                canGUI.Height = this.Height;
+                gHeightRatio = this.Height / gCurrentScreenHeight;
+                gWidthRatio = this.Width / gCurrentScreenWidth;
+            }
+            else if (this.WindowState == WindowState.Maximized)
+            {
+                canGUI.Width = this.ActualWidth;
+                canGUI.Height = this.ActualHeight;
+                gHeightRatio = this.ActualHeight / gCurrentScreenHeight;
+                gWidthRatio = this.ActualWidth / gCurrentScreenWidth;
+            }
         }
     }
 }

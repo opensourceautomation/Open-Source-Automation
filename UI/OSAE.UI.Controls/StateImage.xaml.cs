@@ -23,6 +23,8 @@ namespace OSAE.UI.Controls
         public string CurStateLabel;
         public string CurLevel = "";
         public int LightLevel = 100;
+        public double ImageWidth;
+        public double ImageHeight;
         private string gAppName = "";
 
         public string ObjectName;
@@ -107,6 +109,9 @@ namespace OSAE.UI.Controls
                     bitmapImage.EndInit();
 
                     Image.Source = bitmapImage;
+                    ImageWidth = bitmapImage.Width;
+                    ImageHeight = bitmapImage.Height;
+
                     Image.Visibility = System.Windows.Visibility.Visible;
 
                     imageFrames = 1;
@@ -324,35 +329,18 @@ namespace OSAE.UI.Controls
             string currentUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Current User").Value;
             if (currentUser == "") return;
 
-
-            if (StateMatch == "State 1")
-            {
-                string newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(),"State 2").ToString();
-                OSAEMethodManager.MethodQueueAdd(ObjectName, newState, "0", "", currentUser);
-                OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", currentUser);
-            }
-            else
-            {
-                string newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(), "State 1").ToString();
-                OSAEMethodManager.MethodQueueAdd(ObjectName, newState, "0", "", currentUser);
-                OSAEObjectStateManager.ObjectStateSet(ObjectName, newState, currentUser);
-            }
-
-
-            // TODO: replace ON/OFF with state1/2
-            // Check if method is present and only run either Method or State NOT BOTH
-            /*
-            if (CurState == "ON")
-            {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "OFF", "0", "", currentUser);
-                OSAEObjectStateManager.ObjectStateSet(ObjectName, "OFF", currentUser);
-            }
-            else
-            {
-                OSAEMethodManager.MethodQueueAdd(ObjectName, "ON", "100", "", currentUser);
-                OSAEObjectStateManager.ObjectStateSet(ObjectName, "ON", currentUser);
-            }     
-            */   
+                if (StateMatch == "State 1")
+                {
+                    string newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(), "State 2 Name").Value;
+                    OSAEMethodManager.MethodQueueAdd(ObjectName, newState, "0", "", currentUser);
+                    OSAEObjectStateManager.ObjectStateSet(ObjectName, newState, currentUser);
+                }
+                else
+                {
+                    string newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(), "State 1 Name").Value;
+                    OSAEMethodManager.MethodQueueAdd(ObjectName, newState, "0", "", currentUser);
+                    OSAEObjectStateManager.ObjectStateSet(ObjectName, newState, currentUser);
+                }
         }
 
         private void Slider_ValueChanged_1(object sender, RoutedPropertyChangedEventArgs<double> e)

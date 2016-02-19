@@ -25,7 +25,8 @@ namespace OSAE.UI.Controls
         private string PressScriptParam2 = "";
         private string PressX = "";
         private string PressY = "";
-
+        public double ImageWidth;
+        public double ImageHeight;
 
         private string ReleaseObjectName = "";
         private string ReleaseMethodName = "";
@@ -80,6 +81,9 @@ namespace OSAE.UI.Controls
                 bitmapImage.BeginInit();
                 bitmapImage.StreamSource = imageStream;
                 bitmapImage.EndInit();
+
+                ImageWidth = bitmapImage.Width;
+                ImageHeight = bitmapImage.Height;
                 Image.Source = bitmapImage;
                 Image.Visibility = System.Windows.Visibility.Visible;
             }
