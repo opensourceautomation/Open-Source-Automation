@@ -17,6 +17,9 @@ namespace OSAE.UI.Controls
         public string currentProperty = "";
         public string currentPropertyType = "";
         public string currentScreen = "";
+        public double ControlWidth;
+        public double ControlHeight;
+
         public ScreenObjectList(OSAEObject sObject, string screen,string user)
         {
             InitializeComponent();

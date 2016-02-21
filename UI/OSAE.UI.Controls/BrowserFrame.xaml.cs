@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OSAE.UI.Controls
 {
@@ -21,19 +11,16 @@ namespace OSAE.UI.Controls
     {
         public OSAEObject screenObject { get; set; }
         public Point Location;
-        
-        public string StateMatch;
-        public string CurState;
-
+        public double ControlWidth;
+        public double ControlHeight;
         public string ObjectName;
 
         public BrowserFrame(OSAEObject sObject)
         {
             InitializeComponent();
-                     screenObject = sObject;
+            screenObject = sObject;
             try
             {
-
                 Uri uriproperty = new Uri(screenObject.Property("URI").Value);
                 wbBrowser.Source = uriproperty;
             }

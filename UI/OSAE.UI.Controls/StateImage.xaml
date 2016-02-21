@@ -14,6 +14,5 @@
         </Grid.ColumnDefinitions>
         <Image Name="Image" Grid.Column="0" Stretch="Fill" Margin="0,0,20,0"/>
         <Slider Name="sldSlider" Orientation="Vertical" ValueChanged="Slider_ValueChanged_1" PreviewMouseDown="Slider_MouseDown" PreviewMouseUp="Slider_MouseUp" Maximum="100" LargeChange="10" SmallChange="5" TickFrequency="10" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Right" Width="20"/>
-
     </Grid>
 </UserControl>

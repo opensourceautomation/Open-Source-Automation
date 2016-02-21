@@ -47,7 +47,7 @@
             if (controlName == "")
             {
                 //Let's create a new name
-                sWorkingName = currentScreen + " - New Browser";
+                sWorkingName = currentScreen + " - Browser";
                 DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
                 int iCount = 0;
 
@@ -55,7 +55,7 @@
                 {
                     // We have a duplicate name, we must get a unique name
                     iCount += 1;
-                    sWorkingName = currentScreen + " - New Object " + iCount;
+                    sWorkingName = currentScreen + " - Browser " + iCount;
                     dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
                 }
                 sMode = "Add";
@@ -75,6 +75,8 @@
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "URI", txtURI.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Height", txtHeight.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, "", txtName.Text);
                 NotifyParentFinished();
@@ -90,6 +92,8 @@
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "URI", txtURI.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Height", txtHeight.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, "", txtName.Text);
                 NotifyParentFinished();
@@ -202,8 +206,9 @@
 
         private void txtURI_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string cURL = txtURI.Text;
-            string newURL = cURL.Replace("http://", "");
+            string cURL = txtURI.Text.Replace("http://", ""); 
+            cURL = cURL.Replace("www.", "");
+            cURL = cURL.Replace(".com", "");
             txtName.Text = currentScreen + " - " + cURL + " - Browser";
         }
     }

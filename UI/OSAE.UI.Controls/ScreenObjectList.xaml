@@ -3,25 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Height="353.999" Width="599.045">
+             mc:Ignorable="d" Height="396.307" Width="740.07" Background="#FF9B9999">
 
-    <Canvas HorizontalAlignment="Left" Height="361" Margin="10,10,0,-17" VerticalAlignment="Top" Width="579" Background="#FF9B9898">
-
-
-        <ListBox x:Name="lbControls" HorizontalAlignment="Left" Height="295" VerticalAlignment="Top" Width="220" Canvas.Left="10" Canvas.Top="10" SelectionChanged="lbControls_SelectionChanged"/>
-        <DataGrid x:Name="dgProperties" ItemsSource="{Binding}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="295" Canvas.Left="246" Canvas.Top="10" Width="323" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="dgProperties_SelectionChanged" SelectionMode="Single" >
+    <Grid Canvas.Left="10" Canvas.Top="10" Margin="4,10,0,0">
+        <ListBox x:Name="lbControls" SelectionChanged="lbControls_SelectionChanged" Margin="10,0,0,40" HorizontalAlignment="Left" Width="240"/>
+        <DataGrid x:Name="dgProperties" ItemsSource="{Binding}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="dgProperties_SelectionChanged" SelectionMode="Single" Margin="255,0,10,40" >
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=property_name}" Header="Property" Width="*" />
                 <DataGridTextColumn Binding="{Binding Path=property_value}" Header="Value" Width="*" />
                 <DataGridTextColumn Binding="{Binding Path=property_datatype}" Header="datatype" Width="*" Visibility="Visible"/>
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox x:Name="txtValue" Height="23" Canvas.Left="265" TextWrapping="Wrap" Canvas.Top="310" Width="185"/>
-        <Button x:Name="btnSave" Content="Save" Canvas.Left="464" Canvas.Top="311" Width="47" Height="23" Click="btnSave_Click"/>
-        <ComboBox x:Name="ddlPropValue" Canvas.Left="290" Canvas.Top="311" Width="136" Visibility="Hidden"/>
-        <Button x:Name="btnClose" Content="Close" Canvas.Left="522" Canvas.Top="311" Width="47" Height="23" Click="btnClose_Click"/>
-    </Canvas>
-
+        <TextBox x:Name="txtValue" TextWrapping="Wrap" Margin="255,0,129,10" Height="23" VerticalAlignment="Bottom"/>
+        <Button x:Name="btnSave" Content="Save" Width="47" Height="23" Click="btnSave_Click" Margin="0,0,71,10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+        <ComboBox x:Name="ddlPropValue" Width="136" Visibility="Hidden" Margin="289,0,288,0"/>
+        <Button x:Name="btnClose" Content="Close" Width="47" Height="23" Click="btnClose_Click" Margin="0,0,10,10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+    </Grid>
 
 </UserControl>
     

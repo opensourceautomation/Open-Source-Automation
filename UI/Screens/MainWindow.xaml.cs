@@ -279,6 +279,8 @@
                         {
                             Canvas.SetLeft(screenObjectControl, screenObjectControl.Location.X * gWidthRatio);
                             Canvas.SetTop(screenObjectControl, screenObjectControl.Location.Y * gHeightRatio);
+                            screenObjectControl.Width = screenObjectControl.ControlWidth * gWidthRatio;
+                            screenObjectControl.Height = screenObjectControl.ControlHeight * gHeightRatio;
                         }));
                     }
                     else if (newCtrl.ControlType == "CONTROL STATE IMAGE")
@@ -353,14 +355,28 @@
                                     if (gDebug) Log.Debug("Updated:  " + newCtrl.ControlName);
                                 }
                                 oldCtrl = true;
+                                Dispatcher.Invoke((Action)(() =>
+                                {
+                                    Canvas.SetLeft(tl, tl.Location.X * gWidthRatio);
+                                    Canvas.SetTop(tl, tl.Location.Y * gHeightRatio);
+                                }));
                             }
+
                         }
                     }
                     else if (newCtrl.ControlType == "CONTROL STATIC LABEL")
                     {
                         foreach (OSAE.UI.Controls.StaticLabel sl in staticLabels)
                         {
-                            if (newCtrl.ControlName == sl.screenObject.Name) oldCtrl = true;
+                            if (newCtrl.ControlName == sl.screenObject.Name)
+                            {
+                                oldCtrl = true;
+                                Dispatcher.Invoke((Action)(() =>
+                                {
+                                    Canvas.SetLeft(sl, sl.Location.X * gWidthRatio);
+                                    Canvas.SetTop(sl, sl.Location.Y * gHeightRatio);
+                                }));
+                            }
                         }
                     }
                     else if (newCtrl.ControlType == "CONTROL NAVIGATION IMAGE")
@@ -376,7 +392,6 @@
                                     Canvas.SetTop(nav, nav.Location.Y * gHeightRatio);
                                     nav.Width = nav.ImageWidth * gWidthRatio;
                                     nav.Height = nav.ImageHeight * gHeightRatio;
-
                                 }));
                             }
                         }
@@ -402,7 +417,15 @@
                     {
                         foreach (OSAE.UI.Controls.VideoStreamViewer vsv in cameraViewers)
                         {
-                            if (newCtrl.ControlName == vsv.screenObject.Name) oldCtrl = true;
+                            if (newCtrl.ControlName == vsv.screenObject.Name)
+                            {
+                                oldCtrl = true;
+                                Dispatcher.Invoke((Action)(() =>
+                                {
+                                    Canvas.SetLeft(vsv, vsv.Location.X * gWidthRatio);
+                                    Canvas.SetTop(vsv, vsv.Location.Y * gHeightRatio);
+                                }));
+                            }
                         }
                     }
                     else if (newCtrl.ControlType.Contains("USER CONTROL"))
@@ -420,6 +443,11 @@
                                     }));
                                 }
                                 oldCtrl = true;
+                                Dispatcher.Invoke((Action)(() =>
+                                {
+                                    Canvas.SetLeft(obj, obj.Location.X * gWidthRatio);
+                                    Canvas.SetTop(obj, obj.Location.Y * gHeightRatio);
+                                }));
                             }
                         }
                     }
@@ -429,24 +457,14 @@
                         {
                            if (newCtrl.ControlName == oBrowser.screenObject.Name)
                             {
-                             //   if (newCtrl.LastUpdated != oBrowser.LastUpdated)
-                            //    {
-                             //       this.Log.Debug("Updating:  " + newCtrl.ControlName);
-                                    //sImage.LastUpdated = newCtrl.LastUpdated;
-                             //       try
-                             //       {
-                                    // sImage.Update();
-                             ///       }
-                              //      catch (Exception ex)
-                               //     { }
-                               //     this.Dispatcher.Invoke((Action)(() =>
-                              //          {
-                              //              Canvas.SetLeft(oBrowser, oBrowser.Location.X);
-                              //              Canvas.SetTop(oBrowser, oBrowser.Location.Y);
-                               //         }));
-                               //         this.Log.Debug("Complete:  " + newCtrl.ControlName);
-                               //     }
                                 oldCtrl = true;
+                                Dispatcher.Invoke((Action)(() =>
+                                {
+                                    Canvas.SetLeft(oBrowser, oBrowser.Location.X * gWidthRatio);
+                                    Canvas.SetTop(oBrowser, oBrowser.Location.Y * gHeightRatio);
+                                    oBrowser.Width = oBrowser.ControlWidth * gWidthRatio;
+                                    oBrowser.Height = oBrowser.ControlHeight * gHeightRatio;
+                                }));
                             }
                         }
                     }
@@ -491,10 +509,13 @@
                     screenObjectControl.Location.Y = Double.Parse(obj.Property("Y").Value);
                     screenObjectControl._ScreenLocation = gAppLocation;
                     screenObjectControl.Visibility = System.Windows.Visibility.Hidden;
+
                     canGUI.Children.Add(screenObjectControl);
-                    Canvas.SetLeft(screenObjectControl, screenObjectControl.Location.X);
-                    Canvas.SetTop(screenObjectControl, screenObjectControl.Location.Y);
+                    Canvas.SetLeft(screenObjectControl, screenObjectControl.Location.X * gWidthRatio);
+                    Canvas.SetTop(screenObjectControl, screenObjectControl.Location.Y * gHeightRatio);
                     Canvas.SetZIndex(screenObjectControl, 5);
+                    screenObjectControl.ControlWidth = screenObjectControl.Width;
+                    screenObjectControl.ControlHeight = screenObjectControl.Height;
                     controlTypes.Add(typeof(ScreenObjectList));
                     screenObjectControl.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);
                 }
@@ -551,8 +572,8 @@
                         int dZ = Int32.Parse(obj.Property("ZOrder").Value);
                         pl.Location.X = Double.Parse(obj.Property("X").Value);
                         pl.Location.Y = Double.Parse(obj.Property("Y").Value);
-                        Canvas.SetLeft(pl, pl.Location.X);
-                        Canvas.SetTop(pl, pl.Location.Y);
+                        Canvas.SetLeft(pl, pl.Location.X * gWidthRatio);
+                        Canvas.SetTop(pl, pl.Location.Y * gHeightRatio);
                         Canvas.SetZIndex(pl, dZ);
                         propLabels.Add(pl);
                         controlTypes.Add(typeof(PropertyLabel));
@@ -575,8 +596,8 @@
                         int dZ = Int32.Parse(obj.Property("ZOrder").Value);
                         sl.Location.X = Double.Parse(obj.Property("X").Value);
                         sl.Location.Y = Double.Parse(obj.Property("Y").Value);
-                        Canvas.SetLeft(sl, sl.Location.X);
-                        Canvas.SetTop(sl, sl.Location.Y);
+                        Canvas.SetLeft(sl, sl.Location.X * gWidthRatio);
+                        Canvas.SetTop(sl, sl.Location.Y * gHeightRatio);
                         Canvas.SetZIndex(sl, dZ);
                         staticLabels.Add(sl);
                         controlTypes.Add(typeof(OSAE.UI.Controls.StaticLabel));
@@ -600,8 +621,8 @@
                         int dZ = Int32.Parse(obj.Property("ZOrder").Value);
                         tl.Location.X = Double.Parse(obj.Property("X").Value);
                         tl.Location.Y = Double.Parse(obj.Property("Y").Value);
-                        Canvas.SetLeft(tl, tl.Location.X);
-                        Canvas.SetTop(tl, tl.Location.Y);
+                        Canvas.SetLeft(tl, tl.Location.X * gWidthRatio);
+                        Canvas.SetTop(tl, tl.Location.Y * gHeightRatio);
                         Canvas.SetZIndex(tl, dZ);
                         timerLabels.Add(tl);
                         controlTypes.Add(typeof(OSAE.UI.Controls.TimerLabel));
@@ -620,7 +641,6 @@
                         ClickImage ClickImageControl = new ClickImage(obj, gAppName,gCurrentUser);
                         ClickImageControl.MouseRightButtonDown += new MouseButtonEventHandler(Click_Image_MouseRightButtonDown);
                         canGUI.Children.Add(ClickImageControl);
-
                         double dX = Convert.ToDouble(obj.Property("X").Value);
                         double dY = Convert.ToDouble(obj.Property("Y").Value);
                         int dZ = Convert.ToInt32(obj.Property("ZOrder").Value);
@@ -645,9 +665,7 @@
                         NavigationImage navImageControl = new NavigationImage(obj.Property("Screen").Value, obj);
                         navImageControl.MouseLeftButtonUp += new MouseButtonEventHandler(Navigaton_Image_MouseLeftButtonUp);
                         navImageControl.MouseRightButtonDown += new MouseButtonEventHandler(Navigaton_Image_MouseRightButtonDown);
-                        
                         canGUI.Children.Add(navImageControl);
-
                         double dX = Convert.ToDouble(obj.Property("X").Value);
                         double dY = Convert.ToDouble(obj.Property("Y").Value);
                         int dZ = Convert.ToInt32(obj.Property("ZOrder").Value);
@@ -673,14 +691,11 @@
                         VideoStreamViewer vsv = new VideoStreamViewer(stream, obj);
                         vsv.MouseRightButtonDown += new MouseButtonEventHandler(VideoStreamViewer_MouseRightButtonDown);
                         canGUI.Children.Add(vsv);
-                        OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
-                        OSAE.OSAEObjectProperty pX = obj.Property("X");
-                        OSAE.OSAEObjectProperty pY = obj.Property("Y");
-                        Double dX = Convert.ToDouble(pX.Value);
-                        Canvas.SetLeft(vsv, dX);
-                        Double dY = Convert.ToDouble(pY.Value);
-                        Canvas.SetTop(vsv, dY);
-                        int dZ = Convert.ToInt32(pZOrder.Value);
+                        double dX = Convert.ToDouble(obj.Property("X").Value);
+                        double dY = Convert.ToDouble(obj.Property("Y").Value);
+                        int dZ = Convert.ToInt32(obj.Property("ZOrder").Value);
+                        Canvas.SetLeft(vsv, dX * gWidthRatio);
+                        Canvas.SetTop(vsv, dY * gHeightRatio);
                         Canvas.SetZIndex(vsv, dZ);
                         vsv.Location.X = dX;
                         vsv.Location.Y = dY;
@@ -701,14 +716,11 @@
                     uc = selectedPlugin.Instance.mainCtrl;
                     uc.MouseRightButtonDown += new MouseButtonEventHandler(UserControl_MouseRightButtonDown);
                     uc.PreviewMouseMove += new MouseEventHandler(DragSource_PreviewMouseMove);                 
-                    OSAE.OSAEObjectProperty pZOrder = obj.Property("ZOrder");
-                    OSAE.OSAEObjectProperty pX = obj.Property("X");
-                    OSAE.OSAEObjectProperty pY = obj.Property("Y");
-                    Double dX = Convert.ToDouble(pX.Value);
-                    Canvas.SetLeft(uc, dX);
-                    Double dY = Convert.ToDouble(pY.Value);
-                    Canvas.SetTop(uc, dY);
-                    int dZ = Convert.ToInt32(pZOrder.Value);
+                    double dX = Convert.ToDouble(obj.Property("X").Value);
+                    double dY = Convert.ToDouble(obj.Property("Y").Value);
+                    int dZ = Convert.ToInt32(obj.Property("ZOrder").Value);
+                    Canvas.SetLeft(uc, dX * gWidthRatio);
+                    Canvas.SetTop(uc, dY * gHeightRatio);
                     Canvas.SetZIndex(uc, dZ);
                     uc.setLocation(dX, dY);
                     canGUI.Children.Add(uc);
@@ -727,10 +739,12 @@
                         int dZ = Int32.Parse(obj.Property("ZOrder").Value);
                         bf.Location.X = Double.Parse(obj.Property("X").Value);
                         bf.Location.Y = Double.Parse(obj.Property("Y").Value);
-                        bf.Width = Double.Parse(obj.Property("Width").Value);
-                        bf.Height = Double.Parse(obj.Property("Height").Value);
-                        Canvas.SetLeft(bf, bf.Location.X);
-                        Canvas.SetTop(bf, bf.Location.Y);
+                        bf.Width = Double.Parse(obj.Property("Width").Value) * gWidthRatio;
+                        bf.Height = Double.Parse(obj.Property("Height").Value) * gHeightRatio;
+                        bf.ControlWidth = bf.Width;
+                        bf.ControlHeight = bf.Height;
+                        Canvas.SetLeft(bf, bf.Location.X * gWidthRatio);
+                        Canvas.SetTop(bf, bf.Location.Y * gHeightRatio);
                         Canvas.SetZIndex(bf, dZ);
                         browserFrames.Add(bf);
                         controlTypes.Add(typeof(OSAE.UI.Controls.BrowserFrame));
