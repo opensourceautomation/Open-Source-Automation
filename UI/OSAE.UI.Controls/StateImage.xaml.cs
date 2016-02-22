@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Windows.Media.Imaging;
+using System.Data;
 
 namespace OSAE.UI.Controls
 {
@@ -28,8 +29,10 @@ namespace OSAE.UI.Controls
         private string gAppName = "";
 
         public string ObjectName;
+        public string ObjectType;
         public string SliderMethod;
-       
+        public OSAEObject LinkedObject;
+
         private MemoryStream ms1;
         private MemoryStream ms2;
         private MemoryStream ms3;
@@ -41,7 +44,7 @@ namespace OSAE.UI.Controls
         private int frameDelay = 100;
         private bool repeatAnimation;
         private Boolean sliderVisible = false;
-        private Boolean updatingSlider = false; 
+        private Boolean updatingSlider = false;
         private DispatcherTimer timer = new DispatcherTimer();
 
         public StateImage(OSAEObject sObject, string appName)
@@ -52,6 +55,8 @@ namespace OSAE.UI.Controls
             gAppName = appName;
             screenObject = sObject;
             ObjectName = screenObject.Property("Object Name").Value;
+            //    ObjectType = screenObject.Property("Object Name").Value;
+            LinkedObject = OSAEObjectManager.GetObjectByName(ObjectName);
             SliderMethod = screenObject.Property("Slider Method").Value;
             CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
 
@@ -166,10 +171,10 @@ namespace OSAE.UI.Controls
 
         void timer_Tick(object sender, EventArgs e)
         {
-            if (currentFrame < imageFrames)  currentFrame += 1;
+            if (currentFrame < imageFrames) currentFrame += 1;
             else if (currentFrame == imageFrames) currentFrame = 1;
             MemoryStream imageStream = new MemoryStream();
-            
+
             switch (currentFrame)
             {
                 case 1:
@@ -220,8 +225,7 @@ namespace OSAE.UI.Controls
 
             foreach (OSAEObjectProperty p in screenObject.Properties)
             {
-                if (p.Value.ToLower() == CurState.ToLower())
-                    StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
+                if (p.Value.ToLower() == CurState.ToLower()) StateMatch = p.Name.Substring(0, p.Name.LastIndexOf(' '));
             }
 
             try
@@ -232,7 +236,6 @@ namespace OSAE.UI.Controls
                 try
                 {
                     string propertyCheck = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value;
-
                     if (propertyCheck != "") LightLevel = Convert.ToUInt16(propertyCheck);
                     else LightLevel = 100;
                 }
@@ -248,10 +251,10 @@ namespace OSAE.UI.Controls
                     Dispatcher.Invoke((Action)(() =>
                     {
                         sldSlider.ToolTip = CurLevel + "%";
-                    sldSlider.Value = Convert.ToUInt16(CurLevel);
+                        sldSlider.Value = Convert.ToUInt16(CurLevel);
 
-                    if (CurLevel != "") Image.ToolTip = ObjectName + "\n" + CurStateLabel + " (" + CurLevel + "%) since: " + LastStateChange;
-                    else Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
+                        if (CurLevel != "") Image.ToolTip = ObjectName + "\n" + CurStateLabel + " (" + CurLevel + "%) since: " + LastStateChange;
+                        else Image.ToolTip = ObjectName + "\n" + CurStateLabel + " since: " + LastStateChange;
                     }));
                 }
 
@@ -263,7 +266,7 @@ namespace OSAE.UI.Controls
                     string imgName3 = screenObject.Property(StateMatch + " Image 3").Value;
                     string imgName4 = screenObject.Property(StateMatch + " Image 4").Value;
                     if (imgName != "")
-                    { 
+                    {
                         OSAEImage img1 = imgMgr.GetImage(imgName);
                         if (img1 != null)
                         {
@@ -316,7 +319,7 @@ namespace OSAE.UI.Controls
                             Image.Source = null; // Image.Visibility = System.Windows.Visibility.Hidden;
                         }));
                     }
-              
+
                     if (imageFrames > 1) timer.Start();
                 }
             }
@@ -326,21 +329,30 @@ namespace OSAE.UI.Controls
 
         private void State_Image_MouseLeftButtonUp(object sender, MouseEventArgs e)
         {
+            string param1 = "", param2 = "", newState = "";
             string currentUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Current User").Value;
             if (currentUser == "") return;
 
-                if (StateMatch == "State 1")
+            if (StateMatch == "State 1") newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(), "State 2 Name").Value;
+            else newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(), "State 1 Name").Value;
+
+            bool found = OSAEObjectTypeManager.ObjectTypeMethodExists(LinkedObject.Type, newState);
+            if (found)
+            {
+                DataSet ds = OSAESql.RunSQL("SELECT param_1_label, param_2_label, param_1_default, param_2_default FROM osae_v_object_type_method WHERE object_type = '" + LinkedObject.Type.Replace("'", "''") + "' AND method_name = '" + newState + "'");
+                DataTable dt = ds.Tables[0];
+                if (dt.Rows.Count > 0)
                 {
-                    string newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(), "State 2 Name").Value;
-                    OSAEMethodManager.MethodQueueAdd(ObjectName, newState, "0", "", currentUser);
-                    OSAEObjectStateManager.ObjectStateSet(ObjectName, newState, currentUser);
+                    if (!string.IsNullOrEmpty(dt.Rows[0]["param_1_label"].ToString()))
+                    {
+                        param1 = dt.Rows[0]["param_1_default"].ToString();
+                        param2 = dt.Rows[0]["param_2_default"].ToString();
+                    }
                 }
-                else
-                {
-                    string newState = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name.ToString(), "State 1 Name").Value;
-                    OSAEMethodManager.MethodQueueAdd(ObjectName, newState, "0", "", currentUser);
-                    OSAEObjectStateManager.ObjectStateSet(ObjectName, newState, currentUser);
-                }
+                OSAEMethodManager.MethodQueueAdd(ObjectName, newState, param1, param2, currentUser);
+            }
+            else
+                OSAEObjectStateManager.ObjectStateSet(ObjectName, newState, currentUser);
         }
 
         private void Slider_ValueChanged_1(object sender, RoutedPropertyChangedEventArgs<double> e)

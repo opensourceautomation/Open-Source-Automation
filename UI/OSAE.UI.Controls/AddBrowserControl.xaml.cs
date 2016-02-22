@@ -209,7 +209,7 @@
             string cURL = txtURI.Text.Replace("http://", ""); 
             cURL = cURL.Replace("www.", "");
             cURL = cURL.Replace(".com", "");
-            txtName.Text = currentScreen + " - " + cURL + " - Browser";
+            txtName.Text = currentScreen + " - " + cURL;
         }
     }
 }

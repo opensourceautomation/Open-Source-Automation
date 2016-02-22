@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Data;
 using OSAE;
 
 public partial class screens : System.Web.UI.Page
 {
-
     private int restPort = 8732;
     public string gScreen;
     private OSAEImageManager imgMgr = new OSAEImageManager();
@@ -32,9 +25,7 @@ public partial class screens : System.Web.UI.Page
             }
         }
         catch
-        {
-            return;
-        }
+        { return; }
     }
 
     private void LoadControl(OSAEObject obj)

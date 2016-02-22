@@ -6,7 +6,6 @@ namespace OSAE.UI.Controls
     using System.Data;
     using System.Windows;
     using System.Windows.Controls;
-   // using System.Collections.Generic;
     using System.Windows.Media.Imaging;
 
     /// <summary>
@@ -50,27 +49,6 @@ namespace OSAE.UI.Controls
                     LoadCurrentScreenObject(controlName);
                 }
             }
-
-            /*
-            if (controlName == "")
-            {
-                //Let's create a new name
-                sWorkingName = currentScreen + " - New State Image";
-                DataSet dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
-                int iCount = 0;
-                while (dsScreenControl.Tables[0].Rows[0][0].ToString() == "1")
-                {
-                    // We have a duplicate name, we must get a unique name
-                    iCount += 1;
-                    sWorkingName = currentScreen + " - New State Image" + iCount;
-                    dsScreenControl = OSAESql.RunSQL("SELECT COUNT(object_name) FROM osae_v_object where object_name = '" + sWorkingName + "'");
-                }
-                sMode = "Add";
-                controlName = sWorkingName;
-                txtControlName.Text = controlName;
-                //LoadCurrentScreenObject(controlName);
-            }
-            */
             Enable_Buttons();
         }
 
@@ -112,6 +90,7 @@ namespace OSAE.UI.Controls
                     imgState1Img2.Source = LoadImage(State1Img2.Data);
                     txtDelay.IsEnabled = true;
                     chkRepeat.IsEnabled = true;
+                    btnLoadS1I3.IsEnabled = true;
                     Validate_Initial_Coordinates();
                 }
             }
@@ -126,6 +105,7 @@ namespace OSAE.UI.Controls
                     imgState1Img3.Source = LoadImage(State1Img3.Data);
                     txtDelay.IsEnabled = true;
                     chkRepeat.IsEnabled = true;
+                    btnLoadS1I4.IsEnabled = true;
                     Validate_Initial_Coordinates();
                 }
             }
@@ -164,6 +144,7 @@ namespace OSAE.UI.Controls
                     txtState2Y.IsEnabled = true;
                     lblZOrder.IsEnabled = true;
                     txtZOrder.IsEnabled = true;
+                    btnLoadS2I2.IsEnabled = true;
                 }
             }
             catch { }
@@ -177,6 +158,7 @@ namespace OSAE.UI.Controls
                     imgState2Img2.Source = LoadImage(State2Img2.Data);
                     txtDelay.IsEnabled = true;
                     chkRepeat.IsEnabled = true;
+                    btnLoadS2I3.IsEnabled = true;
                     Validate_Initial_Coordinates();
                 }
             }
@@ -191,6 +173,7 @@ namespace OSAE.UI.Controls
                     imgState2Img3.Source = LoadImage(State2Img3.Data);
                     txtDelay.IsEnabled = true;
                     chkRepeat.IsEnabled = true;
+                    btnLoadS2I4.IsEnabled = true;
                     Validate_Initial_Coordinates();
                 }
             }
@@ -213,17 +196,23 @@ namespace OSAE.UI.Controls
             txtState2X.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 X").Value;
             txtState2Y.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "State 2 Y").Value;
 
-            cboSliderMethod.SelectedValue = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Slider Method").Value;
+            chkSlider.IsEnabled = OSAEObjectPropertyManager.ObjectPropertyExists(cboObject.SelectedValue.ToString(), "Level");
+            if (chkSlider.IsEnabled)
+            {
+                try
+                { chkSlider.IsChecked = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Show Slider").Value); }
+                catch
+                { chkSlider.IsChecked = false; }
+
+                if (chkSlider.IsChecked.Value) cboSliderMethod.SelectedValue = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Slider Method").Value;
+            }
 
             try
             { chkRepeat.IsChecked = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Repeat Animation").Value); }
             catch 
             { chkRepeat.IsChecked = true; }
 
-            try
-            { chkSlider.IsChecked = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Show Slider").Value); }
-            catch
-            { chkSlider.IsChecked = false; }
+
 
             try
             { txtDelay.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Frame Delay").Value; }

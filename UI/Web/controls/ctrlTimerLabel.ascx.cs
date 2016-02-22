@@ -25,7 +25,7 @@ public partial class controls_ctrlTimerLabel : System.Web.UI.UserControl
         OSAEObjectState os = OSAEObjectStateManager.GetObjectStateValue(ObjectName);
         CurrentState = os.Value;
 
-        OffTimer = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "OFF TIMER").Value);
+        OffTimer = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "OFF TIMER").Value);
         TimeInState = (int)os.TimeInState;
 
         string sBackColor = screenObject.Property("Back Color").Value;

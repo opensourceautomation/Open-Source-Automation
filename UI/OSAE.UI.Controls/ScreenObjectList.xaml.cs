@@ -87,6 +87,11 @@ namespace OSAE.UI.Controls
             dgProperties.ItemsSource = dsControls.Tables[0].DefaultView;
         }
 
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            OSAEObjectManager.ObjectDelete(lbControls.SelectedValue.ToString());
+        }
+
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             Visibility = System.Windows.Visibility.Hidden;

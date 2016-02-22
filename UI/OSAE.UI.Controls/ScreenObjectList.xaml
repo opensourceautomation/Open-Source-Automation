@@ -18,6 +18,7 @@
         <Button x:Name="btnSave" Content="Save" Width="47" Height="23" Click="btnSave_Click" Margin="0,0,71,10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
         <ComboBox x:Name="ddlPropValue" Width="136" Visibility="Hidden" Margin="289,0,288,0"/>
         <Button x:Name="btnClose" Content="Close" Width="47" Height="23" Click="btnClose_Click" Margin="0,0,10,10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+        <Button x:Name="btnDelete" Content="Delete" Height="23" Click="btnDelete_Click" Margin="10,0,679,12" VerticalAlignment="Bottom"/>
     </Grid>
 
 </UserControl>

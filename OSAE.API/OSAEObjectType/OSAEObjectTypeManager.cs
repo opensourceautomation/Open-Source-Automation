@@ -69,9 +69,7 @@
                     return type;
                 }
                 else
-                {
                     return null;
-                }
             }
             catch (Exception ex)
             {
@@ -111,13 +109,9 @@
                 command.Parameters.AddWithValue("@HideRedundantEvents", iHideRedundantEvents);
 
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -132,13 +126,9 @@
                 command.CommandText = "CALL osae_sp_object_type_delete (@Name)";
                 command.Parameters.AddWithValue("@Name", Name);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeDelete error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -174,13 +164,9 @@
                 command.Parameters.AddWithValue("@HideRedundantEvents", iHideRedundantEvents);
 
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeUpdate error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -192,7 +178,6 @@
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-
                 command.CommandText = "CALL osae_sp_object_type_export (@object_type_name)";
                 command.Parameters.AddWithValue("@object_type_name", ObjectTypeName);
                 //command.Parameters.Add(new MySqlParameter("@pexport_script", MySqlDbType.Text));
@@ -214,8 +199,7 @@
                 //command.Parameters.Add(new MySqlParameter("@pexport_script", MySqlDbType.Text));
                 //command.Parameters["@pexport_script"].Direction = System.Data.ParameterDirection.Output;
                 OSAESql.RunSQL("CALL osae_sp_object_type_clone ('" + NewObjectTypeName.Replace("'", "''") + "','" + BaseObjectTypeName.Replace("'", "''") + "')");
- 
-            }
+             }
         }
 
         /// <summary>
@@ -234,13 +218,9 @@
                 command.Parameters.AddWithValue("@Label", Label);
 
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("ObjectTypeEventAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -257,13 +237,9 @@
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeEventDelete error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -284,13 +260,31 @@
                 command.Parameters.AddWithValue("@Label", label);
                 command.Parameters.AddWithValue("@ObjectType", objectType);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeEventUpdate error: " + command.CommandText + " - error: " + ex.Message, true); }
+            }
+        }
+
+
+
+        public static bool ObjectTypeMethodExists(string typeName, string methodName)
+        {
+            MySqlCommand command = new MySqlCommand();
+            DataSet dataset = new DataSet();
+            try
+            {
+                command.CommandText = "SELECT method_id FROM osae_v_object_type_method WHERE UPPER(object_type)=UPPER(@Name) AND (method_name=@method_name OR method_label=@method_name)";
+                command.Parameters.AddWithValue("@Name", typeName);
+                command.Parameters.AddWithValue("@method_name", methodName);
+                dataset = OSAESql.RunQuery(command);
+                if (dataset.Tables[0].Rows.Count > 0) return true;
+                else return false;
+            }
+            catch (Exception ex)
+            {
+                Logging.GetLogger().AddToLog("API - ObjectTypeMenthodExists (" + typeName + "." + methodName + ") error: " + ex.Message, true);
+                return false;
             }
         }
 
@@ -313,13 +307,9 @@
                 command.Parameters.AddWithValue("@ParamDefault1", ParamDefault1);
                 command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeMethodAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -336,13 +326,9 @@
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeMethodDelete error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -369,24 +355,19 @@
                 command.Parameters.AddWithValue("@ParamDefault1", ParamDefault1);
                 command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                    Logging.GetLogger().AddToLog("osae_sp_object_type_method_update (" + oldName + "," + newName + "," + label + "," + objectType + "," + paramLabel1 + "," + paramLabel2 + ")", true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeMethodUpdate error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
-        /// <summary>
-        /// Add a property to an object type
-        /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="ParameterType"></param>
-        /// <param name="ObjectType"></param>
-        public static void ObjectTypePropertyAdd(string ObjectType, string Name, string ParameterType, string ParameterObjectType, string ParameterDefault, bool TrackHistory)
+    /// <summary>
+    /// Add a property to an object type
+    /// </summary>
+    /// <param name="Name"></param>
+    /// <param name="ParameterType"></param>
+    /// <param name="ObjectType"></param>
+    public static void ObjectTypePropertyAdd(string ObjectType, string Name, string ParameterType, string ParameterObjectType, string ParameterDefault, bool TrackHistory)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
@@ -398,13 +379,9 @@
                 command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypePropertyAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -421,13 +398,9 @@
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("ObjectTypePropertyADelete error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -451,13 +424,9 @@
                 command.Parameters.AddWithValue("@ObjectType", objectType);
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypePropertyAUpdate error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -470,13 +439,9 @@
                 command.Parameters.AddWithValue("@propertyName", propertyName);
                 command.Parameters.AddWithValue("@option", option);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypePropertyOptionAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -489,13 +454,9 @@
                 command.Parameters.AddWithValue("@propertyName", propertyName);
                 command.Parameters.AddWithValue("@option", option);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypePropertyOptionDelete error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -509,13 +470,9 @@
                 command.Parameters.AddWithValue("@newoption", newoption);
                 command.Parameters.AddWithValue("@oldoption", oldoption);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypePropertyOptionUpdate error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -534,13 +491,9 @@
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@Label", Label);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeStateAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -557,13 +510,9 @@
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("API - ObjectTypeStateDelete error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -584,13 +533,9 @@
                 command.Parameters.AddWithValue("@Label", newLabel);
                 command.Parameters.AddWithValue("@ObjectType", objectType);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("ObjectTypeStateUpdate error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }        
     }

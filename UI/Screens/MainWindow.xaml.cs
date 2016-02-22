@@ -216,6 +216,106 @@
                 LoadControl(obj);
         }
 
+        private void Resize_Objects()
+        {
+            foreach (System.Type newCtrl in controlTypes)
+            {
+                if (newCtrl.Name == "UserSelector")
+                {
+                    Canvas.SetLeft(userSelectorControl, userSelectorControl.Location.X * gWidthRatio);
+                    Canvas.SetTop(userSelectorControl, userSelectorControl.Location.Y * gHeightRatio);
+                }
+                else if (newCtrl.Name == "ScreenObjectList")
+                {
+                    Canvas.SetLeft(screenObjectControl, screenObjectControl.Location.X * gWidthRatio);
+                    Canvas.SetTop(screenObjectControl, screenObjectControl.Location.Y * gHeightRatio);
+                    screenObjectControl.Width = screenObjectControl.ControlWidth * gWidthRatio;
+                    screenObjectControl.Height = screenObjectControl.ControlHeight * gHeightRatio;
+                }
+                else if (newCtrl.Name == "StateImage")
+                {
+                    foreach (StateImage sImage in stateImages)
+                    {
+                        Canvas.SetLeft(sImage, sImage.Location.X * gWidthRatio);
+                        Canvas.SetTop(sImage, sImage.Location.Y * gHeightRatio);
+                        sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
+                        sImage.Width = sImage.ImageWidth * gWidthRatio;
+                        sImage.Height = sImage.ImageHeight * gHeightRatio;
+                    }
+                }
+                else if (newCtrl.Name == "PropertyLabel")
+                {
+                    foreach (PropertyLabel pl in propLabels)
+                    {
+                        Canvas.SetLeft(pl, pl.Location.X * gWidthRatio);
+                        Canvas.SetTop(pl, pl.Location.Y * gHeightRatio);
+                    }
+                }
+                else if (newCtrl.Name == "TimerLabel")
+                {
+                    foreach (OSAE.UI.Controls.TimerLabel tl in timerLabels)
+                    {
+                        Canvas.SetLeft(tl, tl.Location.X * gWidthRatio);
+                        Canvas.SetTop(tl, tl.Location.Y * gHeightRatio);
+                    }
+                }
+                else if (newCtrl.Name == "StaticLabel")
+                {
+                    foreach (OSAE.UI.Controls.StaticLabel sl in staticLabels)
+                    {
+                        Canvas.SetLeft(sl, sl.Location.X * gWidthRatio);
+                        Canvas.SetTop(sl, sl.Location.Y * gHeightRatio);
+                    }
+                }
+                else if (newCtrl.Name == "NavigationImage")
+                {
+                    foreach (OSAE.UI.Controls.NavigationImage nav in navImages)
+                    {
+                        Canvas.SetLeft(nav, nav.Location.X * gWidthRatio);
+                        Canvas.SetTop(nav, nav.Location.Y * gHeightRatio);
+                        nav.Width = nav.ImageWidth * gWidthRatio;
+                        nav.Height = nav.ImageHeight * gHeightRatio;
+                    }
+                }
+                else if (newCtrl.Name == "ClickImage")
+                {
+                    foreach (OSAE.UI.Controls.ClickImage method in clickImages)
+                    {
+                        Canvas.SetLeft(method, method.Location.X * gWidthRatio);
+                        Canvas.SetTop(method, method.Location.Y * gHeightRatio);
+                        method.Width = method.ImageWidth * gWidthRatio;
+                        method.Height = method.ImageHeight * gHeightRatio;
+                    }
+                }
+                else if (newCtrl.Name == "CONTROL CAMERA VIEWER")
+                {
+                    foreach (OSAE.UI.Controls.VideoStreamViewer vsv in cameraViewers)
+                    {
+                        Canvas.SetLeft(vsv, vsv.Location.X * gWidthRatio);
+                        Canvas.SetTop(vsv, vsv.Location.Y * gHeightRatio);
+                    }
+                }
+                else if (newCtrl.Name.Contains("UserControl"))
+                {
+                    foreach (dynamic obj in userControls)
+                    {
+                        Canvas.SetLeft(obj, obj.Location.X * gWidthRatio);
+                        Canvas.SetTop(obj, obj.Location.Y * gHeightRatio);
+                    }
+                }
+                else if (newCtrl.Name == "BrowserFrame")
+                {
+                    foreach (BrowserFrame oBrowser in browserFrames)
+                    {
+                        Canvas.SetLeft(oBrowser, oBrowser.Location.X * gWidthRatio);
+                        Canvas.SetTop(oBrowser, oBrowser.Location.Y * gHeightRatio);
+                        oBrowser.Width = oBrowser.ControlWidth * gWidthRatio;
+                        oBrowser.Height = oBrowser.ControlHeight * gHeightRatio;
+                    }
+                }
+            }
+        }
+
         private void Update_Objects()
         {
             try
@@ -263,6 +363,7 @@
                 foreach (OSAE.OSAEScreenControl newCtrl in controls)
                 {
                     oldCtrl = false;
+                    /*
                     if (newCtrl.ControlType == "CONTROL USER SELECTOR")
                     {
                         oldCtrl = true;
@@ -283,7 +384,8 @@
                             screenObjectControl.Height = screenObjectControl.ControlHeight * gHeightRatio;
                         }));
                     }
-                    else if (newCtrl.ControlType == "CONTROL STATE IMAGE")
+                    */
+                    if (newCtrl.ControlType == "CONTROL STATE IMAGE")
                     {
                         foreach (StateImage sImage in stateImages)
                         {
@@ -292,26 +394,17 @@
                                 if (newCtrl.LastUpdated != sImage.LastUpdated)
                                 {
                                     sImage.LastUpdated = newCtrl.LastUpdated;
-                                    try
-                                    { sImage.Update(); }
-                                    catch
-                                    { }
+                                    try { sImage.Update(); }
+                                    catch { }
                                     if (gDebug) Log.Debug("Updated:  " + newCtrl.ControlName);
                                 }
                                 if (newCtrl.PropertyLastUpdated != sImage.PropertyLastUpdated)
                                 {
                                     sImage.PropertyLastUpdated = newCtrl.PropertyLastUpdated;
                                     sImage.Update();
+                                    Dispatcher.Invoke((Action)(() =>
+                                    { sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00; }));
                                 }
-                                Dispatcher.Invoke((Action)(() =>
-                                {
-                                    Canvas.SetLeft(sImage, sImage.Location.X * gWidthRatio);
-                                    Canvas.SetTop(sImage, sImage.Location.Y * gHeightRatio);
-                                    sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
-                                    sImage.Width = sImage.ImageWidth * gWidthRatio;
-                                    sImage.Height = sImage.ImageHeight * gHeightRatio;
-
-                                }));
                                 oldCtrl = true;
                             }
                         }
@@ -334,11 +427,11 @@
                                     pl.Update("Refresh");
                                     oldCtrl = true;
                                 }
-                                Dispatcher.Invoke((Action)(() =>
-                                {
-                                    Canvas.SetLeft(pl, pl.Location.X * gWidthRatio);
-                                    Canvas.SetTop(pl, pl.Location.Y * gHeightRatio);
-                                }));
+                          //      Dispatcher.Invoke((Action)(() =>
+                         //       {
+                         //           Canvas.SetLeft(pl, pl.Location.X * gWidthRatio);
+                          //          Canvas.SetTop(pl, pl.Location.Y * gHeightRatio);
+                          //      }));
                             }
                         }
                     }
@@ -355,15 +448,15 @@
                                     if (gDebug) Log.Debug("Updated:  " + newCtrl.ControlName);
                                 }
                                 oldCtrl = true;
-                                Dispatcher.Invoke((Action)(() =>
-                                {
-                                    Canvas.SetLeft(tl, tl.Location.X * gWidthRatio);
-                                    Canvas.SetTop(tl, tl.Location.Y * gHeightRatio);
-                                }));
+                            //    Dispatcher.Invoke((Action)(() =>
+                            //    {
+                            //        Canvas.SetLeft(tl, tl.Location.X * gWidthRatio);
+                            //        Canvas.SetTop(tl, tl.Location.Y * gHeightRatio);
+                            //    }));
                             }
-
                         }
                     }
+                    /*
                     else if (newCtrl.ControlType == "CONTROL STATIC LABEL")
                     {
                         foreach (OSAE.UI.Controls.StaticLabel sl in staticLabels)
@@ -428,6 +521,7 @@
                             }
                         }
                     }
+                    */
                     else if (newCtrl.ControlType.Contains("USER CONTROL"))
                     {
                         foreach (dynamic obj in userControls)
@@ -451,6 +545,7 @@
                             }
                         }
                     }
+                    /*
                     else if (newCtrl.ControlType == "CONTROL BROWSER")
                     {
                         foreach (BrowserFrame oBrowser in browserFrames)
@@ -468,6 +563,7 @@
                             }
                         }
                     }
+                    */
                     if (!oldCtrl)
                     {
                         OSAE.OSAEObject obj = OSAEObjectManager.GetObjectByName(newCtrl.ControlName);
@@ -1305,6 +1401,7 @@
                 gHeightRatio = this.ActualHeight / gCurrentScreenHeight;
                 gWidthRatio = this.ActualWidth / gCurrentScreenWidth;
             }
+            Resize_Objects();
         }
     }
 }
