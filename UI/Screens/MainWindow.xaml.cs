@@ -189,7 +189,7 @@
             catch (Exception ex)
             { Log.Error("Failed to load screen: " + sScreen, ex); }
 
-            Log.Info("Loaded Screen:  " + sScreen);
+            Log.Debug("Loaded Screen:  " + sScreen);
             _timer.Start();
         }
 
@@ -238,7 +238,7 @@
                     {
                         Canvas.SetLeft(sImage, sImage.Location.X * gWidthRatio);
                         Canvas.SetTop(sImage, sImage.Location.Y * gHeightRatio);
-                        sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
+                       // sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
                         sImage.Width = sImage.ImageWidth * gWidthRatio;
                         sImage.Height = sImage.ImageHeight * gHeightRatio;
                     }
@@ -363,28 +363,6 @@
                 foreach (OSAE.OSAEScreenControl newCtrl in controls)
                 {
                     oldCtrl = false;
-                    /*
-                    if (newCtrl.ControlType == "CONTROL USER SELECTOR")
-                    {
-                        oldCtrl = true;
-                        Dispatcher.Invoke((Action)(() =>
-                        {
-                            Canvas.SetLeft(userSelectorControl, userSelectorControl.Location.X * gWidthRatio);
-                            Canvas.SetTop(userSelectorControl, userSelectorControl.Location.Y * gHeightRatio);
-                        }));
-                    }
-                    else if (newCtrl.ControlType == "CONTROL SCREEN OBJECTS")
-                    {
-                        oldCtrl = true;
-                        Dispatcher.Invoke((Action)(() =>
-                        {
-                            Canvas.SetLeft(screenObjectControl, screenObjectControl.Location.X * gWidthRatio);
-                            Canvas.SetTop(screenObjectControl, screenObjectControl.Location.Y * gHeightRatio);
-                            screenObjectControl.Width = screenObjectControl.ControlWidth * gWidthRatio;
-                            screenObjectControl.Height = screenObjectControl.ControlHeight * gHeightRatio;
-                        }));
-                    }
-                    */
                     if (newCtrl.ControlType == "CONTROL STATE IMAGE")
                     {
                         foreach (StateImage sImage in stateImages)
@@ -396,6 +374,13 @@
                                     sImage.LastUpdated = newCtrl.LastUpdated;
                                     try { sImage.Update(); }
                                     catch { }
+                                    Dispatcher.Invoke((Action)(() =>
+                                    {
+                                        Canvas.SetLeft(sImage, sImage.Location.X * gWidthRatio);
+                                        Canvas.SetTop(sImage, sImage.Location.Y * gHeightRatio);
+                                        sImage.Width = sImage.ImageWidth * gWidthRatio;
+                                        sImage.Height = sImage.ImageHeight * gHeightRatio;
+                                    }));
                                     if (gDebug) Log.Debug("Updated:  " + newCtrl.ControlName);
                                 }
                                 if (newCtrl.PropertyLastUpdated != sImage.PropertyLastUpdated)
@@ -403,7 +388,9 @@
                                     sImage.PropertyLastUpdated = newCtrl.PropertyLastUpdated;
                                     sImage.Update();
                                     Dispatcher.Invoke((Action)(() =>
-                                    { sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00; }));
+                                    {
+                                        sImage.Opacity = Convert.ToDouble(sImage.LightLevel) / 100.00;
+                                    }));
                                 }
                                 oldCtrl = true;
                             }
@@ -427,11 +414,6 @@
                                     pl.Update("Refresh");
                                     oldCtrl = true;
                                 }
-                          //      Dispatcher.Invoke((Action)(() =>
-                         //       {
-                         //           Canvas.SetLeft(pl, pl.Location.X * gWidthRatio);
-                          //          Canvas.SetTop(pl, pl.Location.Y * gHeightRatio);
-                          //      }));
                             }
                         }
                     }
@@ -448,11 +430,6 @@
                                     if (gDebug) Log.Debug("Updated:  " + newCtrl.ControlName);
                                 }
                                 oldCtrl = true;
-                            //    Dispatcher.Invoke((Action)(() =>
-                            //    {
-                            //        Canvas.SetLeft(tl, tl.Location.X * gWidthRatio);
-                            //        Canvas.SetTop(tl, tl.Location.Y * gHeightRatio);
-                            //    }));
                             }
                         }
                     }
@@ -537,11 +514,11 @@
                                     }));
                                 }
                                 oldCtrl = true;
-                                Dispatcher.Invoke((Action)(() =>
-                                {
-                                    Canvas.SetLeft(obj, obj.Location.X * gWidthRatio);
-                                    Canvas.SetTop(obj, obj.Location.Y * gHeightRatio);
-                                }));
+                           //.     Dispatcher.Invoke((Action)(() =>
+                           //     {
+                          //         Canvas.SetLeft(obj, obj.Location.X * gWidthRatio);
+                           //         Canvas.SetTop(obj, obj.Location.Y * gHeightRatio);
+                           //     }));
                             }
                         }
                     }
@@ -1124,8 +1101,8 @@
         {
             if (_adorner != null)
             {
-                _adorner.LeftOffset = args.GetPosition(DragScope).X /* - _startPoint.X */ ;
-                _adorner.TopOffset = args.GetPosition(DragScope).Y /* - _startPoint.Y */ ;
+                _adorner.LeftOffset = args.GetPosition(DragScope).X;
+                _adorner.TopOffset = args.GetPosition(DragScope).Y;
             }
         }
 
@@ -1156,7 +1133,6 @@
         {
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "X", X, gCurrentUser);
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Y", Y, gCurrentUser);
-
             obj.Property("X").Value = X;
             obj.Property("Y").Value = Y;
         }
@@ -1165,7 +1141,6 @@
         {
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, state + " X", X, gCurrentUser);
             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, state + " Y", Y, gCurrentUser);
-
             obj.Property(state + " X").Value = X; 
             obj.Property(state + " Y").Value = Y;
         }
@@ -1177,19 +1152,22 @@
         private void menuEditMode_Checked(object sender, RoutedEventArgs e)
         {
             editMode = true;
-
+            menuFrameShow.IsEnabled = false;
+            this.WindowState = WindowState.Normal;
+            this.ResizeMode = ResizeMode.NoResize;
+            WindowStyle = System.Windows.WindowStyle.ToolWindow;
             gHeightRatio = 1;
             gWidthRatio = 1;
             this.Width = gCurrentScreenWidth;
             this.Height = gCurrentScreenHeight;
-            this.WindowState = WindowState.Normal;
-            this.ResizeMode = ResizeMode.NoResize;
         }
 
         private void menuEditMode_Unchecked(object sender, RoutedEventArgs e)
         {
             editMode = false;
+            menuFrameShow.IsEnabled = true;
             this.ResizeMode = ResizeMode.CanResize;
+            WindowStyle = System.Windows.WindowStyle.SingleBorderWindow;
         }
 
         private void menuAddStateImage_Click(object sender, RoutedEventArgs e)
@@ -1341,14 +1319,15 @@
 
         private void menuFrameShow_Click(object sender, RoutedEventArgs e)     
         {
-            ResizeMode = System.Windows.ResizeMode.CanResize;
+            //ResizeMode = System.Windows.ResizeMode.CanResize;
             WindowStyle = System.Windows.WindowStyle.SingleBorderWindow;
         }
 
         private void menuFrameHide_Click(object sender, RoutedEventArgs e)
         {
+            //ResizeMode = System.Windows.ResizeMode.CanResize;
             WindowStyle = System.Windows.WindowStyle.None;
-            ResizeMode = System.Windows.ResizeMode.CanResize;
+
             Width = canGUI.Width;
             Height = canGUI.Height;
         }

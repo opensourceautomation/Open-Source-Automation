@@ -269,7 +269,7 @@ namespace OSAE.UI.Controls
         /// </summary>
         private void LoadObjects()
         {
-            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object order by object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_type !='SCREEN' AND base_type != 'CONTROL' order by object_name");
             cboObject.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 

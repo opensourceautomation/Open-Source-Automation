@@ -11,15 +11,11 @@ public partial class images : System.Web.UI.Page
     
     public void RaisePostBackEvent(string eventArgument)
     {
-
     }
     
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!Page.IsPostBack)
-        {
-            loadImages();
-        }
+        if (!Page.IsPostBack) loadImages();
     }
     
     //private void CreateDynamicTable()
@@ -74,7 +70,6 @@ public partial class images : System.Web.UI.Page
 
     private void loadImages()
     {
-
         gvImages.DataSource = OSAESql.RunSQL("SELECT image_name, image_type, image_width, image_height, image_dpi, image_id FROM osae_images ORDER BY image_name");
         gvImages.DataBind();
     }
@@ -86,17 +81,12 @@ public partial class images : System.Web.UI.Page
             try
             {
                 if (System.IO.Path.GetExtension(fileUpload.FileName).ToLower() != ".jpg" && System.IO.Path.GetExtension(fileUpload.FileName).ToLower() != ".png" && System.IO.Path.GetExtension(fileUpload.FileName).ToLower() != ".jpeg")
-                {
-                    // wrong file type
-                    return;
-                }
+                    return; // wrong file type
                 else
                 {
-                    if (fileUpload.PostedFile.ContentLength < 202400)
+                    if (fileUpload.PostedFile.ContentLength < 2502400) //202400
                     {
-                        
                         OSAEImage img = new OSAEImage();
-
                         img.Data = fileUpload.FileBytes;
                         img.Name = txtName.Text;
                         img.Type = System.IO.Path.GetExtension(fileUpload.FileName).ToLower().Substring(1);
@@ -106,20 +96,12 @@ public partial class images : System.Web.UI.Page
 
                         loadImages();
                     }
-                    else
-                    {
-                        // file to big
-                        return;
-                    }
-
+                    else return; // file to big
                 }
             }
             catch (Exception ex)
-            {
-
-            }
+            { }
         }
-
     }
 
     protected void gvImages_RowCommand(object sender, GridViewCommandEventArgs e)

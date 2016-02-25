@@ -324,11 +324,6 @@
             g1.Name = "Is [OBJECT] [STATE]";
             oRecognizer.LoadGrammar(g1);
 
-            gb4.Append(srk);
-            Grammar g4 = new Grammar(gb4);
-            g4.Name = "Is [OBJECT] [STATE]";
-            oRecognizer.LoadGrammar(g4);
-
             gb2.Append(srk);
             g2 = new Grammar(gb2);
             g2.Name = "Is [OBJECT] [STATE]";
@@ -336,8 +331,13 @@
 
             gb3.Append(srk);
             g3 = new Grammar(gb3);
-            g3.Name = "[OBJECT] is [STATE]";
+            g3.Name = "Is [OBJECT] [STATE]";
             oRecognizer.LoadGrammar(g3);
+
+            gb4.Append(srk);
+            Grammar g4 = new Grammar(gb4);
+            g4.Name = "Is [OBJECT] [STATE]";
+            oRecognizer.LoadGrammar(g4);
 
             gb5.Append(srk);
             Grammar g5 = new Grammar(gb5);
@@ -359,13 +359,13 @@
             // 6 I am/You are in np CONTAINER
 
             // 7 is OBJECT in CONTAINER
-            // 8 is np OBJECT is in CONTAINER
+            // 8 is np OBJECT in CONTAINER
             // 9 is OBJECT in np CONTAINER
             // 10 is np OBJECT in np CONTAINER
             // 11 am I/are you in CONTAINER
             // 12 am I/are you in NP CONTAINER
 
-            // OBJECT is in CONTAINER
+            // 1 OBJECT is in CONTAINER
             GrammarBuilder gb_GrammarBuilder = new GrammarBuilder();
             srk = new SemanticResultKey("PARAM1", objectFullChoices);
             gb_GrammarBuilder.Append(srk);
@@ -376,7 +376,7 @@
             g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // np OBJECT is in CONTAINER
+            // 2 np OBJECT is in CONTAINER
             gb_GrammarBuilder = new GrammarBuilder(nounPrecedentChoices);
             srk = new SemanticResultKey("PARAM1", objectFullChoices);
             gb_GrammarBuilder.Append(srk);
@@ -387,7 +387,7 @@
             g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // OBJECT is in np CONTAINER
+            // 3 OBJECT is in np CONTAINER
             gb_GrammarBuilder = new GrammarBuilder();
             srk = new SemanticResultKey("PARAM1", objectFullChoices);
             gb_GrammarBuilder.Append(srk);
@@ -399,7 +399,7 @@
             g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // np OBJECT is in np CONTAINER
+            // 4 np OBJECT is in np CONTAINER
             gb_GrammarBuilder = new GrammarBuilder(nounPrecedentChoices);
             srk = new SemanticResultKey("PARAM1", objectFullChoices);
             gb_GrammarBuilder.Append(srk);
@@ -411,7 +411,7 @@
             g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // [I am/You are] in CONTAINER
+            // 5 [I am/You are] in CONTAINER
             gb_GrammarBuilder = new GrammarBuilder();
             srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_GrammarBuilder.Append(srk);
@@ -423,7 +423,7 @@
             g_Grammar.Name = "[OBJECT] is in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // [I am/You are] am in np CONTAINER
+            // 6 [I am/You are] am in np CONTAINER
             gb_GrammarBuilder = new GrammarBuilder();
             srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_GrammarBuilder.Append(srk);
@@ -438,7 +438,7 @@
 
 
 
-            // is OBJECT in CONTAINER
+            // 7 is OBJECT in CONTAINER
             gb_GrammarBuilder = new GrammarBuilder("is");
             srk = new SemanticResultKey("PARAM1", objectFullChoices);
             gb_GrammarBuilder.Append(srk);
@@ -449,7 +449,7 @@
             g_Grammar.Name = "Is [OBJECT] in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // is np OBJECT is in CONTAINER
+            // 8 is np OBJECT is in CONTAINER
             gb_GrammarBuilder = new GrammarBuilder("is");
             gb_GrammarBuilder.Append(nounPrecedentChoices);
             srk = new SemanticResultKey("PARAM1", objectFullChoices);
@@ -461,11 +461,11 @@
             g_Grammar.Name = "Is [OBJECT] in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // is OBJECT in np CONTAINER
+            // 9 is OBJECT in np CONTAINER
             gb_GrammarBuilder = new GrammarBuilder("is");
             srk = new SemanticResultKey("PARAM1", objectFullChoices);
             gb_GrammarBuilder.Append(srk);
-            gb_GrammarBuilder.Append("is in");
+            gb_GrammarBuilder.Append("in");
             gb_GrammarBuilder.Append(nounPrecedentChoices);
             srk = new SemanticResultKey("PARAM2", containerChoices);
             gb_GrammarBuilder.Append(srk);
@@ -473,7 +473,7 @@
             g_Grammar.Name = "Is [OBJECT] in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // is np OBJECT in np CONTAINER
+            // 10 is np OBJECT in np CONTAINER
             gb_GrammarBuilder = new GrammarBuilder("is");
             gb_GrammarBuilder.Append(nounPrecedentChoices);
             srk = new SemanticResultKey("PARAM1", objectFullChoices);
@@ -486,7 +486,7 @@
             g_Grammar.Name = "Is [OBJECT] in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // [am I/are you] in CONTAINER
+            // 11 [am I/are you] in CONTAINER
             gb_GrammarBuilder = new GrammarBuilder(IsChoices);
             srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_GrammarBuilder.Append(srk);
@@ -497,7 +497,7 @@
             g_Grammar.Name = "Is [OBJECT] in [CONTAINER]";
             oRecognizer.LoadGrammar(g_Grammar);
 
-            // [am I/are you] in NP CONTAINER
+            // 12 [am I/are you] in NP CONTAINER
             gb_GrammarBuilder = new GrammarBuilder(IsChoices);
             srk = new SemanticResultKey("PARAM1", pronounChoices);
             gb_GrammarBuilder.Append(srk);

@@ -243,10 +243,7 @@ namespace OSAE.UI.Controls
 
                 if (sliderVisible && updatingSlider == false)
                 {
-                    try
-                    {
-                        CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value;
-                    }
+                    try { CurLevel = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Level").Value; }
                     catch { CurLevel = "0"; }
                     Dispatcher.Invoke((Action)(() =>
                     {
@@ -280,6 +277,8 @@ namespace OSAE.UI.Controls
                                 bitmapImage.StreamSource = ms1;
                                 bitmapImage.EndInit();
                                 Image.Source = bitmapImage;
+                                ImageWidth = bitmapImage.Width;
+                                ImageHeight = bitmapImage.Height;
                             }));
 
                             // Primary Frame is loaded, load up additional frames for the time to display.
