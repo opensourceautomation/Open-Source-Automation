@@ -38,43 +38,31 @@ public partial class controls_ctrlPropertyLabel : System.Web.UI.UserControl
         if (sFontName != "")
         {
             try
-            {
-                PropertyLabel.Font.Name = sFontName;
-            }
+            { PropertyLabel.Font.Name = sFontName; }
             catch (Exception)
-            {
-            }
+            { }
         }
 
         if (sBackColor != "")
         {
             try
-            {
-                PropertyLabel.BackColor = Color.FromName(sBackColor);
-            }
+            { PropertyLabel.BackColor = Color.FromName(sBackColor); }
             catch (Exception)
-            {
-            }
+            { }
         }
         if (sForeColor != "")
         {
             try
-            {
-                PropertyLabel.ForeColor = Color.FromName(sForeColor);
-            }
+            { PropertyLabel.ForeColor = Color.FromName(sForeColor); }
             catch (Exception)
-            {
-            }
+            { }
         }
         if (iFontSize != "")
         {
             try
-            {
-                PropertyLabel.Font.Size = new FontUnit(iFontSize);
-            }
+            { PropertyLabel.Font.Size = new FontUnit(iFontSize); }
             catch (Exception)
-            {
-            }
+            { }
         }
     }
 }
