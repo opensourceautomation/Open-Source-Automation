@@ -4,9 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Threading;
-    using System.ServiceModel;
     using System.Windows.Forms;
-    using NetworkCommsDotNet;
     using OSAE;
 
     /// <summary>
@@ -29,36 +27,21 @@
                 if (pi.install)
                 {
                     if (!InstallPlugin(filepath, ref ErrorText))
-                    {
                         MessageBox.Show("Package was not successfully installed.");
-                    }
-
                     else if (!string.IsNullOrEmpty(ErrorText))
-                    {
                         MessageBox.Show("Package installed.");
-
-                    }
-
                     else
-                    {
                         MessageBox.Show("Package installed.");
-
-                    }
                 }
             }
             catch (Exception ex)
-            {
-                MessageBox.Show("Error installing user control: " + ex.Message);
-            }
+            { MessageBox.Show("Error installing user control: " + ex.Message); }
         }
 
         public bool InstallPlugin(string PluginPackagePath, ref string ErrorText)
         {
             string exePath = OSAE.Common.ApiPath;
-            if (Directory.Exists(exePath + "/tempDir/"))
-            {
-                Directory.Delete(exePath + "/tempDir/", true);
-            }
+            if (Directory.Exists(exePath + "/tempDir/")) Directory.Delete(exePath + "/tempDir/", true);
             PluginDescription desc = new PluginDescription();
             string tempfolder = exePath + "/tempDir/";
             string zipFileName = Path.GetFullPath(PluginPackagePath);
@@ -97,9 +80,7 @@
                     return false;
                 }
                 if (osaudFiles.Count == 1)
-                {
                     DescPath = osaudFiles[0];
-                }
 
                 if (!string.IsNullOrEmpty(DescPath))
                 {
@@ -128,9 +109,7 @@
                                     script.Execute();
                                 }
                                 catch (Exception ex)
-                                {
-                                    this.Log.Error("Error running sql script: " + s, ex);
-                                }
+                                { Log.Error("Error running sql script: " + s, ex); }
                             }
 
                             string newControlFolder = exePath +"/UserControls/" + pluginFolder;
@@ -186,10 +165,7 @@
                 MessageBox.Show("catch: " + ex.Message);
                 return false;
             }
-            if (Directory.Exists(exePath + "/tempDir/"))
-            {
-                deleteFolder(exePath + "/tempDir/");
-            }
+            if (Directory.Exists(exePath + "/tempDir/")) deleteFolder(exePath + "/tempDir/");
             return NoError;
         }
 
@@ -214,33 +190,17 @@
             string webFolder = exePath + "/Plugins/Web Server/wwwroot/controls/usercontrols/" + desc.Path;
             if (Directory.Exists(pluginFolder))
             {
-                if (deleteFolder(pluginFolder))
-                {
-                    returnValue = true;
-                }
-                else
-                {
-                    returnValue = false;
-                }
-                if (Directory.Exists(pluginFolder))
-                {
-                    returnValue = false;
-                }
+                if (deleteFolder(pluginFolder)) returnValue = true;
+                else  returnValue = false;
+
+                if (Directory.Exists(pluginFolder)) returnValue = false;
             }
             if (Directory.Exists(webFolder))
             {
-                if (deleteFolder(webFolder))
-                {
-                    returnValue = true;
-                }
-                else
-                {
-                    returnValue = false;
-                }
-                if (Directory.Exists(webFolder))
-                {
-                    returnValue = false;
-                }
+                if (deleteFolder(webFolder)) returnValue = true;
+                else returnValue = false;
+
+                if (Directory.Exists(webFolder)) returnValue = false;
             }
             else
                 returnValue = true;
@@ -271,16 +231,12 @@
                 return true;
             }
             catch
-            {
-                return false;
-            }
+            { return false; }
         }
         public void deleteAllFiles(DirectoryInfo dir)
         {
             foreach (FileInfo fi in dir.GetFiles())
-            {
                 fi.Delete();
-            }
         }
 
         public void deleteDir(DirectoryInfo di)

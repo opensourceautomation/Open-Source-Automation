@@ -167,7 +167,7 @@
             Grammar g3 = new Grammar(gb3);
             g3.Name = "What is [OBJECT] [PROPERTY]";
             oRecognizer.LoadGrammar(g3);
-       
+
             #endregion
 
             //Too slow
@@ -288,6 +288,7 @@
             // 4 [I am/You are] STATE
             // 5 OBJECT is STATE
             // 6 [NP] OBJECT is STATE
+            // 7 OBJECT STATE
             gb1 = new GrammarBuilder(IsChoices);
             GrammarBuilder gb4 = new GrammarBuilder();
             srk = new SemanticResultKey("PARAM1", pronounChoices);
@@ -308,6 +309,7 @@
             gb6.Append(srk);
             gb5.Append("is");
             gb6.Append("is");
+            GrammarBuilder gb7 = new GrammarBuilder(srk);
 
             //Now the the appropriate states                    
             dsResults = OSAESql.RunSQL("SELECT DISTINCT state_label FROM osae_v_object_type_state_list_full");
@@ -348,6 +350,11 @@
             Grammar g6 = new Grammar(gb6);
             g6.Name = "[OBJECT] is [STATE]";
             oRecognizer.LoadGrammar(g6);
+
+            gb7.Append(srk);
+            Grammar g7 = new Grammar(gb7);
+            g7.Name = "[OBJECT] is [STATE]";
+            oRecognizer.LoadGrammar(g7);
             #endregion
 
             #region [OBJECT] [CONTAINER]

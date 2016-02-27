@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Data;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using OSAE;
 
-namespace MYStateButton
+namespace StateButton
 {
     /// <summary>
     /// Interaction logic for AddNewControl.xaml
@@ -27,7 +18,7 @@ namespace MYStateButton
         // Set the Default Object Type to Associate with this Custom UserControl
         // Example, X-10 RELAY, IP CAMERA, DIMMER, THERMOSTAT
         // Must be all UPPERCASE!
-        string defaultAssocObject = "X10 RELAY";
+        //string defaultAssocObject = "X10 RELAY";
 
         // Set the Default X Coordinate
         string defaultX = "100";
@@ -39,7 +30,7 @@ namespace MYStateButton
         string defaultZ = "1";
 
         // Set the Default Dropdown Caption
-        string defaultCaption = "Choose an X10 RELAY below";
+        string defaultCaption = "Choose an Object below";
 
         #region DO NOT CHANGE THIS CODE
         Boolean hasParams = false;
@@ -138,7 +129,7 @@ namespace MYStateButton
         /// </summary>
         private void LoadObjects()
         {
-            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_Type = '" + defaultAssocObject + "' ORDER BY object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_type != 'SCREEN' AND object_type != 'SCREEN' AND base_type != 'CONTROL' ORDER BY object_name");
             objectsComboBox.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 
@@ -156,17 +147,15 @@ namespace MYStateButton
                 if (hasParams == true)
                 {
                     foreach (objParams op in oParams)
-                    {
                         OSAEObjectPropertyManager.ObjectPropertySet(sName, op.Name, op.Value, currentUser);
-                    }
                 }
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
                 NotifyParentFinished();
             }
-            else
-            {
+           // else
+          //  {
                 // Do not save until feilds are correct
-            }
+          //  }
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
@@ -187,17 +176,15 @@ namespace MYStateButton
                 if (hasParams == true)
                 {
                     foreach (objParams op in oParams)
-                    {
                         OSAEObjectPropertyManager.ObjectPropertySet(sName, op.Name, op.Value, currentUser);
-                    }
                 }
                 OSAEScreenControlManager.ScreenObjectUpdate(currentScreen, objectsComboBox.Text, sName);
                 NotifyParentFinished();
             }
-            else
-            {
+           // else
+           // {
                 // Do not save until feilds are correct
-            }
+          //  }
         }
 
         private bool ValidateForm(string mthd)

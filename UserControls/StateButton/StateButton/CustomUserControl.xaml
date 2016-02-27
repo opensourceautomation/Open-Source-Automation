@@ -1,0 +1,10 @@
+﻿<UserControl x:Class="StateButton.CustomUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" BorderThickness="2" BorderBrush="DarkGray"  Unloaded="UserControl_Unloaded" Height="24.467" Width="116">
+    <Grid Margin="0,0,0,-1">
+        <Button x:Name="btnState" Content="This Control is OFF" Click="btnState_Click" Margin="0,0,0,1"/>
+    </Grid>
+</UserControl>

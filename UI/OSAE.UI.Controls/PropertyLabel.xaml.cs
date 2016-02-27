@@ -74,18 +74,14 @@
                 if (iFontSize != "")
                 {
                     try
-                    {
-                        propLabel.FontSize = Convert.ToDouble(iFontSize);
-                    }
+                    { propLabel.FontSize = Convert.ToDouble(iFontSize); }
                     catch (Exception)
                     {}
                 }
                 if (sFontName != "")
                 {
                     try
-                    {
-                        propLabel.FontFamily = new FontFamily(sFontName);
-                    }
+                    { propLabel.FontFamily = new FontFamily(sFontName); }
                     catch (Exception)
                     {}
                 }

@@ -36,3 +36,12 @@ CALL osae_sp_object_type_event_add('X10 RELAY','OFF','Off');
 CALL osae_sp_object_type_method_add('X10 RELAY','ON','On','','','100','');
 CALL osae_sp_object_type_method_add('X10 RELAY','OFF','Off','','','','');
 CALL osae_sp_object_type_property_add('X10 RELAY','Off Timer','Integer','','-1',0);
+
+CALL osae_sp_object_type_add ('X10 PHOTOCELL','X10 Photocell','','SENSOR',0,0,0,0);
+CALL osae_sp_object_type_state_add('X10 PHOTOCELL','ON','Dark');
+CALL osae_sp_object_type_state_add('X10 PHOTOCELL','OFF','Light');
+CALL osae_sp_object_type_event_add('X10 PHOTOCELL','ON','Dark');
+CALL osae_sp_object_type_event_add('X10 PHOTOCELL','OFF','Light');
+CALL osae_sp_object_type_property_add('X10 PHOTOCELL','Off Timer','Integer','','-1',0);
+CALL osae_sp_object_type_property_add('X10 PHOTOCELL','Level','Integer','','0',1);
+

@@ -172,7 +172,8 @@
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Version", plugin.PluginVersion, serviceName);
                             OSAEObjectPropertyManager.ObjectPropertySet(plugin.PluginName, "Author", plugin.PluginAuthor, serviceName);
                             Log.Info(plugin.PluginName + ":  Plugin added to DB.");
-                            UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
+                            //Uh, this still looks wrong below.   I don't think it is needed, besides, any new plugin is disabled...
+                            //UDPConnection.SendObject("Plugin", plugin.PluginName + " | " + plugin.Enabled.ToString() + " | " + plugin.PluginVersion + " | Stopped | " + plugin.LatestAvailableVersion + " | " + plugin.PluginType + " | " + Common.ComputerName, new IPEndPoint(IPAddress.Broadcast, 10051));
                         }
                         else
                             Log.Info(":  Plugin Object Type Not found for: " + plugin.PluginType + ".  Plugin Object Cannot be Created!");

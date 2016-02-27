@@ -96,6 +96,9 @@
             canGUI.Background = new ImageBrush(bitmapImage);
             canGUI.Height = bitmapImage.Height;
             canGUI.Width = bitmapImage.Width;
+            this.Height = bitmapImage.Height;
+            this.Width = bitmapImage.Width;
+
 
             menuEditMode.IsChecked = false;
             menuEditMode.IsEnabled = false;
@@ -110,6 +113,8 @@
 
             gCurrentScreen = OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Default Screen").Value;
             gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
+
+            // uh maybe this should have code for no screens here, since the resize code went it.  if above fix dont work
             if (gCurrentScreen == "") Set_Default_Screen();
 
             Load_Screen(gCurrentScreen);
@@ -796,6 +801,8 @@
                     Canvas.SetTop(uc, dY * gHeightRatio);
                     Canvas.SetZIndex(uc, dZ);
                     uc.setLocation(dX, dY);
+                    uc.Width = uc.ControlWidth * gWidthRatio;
+                    uc.Height = uc.ControlHeight * gHeightRatio;
                     canGUI.Children.Add(uc);
                     userControls.Add(uc);
                     controlTypes.Add(uc.GetType());

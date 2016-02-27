@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MYStateButton", "MYStateButton\MYStateButton.csproj", "{C0FD822A-00D2-4209-B714-0B713C1D2FA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateButton", "StateButton.csproj", "{C0FD822A-00D2-4209-B714-0B713C1D2FA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
