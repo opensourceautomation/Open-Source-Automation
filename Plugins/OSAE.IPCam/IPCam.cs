@@ -19,7 +19,6 @@ namespace OSAE.IPCam
         {
             pName = pluginName;
             Log = new OSAE.General.OSAELog(pName);
-            Log.Info("IPCAM Plugin Object: " + pluginName);
             Log.Info(pluginName + " is starting...");
             Log.Info("===================================================");
         }
