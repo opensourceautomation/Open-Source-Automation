@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -26,6 +21,8 @@ namespace OSAE.Weather_Control
         OSAEObject weatherObj;
         public Point Location;
         public string _controlname;
+        public int ControlWidth;
+        public int ControlHeight;
         public OSAEObject screenObject = new OSAEObject();
         public string CurState;
         public string CurStateLabel;
@@ -44,6 +41,79 @@ namespace OSAE.Weather_Control
             _controlname = ControlName;
             screenObject = sObj;
             objName = sObj.Property("Object Name").Value;
+
+            try
+            {
+                ControlWidth = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, "Width").Value);
+                ControlHeight = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, "Height").Value);
+            }
+            catch (Exception ex)
+            { }
+
+            string sBackColor = screenObject.Property("Back Color").Value;
+            string sForeColor = screenObject.Property("Fore Color").Value;
+            string iFontSize = screenObject.Property("Font Size").Value;
+            string sFontName = screenObject.Property("Font Name").Value;
+            if (sBackColor != "")
+            {
+                try
+                {
+                    BrushConverter conv = new BrushConverter();
+                    SolidColorBrush brush = conv.ConvertFromString(sBackColor) as SolidColorBrush;
+                    this.Background = brush;
+                }
+                catch (Exception)
+                { }
+            }
+            if (sForeColor != "")
+            {
+                try
+                {
+                    BrushConverter conv = new BrushConverter();
+                    SolidColorBrush brush = conv.ConvertFromString(sForeColor) as SolidColorBrush;
+                    lblCurTemp.Foreground = brush;
+                    lblConditions.Foreground = brush;
+                    lblDay1.Foreground = brush;
+                    lblDay2.Foreground = brush;
+                    lblDay3.Foreground = brush;
+                    lblDay4.Foreground = brush;
+                    lblDay5.Foreground = brush;
+                    lblForcast.Foreground = brush;
+                }
+                catch (Exception)
+                { }
+            }
+            if (iFontSize != "")
+            {
+                try
+                {
+                    lblConditions.FontSize = Convert.ToDouble(iFontSize);
+                    lblDay1.FontSize = Convert.ToDouble(iFontSize);
+                    lblDay2.FontSize = Convert.ToDouble(iFontSize);
+                    lblDay3.FontSize = Convert.ToDouble(iFontSize);
+                    lblDay4.FontSize = Convert.ToDouble(iFontSize);
+                    lblDay5.FontSize = Convert.ToDouble(iFontSize);
+                    lblForcast.FontSize = Convert.ToDouble(iFontSize);
+                }
+                catch (Exception)
+                { }
+            }
+            if (sFontName != "")
+            {
+                try
+                {
+                    lblConditions.FontFamily = new FontFamily(sFontName);
+                    lblDay1.FontFamily = new FontFamily(sFontName);
+                    lblDay2.FontFamily = new FontFamily(sFontName);
+                    lblDay3.FontFamily = new FontFamily(sFontName);
+                    lblDay4.FontFamily = new FontFamily(sFontName);
+                    lblDay5.FontFamily = new FontFamily(sFontName);
+                    lblForcast.FontFamily = new FontFamily(sFontName);
+                }
+                catch (Exception)
+                { }
+            }
+
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(timMain_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 30, 0);
@@ -62,7 +132,6 @@ namespace OSAE.Weather_Control
             weatherObj = OSAEObjectManager.GetObjectByName("Weather");
             lblCurTemp.Content = weatherObj.Property("Temp").Value + "°";
             lblConditions.Content = weatherObj.Property("Today Forecast").Value;
-            lblLastUpd.Content = weatherObj.Property("Last Updated").Value;
 
             LoadLows();
             LoadHighs();
@@ -100,21 +169,21 @@ namespace OSAE.Weather_Control
         }
         private void LoadHighs()
         {
-            lblTodayHi.Content = string.Format("High: {0}°", weatherObj.Property("Day1 High").Value);
-            lblDay1Hi.Content = string.Format("High: {0}°", weatherObj.Property("Day1 High").Value);
-            lblDay2Hi.Content = string.Format("High: {0}°", weatherObj.Property("Day2 High").Value);
-            lblDay3Hi.Content = string.Format("High: {0}°", weatherObj.Property("Day3 High").Value);
-            lblDay4Hi.Content = string.Format("High: {0}°", weatherObj.Property("Day4 High").Value);
-            lblDay5Hi.Content = string.Format("High: {0}°", weatherObj.Property("Day5 High").Value);
+            lblTodayHi.Content = string.Format("{0}°", weatherObj.Property("Day1 High").Value);
+            lblDay1Hi.Content = string.Format("{0}°", weatherObj.Property("Day1 High").Value);
+            lblDay2Hi.Content = string.Format("{0}°", weatherObj.Property("Day2 High").Value);
+            lblDay3Hi.Content = string.Format("{0}°", weatherObj.Property("Day3 High").Value);
+            lblDay4Hi.Content = string.Format("{0}°", weatherObj.Property("Day4 High").Value);
+            lblDay5Hi.Content = string.Format("{0}°", weatherObj.Property("Day5 High").Value);
         }
         private void LoadLows()
         {
-            lblTodayLo.Content = string.Format("Low: {0}°", weatherObj.Property("Night1 Low").Value);
-            lblDay1Lo.Content = string.Format("Low: {0}°", weatherObj.Property("Night1 Low").Value);
-            lblDay2Lo.Content = string.Format("Low: {0}°", weatherObj.Property("Night2 Low").Value);
-            lblDay3Lo.Content = string.Format("Low: {0}°", weatherObj.Property("Night3 Low").Value);
-            lblDay4Lo.Content = string.Format("Low: {0}°", weatherObj.Property("Night4 Low").Value);
-            lblDay5Lo.Content = string.Format("Low: {0}°", weatherObj.Property("Night5 Low").Value);
+            lblTodayLo.Content = string.Format("{0}°", weatherObj.Property("Night1 Low").Value);
+            lblDay1Lo.Content = string.Format("{0}°", weatherObj.Property("Night1 Low").Value);
+            lblDay2Lo.Content = string.Format("{0}°", weatherObj.Property("Night2 Low").Value);
+            lblDay3Lo.Content = string.Format("{0}°", weatherObj.Property("Night3 Low").Value);
+            lblDay4Lo.Content = string.Format("{0}°", weatherObj.Property("Night4 Low").Value);
+            lblDay5Lo.Content = string.Format("{0}°", weatherObj.Property("Night5 Low").Value);
         }
         private void LoadDates()
         {
@@ -170,7 +239,6 @@ namespace OSAE.Weather_Control
 
         private void Grid_MouseUp_1(object sender, MouseButtonEventArgs e)
         {
-            
         }
 
         private void imageHover(object sender, EventArgs e)
@@ -195,14 +263,12 @@ namespace OSAE.Weather_Control
             if (sMode == "Max")
             {
                 sMode = "Min";
-                this.Width = 110;
-                lblLastUpd.Visibility = System.Windows.Visibility.Hidden;
+                this.Width = 85;
             }
             else
             {
                 sMode = "Max";
-                this.Width = 475;
-                lblLastUpd.Visibility = System.Windows.Visibility.Visible;
+                this.Width = 440;
             }
         }
 

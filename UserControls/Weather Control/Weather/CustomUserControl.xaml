@@ -4,43 +4,41 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:OSAEMainUserCtrl ="clr-namespace:OSAE;assembly=OSAE.API"
-             mc:Ignorable="d" 
-             d:DesignHeight="310" d:DesignWidth="475"
-             Background="LightGray"  BorderThickness="2" BorderBrush="Black">
-    <Grid>
-        <Label x:Name="lblCurTemp" Content="lblCurTemp" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="39" Width="64" FontWeight="Bold" FontSize="18"/>
-        <Label x:Name="lblConditions" Content="Conditions" HorizontalAlignment="Left" Margin="107,16,0,0" VerticalAlignment="Top"/>
-        <Image x:Name="imgTodayDay" HorizontalAlignment="Left" Height="83" Margin="10,54,0,0" VerticalAlignment="Top" Width="83" MouseUp="imgTodayDay_MouseUp" ToolTip="Click to Min/Max Control"/>
-        <Image x:Name="imgTodayNight" HorizontalAlignment="Left" Height="83" Margin="10,183,0,0" VerticalAlignment="Top" Width="83"/>
-        <Label x:Name="lblTodayHi" Content="Hi: xx*" HorizontalAlignment="Left" Margin="10,134,0,0" VerticalAlignment="Top" Foreground="Red"/>
-        <Label x:Name="lblTodayLo" Content="Low: xx*" HorizontalAlignment="Left" Margin="10,152,0,0" VerticalAlignment="Top" Foreground="#FF0047DE"/>
-        <Image x:Name="imgDay1Day" HorizontalAlignment="Left" Height="64" Margin="120,73,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Image x:Name="imgDay1Night" HorizontalAlignment="Left" Height="64" Margin="120,183,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Label x:Name="lblDay1Hi" Content="Hi: xx*" HorizontalAlignment="Left" Margin="120,134,0,0" VerticalAlignment="Top" Foreground="Red"/>
-        <Label x:Name="lblDay1Lo" Content="Low: xx*" HorizontalAlignment="Left" Margin="120,152,0,0" VerticalAlignment="Top" Foreground="#FF0047DE"/>
-        <Image x:Name="imgDay2Day" HorizontalAlignment="Left" Height="64" Margin="190,73,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Image x:Name="imgDay2Night" HorizontalAlignment="Left" Height="64" Margin="190,183,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Label x:Name="lblDay2Hi" Content="Hi: xx*" HorizontalAlignment="Left" Margin="190,134,0,0" VerticalAlignment="Top" Foreground="Red"/>
-        <Label x:Name="lblDay2Lo" Content="Low: xx*" HorizontalAlignment="Left" Margin="190,152,0,0" VerticalAlignment="Top" Foreground="#FF0047DE"/>
-        <Image x:Name="imgDay3Day" HorizontalAlignment="Left" Height="64" Margin="260,73,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Image x:Name="imgDay3Night" HorizontalAlignment="Left" Height="64" Margin="260,183,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Label x:Name="lblDay3Hi" Content="Hi: xx*" HorizontalAlignment="Left" Margin="260,134,0,0" VerticalAlignment="Top" Foreground="Red"/>
-        <Label x:Name="lblDay3Lo" Content="Low: xx*" HorizontalAlignment="Left" Margin="260,152,0,0" VerticalAlignment="Top" Foreground="#FF0047DE"/>
-        <Image x:Name="imgDay4Day" HorizontalAlignment="Left" Height="64" Margin="330,73,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Image x:Name="imgDay4Night" HorizontalAlignment="Left" Height="64" Margin="330,183,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Label x:Name="lblDay4Hi" Content="Hi: xx*" HorizontalAlignment="Left" Margin="330,134,0,0" VerticalAlignment="Top" Foreground="Red"/>
-        <Label x:Name="lblDay4Lo" Content="Low: xx*" HorizontalAlignment="Left" Margin="330,152,0,0" VerticalAlignment="Top" Foreground="#FF0047DE"/>
-        <Image x:Name="imgDay5Day" HorizontalAlignment="Left" Height="64" Margin="399,73,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Image x:Name="imgDay5Night" HorizontalAlignment="Left" Height="64" Margin="399,183,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
-        <Label x:Name="lblDay5Hi" Content="Hi: xx*" HorizontalAlignment="Left" Margin="399,134,0,0" VerticalAlignment="Top" Foreground="Red"/>
-        <Label x:Name="lblDay5Lo" Content="Low: xx*" HorizontalAlignment="Left" Margin="399,152,0,0" VerticalAlignment="Top" Foreground="#FF0047DE"/>
-        <Label x:Name="lblDay1" Content="Day 1" HorizontalAlignment="Left" Margin="120,47,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblDay2" Content="Day 2" HorizontalAlignment="Left" Margin="190,47,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblDay3" Content="Day 3" HorizontalAlignment="Left" Margin="260,47,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblDay4" Content="Day 4" HorizontalAlignment="Left" Margin="330,47,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblDay5" Content="Day 5" HorizontalAlignment="Left" Margin="399,47,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblLastUpd" Content="Label" HorizontalAlignment="Left" Margin="10,276,0,0" VerticalAlignment="Top"/>
-        <TextBlock x:Name="lblForcast" Text="Label" HorizontalAlignment="Left" Margin="120,247,0,0" VerticalAlignment="Top" Height="45" Width="343" TextWrapping="Wrap"/>
+             mc:Ignorable="d"
+             Background="LightGray"  BorderThickness="0" BorderBrush="Black" Height="251.403" Width="440.03">
+    <Grid x:Name="grdControl" Margin="0,0,-4,0">
+        <Label x:Name="lblCurTemp" Content="lblCurTemp" HorizontalAlignment="Left" VerticalAlignment="Top" Height="35" Width="83" FontWeight="Bold" FontSize="21.333" Margin="0,-4,0,0"/>
+        <Label x:Name="lblConditions" Content="Conditions" HorizontalAlignment="Left" Margin="88,0,0,0" VerticalAlignment="Top"/>
+        <Image x:Name="imgTodayDay" HorizontalAlignment="Left" Height="83" Margin="3,31,0,0" VerticalAlignment="Top" Width="83" MouseUp="imgTodayDay_MouseUp" ToolTip="Click to Min/Max Control"/>
+        <Image x:Name="imgTodayNight" HorizontalAlignment="Left" Height="83" Margin="0,142,0,0" VerticalAlignment="Top" Width="83"/>
+        <Label x:Name="lblTodayHi" Content="xx*" HorizontalAlignment="Left" Margin="31,111,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="16"/>
+        <Label x:Name="lblTodayLo" Content="xx*" HorizontalAlignment="Left" Margin="0,111,0,0" VerticalAlignment="Top" Foreground="#FF0047DE" FontSize="16"/>
+        <Image x:Name="imgDay1Day" HorizontalAlignment="Left" Height="64" Margin="92,50,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Image x:Name="imgDay1Night" HorizontalAlignment="Left" Height="64" Margin="92,142,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Label x:Name="lblDay1Hi" Content="xx*" HorizontalAlignment="Left" Margin="117,111,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="16"/>
+        <Label x:Name="lblDay1Lo" Content="xx*" HorizontalAlignment="Left" Margin="86,111,0,0" VerticalAlignment="Top" Foreground="#FF0047DE" FontSize="16"/>
+        <Image x:Name="imgDay2Day" HorizontalAlignment="Left" Height="64" Margin="161,50,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Image x:Name="imgDay2Night" HorizontalAlignment="Left" Height="64" Margin="161,142,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Label x:Name="lblDay2Hi" Content="xx*" HorizontalAlignment="Left" Margin="187,111,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="16"/>
+        <Label x:Name="lblDay2Lo" Content="xx*" HorizontalAlignment="Left" Margin="156,111,0,0" VerticalAlignment="Top" Foreground="#FF0047DE" FontSize="16"/>
+        <Image x:Name="imgDay3Day" HorizontalAlignment="Left" Height="64" Margin="230,50,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Image x:Name="imgDay3Night" HorizontalAlignment="Left" Height="64" Margin="230,142,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Label x:Name="lblDay3Hi" Content="xx*" HorizontalAlignment="Left" Margin="257,111,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="16"/>
+        <Label x:Name="lblDay3Lo" Content="xx*" HorizontalAlignment="Left" Margin="226,111,0,0" VerticalAlignment="Top" Foreground="#FF0047DE" FontSize="16"/>
+        <Image x:Name="imgDay4Day" HorizontalAlignment="Left" Height="64" Margin="299,50,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Image x:Name="imgDay4Night" HorizontalAlignment="Left" Height="64" Margin="299,142,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Label x:Name="lblDay4Hi" Content="xx*" HorizontalAlignment="Left" Margin="327,111,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="16"/>
+        <Label x:Name="lblDay4Lo" Content="xx*" HorizontalAlignment="Left" Margin="296,111,0,0" VerticalAlignment="Top" Foreground="#FF0047DE" FontSize="16"/>
+        <Image x:Name="imgDay5Day" HorizontalAlignment="Left" Height="64" Margin="368,50,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Image x:Name="imgDay5Night" HorizontalAlignment="Left" Height="64" Margin="368,142,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Label x:Name="lblDay5Hi" Content="xx*" HorizontalAlignment="Left" Margin="396,111,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="16"/>
+        <Label x:Name="lblDay5Lo" Content="xx*" HorizontalAlignment="Left" Margin="365,111,0,0" VerticalAlignment="Top" Foreground="#FF0047DE" FontSize="16"/>
+        <Label x:Name="lblDay1" Content="Day 1" HorizontalAlignment="Left" Margin="88,24,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblDay2" Content="Day 2" HorizontalAlignment="Left" Margin="156,24,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblDay3" Content="Day 3" HorizontalAlignment="Left" Margin="226,24,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblDay4" Content="Day 4" HorizontalAlignment="Left" Margin="296,24,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblDay5" Content="Day 5" HorizontalAlignment="Left" Margin="365,24,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="lblForcast" Text="Label" HorizontalAlignment="Left" Margin="86,206,0,0" VerticalAlignment="Top" Height="45" Width="343" TextWrapping="Wrap"/>
 
     </Grid>
 </UserControl>
