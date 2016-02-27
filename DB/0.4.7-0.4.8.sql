@@ -1216,6 +1216,20 @@ CALL osae_sp_object_type_property_add('WUNDERGROUND','Debug','Boolean','','FALSE
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Version','String','','',0);
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Author','String','','',0);
 
+CALL osae_sp_object_type_add ('USER CONTROL STATEBUTTON','Custom User Control','SYSTEM','USER CONTROL',0,1,0,1);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Control Type','String','','',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Object Name','String','','',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','X','Integer','','0',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Y','Integer','','0',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','ZOrder','Integer','','0',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Width','Integer','','75',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Font Name','String','','Arial',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Font Size','Integer','','12',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Back Color','String','','Transparent',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Fore Color','String','','',0);
+CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Height','Integer','','40',0);
+
+
 
 UPDATE osae_object_type_property SET property_default = '0' WHERE property_datatype = 'Integer' and (property_default = '' or property_default IS NULL);
 UPDATE osae_object_type_property SET property_default = '-1' WHERE property_datatype = 'Integer' and property_name = "Off Timer" and (property_default = '' or property_default = "0" or property_default IS NULL);

@@ -88,12 +88,19 @@ Public Class CM15A
         Dim sAddress As String
         Dim iLevel As Integer
         Dim bSoftStart As String
+        Dim found As Boolean
 
         sMethod = method.MethodName
         sParam1 = method.Parameter1
         sObject = method.ObjectName
         sAddress = method.Address
-        bSoftStart = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, "Soft Start").Value
+
+        found = OSAEObjectPropertyManager.ObjectPropertyExists(sObject, "Soft Start")
+        If found Then
+            bSoftStart = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, "Soft Start").Value
+        Else
+            bSoftStart = "FALSE"
+        End If
 
         If sMethod = "ON" Or sMethod = "OFF" Then
             Try
