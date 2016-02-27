@@ -28,6 +28,7 @@ CALL osae_sp_object_type_method_add('X10 DIMMER','BRIGHT','Bright','Increment %'
 CALL osae_sp_object_type_method_add('X10 DIMMER','DIM','Dim','Decrement %','','10','');
 CALL osae_sp_object_type_property_add('X10 DIMMER','Off Timer','Integer','','-1',0);
 CALL osae_sp_object_type_property_add('X10 DIMMER','Level','Integer','','0',0);
+CALL osae_sp_object_type_property_add('X10 DIMMER','Soft Start','Boolean','','FALSE',0);
 
 CALL osae_sp_object_type_add ('X10 RELAY','X10 Relay','','SWITCH',0,0,0,0);
 CALL osae_sp_object_type_state_add('X10 RELAY','ON','On');
@@ -37,6 +38,7 @@ CALL osae_sp_object_type_event_add('X10 RELAY','OFF','Off');
 CALL osae_sp_object_type_method_add('X10 RELAY','ON','On','','','','');
 CALL osae_sp_object_type_method_add('X10 RELAY','OFF','Off','','','','');
 CALL osae_sp_object_type_property_add('X10 RELAY','Off Timer','Integer','','-1',0);
+CALL osae_sp_object_type_property_add('X10 RELAY','Soft Start','Boolean','','FALSE',0);
 
 CALL osae_sp_object_type_add ('X10 SENSOR','X10 Sensor','','SENSOR',0,0,0,0);
 CALL osae_sp_object_type_state_add('X10 SENSOR','ON','On');

@@ -1,22 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.IO;
-using System.Linq;
 using System.Net;
 using OSAE;
-using System.Text;
-using System.Web;
-using System.Xml;
-
 
 namespace OSAE.IPCam
 {
     public class IPCam : OSAEPluginBase
     {
-        OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
-        
+        OSAE.General.OSAELog Log;
+        string pName = "";
         string camName;
         string sMethod;
         string sProperty;
@@ -25,14 +17,16 @@ namespace OSAE.IPCam
 
         public override void RunInterface(string pluginName)
         {
-            this.Log.Info("IPCAM Plugin Object: " + pluginName);
-            this.Log.Info(pluginName + " is starting...");
-            this.Log.Info("===================================================");
+            pName = pluginName;
+            Log = new OSAE.General.OSAELog(pName);
+            Log.Info("IPCAM Plugin Object: " + pluginName);
+            Log.Info(pluginName + " is starting...");
+            Log.Info("===================================================");
         }
 
         public override void ProcessCommand(OSAEMethod method)
         {
-            this.Log.Info("RECEIVED: " + method.ObjectName + " - " + method.MethodName);
+            Log.Info("RECEIVED: " + method.ObjectName + " - " + method.MethodName);
             sMethod = method.MethodName;
             camName = method.ObjectName;
             camobj = OSAEObjectManager.GetObjectByName(camName);
@@ -50,17 +44,15 @@ namespace OSAE.IPCam
                     string camSloc = camobj.Property("Save Location").Value;
                     camSloc = camSloc + @"\";
                     string filename = camSloc + camName + "_" + i + ".jpg";
-                    var URI = new Uri(renameingSys(camSnapShot, "",""));
+                    var URI = new Uri(renameingSys(camSnapShot, "", ""));
                     WebClient wc = new WebClient();
                     wc.Headers["Content-Type"] = "application/x-www-form-urlencoded";
                     wc.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadFileCallback2);
-                    wc.DownloadFile(URI, filename);  
+                    wc.DownloadFile(URI, filename);
                     this.Log.Info(filename + " was created");
                 }
                 catch (Exception ex)
-                {
-                    this.Log.Error("An error occurred durning the snapshot!!!: " + ex.Message);
-                }
+                { Log.Error("An error occurred durning the snapshot!!!: " + ex.Message); }
             }
             else
             {
@@ -75,16 +67,14 @@ namespace OSAE.IPCam
                     this.Log.Info("SENT TO: " + method.ObjectName + ": " + sProperty);
                 }
                 catch (Exception ex)
-                {
-                    this.Log.Error("An error occurred!!!: " + ex.Message);
-                }
+                { Log.Error("An error occurred!!!: " + ex.Message); }
             }
-            this.Log.Info("===================================================");
+            Log.Info("===================================================");
         }
 
         public override void Shutdown()
         {
-            this.Log.Info("IPCam Plugin has STOPPED");
+            Log.Info("IPCam Plugin has STOPPED");
         }
 
         public string renameingSys(string fieldData, string camParam1, string camParam2)
@@ -103,9 +93,7 @@ namespace OSAE.IPCam
                     if (camParam1 == renameProperty)
                     {
                         if (camParam2 == "")
-                        {
-                            this.Log.Debug("Property change Error: NO Parameter 2 for property " + camParam1);
-                        }
+                            Log.Debug("Property change Error: NO Parameter 2 for property " + camParam1);
                         else
                         {
                             int ssp = camParam2.IndexOf("[");
@@ -116,34 +104,25 @@ namespace OSAE.IPCam
                                 camParam2 = camobj.Property(camParam2).Value;
                             }
                             changeProperty = camParam2;
-                            this.Log.Debug("Property changed by Method Parameter 1: [" + renameProperty + "] to " + camParam2);
+                            Log.Debug("Property changed by Method Parameter 1: [" + renameProperty + "] to " + camParam2);
                         }
                     }
                     else
-                    {
                         changeProperty = camobj.Property(renameProperty).Value;
-                    }
                 }
                 else
-                {
                    changeProperty = camobj.Property(renameProperty).Value;
-                }
                 
                 getProperty = changeProperty;
 
                     // log any errors
                 if (getProperty.Length > 0)
-                {
                     newData = newData.Replace("[" + renameProperty + "]", getProperty);
-                }
                 else
-                {
-                    this.Log.Error("Property " + getProperty + " has NO data");
-                }
-                if(getProperty == null)
-                {
-                    this.Log.Error("Property " + getProperty + " NOT FOUND");
-                }
+                    Log.Error("Property " + getProperty + " has NO data");
+
+                if (getProperty == null)
+                    Log.Error("Property " + getProperty + " NOT FOUND");
             }
             newData = @"http://" + newData;
             return newData;
@@ -152,13 +131,13 @@ namespace OSAE.IPCam
         private void UploadStringCallback2(Object sender, UploadStringCompletedEventArgs e)
         {
             string reply = e.Result;
-            this.Log.Debug("Device CGI returned info: " + reply);
+            Log.Debug("Device CGI returned info: " + reply);
         }
 
         private void DownloadFileCallback2(Object sender, AsyncCompletedEventArgs e)
         {
             string reply = e.ToString();
-            this.Log.Debug("Device CGI returned info: " + reply);
+            Log.Debug("Device CGI returned info: " + reply);
         }
     }
 }
