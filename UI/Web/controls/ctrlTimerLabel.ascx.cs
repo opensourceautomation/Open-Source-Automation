@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Drawing;
 using OSAE;
@@ -48,32 +44,23 @@ public partial class controls_ctrlTimerLabel : System.Web.UI.UserControl
         if (sBackColor != "")
         {
             try
-            {
-                TimerLabel.BackColor = Color.FromName(sBackColor);
-            }
+            { TimerLabel.BackColor = Color.FromName(sBackColor); }
             catch (Exception)
-            {
-            }
+            { }
         }
         if (sForeColor != "")
         {
             try
-            {
-                TimerLabel.ForeColor = Color.FromName(sForeColor);
-            }
+            { TimerLabel.ForeColor = Color.FromName(sForeColor); }
             catch (Exception)
-            {
-            }
+            { }
         }
         if (iFontSize != "")
         {
             try
-            {
-                TimerLabel.Font.Size = new FontUnit(iFontSize);
-            }
+            { TimerLabel.Font.Size = new FontUnit(iFontSize); }
             catch (Exception)
-            {
-            }
+            { }
         }
     }
 }

@@ -31,14 +31,14 @@ namespace OSAE.UI.Controls
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
             _mjpeg.Error += _mjpeg_Error;
-            int imgsWidth = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Width").Value);
-            int imgsHeight = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Height").Value);
-            ControlWidth = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Width").Value);
-            imgRatio = ControlWidth / imgsWidth;
-            ControlHeight = Convert.ToInt32(imgHeight * imgRatio);
+            imgWidth = Convert.ToDouble(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Width").Value);
+            imgHeight = Convert.ToDouble(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Height").Value);
+            ControlWidth = Convert.ToDouble(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Width").Value);
+            imgRatio = ControlWidth / imgWidth;
+            ControlHeight = Convert.ToDouble(imgHeight * imgRatio);
             streamURI = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
-            if (imgsWidth > 0) { imgWidth = Convert.ToDouble(imgsWidth); }
-            if (imgsHeight > 0) { imgHeight = Convert.ToDouble(imgsHeight); }
+          //  if (imgWidth > 0) { imgWidth = imgWidth); }
+           // if (imgHeight > 0) { imgHeight = Convert.ToDouble(imgHeight); }
             this.Width = ControlWidth;
             this.Height = ControlHeight;
             
