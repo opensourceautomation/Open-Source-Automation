@@ -50,6 +50,7 @@ namespace OSAE.IPCam
 
         public override void ProcessCommand(OSAEMethod method)
         {
+            Log.Info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             Log.Info("RECEIVED: " + method.ObjectName + " - " + method.MethodName);
             sMethod = method.MethodName;
             camName = method.ObjectName;
@@ -76,7 +77,7 @@ namespace OSAE.IPCam
                     Log.Info(filename + " was created");
                 }
                 catch (Exception ex)
-                { Log.Error("An error occurred durning the snapshot!!!: " + ex.Message); }
+                { Log.Error("An error occurred durning the snapshot!!!", ex); }
             }
             else
             {
@@ -91,7 +92,7 @@ namespace OSAE.IPCam
                     this.Log.Info("SENT TO: " + method.ObjectName + ": " + sProperty);
                 }
                 catch (Exception ex)
-                { Log.Error("An error occurred!!!: " + ex.Message); }
+                { Log.Error("An error occurred!!!", ex); }
             }
             Log.Info("===================================================");
         }
@@ -107,7 +108,9 @@ namespace OSAE.IPCam
             string getProperty;
             string changeProperty="";
             newData = fieldData.Replace("http://", "");
-            while (newData.IndexOf("[") != -1)
+            try
+            {
+                while (newData.IndexOf("[") != -1)
             {
                 int ss = newData.IndexOf("[");
                 int es = newData.IndexOf("]");
@@ -150,6 +153,12 @@ namespace OSAE.IPCam
             }
             newData = @"http://" + newData;
             return newData;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("A renaming error occurred!!!", ex);
+                return null;
+            }
         }
 
         private void UploadStringCallback2(Object sender, UploadStringCompletedEventArgs e)
