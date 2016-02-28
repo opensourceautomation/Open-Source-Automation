@@ -984,7 +984,7 @@
             _timer.Stop();
             VideoStreamViewer vidviewr = (VideoStreamViewer)sender;
             AddControl addControl = new AddControl();
-            AddNewCameraViewer cmi = new AddNewCameraViewer(gCurrentScreen, vidviewr.screenObject.Name);
+            AddNewCameraViewer cmi = new AddNewCameraViewer(gCurrentScreen, vidviewr.screenObject.Name, vidviewr.screenObject.Name);
             addControl.Content = cmi;
             addControl.Width = cmi.Width + 80;
             addControl.Height = cmi.Height + 80;

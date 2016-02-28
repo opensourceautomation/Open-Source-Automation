@@ -1216,6 +1216,13 @@ CALL osae_sp_object_type_property_add('WUNDERGROUND','Debug','Boolean','','FALSE
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Version','String','','',0);
 CALL osae_sp_object_type_property_add('WUNDERGROUND','Author','String','','',0);
 
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Width','Integer','','445',0);
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Font Name','String','','Arial',0);
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Font Size','Integer','','14',0);
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Back Color','String','','Gray',0);
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Fore Color','String','','Black',0);
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Height','Integer','','270',0);
+
 CALL osae_sp_object_type_add ('USER CONTROL STATEBUTTON','Custom User Control','SYSTEM','USER CONTROL',0,1,0,1);
 CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Control Type','String','','',0);
 CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Object Name','String','','',0);
@@ -1229,7 +1236,16 @@ CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Back Color','S
 CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Fore Color','String','','',0);
 CALL osae_sp_object_type_property_add('USER CONTROL STATEBUTTON','Height','Integer','','40',0);
 
+CALL osae_sp_object_type_property_add('CONTROL CAMERA VIEWER','Width','Integer','','400',0);
 
+CALL osae_sp_object_type_add ('IP CAMERA','Core Type: Container','IPCam','THING',0,1,1,1);
+CALL osae_sp_object_type_state_add('IP CAMERA','ON','On');
+CALL osae_sp_object_type_state_add('IP CAMERA','OFF','Off');
+CALL osae_sp_object_type_event_add('IP CAMERA','OFF','Off');
+CALL osae_sp_object_type_event_add('IP CAMERA','ON','On');
+CALL osae_sp_object_type_property_add('IP CAMERA','Stream Address','String','','',1);
+CALL osae_sp_object_type_property_add('IP CAMERA','Height','Integer','','300',1);
+CALL osae_sp_object_type_property_add('IP CAMERA','Width','Integer','','400',0);
 
 UPDATE osae_object_type_property SET property_default = '0' WHERE property_datatype = 'Integer' and (property_default = '' or property_default IS NULL);
 UPDATE osae_object_type_property SET property_default = '-1' WHERE property_datatype = 'Integer' and property_name = "Off Timer" and (property_default = '' or property_default = "0" or property_default IS NULL);

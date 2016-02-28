@@ -75,6 +75,7 @@ namespace OSAE.UI.Controls
             objectsComboBox.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Object Name").Value;
             txtX.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "X").Value;
             txtY.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Y").Value;
+            txtWidth.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "Width").Value;
             txtZOrder.Text = OSAEObjectPropertyManager.GetObjectPropertyValue(controlName, "ZOrder").Value;
         }
 
@@ -88,13 +89,12 @@ namespace OSAE.UI.Controls
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
                 NotifyParentFinished();
             }
             else
-            {
                 MessageBox.Show("Not all the mandatory fields have been completed", "Fields Incomplete", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
@@ -107,6 +107,7 @@ namespace OSAE.UI.Controls
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "X", txtX.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "Y", txtY.Text, currentUser);
                 OSAEObjectPropertyManager.ObjectPropertySet(sName, "ZOrder", txtZOrder.Text, currentUser);
+                OSAEObjectPropertyManager.ObjectPropertySet(sName, "Width", txtWidth.Text, currentUser);
                 OSAEScreenControlManager.ScreenObjectAdd(currentScreen, objectsComboBox.Text, sName);
                 NotifyParentFinished();
             }

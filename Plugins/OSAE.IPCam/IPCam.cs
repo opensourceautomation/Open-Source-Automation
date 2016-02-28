@@ -21,6 +21,31 @@ namespace OSAE.IPCam
             Log = new OSAE.General.OSAELog(pName);
             Log.Info(pluginName + " is starting...");
             Log.Info("===================================================");
+            OwnTypes();
+        }
+
+        public void OwnTypes()
+        {
+            //Added the follow to automatically own Speech Base types that have no owner.
+            OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("IPCAM");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("IPCam Plugin took ownership of the IPCAM Object Type.");
+            }
+            else
+                Log.Info("IPCam Plugin correctly owns the IPCAM Object Type.");
+
+            oType = OSAEObjectTypeManager.ObjectTypeLoad("IP CAMERA");
+
+            if (oType.OwnedBy == "")
+            {
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                Log.Info("IPCam Plugin took ownership of the IP CAMERA Object Type.");
+            }
+            else
+                Log.Info("IPCam Plugin correctly owns the IP CAMERA Object Type.");
         }
 
         public override void ProcessCommand(OSAEMethod method)

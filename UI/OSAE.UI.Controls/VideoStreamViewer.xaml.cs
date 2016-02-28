@@ -18,8 +18,9 @@ namespace OSAE.UI.Controls
         string newData;
         double imgWidth = 400;
         double imgHeight = 300;
-        public int ControlWidth;
-        public int ControlHeight;
+        double imgRatio;
+        public double ControlWidth;
+        public double ControlHeight;
         string streamURI;
 
         public VideoStreamViewer(string url, OSAEObject obj, string appName)
@@ -30,17 +31,19 @@ namespace OSAE.UI.Controls
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
             _mjpeg.Error += _mjpeg_Error;
-            var imgsWidth = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Width").Value;
-            var imgsHeight = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Height").Value;
+            int imgsWidth = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Width").Value);
+            int imgsHeight = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Height").Value);
+            ControlWidth = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "Width").Value);
+            imgRatio = ControlWidth / imgsWidth;
+            ControlHeight = Convert.ToInt32(imgHeight * imgRatio);
             streamURI = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
-            if (imgsWidth != "") { imgWidth = Convert.ToDouble(imgsWidth); }
-            if (imgsHeight != "") { imgHeight = Convert.ToDouble(imgsHeight); }
-            this.Width = imgWidth;
-            this.Height = imgHeight;
-            ControlWidth = Convert.ToInt32(imgWidth);
-            ControlHeight = Convert.ToInt32(imgHeight);
-            image.Width = imgWidth;
-            image.Height = imgHeight;
+            if (imgsWidth > 0) { imgWidth = Convert.ToDouble(imgsWidth); }
+            if (imgsHeight > 0) { imgHeight = Convert.ToDouble(imgsHeight); }
+            this.Width = ControlWidth;
+            this.Height = ControlHeight;
+            
+            image.Width = ControlWidth;
+            image.Height = ControlHeight;
             if (streamURI == null)
             {
                 Log.Error("Stream Path Not Found: " + streamURI);
