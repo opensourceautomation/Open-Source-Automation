@@ -19,11 +19,11 @@ CALL osae_sp_object_type_property_add('W800RF','Version','String','','',0);
 CALL osae_sp_object_type_property_add('W800RF','Author','String','','',0);
 CALL osae_sp_object_type_property_delete('Computer Name','W800RF');
 
-CALL osae_sp_object_type_add ('X10 DS10A','X10 DS10A OC','','SENSOR',0,0,0,1);
-CALL osae_sp_object_type_state_add('X10 DS10A','ON','Opened');
-CALL osae_sp_object_type_state_add('X10 DS10A','OFF','Closed');
-CALL osae_sp_object_type_event_add('X10 DS10A','ON','Opened');
-CALL osae_sp_object_type_event_add('X10 DS10A','OFF','Closed');
+CALL osae_sp_object_type_add ('X10 DS10A OC','X10 DS10A OC','','SENSOR',0,0,0,1);
+CALL osae_sp_object_type_state_add('X10 DS10A OC','ON','Opened');
+CALL osae_sp_object_type_state_add('X10 DS10A OC','OFF','Closed');
+CALL osae_sp_object_type_event_add('X10 DS10A OC','ON','Opened');
+CALL osae_sp_object_type_event_add('X10 DS10A OC','OFF','Closed');
 
 CALL osae_sp_object_type_add ('X10 DS10A','X10 DS10A','','SENSOR',0,0,0,1);
 CALL osae_sp_object_type_state_add('X10 DS10A','ON','On');

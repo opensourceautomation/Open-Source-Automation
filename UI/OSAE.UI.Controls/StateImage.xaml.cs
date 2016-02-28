@@ -59,7 +59,7 @@ namespace OSAE.UI.Controls
             LinkedObject = OSAEObjectManager.GetObjectByName(ObjectName);
             SliderMethod = screenObject.Property("Slider Method").Value;
             CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
-
+            CurStateLabel = OSAEObjectStateManager.GetObjectStateValue(ObjectName).StateLabel;
             try
             {
                 string propertyCheck = OSAEObjectPropertyManager.GetObjectPropertyValue(ObjectName, "Light Level").Value;
@@ -70,7 +70,7 @@ namespace OSAE.UI.Controls
             { }
 
             LastStateChange = OSAEObjectStateManager.GetObjectStateValue(ObjectName).LastStateChange;
-            Image.ToolTip = ObjectName + "\n" + CurState + " since: " + LastStateChange;
+            Image.ToolTip = ObjectName + " " + CurStateLabel + "\n" + "since: " + LastStateChange;
 
             Image.Tag = ObjectName;
             Image.MouseLeftButtonUp += new MouseButtonEventHandler(State_Image_MouseLeftButtonUp);
