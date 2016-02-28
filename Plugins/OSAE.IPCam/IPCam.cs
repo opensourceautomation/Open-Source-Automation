@@ -48,7 +48,7 @@ namespace OSAE.IPCam
                     wc.Headers["Content-Type"] = "application/x-www-form-urlencoded";
                     wc.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadFileCallback2);
                     wc.DownloadFile(URI, filename);
-                    this.Log.Info(filename + " was created");
+                    Log.Info(filename + " was created");
                 }
                 catch (Exception ex)
                 { Log.Error("An error occurred durning the snapshot!!!: " + ex.Message); }

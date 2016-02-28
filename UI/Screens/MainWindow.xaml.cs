@@ -488,6 +488,7 @@
                             }
                         }
                     }
+                    */
                     else if (newCtrl.ControlType == "CONTROL CAMERA VIEWER")
                     {
                         foreach (OSAE.UI.Controls.VideoStreamViewer vsv in cameraViewers)
@@ -495,15 +496,30 @@
                             if (newCtrl.ControlName == vsv.screenObject.Name)
                             {
                                 oldCtrl = true;
-                                Dispatcher.Invoke((Action)(() =>
+                                if (gWidthRatio > gHeightRatio)
                                 {
-                                    Canvas.SetLeft(vsv, vsv.Location.X * gWidthRatio);
-                                    Canvas.SetTop(vsv, vsv.Location.Y * gHeightRatio);
-                                }));
+                                    Dispatcher.Invoke((Action)(() =>
+                                    {
+                                        Canvas.SetLeft(vsv, vsv.Location.X * gWidthRatio);
+                                        Canvas.SetTop(vsv, vsv.Location.Y * gHeightRatio);
+                                        vsv.Width = vsv.ControlWidth * gHeightRatio;
+                                        vsv.Height = vsv.ControlHeight * gHeightRatio;
+                                    }));
+                                }
+                                else
+                                {
+                                    Dispatcher.Invoke((Action)(() =>
+                                    {
+                                        Canvas.SetLeft(vsv, vsv.Location.X * gWidthRatio);
+                                        Canvas.SetTop(vsv, vsv.Location.Y * gHeightRatio);
+                                        vsv.Width = vsv.ControlWidth * gWidthRatio;
+                                        vsv.Height = vsv.ControlHeight * gWidthRatio;
+                                    }));
+                                }
                             }
                         }
                     }
-                    */
+                  
                     else if (newCtrl.ControlType.Contains("USER CONTROL"))
                     {
                         foreach (dynamic obj in userControls)
@@ -716,7 +732,7 @@
                 {
                     try
                     {
-                        ClickImage ClickImageControl = new ClickImage(obj, gAppName,gCurrentUser);
+                        ClickImage ClickImageControl = new ClickImage(obj, gAppName, gCurrentUser);
                         ClickImageControl.MouseRightButtonDown += new MouseButtonEventHandler(Click_Image_MouseRightButtonDown);
                         canGUI.Children.Add(ClickImageControl);
                         double dX = Convert.ToDouble(obj.Property("X").Value);
@@ -766,7 +782,7 @@
                     try
                     {
                         string stream = OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Property("Object Name").Value, "Stream Address").Value;
-                        VideoStreamViewer vsv = new VideoStreamViewer(stream, obj);
+                        VideoStreamViewer vsv = new VideoStreamViewer(stream, obj, gAppName);
                         vsv.MouseRightButtonDown += new MouseButtonEventHandler(VideoStreamViewer_MouseRightButtonDown);
                         canGUI.Children.Add(vsv);
                         double dX = Convert.ToDouble(obj.Property("X").Value);

@@ -18,12 +18,14 @@ namespace OSAE.UI.Controls
         string newData;
         double imgWidth = 400;
         double imgHeight = 300;
+        public int ControlWidth;
+        public int ControlHeight;
         string streamURI;
 
-        public VideoStreamViewer(string url, OSAEObject obj)
+        public VideoStreamViewer(string url, OSAEObject obj, string appName)
         {
             InitializeComponent();
-            Log = new General.OSAELog("SYSTEM");
+            Log = new General.OSAELog(appName);
             screenObject = obj;
             _mjpeg = new MjpegDecoder();
             _mjpeg.FrameReady += mjpeg_FrameReady;
@@ -35,17 +37,19 @@ namespace OSAE.UI.Controls
             if (imgsHeight != "") { imgHeight = Convert.ToDouble(imgsHeight); }
             this.Width = imgWidth;
             this.Height = imgHeight;
+            ControlWidth = Convert.ToInt32(imgWidth);
+            ControlHeight = Convert.ToInt32(imgHeight);
             image.Width = imgWidth;
             image.Height = imgHeight;
             if (streamURI == null)
             {
-                this.Log.Error("Stream Path Not Found: " + streamURI);
+                Log.Error("Stream Path Not Found: " + streamURI);
                 message.Content = "Can Not Open: " + streamURI;
             }
             else
             {
                 streamURI = renameingSys(streamURI);
-                this.Log.Info("Streaming: " + streamURI);
+                Log.Info("Streaming: " + streamURI);
                 _mjpeg.ParseStream(new Uri(streamURI));
             }
         }
@@ -61,17 +65,11 @@ namespace OSAE.UI.Controls
                 string getProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Property("Object Name").Value, renameProperty).Value;
                 // log any errors
                 if (getProperty.Length > 0)
-                {
                     newData = newData.Replace("[" + renameProperty + "]", getProperty);
-                }
                 else
-                {
-                    this.Log.Error("Property has NO data");
-                }
-                if (getProperty == null)
-                {
-                    this.Log.Error("Property: NOT FOUND");
-                }
+                    Log.Error("Property has NO data");
+
+                if (getProperty == null) Log.Error("Property: NOT FOUND");
             }
             newData = @"http://" + newData;
             return newData;
@@ -79,7 +77,7 @@ namespace OSAE.UI.Controls
 
         private void _mjpeg_Error(object sender, ErrorEventArgs e)
         {
-            this.Log.Error("Error parsing stream:" + e.Message);
+            Log.Error("Error parsing stream:" + e.Message);
         }
  
         private void mjpeg_FrameReady(object sender, FrameReadyEventArgs e)
@@ -90,7 +88,7 @@ namespace OSAE.UI.Controls
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             _mjpeg.StopStream();
-            this.Log.Info("Stopping stream:" + streamURI);
+            Log.Info("Stopping stream:" + streamURI);
         }
     }
 }
