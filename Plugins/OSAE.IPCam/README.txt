@@ -8,25 +8,19 @@ INSTALLATION:
 
 2) Using the settings GUI, open "Objects".
 
-3) Create a new object for the PlugIn as normal.
+3) Create a new "IP CAMERA" object for your camera as normal.
 
-4) Now, go to "Object types".
+4) Now select your newly created IP CAMERA Object.
 
-5) Chage the Default "Ownership" for the "IP CAMERA" object to belong to "IPCam" plugin and save your changes.
-
-6) Now, go back to the "Objects" page,
-
-7) Create a new "IP CAMERA" object for your camera as normal.
-
-8) Now select your newly created IP CAMERA Object.
-
-9) Now set each property with the correct information: (Please see NOTES at bottom of page)
+5) Now set each property with the correct information: (Please see NOTES at bottom of page)
     
 	Stream Address - The URL to obtain the video stream from the camera.
-	camSnapShot - URL to Invoke the camera to take a Snapshot. (if camera has function)
+	Snap Shot - URL to Invoke the camera to take a Snapshot. (if camera has function)
 	Save Location - This is the folder location where snapshots and future recording will be saved. (If camera has function)
 
-10) Open the Manager and stop the service. Add a check mark for the IPCam plugin, and re-start the service.
+6) Select the IPCam object and check Enabled, update.
+
+7) Open Manager.exe and stop the service, and re-start the service.
 
 NOTES:
 ============================================================================================
