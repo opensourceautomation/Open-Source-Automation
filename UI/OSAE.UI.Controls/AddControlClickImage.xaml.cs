@@ -39,8 +39,8 @@ namespace OSAE.UI.Controls
                     // We have a hit, this is an Update call, se call the preload
                     sMode = "Update";
                     sOriginalName = controlName;
-                    txtControlName.Text = controlName;
                     LoadCurrentScreenObject(controlName);
+                    txtControlName.Text = sOriginalName;
                 }
             }
 
@@ -114,7 +114,7 @@ namespace OSAE.UI.Controls
         /// </summary>
         private void LoadObjects()
         {
-            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object order by object_name");
+            DataSet dataSet = OSAESql.RunSQL("SELECT object_name FROM osae_v_object WHERE object_type !='SCREEN' AND base_type != 'CONTROL' order by object_name");
             cboPressObject.ItemsSource = dataSet.Tables[0].DefaultView;
             cboReleaseObject.ItemsSource = dataSet.Tables[0].DefaultView;
             DataSet dataSet2 = OSAESql.RunSQL("SELECT script_name FROM osae_script order by script_name");

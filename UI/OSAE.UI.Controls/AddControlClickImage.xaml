@@ -71,8 +71,8 @@
                 </TransformGroup>
             </TextBox.RenderTransform>
         </TextBox>
-        <TextBox x:Name="txtNormalX" HorizontalAlignment="Left" Height="22" Margin="224,33,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" Text="100" IsEnabled="False"/>
-        <TextBox x:Name="txtNormalY" HorizontalAlignment="Left" Height="22" Margin="224,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100" IsEnabled="False"/>
+        <TextBox x:Name="txtNormalX" HorizontalAlignment="Left" Height="22" Margin="224,33,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" Text="100"/>
+        <TextBox x:Name="txtNormalY" HorizontalAlignment="Left" Height="22" Margin="224,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" RenderTransformOrigin="0.534,2.077" Text="100"/>
         <Label Content="X" HorizontalAlignment="Left" Margin="202,29,0,0" VerticalAlignment="Top" IsEnabled="False"/>
         <Label Content="Y" HorizontalAlignment="Left" Margin="202,62,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.588,1.846" IsEnabled="False"/>
         <Label Content="ZOrder" HorizontalAlignment="Left" Margin="171,88,0,0" VerticalAlignment="Top" IsEnabled="False"/>

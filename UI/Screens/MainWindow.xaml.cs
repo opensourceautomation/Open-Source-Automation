@@ -179,6 +179,8 @@
                     }
                     else
                     {
+                        canGUI.Height = bitmapImage.Height;
+                        canGUI.Width = bitmapImage.Width;
                         this.Height = bitmapImage.Height;
                         this.Width = bitmapImage.Width;
                         gHeightRatio = 1;

@@ -435,9 +435,9 @@ namespace OSAE.UI.Controls
 
         private void cboObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DataSet dataSet = OSAESql.RunSQL("SELECT state_label, state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue + "' order by state_label");
+            DataSet dataSet = OSAESql.RunSQL("SELECT state_label, state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue.ToString().Replace("'", "''") + "' order by state_label");
             cboState1.ItemsSource = dataSet.Tables[0].DefaultView;
-            DataSet dataSet2 = OSAESql.RunSQL("SELECT method_label, method_name FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue + "' order by method_label");
+            DataSet dataSet2 = OSAESql.RunSQL("SELECT method_label, method_name FROM osae_v_object_method where object_name = '" + cboObject.SelectedValue.ToString().Replace("'", "''") + "' order by method_label");
             cboSliderMethod.ItemsSource = dataSet2.Tables[0].DefaultView;
 
             // The Screen - Object Is default name for the screen control, so update it based on the selection here
@@ -762,7 +762,7 @@ namespace OSAE.UI.Controls
             btnLoadS1I1.IsEnabled = true;
             imgState1Img1.IsEnabled = true;
             cboState2.IsEnabled = true;
-            DataSet dataSet = OSAESql.RunSQL("SELECT state_label, state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue + "' AND state_name !='" + cboState1.SelectedValue + "' order by state_label");
+            DataSet dataSet = OSAESql.RunSQL("SELECT state_label, state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue.ToString().Replace("'", "''") + "' AND state_name !='" + cboState1.SelectedValue + "' order by state_label");
             cboState2.ItemsSource = dataSet.Tables[0].DefaultView;
         }
 

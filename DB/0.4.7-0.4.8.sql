@@ -1046,6 +1046,7 @@ CALL osae_sp_object_type_property_add('PERSON','PIN','Password','','',0);
 CALL osae_sp_object_type_update ('WEATHER','WEATHER','Weather Data','SYSTEM','THING',0,1,0,1);
 CALL osae_sp_object_type_update ('COMPUTER','COMPUTER','Core Type: Computer','','THING',0,1,1,1);
 CALL osae_sp_object_type_update ('SERVICE','SERVICE','OSA Service','','SERVICE',0,1,1,1);
+CALL osae_sp_object_type_property_add('THING','URL','String','','',0);
 
 CALL osae_sp_object_type_property_add('GUI CLIENT','Current Screen','String','','',0);
 CALL osae_sp_object_type_property_add('GUI CLIENT','Default Screen','String','','',0);

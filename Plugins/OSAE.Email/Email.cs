@@ -3,38 +3,44 @@
     using System;
     using System.Net;
     using System.Net.Mail;
+    using System.ComponentModel;
 
     public class Email : OSAEPluginBase
     {
         string gAppName;
+        private OSAE.General.OSAELog Log;
 
-        private OSAE.General.OSAELog Log;// = new General.OSAELog();
-        
         public override void ProcessCommand(OSAEMethod method)
         {
             //process command
             try
-            {                
-                string to = string.Empty;
+            {
+                
                 string parameter2 = string.Empty;
                 string subject = string.Empty;
                 string body = string.Empty;
-                OSAEObjectProperty prop = OSAEObjectPropertyManager.GetObjectPropertyValue(method.Parameter1, "Email Address");
-
-                if (prop != null) to = prop.Value;
-                if (to == string.Empty) to = method.Parameter1;
 
                 // To
-                MailMessage mailMsg = new MailMessage();
-                mailMsg.To.Add(to);
+                MailAddress to;
+                OSAEObjectProperty prop = OSAEObjectPropertyManager.GetObjectPropertyValue(method.Parameter1, "Email Address");
+                if (prop != null)
+                {
+                    if (prop.Value == string.Empty) to = new MailAddress(method.Parameter1);
+                    else to = new MailAddress(prop.Value);
+                }
+                else
+                    to = new MailAddress(method.Parameter1);
 
                 // From
-                MailAddress mailAddress = new MailAddress(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "From Address").Value);
-                mailMsg.From = mailAddress;
+                MailAddress from = new MailAddress(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "From Address").Value);
+
+                MailMessage mailMsg = new MailMessage(from, to);
 
                 // Subject and Body
                 mailMsg.Subject = "Message from OSAE";
                 mailMsg.Body = Common.PatternParse(method.Parameter2);
+                mailMsg.BodyEncoding = System.Text.Encoding.UTF8;
+
                 parameter2 = Common.PatternParse(method.Parameter2);
 
                 // Make sure there is a body of text.
@@ -56,6 +62,8 @@
                 if (subject.Equals(string.Empty))
                 {
                     mailMsg.Subject = "Message from OSAE";
+                    mailMsg.SubjectEncoding = System.Text.Encoding.UTF8;
+
                     mailMsg.Body = parameter2;
                 }
                 else
@@ -80,21 +88,34 @@
                 Log.Info("from: " + mailMsg.From);
                 Log.Info("subject: " + mailMsg.Subject);
                 Log.Info("body: " + mailMsg.Body);
-                Log.Info("smtpServer: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "SMTP Server").Value);
-                Log.Info("smtpPort: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "SMTP Port").Value);
+                Log.Info("smtpServer: " + smtpClient.Host);
+                Log.Info("smtpPort: " + smtpClient.Port);
                 Log.Info("username: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Username").Value);
                 Log.Info("password: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Password").Value);
-                Log.Info("ssl: " + OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "ssl").Value);
+                Log.Info("ssl: " + smtpClient.EnableSsl);
+                smtpClient.SendCompleted += new SendCompletedEventHandler(SendCompletedCallback);
+                string userState = "test message1";
+                smtpClient.SendAsync(mailMsg, userState);
 
-                smtpClient.Send(mailMsg);
+                //smtpClient.Send(mailMsg);
             }
             catch (Exception ex)
             { Log.Error("Error Sending email" , ex); }
         }
 
-        /// <summary>
-        /// Interface implementation, this plugin does not perform any actions on shutdown
-        /// </summary>
+        public void SendCompletedCallback(object sender, AsyncCompletedEventArgs e)
+        {
+            // Get the unique identifier for this asynchronous operation.
+            String token = (string)e.UserState;
+
+            if (e.Cancelled) Log.Info(token + "  Send canceled.");
+
+            if (e.Error != null)
+                Log.Info(token + " " +e.Error.ToString());
+            else
+                Log.Info("Message sent.");
+        }
+
         public override void Shutdown()
         {
             Log.Info("*** Shutting Down ***");
@@ -108,7 +129,10 @@
             Log.Info("Email Plugin is Starting...");
 
             OwnTypes();
+            
         }
+
+
 
         public void OwnTypes()
         {

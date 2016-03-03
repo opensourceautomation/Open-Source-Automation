@@ -23,7 +23,7 @@ public partial class controls_ctrlEmbedded : System.Web.UI.UserControl
         width = ControlWidth.ToString();
         height = ControlHeight.ToString();
         imgSnapShot.Attributes.Add("Style", "position:absolute;top:" + (Int32.Parse(screenObject.Property("Y").Value) + 50).ToString() + "px;left:" + (Int32.Parse(screenObject.Property("X").Value) + 10).ToString() + "px;z-index:" + (Int32.Parse(screenObject.Property("ZOrder").Value) + 10).ToString() + ";");
-        imgSnapShot.ImageUrl = Source;
+        imgSnapShot.ImageUrl = @Source;
         imgSnapShot.Width = System.Web.UI.WebControls.Unit.Parse(width);
         imgSnapShot.Height = System.Web.UI.WebControls.Unit.Parse(height);
      }

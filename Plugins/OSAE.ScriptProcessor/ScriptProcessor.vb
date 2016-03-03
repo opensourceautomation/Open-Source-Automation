@@ -349,6 +349,12 @@ Public Class ScriptProcessor
                                         If oTemp.Type <> sValue Then
                                             sNesting(iNestingLevel) = "FAIL"
                                         End If
+                                    ElseIf sOption.ToUpper = "NAME" Then
+                                        Dim oTemp As OSAEObject
+                                        oTemp = OSAE.OSAEObjectManager.GetObjectByName(sObject)
+                                        If oTemp.Name <> sValue Then
+                                            sNesting(iNestingLevel) = "FAIL"
+                                        End If
                                     Else
                                         pProperty = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sOption)
                                         If pProperty.DataType = "String" Then pProperty.Value = pProperty.Value.ToUpper
