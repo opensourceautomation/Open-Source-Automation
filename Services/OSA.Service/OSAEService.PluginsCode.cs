@@ -156,7 +156,7 @@
 
                             Log.Info(obj.Name + ":  Plugin Enabled = " + plugin.Enabled.ToString());
                             Log.Info(obj.Name + ":  Plugin Version = " + plugin.PluginVersion);
-                            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", serviceName, 50, plugin.Enabled);
+                            OSAEObjectManager.ObjectUpdate(plugin.PluginName, plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, obj.Address, serviceName, 50, plugin.Enabled);
                             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Version", plugin.PluginVersion, serviceName);
                             OSAEObjectPropertyManager.ObjectPropertySet(obj.Name, "Author", plugin.PluginAuthor, serviceName);
                         }

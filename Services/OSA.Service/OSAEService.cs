@@ -85,7 +85,7 @@ namespace OSAE.Service
 
             Common.CheckComputerObject(serviceObject);
             OSAEObject obj = OSAEObjectManager.GetObjectByName(serviceObject);
-            OSAEObjectManager.ObjectUpdate(serviceObject, serviceObject, "", obj.Description, obj.Type, "", Common.ComputerName, obj.MinTrustLevel, obj.Enabled);
+            OSAEObjectManager.ObjectUpdate(serviceObject, serviceObject, obj.Address, obj.Description, obj.Type, "", Common.ComputerName, obj.MinTrustLevel, obj.Enabled);
 
             InitialiseOSAInEventLog();
 
