@@ -1,10 +1,8 @@
 ﻿namespace OSAE
 {
     using System;
-    using MySql.Data.MySqlClient;
     using System.Collections.Generic;
     using System.Data;
-    using System.Speech;
     using System.Speech.Recognition;
 
     public class OSAEGrammar
@@ -21,9 +19,7 @@
                 //Load all users
                 dsResults = OSAESql.RunSQL("SELECT object_name FROM osae_v_object_list_full WHERE base_type='PERSON'");
                 for (int i = 0; i < dsResults.Tables[0].Rows.Count; i++)
-                {
                     userList.Add(dsResults.Tables[0].Rows[i][0].ToString());
-                }
             }
             catch (Exception ex)
             {throw new Exception("API.Grammar User Grammar 1: " + ex.Message, ex);}
@@ -630,6 +626,27 @@
             g_Single = new Grammar(gb_Single);
             g_Single.Name = "Who is [PERSON]";
             oRecognizer.LoadGrammar(g_Single);
+            #endregion
+
+            #region How is [PRONOUN]
+            //1. How [am I/are you]
+            //2. How is OBJECT
+
+            gb1 = new GrammarBuilder("How");
+            gb2 = new GrammarBuilder("How");
+            gb1.Append(IsChoices);
+            gb2.Append(IsChoices);
+            srk = new SemanticResultKey("PARAM1", pronounChoices);
+            gb1.Append(srk);
+            srk = new SemanticResultKey("PARAM1", objectFullChoices);
+            gb2.Append(srk);
+
+            g1 = new Grammar(gb1);
+            g1.Name = "How is [OBJECT]";
+            oRecognizer.LoadGrammar(g1);
+            g2 = new Grammar(gb2);
+            g2.Name = "How is [OBJECT]";
+            oRecognizer.LoadGrammar(g2);
             #endregion
 
             return oRecognizer;

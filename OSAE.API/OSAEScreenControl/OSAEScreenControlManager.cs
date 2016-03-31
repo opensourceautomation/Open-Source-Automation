@@ -17,13 +17,9 @@
                 command.Parameters.AddWithValue("@ControlName", controlName);
 
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("ScreenObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("ScreenObjectAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -37,13 +33,9 @@
                 command.Parameters.AddWithValue("@ControlName", controlName);
 
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("ScreenObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("ScreenObjectUpdate error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 
@@ -57,13 +49,9 @@
                 command.Parameters.AddWithValue("@ControlName", controlName);
 
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    Logging.GetLogger().AddToLog("ScreenObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true);
-                }
+                { Logging.GetLogger().AddToLog("ScreenObjectDelete error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
         }
 

@@ -2,7 +2,6 @@
 {
     using System;
     using System.IO;
-    using System.Text;
     using MySql.Data.MySqlClient;
     
     [Obsolete("Please use OSAELog class")]
@@ -63,10 +62,8 @@
         {
             lock (memoryLock)
             {
-                if (privateInstance == null)
-                    privateInstance = new Logging(requestedLogName);
-                else
-                    privateInstance.logName = requestedLogName;
+                if (privateInstance == null) privateInstance = new Logging(requestedLogName);
+                else privateInstance.logName = requestedLogName;
             }
             Logging.GetConfiguration();
             return privateInstance;
@@ -103,11 +100,9 @@
                     System.IO.FileInfo file = new System.IO.FileInfo(filePath);
                     file.Directory.Create();
                     StreamWriter sw = File.AppendText(filePath);
-                    sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - LOGGING ERROR: "
-                        + ex.Message + " - " + ex.InnerException);
+                    sw.WriteLine(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " - LOGGING ERROR: " + ex.Message + " - " + ex.InnerException);
                     sw.Close();
-                    if (file.Length > 1000000)
-                        file.Delete();
+                    if (file.Length > 1000000) file.Delete();
                 }
             }        
         }
@@ -158,9 +153,7 @@
                 command.Parameters.AddWithValue("@Param1", parameter1);
                 command.Parameters.AddWithValue("@Param2", parameter2);
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
                 { AddToLog("API - EventLogAdd error: " + command.CommandText + " - error: " + ex.Message, true); }
             }
@@ -175,9 +168,7 @@
             {
                 command.CommandText = "CALL osae_sp_event_log_clear";
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
                 { AddToLog("API - EventLogClear error: " + command.CommandText + " - error: " + ex.Message, true); }
             }

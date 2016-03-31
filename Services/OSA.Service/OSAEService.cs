@@ -6,11 +6,6 @@ namespace OSAE.Service
     using System.Timers;
     using NetworkCommsDotNet;
     using System.Windows.Forms;
-    //using System.Collections.Generic;
-    //using System.ServiceModel;
-    //using System.ServiceProcess;
-    //using System.Diagnostics;
-    //using System.Reflection;
 
     /// <summary>
     /// The primary server used in the OSA infrastructure to process information
@@ -30,7 +25,7 @@ namespace OSAE.Service
         private bool running = true;
         private string serviceObject = "";
         private static System.Timers.Timer checkLog;
-        private OSAE.General.OSAELog Log;// = new General.OSAELog("SERVICE");
+        private OSAE.General.OSAELog Log;
 
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
@@ -77,15 +72,15 @@ namespace OSAE.Service
                 Log = new General.OSAELog("Faulted Service");
                 Log.Fatal("Failed to retrieve Service's Object!");
             }
-            else
-                OSAE.OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
+            //else
+             //   OSAE.OSAEObjectStateManager.ObjectStateSet(serviceObject, "ON", serviceObject);
 
             Log = new General.OSAELog(serviceObject);
             Log.Info("Service Starting");
 
             Common.CheckComputerObject(serviceObject);
             OSAEObject obj = OSAEObjectManager.GetObjectByName(serviceObject);
-            OSAEObjectManager.ObjectUpdate(serviceObject, serviceObject, obj.Address, obj.Description, obj.Type, "", Common.ComputerName, obj.MinTrustLevel, obj.Enabled);
+            OSAEObjectManager.ObjectUpdate(serviceObject, serviceObject, obj.Address, obj.Description, obj.Type, obj.Address, Common.ComputerName, obj.MinTrustLevel, obj.Enabled);
 
             InitialiseOSAInEventLog();
 
@@ -155,6 +150,7 @@ namespace OSAE.Service
         {
             Log.Info("OnStop Invoked");
             OSAE.OSAEObjectStateManager.ObjectStateSet(serviceObject, "OFF", serviceObject);
+            Log.Info("Set my Object to Stopped");
             NetworkComms.Shutdown();
             ShutDownSystems();
             OSAE.General.OSAELog.FlushBuffers();

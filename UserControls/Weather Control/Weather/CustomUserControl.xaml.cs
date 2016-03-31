@@ -32,10 +32,22 @@ namespace OSAE.Weather_Control
         string sMode = "Max";
         private string gAppName = "";
         private string currentUser;
+        private int[] sizes = new int[12];
+        private int maxDays;
+
 
         public CustomUserControl(OSAEObject sObj, string ControlName, string appName, string user)
         {
             InitializeComponent();
+            sizes[0] = 90;
+            sizes[1] = 157;
+            sizes[2] = 220;
+            sizes[3] = 295;
+            sizes[4] = 365;
+            sizes[5] = 435;
+            sizes[6] = 504;
+            sizes[7] = 574;
+
             gAppName = appName;
             currentUser = user;
             _controlname = ControlName;
@@ -44,8 +56,9 @@ namespace OSAE.Weather_Control
 
             try
             {
-                ControlWidth = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, "Width").Value);
+                //ControlWidth = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, "Width").Value);
                 ControlHeight = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, "Height").Value);
+                maxDays = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, "Max Days").Value);
             }
             catch (Exception ex)
             { }
@@ -54,6 +67,23 @@ namespace OSAE.Weather_Control
             string sForeColor = screenObject.Property("Fore Color").Value;
             string iFontSize = screenObject.Property("Font Size").Value;
             string sFontName = screenObject.Property("Font Name").Value;
+            bool minimized = Convert.ToBoolean( screenObject.Property("Minimized").Value);
+
+            if (minimized)
+            {
+                sMode = "Min";
+                this.Width = sizes[0];
+                ControlWidth = sizes[0];
+                OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Width", sizes[0].ToString(), gAppName);
+            }
+            else
+            {
+                sMode = "Max";
+                this.Width = sizes[maxDays];
+                ControlWidth = sizes[maxDays];
+                OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Width", sizes[maxDays].ToString(), gAppName);
+            }
+
             if (sBackColor != "")
             {
                 try
@@ -88,11 +118,13 @@ namespace OSAE.Weather_Control
                 try
                 {
                     lblConditions.FontSize = Convert.ToDouble(iFontSize);
-                    lblDay1.FontSize = Convert.ToDouble(iFontSize);
-                    lblDay2.FontSize = Convert.ToDouble(iFontSize);
-                    lblDay3.FontSize = Convert.ToDouble(iFontSize);
-                    lblDay4.FontSize = Convert.ToDouble(iFontSize);
-                    lblDay5.FontSize = Convert.ToDouble(iFontSize);
+                    lblDay1.FontSize = Convert.ToDouble(iFontSize) - 1;
+                    lblDay2.FontSize = Convert.ToDouble(iFontSize) - 1;
+                    lblDay3.FontSize = Convert.ToDouble(iFontSize) - 1;
+                    lblDay4.FontSize = Convert.ToDouble(iFontSize) - 1;
+                    lblDay5.FontSize = Convert.ToDouble(iFontSize) - 1;
+                    lblDay6.FontSize = Convert.ToDouble(iFontSize) - 1;
+                    lblDay7.FontSize = Convert.ToDouble(iFontSize) - 1;
                     lblForcast.FontSize = Convert.ToDouble(iFontSize);
                 }
                 catch (Exception)
@@ -108,6 +140,8 @@ namespace OSAE.Weather_Control
                     lblDay3.FontFamily = new FontFamily(sFontName);
                     lblDay4.FontFamily = new FontFamily(sFontName);
                     lblDay5.FontFamily = new FontFamily(sFontName);
+                    lblDay6.FontFamily = new FontFamily(sFontName);
+                    lblDay7.FontFamily = new FontFamily(sFontName);
                     lblForcast.FontFamily = new FontFamily(sFontName);
                 }
                 catch (Exception)
@@ -143,6 +177,7 @@ namespace OSAE.Weather_Control
 
             lblForcast.Text = "";
         }
+
         private void LoadNightSummaryLabels()
         {
             imgDay1Night.Tag = weatherObj.Property("Night1 Summary").Value;
@@ -150,7 +185,11 @@ namespace OSAE.Weather_Control
             imgDay3Night.Tag = weatherObj.Property("Night3 Summary").Value;
             imgDay4Night.Tag = weatherObj.Property("Night4 Summary").Value;
             imgDay5Night.Tag = weatherObj.Property("Night5 Summary").Value;
+            imgDay6Night.Tag = weatherObj.Property("Night6 Summary").Value;
+            imgDay7Night.Tag = weatherObj.Property("Night7 Summary").Value;
+
         }
+
         private void LoadDaySummaryLabels()
         {
             imgDay1Day.Tag = weatherObj.Property("Day1 Summary").Value;
@@ -158,7 +197,10 @@ namespace OSAE.Weather_Control
             imgDay3Day.Tag = weatherObj.Property("Day3 Summary").Value;
             imgDay4Day.Tag = weatherObj.Property("Day4 Summary").Value;
             imgDay5Day.Tag = weatherObj.Property("Day5 Summary").Value;
+            imgDay6Day.Tag = weatherObj.Property("Day6 Summary").Value;
+            imgDay7Day.Tag = weatherObj.Property("Day7 Summary").Value;
         }
+
         private void LoadDayLabels()
         {
             lblDay1.Tag = weatherObj.Property("Day1 Forecast").Value;
@@ -166,7 +208,10 @@ namespace OSAE.Weather_Control
             lblDay3.Tag = weatherObj.Property("Day3 Forecast").Value;
             lblDay4.Tag = weatherObj.Property("Day4 Forecast").Value;
             lblDay5.Tag = weatherObj.Property("Day5 Forecast").Value;
+            lblDay6.Tag = weatherObj.Property("Day6 Forecast").Value;
+            lblDay7.Tag = weatherObj.Property("Day7 Forecast").Value;
         }
+
         private void LoadHighs()
         {
             lblTodayHi.Content = string.Format("{0}°", weatherObj.Property("Day1 High").Value);
@@ -175,7 +220,10 @@ namespace OSAE.Weather_Control
             lblDay3Hi.Content = string.Format("{0}°", weatherObj.Property("Day3 High").Value);
             lblDay4Hi.Content = string.Format("{0}°", weatherObj.Property("Day4 High").Value);
             lblDay5Hi.Content = string.Format("{0}°", weatherObj.Property("Day5 High").Value);
+            lblDay6Hi.Content = string.Format("{0}°", weatherObj.Property("Day6 High").Value);
+            lblDay7Hi.Content = string.Format("{0}°", weatherObj.Property("Day7 High").Value);
         }
+
         private void LoadLows()
         {
             lblTodayLo.Content = string.Format("{0}°", weatherObj.Property("Night1 Low").Value);
@@ -184,7 +232,10 @@ namespace OSAE.Weather_Control
             lblDay3Lo.Content = string.Format("{0}°", weatherObj.Property("Night3 Low").Value);
             lblDay4Lo.Content = string.Format("{0}°", weatherObj.Property("Night4 Low").Value);
             lblDay5Lo.Content = string.Format("{0}°", weatherObj.Property("Night5 Low").Value);
+            lblDay6Lo.Content = string.Format("{0}°", weatherObj.Property("Night6 Low").Value);
+            lblDay7Lo.Content = string.Format("{0}°", weatherObj.Property("Night7 Low").Value);
         }
+
         private void LoadDates()
         {
             lblDay1.Content = DateTime.Now.AddDays(0).DayOfWeek;
@@ -192,7 +243,10 @@ namespace OSAE.Weather_Control
             lblDay3.Content = DateTime.Now.AddDays(2).DayOfWeek;
             lblDay4.Content = DateTime.Now.AddDays(3).DayOfWeek;
             lblDay5.Content = DateTime.Now.AddDays(4).DayOfWeek;
+            lblDay6.Content = DateTime.Now.AddDays(5).DayOfWeek;
+            lblDay7.Content = DateTime.Now.AddDays(6).DayOfWeek;
         }
+
         private void LoadImageControls()
         {
             LoadImages("Today Image", imgTodayDay);
@@ -202,11 +256,15 @@ namespace OSAE.Weather_Control
             LoadImages("Day3 Image", imgDay3Day);
             LoadImages("Day4 Image", imgDay4Day);
             LoadImages("Day5 Image", imgDay5Day);
+            LoadImages("Day6 Image", imgDay6Day);
+            LoadImages("Day7 Image", imgDay7Day);
             LoadImages("Night1 Image", imgDay1Night);
             LoadImages("Night2 Image", imgDay2Night);
             LoadImages("Night3 Image", imgDay3Night);
             LoadImages("Night4 Image", imgDay4Night);
             LoadImages("Night5 Image", imgDay5Night);
+            LoadImages("Night6 Image", imgDay6Night);
+            LoadImages("Night7 Image", imgDay7Night);
         }
 
         private void LoadImages(string key, System.Windows.Controls.Image imageBox)
@@ -260,15 +318,31 @@ namespace OSAE.Weather_Control
 
         private void imgTodayDay_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            try
+            {
+            //    ControlWidth = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, "Width").Value);
+             //   ControlHeight = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, "Height").Value);
+                maxDays = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue(screenObject.Name, "Max Days").Value);
+            }
+            catch (Exception ex)
+            { }
             if (sMode == "Max")
             {
                 sMode = "Min";
-                this.Width = 85;
+                this.Width = sizes[0];
+                //          bool minimized = Convert.ToBoolean( screenObject.Property("Minimized").Value);
+                OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Minimized", "TRUE", gAppName);
+                OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Width", sizes[0].ToString(), gAppName);
+                ControlWidth = sizes[0];
             }
             else
             {
                 sMode = "Max";
-                this.Width = 440;
+                this.Width = sizes[maxDays];
+                OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Minimized", "FALSE", gAppName);
+                OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Width", sizes[maxDays].ToString(), gAppName);
+                ControlWidth = sizes[maxDays];
+               // grdControl.Width = sizes[maxDays];
             }
         }
 

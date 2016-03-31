@@ -15,17 +15,17 @@ namespace VR2
     public partial class MainWindow : Window
     {
         SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
-        String gAppName = "";
-        Boolean gVRMuted = false;
-        Boolean gVREnabled = true;
-        String gWakePattern = "VR Wake";
-        String gSleepPattern = "Thanks";
+        string gAppName = "";
+        bool gVRMuted = false;
+        bool gVREnabled = true;
+        string gWakePattern = "VR Wake";
+        string gSleepPattern = "Thanks";
         List<string> wakeList = new List<string>();
         List<string> sleepList = new List<string>();
         List<string> userList = new List<string>();
-        String gSpeechPlugin = "";
-        String gUser = "";
-        Boolean gAppClosing = false;
+        string gSpeechPlugin = "";
+        string gUser = "";
+        bool gAppClosing = false;
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
 
         public MainWindow()
@@ -53,7 +53,7 @@ namespace VR2
             }
            
             Load_Settings();
-            
+            Common.CheckComputerObject(gAppName);
             oRecognizer = OSAEGrammar.Load_User_Grammar(oRecognizer);
             try
             {
@@ -266,24 +266,26 @@ namespace VR2
                             if (scriptParamaters != "")
                             {
                                 if (gUser == scriptParamaters) return;
-                                gUser = scriptParamaters;
+                                OSAEObject obj = OSAEObjectManager.GetObjectByName(scriptParamaters);
+                                if (obj.Alias.Length > 0) gUser = obj.Alias;
+                                else gUser = obj.Name;
+
                                 AddToLog("I am talking to " + gUser);
                                 lblObjectTalking.Content = "I am talking to " + gUser;
                                 string sText = OSAEGrammar.SearchForMeaning(sInput, scriptParamaters, gUser);
+                                return;
                             }
                         }
 
                         if (gUser == "")
                         {
                             AddToLog("I must know who I am talking with.");
-                            return;
+                            //return;
                         }
 
                         try
                         {
                             string sLogEntry = "Heard: " + sRaw;
-                            //string sText = OSAE.Common.MatchPattern(sInput,gUser);
-                            //string sText = MatchPattern(sInput,gUser);
                             string sText = OSAEGrammar.SearchForMeaning(sInput, scriptParamaters, gUser);
 
                             if (sText.Length > 0)

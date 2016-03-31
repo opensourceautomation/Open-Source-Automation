@@ -1,7 +1,6 @@
 ﻿namespace Manager_WPF
 {
     using System;
-
     using System.ComponentModel;
     using System.Diagnostics;
     using System.ServiceProcess;
@@ -12,11 +11,6 @@
     using System.Windows.Navigation;
     using OSAE;
     using NetworkCommsDotNet;
-    using System.Collections.Generic;
-    using System.Windows.Media.Imaging;
-    using System.Windows.Documents;
-    using System.IO;
-    using System.ServiceModel;
     using System.Net;
 
     /// <summary>

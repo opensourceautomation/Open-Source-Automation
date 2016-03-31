@@ -3,7 +3,6 @@
     using System;
     using System.Diagnostics;
     using System.IO;
-    using System.ServiceModel;
     using System.Threading;
     using System.Net;
     using NetworkCommsDotNet;

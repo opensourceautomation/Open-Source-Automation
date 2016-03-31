@@ -6,13 +6,13 @@
 
     public class SPEECH : OSAEPluginBase
     {
-        private OSAE.General.OSAELog Log;// = new General.OSAELog();
+        private OSAE.General.OSAELog Log;
 
         SpeechSynthesizer oSpeech = new SpeechSynthesizer();
         WMPLib.WindowsMediaPlayer wmPlayer = new WMPLib.WindowsMediaPlayer();
-        String gAppName = "";
-        String gSelectedVoice = "";
-        Boolean gDebug = false;
+        string gAppName = "";
+        string gSelectedVoice = "";
+        bool gDebug = false;
 
         public override void RunInterface(string pluginName)
         {
@@ -20,7 +20,9 @@
             Log = new General.OSAELog(gAppName);
             OwnTypes();
             Load_Settings();
+            OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "TRUE", gAppName);
             oSpeech.Speak("speech client started");
+            OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "Speaking", "FALSE", gAppName);
         }
 
         public void OwnTypes()
@@ -42,9 +44,7 @@
             try
             {
                 try
-                {
-                    gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
-                }
+                { gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value); }
                 catch
                 { Log.Error("I think the Debug property is missing from the Speech object type!"); }
 
@@ -71,11 +71,9 @@
                 }
 
                 // Load the speech rate, which must be -10 to 10, and set it to 0 if it is not valid.
-                Int16 iTTSRate = 0;
+                int iTTSRate = 0;
                 try
-                {
-                    iTTSRate = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value);
-                }
+                { iTTSRate = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Rate").Value); }
                 catch
                 {
                     OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Rate", iTTSRate.ToString(), gAppName);
@@ -89,7 +87,7 @@
                 }
                 Log.Info("TTS Rate Set to " + iTTSRate.ToString());
                 oSpeech.Rate = iTTSRate;
-                Int16 iTTSVolume = 0;
+                int iTTSVolume = 0;
                 try
                 {
                     iTTSVolume = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
@@ -105,7 +103,7 @@
                     OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", iTTSVolume.ToString(), gAppName);
                     Log.Info("TTS Volume was invalid! I changed it to " + iTTSVolume.ToString());
                 }
-                oSpeech.Rate = iTTSVolume;
+                oSpeech.Volume = iTTSVolume;
                 Log.Info("TTS Volume Set to " + iTTSVolume.ToString());
             }
             catch (Exception ex)

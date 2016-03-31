@@ -1,34 +1,47 @@
-﻿
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
 using System.Data;
-using System.Configuration;
 using System.Diagnostics;
 using System.Reflection;
-using log4net.Config;
 using log4net;
 using MySql.Data.MySqlClient;
-using OSAE;
+using System.Threading;
 
 namespace OSAE.General
 {
-    
     [Serializable]
     public class OSAELog
     {
         private static ILog Log;
         private Type logSource;
-        private Boolean bDebug = false;
-        private Boolean bPrune = false;
+        private bool bDebug = false;
+        private bool bPrune = false;
         public OSAELog(string source)
         {
             StackFrame frame = new StackFrame(1);
-            MethodBase method = frame.GetMethod();
-            logSource = method.DeclaringType;
+            //MethodBase method = frame.GetMethod();
+            //logSource = method.DeclaringType;
             Log = LogManager.GetLogger(source);
+
+            DBConnectionStatus results = Common.TestConnection();
+            //I will make this use a loop in the future if it fixes the problems with the service starting up
+            if (!results.Success)
+            {
+                Thread.Sleep(5000);
+                results = Common.TestConnection();
+                if (!results.Success)
+                {
+                    Thread.Sleep(5000);
+                    results = Common.TestConnection();
+                    if (!results.Success)
+                    {
+                        Thread.Sleep(5000);
+                        results = Common.TestConnection();
+                        if (!results.Success) throw new Exception("DB Connection Test Failed!");
+                    }
+                }
+            }
+
             bPrune = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value);
             bDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value);
             var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;
@@ -113,13 +126,9 @@ namespace OSAE.General
                 command.Parameters.AddWithValue("@perror", error);
                 command.Parameters.AddWithValue("@psource", source);
                 try
-                {
-                    return OSAESql.RunQuery(command);
-                }
+                { return OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    throw ex;
-                }
+                { throw ex; }
             }
         }
 
@@ -129,13 +138,9 @@ namespace OSAE.General
             {
                 command.CommandText = "CALL osae_sp_server_log_clear";
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    throw ex;
-                }
+                { throw ex; }
             }
         }
 
@@ -145,13 +150,9 @@ namespace OSAE.General
             {
                 command.CommandText = "SELECT DISTINCT Logger FROM osae_log";
                 try
-                {
-                    return OSAESql.RunQuery(command);
-                }
+                { return OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    throw ex;
-                }
+                { throw ex; }
             }
         }
 
@@ -159,16 +160,11 @@ namespace OSAE.General
         {
             if(bPrune)
             {
-                if(GetTableSize("osae_log") > 10)
-                {
-                    Clear();
-                }
-                if (GetTableSize("osae_event_log") > 10 || GetTableSize("osae_debug_log") > 10 || GetTableSize("osae_method_log") > 10)
-                {
-                    EventLogClear();
-                }
+                if (GetTableSize("osae_log") > 10) Clear();
+                if (GetTableSize("osae_event_log") > 10 || GetTableSize("osae_debug_log") > 10 || GetTableSize("osae_method_log") > 10) EventLogClear();
             }
         }
+
         private decimal GetTableSize(string tableName)
         {
             decimal size = 0;
@@ -208,13 +204,9 @@ namespace OSAE.General
             {
                 command.CommandText = "CALL osae_sp_event_log_clear";
                 try
-                {
-                    OSAESql.RunQuery(command);
-                }
+                { OSAESql.RunQuery(command); }
                 catch (Exception ex)
-                {
-                    throw ex;
-                }
+                { throw ex; }
             }
         }
     }

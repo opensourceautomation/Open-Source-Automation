@@ -472,24 +472,24 @@
                     GetFieldFromXmlAndReport(xml, "Night6 Image", @"response/forecast/txt_forecast/forecastdays/forecastday[period=13]/icon_url");
                     #endregion
 
-                    #region Period8
-                    GetFieldFromXmlAndReport(xml, "Day7 Precip", @"response/forecast/txt_forecast/forecastdays/forecastday[period=12]/pop");
-                    GetFieldFromXmlAndReport(xml, "Day7 Forecast", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/conditions");
-                    GetFieldFromXmlAndReport(xml, "Day7 Summary", @"response/forecast/txt_forecast/forecastdays/forecastday[period=12]/fcttext");
-                    GetFieldFromXmlAndReport(xml, "Day7 Image", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/icon_url");
+                    #region Period8/14-15
+                    GetFieldFromXmlAndReport(xml, "Day7 Precip", @"response/forecast/txt_forecast/forecastdays/forecastday[period=14]/pop");
+                    GetFieldFromXmlAndReport(xml, "Day7 Forecast", @"response/forecast/simpleforecast/forecastdays/forecastday[period=8]/conditions");
+                    GetFieldFromXmlAndReport(xml, "Day7 Summary", @"response/forecast/txt_forecast/forecastdays/forecastday[period=14]/fcttext");
+                    GetFieldFromXmlAndReport(xml, "Day7 Image", @"response/forecast/simpleforecast/forecastdays/forecastday[period=8]/icon_url");
                     if (!Metric)
                     {
-                        GetFieldFromXmlAndReport(xml, "Day7 High", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/high/fahrenheit");
-                        GetFieldFromXmlAndReport(xml, "Night7 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/low/fahrenheit");
+                        GetFieldFromXmlAndReport(xml, "Day7 High", @"response/forecast/simpleforecast/forecastdays/forecastday[period=8]/high/fahrenheit");
+                        GetFieldFromXmlAndReport(xml, "Night7 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=8]/low/fahrenheit");
                     }
                     else
                     {
-                        GetFieldFromXmlAndReport(xml, "Day7 High", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/high/celsius");
-                        GetFieldFromXmlAndReport(xml, "Night7 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=7]/low/celsius");
+                        GetFieldFromXmlAndReport(xml, "Day7 High", @"response/forecast/simpleforecast/forecastdays/forecastday[period=8]/high/celsius");
+                        GetFieldFromXmlAndReport(xml, "Night7 Low", @"response/forecast/simpleforecast/forecastdays/forecastday[period=8]/low/celsius");
                     }
-                    GetFieldFromXmlAndReport(xml, "Night7 Precip", @"response/forecast/txt_forecast/forecastdays/forecastday[period=13]/pop");
-                    GetFieldFromXmlAndReport(xml, "Night7 Summary", @"response/forecast/txt_forecast/forecastdays/forecastday[period=13]/fcttext");
-                    GetFieldFromXmlAndReport(xml, "Night7 Image", @"response/forecast/txt_forecast/forecastdays/forecastday[period=13]/icon_url");
+                    GetFieldFromXmlAndReport(xml, "Night7 Precip", @"response/forecast/txt_forecast/forecastdays/forecastday[period=15]/pop");
+                    GetFieldFromXmlAndReport(xml, "Night7 Summary", @"response/forecast/txt_forecast/forecastdays/forecastday[period=15]/fcttext");
+                    GetFieldFromXmlAndReport(xml, "Night7 Image", @"response/forecast/txt_forecast/forecastdays/forecastday[period=15]/icon_url");
                     #endregion
                 }
             }

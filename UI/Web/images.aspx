@@ -3,6 +3,13 @@
 <%@ Implements Interface="System.Web.UI.IPostBackEventHandler" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="ContentPlaceHolder">
+<script type="text/javascript">
+function callme()
+  {
+    document.getElementById('<%=txtName.ClientID%>').value = document.getElementById('<%=fileUpload.ClientID %>').value.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, "");
+            
+  }
+</script></script>
 
     <div class="row-fluid">
         <div class="span2">
@@ -51,7 +58,7 @@
         </div>
         <div class="span8">
             <h3>add a new image</h3>
-            <asp:FileUpload ID="fileUpload" runat="server" />
+            <asp:FileUpload ID="fileUpload" runat="server" onchange="callme(this)" />
             <asp:TextBox ID="txtName" runat="server" CssClass="input"></asp:TextBox>
             <asp:Button ID="btnAdd" runat="server" OnClick="btnAdd_Click" Text="Add" />
         </div>

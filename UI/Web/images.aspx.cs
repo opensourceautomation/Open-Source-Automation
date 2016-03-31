@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using OSAE;
@@ -15,7 +12,10 @@ public partial class images : System.Web.UI.Page
     
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!Page.IsPostBack) loadImages();
+        if (!Page.IsPostBack)
+            loadImages();
+        else
+            if (fileUpload.HasFile) txtName.Text = fileUpload.FileName;
     }
     
     //private void CreateDynamicTable()

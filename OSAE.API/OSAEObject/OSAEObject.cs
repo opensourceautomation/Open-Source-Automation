@@ -1,14 +1,12 @@
 ﻿namespace OSAE
 {
     using System;
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     [Serializable, DataContract]
     public class OSAEObject
     {
         #region Properties
-           
         private string _name;
         private string _alias;
         private string _description;
@@ -30,11 +28,7 @@
         [DataMember]
         public string Name
         {
-            get
-            {
-                return _name;
-            }
-
+            get { return _name; }
             set
             {
                 OSAEObjectManager.ObjectUpdate(_name, value, _alias, _description, _type, _address, _container, _minTrustLevel, _enabled);
@@ -45,11 +39,7 @@
         [DataMember]
         public string Alias
         {
-            get
-            {
-                return _alias;
-            }
-
+            get { return _alias; }
             set
             {
                 OSAEObjectManager.ObjectUpdate(_name,_name, value, _description, _type, _address, _container, _minTrustLevel, _enabled);
@@ -60,11 +50,7 @@
         [DataMember]
         public string Description
         {
-            get
-            {
-                return _description;
-            }
-
+            get { return _description; }
             set
             {
                 _description = value;
@@ -75,11 +61,7 @@
         [DataMember]
         public string Type
         {
-            get
-            {
-                return _type;
-            }
-
+            get { return _type; }
             set
             {
                 _type = value;
@@ -90,25 +72,14 @@
         [DataMember]
         public string BaseType
         {
-            get
-            {
-                return _baseType;
-            }
-
-            set
-            {
-                _baseType = value;
-            }
+            get { return _baseType; }
+            set { _baseType = value; }
         }
 
         [DataMember]
         public string Address
         {
-            get
-            {
-                return _address;
-            }
-
+            get { return _address; }
             set
             {
                 _address = value;
@@ -119,11 +90,7 @@
         [DataMember]
         public string Container
         {
-            get
-            {
-                return _container;
-            }
-
+            get { return _container; }
             set
             {
                 _container = value;
@@ -134,11 +101,7 @@
         [DataMember]
         public int MinTrustLevel
         {
-            get
-            {
-                return _minTrustLevel;
-            }
-
+            get { return _minTrustLevel; }
             set
             {
                 _minTrustLevel = value;
@@ -150,11 +113,7 @@
         [DataMember]
         public bool Enabled  
         {
-            get
-            {
-                return _enabled;
-            }
-
+            get { return _enabled; }
             set
             {
                 _enabled = value;
@@ -170,7 +129,6 @@
                 _state.Value = OSAEObjectStateManager.GetObjectStateValue(_name).Value;
                 return _state;
             }
-
             set
             {
                 _state = value;
@@ -181,15 +139,8 @@
         [DataMember]
         public string LastUpd
         {
-            get
-            {
-                return _lastUpd;
-            }
-
-            set
-            {
-                _lastUpd = value;
-            }
+            get { return _lastUpd; }
+            set { _lastUpd = value; }
         }      
         
         #endregion
@@ -228,10 +179,7 @@
             OSAEObjectPropertyManager.ObjectPropertySet(Name, prop, value, source);
             foreach (OSAEObjectProperty p in Properties)
             {
-                if (p.Name == prop)
-                {
-                    p.Value = value;
-                }
+                if (p.Name == prop)p.Value = value;
             }
         }
 
@@ -239,10 +187,7 @@
         {
             foreach (OSAEObjectProperty p in Properties)
             {
-                if (String.Equals(p.Name, prop, StringComparison.OrdinalIgnoreCase))
-                {
-                    return p;
-                }
+                if (String.Equals(p.Name, prop, StringComparison.OrdinalIgnoreCase)) return p;
             }
 
             return null;

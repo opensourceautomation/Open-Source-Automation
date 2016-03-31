@@ -90,6 +90,7 @@
         {
             Load_App_Name();
             Log = new OSAE.General.OSAELog(gAppName);
+            Common.CheckComputerObject(gAppName);
             Uri uri = new Uri("pack://siteoforigin:,,,/OSA.png");
             var bitmapImage = new BitmapImage(uri);
             
@@ -172,19 +173,49 @@
                     gCurrentScreenWidth = bitmapImage.Width;
 
                     canGUI.Background = new ImageBrush(bitmapImage);
-                    if (isMax)
+
+                    bool gForcedScreenSettings = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Use Global Screen Settings").Value);
+                    if (gForcedScreenSettings)
                     {
-                        gHeightRatio = this.ActualHeight / gCurrentScreenHeight;
-                        gWidthRatio = this.ActualWidth / gCurrentScreenWidth;
+                        double gForcedScreenHeight = Convert.ToDouble(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Height").Value);
+                        double gForcedScreenWidth = Convert.ToDouble(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Width").Value);
+                        canGUI.Height = gForcedScreenHeight;
+                        canGUI.Width = gForcedScreenWidth;
+                        this.Height = gForcedScreenHeight;
+                        this.Width = gForcedScreenWidth;
+                        gHeightRatio = this.ActualHeight / gForcedScreenHeight;
+                        gWidthRatio = this.ActualWidth / gForcedScreenWidth;
+
+                        bool gForcedScreenShowFrame = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Show Frame").Value);
+                        if (gForcedScreenShowFrame)
+                        {
+                            WindowStyle = System.Windows.WindowStyle.SingleBorderWindow;
+                            this.ResizeMode = ResizeMode.CanResize;
+                            menuFrameShow.IsChecked = true;
+                        }
+                        else
+                        {
+                            WindowStyle = System.Windows.WindowStyle.None;
+                            this.ResizeMode = ResizeMode.NoResize;
+                            menuFrameShow.IsChecked = false;
+                        }
                     }
                     else
                     {
-                        canGUI.Height = bitmapImage.Height;
-                        canGUI.Width = bitmapImage.Width;
-                        this.Height = bitmapImage.Height;
-                        this.Width = bitmapImage.Width;
-                        gHeightRatio = 1;
-                        gWidthRatio = 1;
+                        if (isMax)
+                        {
+                            gHeightRatio = this.ActualHeight / gCurrentScreenHeight;
+                            gWidthRatio = this.ActualWidth / gCurrentScreenWidth;
+                        }
+                        else
+                        {
+                            canGUI.Height = bitmapImage.Height;
+                            canGUI.Width = bitmapImage.Width;
+                            this.Height = bitmapImage.Height;
+                            this.Width = bitmapImage.Width;
+                            gHeightRatio = 1;
+                            gWidthRatio = 1;
+                        }
                     }
                 }
 
@@ -1344,13 +1375,13 @@
 
         private void menuFrameShow_Click(object sender, RoutedEventArgs e)     
         {
-            //ResizeMode = System.Windows.ResizeMode.CanResize;
+            ResizeMode = System.Windows.ResizeMode.CanResize;
             WindowStyle = System.Windows.WindowStyle.SingleBorderWindow;
         }
 
         private void menuFrameHide_Click(object sender, RoutedEventArgs e)
         {
-            //ResizeMode = System.Windows.ResizeMode.CanResize;
+            ResizeMode = System.Windows.ResizeMode.CanMinimize;
             WindowStyle = System.Windows.WindowStyle.None;
 
             Width = canGUI.Width;

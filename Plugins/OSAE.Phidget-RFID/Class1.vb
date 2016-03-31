@@ -45,12 +45,11 @@
     End Sub
 
     Private Sub phidgetRFID_Tag(ByVal sender As Object, ByVal e As Phidgets.Events.TagEventArgs) Handles phidgetRFID.Tag
-        Dim oObject As OSAEObject
-        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Last Tag Read", e.Tag, pName)
         Log.Info("Read Tag = " & e.Tag)
+        OSAEObjectPropertyManager.ObjectPropertySet(pName, "Last Tag Read", e.Tag, pName)
         Log.Debug("GetObjectByAddress: " & e.Tag)
         Try
-            oObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
+            Dim oObject As OSAEObject = OSAEObjectManager.GetObjectByAddress(e.Tag)
             If IsNothing(oObject) Then
                 Log.Info("Adding new RFID Tag: " & e.Tag)
                 OSAEObjectManager.ObjectAdd("RFID-" & e.Tag, "RFID-" & e.Tag, "Unknown RFID Tag", "PHIDGET RFID TAG", e.Tag, "", 30, True)
@@ -108,13 +107,13 @@
         Try
             pName = pluginName
             Log = New General.OSAELog(pName)
-            gAntenna = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Antenna Enabled").Value)
+            gAntenna = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Antenna Enabled").Value)
             Log.Info("Antenna Enabled = " & gAntenna)
-            gLED = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "LED Enabled").Value)
+            gLED = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "LED Enabled").Value)
             Log.Info("LED Enabled = " & gLED)
-            gOutput1 = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Output 1 ON").Value)
+            gOutput1 = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Output 1 ON").Value)
             Log.Info("Output 1 ON = " & gOutput1)
-            gOutput2 = Val(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Output 2 ON").Value)
+            gOutput2 = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Output 2 ON").Value)
             Log.Info("Output 2 ON = " & gOutput2)
             phidgetRFID = New Phidgets.RFID
             phidgetRFID.open()

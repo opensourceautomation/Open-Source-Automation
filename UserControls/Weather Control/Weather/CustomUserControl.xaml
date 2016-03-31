@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:OSAEMainUserCtrl ="clr-namespace:OSAE;assembly=OSAE.API"
              mc:Ignorable="d"
-             Background="LightGray"  BorderThickness="0" BorderBrush="Black" Height="251.403" Width="440.03">
-    <Grid x:Name="grdControl" Margin="0,0,-4,0">
-        <Label x:Name="lblCurTemp" Content="lblCurTemp" HorizontalAlignment="Left" VerticalAlignment="Top" Height="35" Width="83" FontWeight="Bold" FontSize="21.333" Margin="0,-4,0,0"/>
+             Background="LightGray"  BorderThickness="0" BorderBrush="Black" Height="251.403" Width="576.721">
+    <Grid x:Name="grdControl">
+        <Label x:Name="lblCurTemp" Content="lblCurTemp" VerticalAlignment="Top" Height="35" FontWeight="Bold" FontSize="21.333" Margin="0,-4,0,0" HorizontalAlignment="Left" Width="83"/>
         <Label x:Name="lblConditions" Content="Conditions" HorizontalAlignment="Left" Margin="88,0,0,0" VerticalAlignment="Top"/>
         <Image x:Name="imgTodayDay" HorizontalAlignment="Left" Height="83" Margin="3,31,0,0" VerticalAlignment="Top" Width="83" MouseUp="imgTodayDay_MouseUp" ToolTip="Click to Min/Max Control"/>
         <Image x:Name="imgTodayNight" HorizontalAlignment="Left" Height="83" Margin="0,142,0,0" VerticalAlignment="Top" Width="83"/>
@@ -38,7 +38,17 @@
         <Label x:Name="lblDay3" Content="Day 3" HorizontalAlignment="Left" Margin="226,24,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblDay4" Content="Day 4" HorizontalAlignment="Left" Margin="296,24,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblDay5" Content="Day 5" HorizontalAlignment="Left" Margin="365,24,0,0" VerticalAlignment="Top"/>
-        <TextBlock x:Name="lblForcast" Text="Label" HorizontalAlignment="Left" Margin="86,206,0,0" VerticalAlignment="Top" Height="45" Width="343" TextWrapping="Wrap"/>
+        <Label x:Name="lblDay6" Content="Day 6" HorizontalAlignment="Left" Margin="433,24,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblDay7" Content="Day 7" HorizontalAlignment="Left" Margin="502,24,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="lblForcast" Text="Label" Margin="86,206,1,0" VerticalAlignment="Top" Height="45" TextWrapping="Wrap"/>
+        <Image x:Name="imgDay6Day" HorizontalAlignment="Left" Height="64" Margin="436,50,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Image x:Name="imgDay6Night" HorizontalAlignment="Left" Height="64" Margin="436,142,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Label x:Name="lblDay6Hi" Content="xx*" HorizontalAlignment="Left" Margin="464,111,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="16"/>
+        <Label x:Name="lblDay6Lo" Content="xx*" HorizontalAlignment="Left" Margin="433,111,0,0" VerticalAlignment="Top" Foreground="#FF0047DE" FontSize="16"/>
+        <Image x:Name="imgDay7Day" HorizontalAlignment="Left" Height="64" Margin="505,50,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Image x:Name="imgDay7Night" HorizontalAlignment="Left" Height="64" Margin="505,142,0,0" VerticalAlignment="Top" Width="64" MouseEnter="imageHover" MouseLeave="imageLeave"/>
+        <Label x:Name="lblDay7Hi" Content="xx*" HorizontalAlignment="Left" Margin="533,111,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="16"/>
+        <Label x:Name="lblDay7Lo" Content="xx*" HorizontalAlignment="Left" Margin="502,111,0,0" VerticalAlignment="Top" Foreground="#FF0047DE" FontSize="16"/>
 
     </Grid>
 </UserControl>

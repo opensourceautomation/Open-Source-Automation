@@ -177,7 +177,10 @@ namespace OSAE.Jabber
                 if (objects != null)
                 {
                     foreach (OSAEObject oObj in objects)
-                        gCurrentUser = oObj.Name;
+                    {
+                        if (oObj.Alias.Length > 0) gCurrentUser = oObj.Alias;
+                        else gCurrentUser = oObj.Name;
+                    }
                 }
                 else
                     Log.Info("Message from Unknown address: " + jID);
