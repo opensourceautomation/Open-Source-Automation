@@ -27,8 +27,10 @@
         System.Timers.Timer Clock = new System.Timers.Timer();
         private bool clicked = true;
         private bool webclicked = true;
+        private bool MySQLclicked = true;
         private bool starting = false;
         private bool webstarting = false;
+        private bool MySQLstarting = false;
         private bool UWSenabled = false;
         private const string Unique = "OSAE Manager";
 
@@ -151,6 +153,8 @@
             if (UWSenabled == true) CheckWebService();   
             string svcStatus = myService.Status.ToString();
 
+            CheckMySQLService();
+
             if (svcStatus == "Running")
             {
                 setLabel(Brushes.Green, "RUNNING");
@@ -226,6 +230,39 @@
             }
             catch (Exception ex)
             { Log.Error("Error checking Web Services", ex); }
+        }
+
+        private void CheckMySQLService()
+        {
+            try
+            {
+                ServiceController hiService = new ServiceController();
+                hiService.ServiceName = "MySQL";
+                string svcStatus = hiService.Status.ToString();
+
+                if (svcStatus == "Running" )
+                {
+                    setMySQLLabel(Brushes.Green, "RUNNING");
+                    setMySQLButton("Stop", true);
+                    MySQLstarting = false;
+                }
+                else
+                {
+                    setMySQLLabel(Brushes.Red, "STOPPED");
+                    setMySQLButton("Start", true);
+
+                    if (!MySQLclicked)
+                    {
+                        Log.Info("MySQL Services died.  Attempting to restart.");
+                        MySQLclicked = false;
+                        System.Threading.Thread.Sleep(5000);
+                        Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartMySQLService));
+                        m_WorkerThreadStart.Start();
+                    }
+                }
+            }
+            catch (Exception ex)
+            { Log.Error("Error checking MySQL Services", ex); }
         }
 
         private void StartService()
@@ -366,6 +403,48 @@
             { Log.Error("Error checking for UWS Server!", ex); }
         }
 
+        private void StartMySQLService()
+        {
+            System.TimeSpan ts = new TimeSpan(0, 0, 30);
+
+            Log.Info("Checking for MySQL Services...");
+            try
+            {
+                ServiceController hiService = new ServiceController();
+                hiService.ServiceName = "MySQL";
+                string svcStatus = hiService.Status.ToString();
+                if (svcStatus == "Stopped")
+                {
+                    hiService.Start();
+                    hiService.WaitForStatus(ServiceControllerStatus.Running, ts);
+                    Log.Info("Started MySQL Services");
+                }
+            }
+            catch (Exception ex)
+            { Log.Error("Error checking for MySQL Service!", ex); }
+        }
+
+        private void StopMySQLService()
+        {
+            System.TimeSpan ts = new TimeSpan(0, 0, 30);
+
+            Log.Info("Checking for MySQL Services...");
+            try
+            {
+                ServiceController hiService = new ServiceController();
+                hiService.ServiceName = "MySQL";
+                string svcStatus = hiService.Status.ToString();
+               // if (svcStatus == "Running")
+               // {
+                    hiService.Stop();
+                    hiService.WaitForStatus(ServiceControllerStatus.Running, ts);
+                    Log.Info("Stopped MySQL Services");
+               // }
+            }
+            catch (Exception ex)
+            { Log.Error("Error checking for MySQL Service!", ex); }
+        }
+
         private void setButton(string text, bool enabled)
         {
             btnService.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
@@ -384,6 +463,15 @@
             }));
         }
 
+        private void setMySQLButton(string text, bool enabled)
+        {
+            btnMySQLService.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
+            {
+                btnMySQLService.IsEnabled = enabled;
+                btnMySQLService.Content = text;
+            }));
+        }
+
         private void setLabel(Brush color, string text)
         {
             lbl_isRunning.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
@@ -399,6 +487,15 @@
             {
                 lbl_isWebRunning.Foreground = color;
                 lbl_isWebRunning.Content = text;
+            }));
+        }
+
+        private void setMySQLLabel(Brush color, string text)
+        {
+            lbl_isMySQLRunning.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
+            {
+                lbl_isMySQLRunning.Foreground = color;
+                lbl_isMySQLRunning.Content = text;
             }));
         }
 
@@ -565,6 +662,30 @@
 
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartWebService));
+                m_WorkerThreadStart.Start();
+            }
+        }
+
+        private void btnMySQLService_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnMySQLService.Content.ToString() == "Stop")
+                MySQLclicked = true;
+
+            setMySQLButton(btnMySQLService.Content.ToString(), false);
+            if (btnMySQLService.Content.ToString() == "Stop")
+            {
+                //client.Close();
+                setMySQLLabel(Brushes.Red, "STOPPING...");
+                Thread m_WorkerThreadStop = new Thread(new ThreadStart(this.StopMySQLService));
+                m_WorkerThreadStop.Start();
+            }
+            else if (btnMySQLService.Content.ToString() == "Start")
+            {
+                MySQLstarting = true;
+                setMySQLLabel(Brushes.Green, "STARTING...");
+
+                System.TimeSpan ts = new TimeSpan(0, 0, 30);
+                Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartMySQLService));
                 m_WorkerThreadStart.Start();
             }
         }
