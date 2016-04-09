@@ -87,7 +87,9 @@
                 }
                 Log.Info("TTS Rate Set to " + iTTSRate.ToString());
                 oSpeech.Rate = iTTSRate;
-                int iTTSVolume = 0;
+
+                // Load the speech volume, which must be 0 to 100, and set it to 1000 if it is not valid.
+                int iTTSVolume = 1000;
                 try
                 {
                     iTTSVolume = Convert.ToInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "TTS Volume").Value);
@@ -97,7 +99,7 @@
                     OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", iTTSVolume.ToString(), gAppName);
                     Log.Info("TTS Volume was invalid! I changed it to " + iTTSVolume.ToString());
                 }
-                if (iTTSVolume < -10 || iTTSVolume > 10)
+                if (iTTSVolume < 0 || iTTSVolume > 100)
                 {
                     iTTSVolume = 0;
                     OSAEObjectPropertyManager.ObjectPropertySet(gAppName, "TTS Volume", iTTSVolume.ToString(), gAppName);
