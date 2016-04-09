@@ -96,7 +96,7 @@
     public class api : IRestService
     {
        // private Logging logging = Logging.GetLogger("Rest");
-        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("REST");
+        private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Rest");
         SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
      
         public OSAEObject GetObject(string name)
@@ -117,7 +117,7 @@
 
         public Boolean SetObjectState(string name, string state)
         {
-            OSAEObjectStateManager.ObjectStateSet(name, state, "REST");
+            OSAEObjectStateManager.ObjectStateSet(name, state, "Rest");
             Log.Debug("Setting object state:  " + name + " set to: " + state + ".");
             return true;
         }
@@ -160,7 +160,7 @@
         public Boolean ExecuteMethod(string name, string method, string param1, string param2)
         {
             // execute a method on an object 
-            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "REST");
+            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "Rest");
             Log.Debug("Executing Method:  " + name + "." + method + "."+ param1 + "." + param2);
             return true;
         }
@@ -168,19 +168,19 @@
         public Boolean SendPattern(string match)
         {
 
-            try
-            {
-                oRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(oRecognizer_SpeechRecognized);
+          //  try
+          //  {
+           //     oRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(oRecognizer_SpeechRecognized);
                 //oRecognizer.AudioStateChanged += new EventHandler<AudioStateChangedEventArgs>(oRecognizer_StateChanged);
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Unable to configure oRecognizer", ex);
-            }
+         //   }
+         //   catch (Exception ex)
+         //   {
+          //      Log.Error("Unable to configure oRecognizer", ex);
+         //   }
 
-            oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
-            oRecognizer = OSAEGrammar.Load_Voice_Grammars(oRecognizer);
-            oRecognizer = OSAEGrammar.Load_Text_Only_Grammars(oRecognizer);
+         //   oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
+         //   oRecognizer = OSAEGrammar.Load_Voice_Grammars(oRecognizer);
+          //  oRecognizer = OSAEGrammar.Load_Text_Only_Grammars(oRecognizer);
 
             //REPLACE WITH GRAMMAR
 
@@ -189,11 +189,12 @@
             // string patternName = Common.MatchPattern(match,"");
             // if (patternName != "")
             //  {
-            //     OSAEScriptManager.RunPatternScript(patternName, "", "REST Service");
-            //     return true;
+                 OSAEScriptManager.RunScript(match, "", "Rest");
+                 Log.Debug("Executing Script:  " + match);
+            return true;
             //  }
             //  else
-            return false;
+            //return false;
         }
 
         public Boolean AddObject(string name, string alias, string description, string type, string address, string container, int mintruestlevel, string enabled)
