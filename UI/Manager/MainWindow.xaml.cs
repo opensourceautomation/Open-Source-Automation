@@ -19,7 +19,7 @@
     public partial class MainWindow : Window
     {
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
-        ServiceController myService = new ServiceController();
+        //ServiceController myService = new ServiceController();
 
         private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Manager-" + Common.ComputerName);
 
@@ -80,6 +80,7 @@
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ServiceController myService = new ServiceController();
             ServiceController[] services = ServiceController.GetServices();
             UWSenabled = false;
             foreach (ServiceController service in services)
@@ -145,16 +146,20 @@
             }
             catch (Exception ex)
             { Log.Error("Error starting listener", ex); }
-            
+
         }
- 
+
         private void CheckService(object sender, EventArgs e)
         {
-            if (UWSenabled == true) CheckWebService();   
-            string svcStatus = myService.Status.ToString();
+            CheckOSAEService();
+
+            if (UWSenabled == true) CheckWebService();
+
 
             CheckMySQLService();
 
+            /*
+            string svcStatus = myService.Status.ToString();
             if (svcStatus == "Running")
             {
                 setLabel(Brushes.Green, "RUNNING");
@@ -189,7 +194,10 @@
                     m_WorkerThreadStart.Start();
                 }
             }
+            */
         }
+
+
 
         private void CheckWebService()
         {
@@ -215,7 +223,7 @@
                 }
                 else
                 {
-                setWebLabel(Brushes.Red, "STOPPED");
+                    setWebLabel(Brushes.Red, "STOPPED");
                     setWebButton("Start", true);
 
                     if (!webclicked)
@@ -240,7 +248,7 @@
                 hiService.ServiceName = "MySQL";
                 string svcStatus = hiService.Status.ToString();
 
-                if (svcStatus == "Running" )
+                if (svcStatus == "Running")
                 {
                     setMySQLLabel(Brushes.Green, "RUNNING");
                     setMySQLButton("Stop", true);
@@ -265,13 +273,49 @@
             { Log.Error("Error checking MySQL Services", ex); }
         }
 
+        private void CheckOSAEService()
+        {
+            try
+            {
+                ServiceController osaService = new ServiceController();
+                osaService.ServiceName = "OSAE";
+                string svcStatus = osaService.Status.ToString();
+
+                if (svcStatus == "Running")
+                {
+                    setLabel(Brushes.Green, "RUNNING");
+                    setButton("Stop", true);
+                    starting = false;
+                }
+                else
+                {
+                    setLabel(Brushes.Red, "STOPPED");
+                    setButton("Start", true);
+
+                    if (!clicked)
+                    {
+                        Log.Info("OSAE Services died.  Attempting to restart.");
+                        clicked = false;
+                        System.Threading.Thread.Sleep(5000);
+                        Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
+                        m_WorkerThreadStart.Start();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error checking OSA Service", ex);
+            } 
+        }
+
         private void StartService()
         {
             try
             {
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
-                myService.Start();
-                myService.WaitForStatus(ServiceControllerStatus.Running, ts);
+                ServiceController osaService = new ServiceController();
+                osaService.Start();
+                osaService.WaitForStatus(ServiceControllerStatus.Running, ts);
             }
             catch (Exception ex)
             {
@@ -286,8 +330,9 @@
             try
             {
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
-                myService.Stop();
-                myService.WaitForStatus(ServiceControllerStatus.Stopped, ts);
+                ServiceController osaService = new ServiceController();
+                osaService.Stop();
+                osaService.WaitForStatus(ServiceControllerStatus.Stopped, ts);
             }
             catch (Exception ex)
             {
