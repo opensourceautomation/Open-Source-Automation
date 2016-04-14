@@ -314,6 +314,7 @@
             {
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 ServiceController osaService = new ServiceController();
+                osaService.ServiceName = "OSAE";
                 osaService.Start();
                 osaService.WaitForStatus(ServiceControllerStatus.Running, ts);
             }
@@ -331,6 +332,7 @@
             {
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 ServiceController osaService = new ServiceController();
+                osaService.ServiceName = "OSAE";
                 osaService.Stop();
                 osaService.WaitForStatus(ServiceControllerStatus.Stopped, ts);
             }
