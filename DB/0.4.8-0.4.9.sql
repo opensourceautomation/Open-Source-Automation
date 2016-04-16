@@ -3,7 +3,7 @@
 --
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 
-USE osa;
+USE osae;
 
 
 DELIMITER $$
@@ -19,8 +19,7 @@ DROP FUNCTION IF EXISTS osae_fn_lookup_object_id$$
 DROP PROCEDURE osae_sp_object_property_set$$
 CREATE PROCEDURE osae_sp_object_property_set(IN pname varchar(200), IN pproperty varchar(200), IN pvalue varchar(4000), IN pfromobject varchar(200), IN pdebuginfo varchar(2000))
 BEGIN
-  DECLARE vDebugTrace VARCHAR(2000) DEFAULT '';
-
+DECLARE vDebugTrace VARCHAR(2000) DEFAULT '';
 DECLARE vObjectID INT DEFAULT 0;
 DECLARE vObjectCount INT DEFAULT 0;
 DECLARE vObjectTypeID INT DEFAULT 0;
@@ -33,13 +32,14 @@ DECLARE vFromObjectType VARCHAR(255);
 DECLARE vMinTrustLevel INT DEFAULT 0;
 DECLARE vOldTrustLevel INT DEFAULT 0;
 DECLARE vNewTrustLevel INT DEFAULT 50;
+DECLARE vTrustLevelExists INT DEFAULT 0;
 DECLARE vEventCount INT;
   SET vDebugTrace = CONCAT(pdebuginfo,' -> object_property_set');
   SET vObjectCount = osae_fn_object_exists(pfromobject);
   IF vObjectCount = 1 THEN
-    CALL osae_fn_object_property_exists(pname, pproperty);
+    SET vPropertyCount = osae_fn_object_property_exists(pname, pproperty);
     IF vPropertyCount > 0 THEN
-      CALL osae_fn_trust_level_property_exists(pfromobject);
+      SET vTrustLevelExists = osae_fn_trust_level_property_exists(pfromobject);
       SET vObjectID = osae_fn_object_getid(pname);
       SELECT object_type_id,min_trust_level INTO vObjectTypeID,vMinTrustLevel FROM osae_object WHERE object_id=vObjectID;
       SELECT trust_level,object_type_property_id INTO vOldTrustLevel,vObjectTypePropertyID FROM osae_v_object_property WHERE object_id=vObjectID AND property_name=pproperty AND (property_value IS NULL OR property_value != pvalue);        
@@ -153,7 +153,7 @@ DECLARE oCount INT;
 DECLARE var1 CHAR(40);
 DECLARE curs CURSOR FOR SELECT object_name FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1 AND state_name='OFF';
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET bDone = 1;
-    SET vOldCount = (SELECT COUNT(property_value) FROM osae_v_object_property WHERE object_name='SYSTEM' AND property_name='Plugins Running');  
+    SET vOldCount = (SELECT property_value FROM osae_v_object_property WHERE object_name='SYSTEM' AND property_name='Plugins Errored');  
     SET iPluginErrorCount = (SELECT COUNT(object_name) FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1 AND state_name='OFF' AND container_state_name='ON');
  
     IF vOldCount != iPluginErrorCount THEN  
@@ -567,6 +567,7 @@ ALTER EVENT osae_ev_off_timer
 # Performing full review and performace statistics for v049
 
 BEGIN
+  DECLARE iServiceRunning INT DEFAULT 0;
   DECLARE vObjectName  VARCHAR(200);
   DECLARE iLoopCount   INT DEFAULT 0;
   DECLARE iMethodCount INT DEFAULT 0;
@@ -576,6 +577,8 @@ BEGIN
   DECLARE cur1 CURSOR FOR SELECT object_name FROM osae_v_object_property WHERE state_name <> 'OFF' AND property_name = 'OFF TIMER' AND property_value IS NOT NULL AND property_value <> '' AND property_value <> '-1' AND subtime(now(), sec_to_time(property_value)) > object_last_updated;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
   DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+  SET iServiceRunning = (SELECT COUNT(object_id) FROM osae_v_object WHERE object_name = 'SERVICE' and state_name = 'ON');
+  IF iServiceRunning > 0 THEN
   CALL osae_sp_object_property_set('SYSTEM', 'Time', curtime(), 'SYSTEM', 'osae_ev_off_timer');
   CALL osae_sp_object_property_set('SYSTEM', 'Time AMPM', DATE_FORMAT(now(), '%h:%i %p'), 'SYSTEM', 'osae_ev_off_timer');
   CALL osae_sp_system_process_methods();
@@ -605,6 +608,7 @@ Loop_Tag:
   CLOSE cur1;
 
   SELECT count(method_id) INTO iMethodCount FROM osae_v_object_method;
+  END IF;
 END
 $$
 

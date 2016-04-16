@@ -353,6 +353,35 @@
             oRecognizer.LoadGrammar(g7);
             #endregion
 
+
+            #region [Object] [Method] [Parameter]
+            // 1 OBJECT STATE {PARAMETER}
+            srk = new SemanticResultKey("PARAM1", objectFullChoices);
+            gb1 = new GrammarBuilder(srk);
+
+            //Now the the appropriate method   
+            List<string> methodList = new List<string>();
+            dsResults = OSAESql.RunSQL("SELECT DISTINCT method_label FROM osae_v_object_type_method_list_full");
+            foreach (DataRow dr in dsResults.Tables[0].Rows)
+                methodList.Add(dr[0].ToString());
+
+            Choices methodChoices = new Choices(methodList.ToArray());
+            srk = new SemanticResultKey("PARAM2", methodChoices);
+            gb1.Append(srk);
+            gb1.AppendDictation();
+            g1 = new Grammar(gb7);
+            g1.Name = "[OBJECT] [METHOD] [PARAMETER]";
+            oRecognizer.LoadGrammar(g1);
+
+            #endregion
+
+
+
+
+
+
+
+
             #region [OBJECT] [CONTAINER]
             // 1 OBJECT is in CONTAINER
             // 2 np OBJECT is in CONTAINER

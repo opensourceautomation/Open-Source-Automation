@@ -48,16 +48,16 @@
         {
             try
             {
-                bool found = OSAEObjectManager.ObjectExists("SERVICE-" + Common.ComputerName);
+                bool found = OSAEObjectManager.ObjectExists("SERVICE");
                 if (!found)
                 {
-                    OSAEObjectManager.ObjectAdd("SERVICE-" + Common.ComputerName, "", "SERVICE", "SERVICE", "", "SYSTEM", 50, true);
+                    OSAEObjectManager.ObjectAdd("SERVICE", "", "SERVICE", "SERVICE", "", "SYSTEM", 50, true);
                     //Log.Debug("Created Service Object called " + "SERVICE-" + Common.ComputerName);
                 }
                 //else
                    //Log.Debug("Found Service Object called " + "SERVICE-" + Common.ComputerName);
 
-                return "SERVICE-" + Common.ComputerName;
+                return "SERVICE";
 
                 //  OSAEObjectStateManager.ObjectStateSet("SERVICE-" + Common.ComputerName, "ON", "OSAE Service");   This is some kind of hack
             }
@@ -125,7 +125,7 @@
                     {
                         Log.Debug("Method in queue for: " + method.Owner + " Method: " + method.ObjectName + "." + method.MethodName + "," + method.Parameter1 + "," + method.Parameter2);
 
-                        if (method.ObjectName == "SERVICE-" + Common.ComputerName) // This Service
+                        if (method.ObjectName == "SERVICE") // This Service
                         {
                             switch (method.MethodName)
                             {
@@ -187,7 +187,7 @@
 
                             OSAEObject tempObj = OSAEObjectManager.GetObjectByName(method.ObjectName);
                             string isContainerService = tempObj.Container.Split('-')[0];
-                            if (tempObj.BaseType == "PLUGIN" && tempObj.Container == ("SERVICE-" + Common.ComputerName))  // Plugins on the localhost
+                            if (tempObj.BaseType == "PLUGIN" && tempObj.Container == ("SERVICE"))  // Plugins on the localhost
                             {
                                 switch (method.MethodName)
                                 {
