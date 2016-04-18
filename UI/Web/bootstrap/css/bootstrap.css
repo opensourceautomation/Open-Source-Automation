@@ -2908,6 +2908,27 @@ input[type="submit"].btn.btn-mini {
   margin-left: 5px;
 }
 
+.btn_logout {
+  margin-top: 9px;
+  margin-bottom: 9px;
+  display: inline-block;
+  width:auto; 
+  height:20px; 
+  cursor:pointer; 
+  background-color:black;
+  color:white;
+ margin-right:10px;
+}
+
+.btn_admin {
+  margin-top: 9px;
+  display: inline-block;
+  width:auto; 
+  height:auto;
+  cursor:pointer; 
+  margin-right:10px;
+}
+
 .btn-toolbar {
   margin-top: 9px;
   margin-bottom: 9px;
