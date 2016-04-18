@@ -23,6 +23,7 @@ public partial class firstrun : System.Web.UI.Page
             {
                 OSAEObjectManager.ObjectAdd(txtUser.Text, "", "Web UI user", "PERSON", "", "House",50, true);
                 OSAEObjectPropertyManager.ObjectPropertySet(txtUser.Text, "Password", txtPass.Text, "SYSTEM");
+                OSAEObjectPropertyManager.ObjectPropertySet(txtUser.Text, "Security Level", "Admin", "SYSTEM");
                 Response.Redirect("~/objects.aspx"); 
             }
             else
