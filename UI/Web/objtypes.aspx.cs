@@ -10,7 +10,8 @@ using OSAE;
 
 public partial class objtypes : System.Web.UI.Page
 {
-    
+    OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
+
     public void RaisePostBackEvent(string eventArgument)
     {
         string[] args = eventArgument.Split('_');
@@ -74,6 +75,13 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("ObjectTypeTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < objSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
         if (!IsPostBack)
         {
             ViewState["sortOrder"] = "";
@@ -152,7 +160,7 @@ public partial class objtypes : System.Web.UI.Page
             txtEventName.Text = hdnSelectedEventName.Text;
             txtEventLabel.Text = gvEvents.DataKeys[Int32.Parse(hdnSelectedEventRow.Text)]["event_label"].ToString();
         }
-        
+
         if (hdnSelectedObjectName.Text != "")
             lblExportScript.Text = OSAEObjectTypeManager.ObjectTypeExport(hdnSelectedObjectName.Text);
 
@@ -177,7 +185,7 @@ public partial class objtypes : System.Web.UI.Page
         //    divEvents.Visible = false;
         //else
         //    divEvents.Visible = true;
-      
+
     }
 
     protected void gvObjectTypes_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -320,6 +328,7 @@ public partial class objtypes : System.Web.UI.Page
         chkHideEvents.Checked = type.HideRedundant;
         chkOwner.Checked = type.Owner;
         chkSysType.Checked = type.SysType;
+        applyObjectSecurity(type.Name);
     }
 
     protected void btnStateSave_Click(object sender, EventArgs e)
@@ -353,7 +362,7 @@ public partial class objtypes : System.Web.UI.Page
         OSAEObjectTypeManager.ObjectTypePropertyUpdate(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString(), txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedValue, txtPropDefault.Text, hdnSelectedObjectName.Text, chkTrackChanges.Checked);
         loadProperties();
     }
-    
+
     protected void btnMethodSave_Click(object sender, EventArgs e)
     {
         OSAEObjectTypeManager.ObjectTypeMethodUpdate(hdnSelectedMethodName.Text, txtMethodName.Text, txtMethodLabel.Text, hdnSelectedObjectName.Text, txtParam1Label.Text, txtParam2Label.Text, txtParam1Default.Text, txtParam2Default.Text);
@@ -426,7 +435,7 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectTypeManager.ObjectTypeClone(txtName.Text,hdnSelectedObjectName.Text);
+        OSAEObjectTypeManager.ObjectTypeClone(txtName.Text, hdnSelectedObjectName.Text);
         txtName.Text = "";
         txtDescr.Text = "";
         chkOwner.Checked = false;
@@ -509,5 +518,82 @@ public partial class objtypes : System.Web.UI.Page
 
         //string s = ddlBaseType2.SelectedItem.Text.ToUpper();
         hdnSelectedPropDataType.Text = ddlPropType.SelectedValue.ToString();
+    }
+
+    #region Trust Settings
+    protected void applyObjectSecurity(string objName)
+    {
+        int sessTrust = Convert.ToInt32(Session["TrustLevel"].ToString());
+        txtName.Enabled = false;
+        txtDescr.Enabled = false;
+        ddlOwnedBy.Enabled = false;
+        ddlBaseType.Enabled = false;
+        ddlBaseType2.Enabled = false;
+        chkOwner.Enabled = false;
+        chkContainer.Enabled = false;
+        chkHideEvents.Enabled = false;
+        chkSysType.Enabled = false;
+        btnAdd.Enabled = false;
+        btnUpdate.Enabled = false;
+        btnDelete.Enabled = false;
+        btnPropAdd.Enabled = false;
+        btnPropDelete.Enabled = false;
+        btnPropSave.Enabled = false;
+        btnEventAdd.Enabled = false;
+        btnEventDelete.Enabled = false;
+        btnEventSave.Enabled = false;
+        btnMethodAdd.Enabled = false;
+        btnMethodDelete.Enabled = false;
+        btnMethodSave.Enabled = false;
+        btnStateAdd.Enabled = false;
+        btnStateDelete.Enabled = false;
+        btnStateSave.Enabled = false;
+        btnEditPropOptions.Enabled = false;
+        chkTrackChanges.Enabled = false;
+        if (sessTrust >= adSet.ObjectTypeAddTrust)
+        {
+            txtName.Enabled = true;
+            txtDescr.Enabled = true;
+            ddlOwnedBy.Enabled = true;
+            ddlBaseType.Enabled = true;
+            ddlBaseType2.Enabled = true;
+            chkOwner.Enabled = true;
+            chkContainer.Enabled = true;
+            chkHideEvents.Enabled = true;
+            chkSysType.Enabled = true;
+            btnAdd.Enabled = true;
+            btnStateAdd.Enabled = true;
+            btnMethodAdd.Enabled = true;
+            btnEventAdd.Enabled = true;
+            btnPropAdd.Enabled = true;
+        }
+        if (sessTrust >= adSet.ObjectTypeUpdateTrust)
+        {
+            txtName.Enabled = true;
+            txtDescr.Enabled = true;
+            ddlOwnedBy.Enabled = true;
+            ddlBaseType.Enabled = true;
+            ddlBaseType2.Enabled = true;
+            chkOwner.Enabled = true;
+            chkContainer.Enabled = true;
+            chkHideEvents.Enabled = true;
+            chkSysType.Enabled = true;
+            btnUpdate.Enabled = true;
+            btnStateSave.Enabled = true;
+            btnMethodSave.Enabled = true;
+            btnEventSave.Enabled = true;
+            btnPropSave.Enabled = true;
+            btnEditPropOptions.Enabled = true;
+            chkTrackChanges.Enabled = true;
+        }
+        if (sessTrust >= adSet.ObjectTypeDeleteTrust)
+        {
+            btnDelete.Enabled = true;
+            btnStateDelete.Enabled = true;
+            btnMethodDelete.Enabled = true;
+            btnEventDelete.Enabled = true;
+            btnPropDelete.Enabled = true;
+        }
+        #endregion
     }
 }

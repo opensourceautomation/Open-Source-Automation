@@ -8,9 +8,22 @@ using System.Web.UI.WebControls;
 
 public partial class logs : System.Web.UI.Page
 {
+    // Get current Admin Trust Settings
+    OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
+
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("ServerLogTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < objSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
         if (!IsPostBack) GetLogs();
+
+        // Apply Security Admin Settings
+        applySecurity();
     }
 
 
@@ -54,4 +67,18 @@ public partial class logs : System.Web.UI.Page
     {
         GetLogs();
     }
+
+    #region Trust Settings
+    protected void applySecurity()
+    {
+        int sessTrust = Convert.ToInt32(Session["TrustLevel"].ToString());
+        btnClear.Enabled = false;
+        btnClear2.Enabled = false;
+        if (sessTrust >= adSet.LogsClearTrust)
+        {
+            btnClear.Enabled = true;
+            btnClear2.Enabled = true;
+        }
+    }
+    #endregion
 }

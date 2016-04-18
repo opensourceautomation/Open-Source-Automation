@@ -24,6 +24,13 @@ public partial class analytics : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("AnalyticsTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < objSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
         loadProperties();
         loadStates();
         getRestPort();

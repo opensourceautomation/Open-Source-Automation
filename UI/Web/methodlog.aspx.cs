@@ -9,13 +9,23 @@ using OSAE;
 public partial class methodlog : System.Web.UI.Page
 {
     Logging logging = Logging.GetLogger("Web UI");
+    // Get current Admin Trust Settings
+    OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("MethodLogTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < objSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
         if (!IsPostBack)
         {
             BindData();
         }
+        applySecurity();
     }
 
     private void BindData()
@@ -41,4 +51,18 @@ public partial class methodlog : System.Web.UI.Page
     {
         BindData();
     }
+
+    #region Trust Settings
+    protected void applySecurity()
+    {
+        int sessTrust = Convert.ToInt32(Session["TrustLevel"].ToString());
+        clearLogButton.Enabled = false;
+        clearLogButton2.Enabled = false;
+        if (sessTrust >= adSet.LogsClearTrust)
+        {
+            clearLogButton.Enabled = true;
+            clearLogButton2.Enabled = true;
+        }
+    }
+    #endregion
 }

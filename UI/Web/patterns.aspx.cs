@@ -8,7 +8,10 @@ using OSAE;
 
 public partial class patterns : System.Web.UI.Page
 {
-    
+
+    // Get current Admin Trust Settings
+    OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
+
     public void RaisePostBackEvent(string eventArgument)
     {
         string[] args = eventArgument.Split('_');
@@ -36,6 +39,13 @@ public partial class patterns : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("PatternTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < objSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
         loadPatterns();
         if (!this.IsPostBack)
         {
@@ -47,6 +57,7 @@ public partial class patterns : System.Web.UI.Page
             loadMatches();
             loadScripts();
         }
+        applyObjectSecurity();
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
@@ -205,4 +216,36 @@ public partial class patterns : System.Web.UI.Page
                 true);
         }
     }
+
+    #region Trust Settings
+    protected void applyObjectSecurity()
+    {
+        int sessTrust = Convert.ToInt32(Session["TrustLevel"].ToString());
+        btnMatchAdd.Enabled = false;
+        btnMatchDelete.Enabled = false;
+        btnMatchUpdate.Enabled = false;
+        btnPatternSave.Enabled = false;
+        btnPatternUpdate.Enabled = false;
+        btnPatternDelete.Enabled = false;
+        btnScriptAdd.Enabled = false;
+        btnScriptDelete.Enabled = false;
+        if(sessTrust>=adSet.PatternAddTrust)
+        {
+            btnPatternSave.Enabled = true;
+            btnMatchAdd.Enabled = true;
+            btnScriptAdd.Enabled = true;
+        }
+        if (sessTrust >= adSet.PatternUpdateTrust)
+        {
+            btnPatternUpdate.Enabled = true;
+            btnMatchUpdate.Enabled = true;
+        }
+        if (sessTrust >= adSet.PatternDeleteTrust)
+        {
+            btnPatternDelete.Enabled = true;
+            btnMatchDelete.Enabled = true;
+            btnScriptDelete.Enabled = true;
+        }
+    }
+    #endregion
 }

@@ -11,6 +11,7 @@ public partial class home : System.Web.UI.Page
 {
     //private OSAE.General.OSAELog Log = new OSAE.General.OSAELog();
     string objectSQL = "";
+    OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
 
     public void RaisePostBackEvent(string eventArgument)
     {
@@ -56,12 +57,12 @@ public partial class home : System.Web.UI.Page
             }
             else if (gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString() == "Boolean")
             {
-                ddlPropValue.Items.Clear(); 
+                ddlPropValue.Items.Clear();
                 ddlPropValue.Items.Add(new ListItem("TRUE", "TRUE"));
                 ddlPropValue.Items.Add(new ListItem("FALSE", "FALSE"));
                 if (!string.IsNullOrEmpty(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString()) && ddlPropValue.Items.FindByValue(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString()) != null)
                     ddlPropValue.SelectedValue = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_value"].ToString();
-                
+
                 txtPropValue.Visible = false;
                 btnPropSave.Visible = true;
                 lblPropName.Visible = true;
@@ -108,7 +109,6 @@ public partial class home : System.Web.UI.Page
                 string propID = gvProperties.DataKeys[gvProperties.SelectedIndex]["object_property_id"].ToString();
                 DataSet options = OSAESql.RunSQL("SELECT option_name FROM osae_object_type_property_option ootpo INNER JOIN osae_object_property oop ON oop.object_type_property_id = ootpo.property_id WHERE oop.object_property_id=" + propID + " ORDER BY option_name");
                 ddlPropValue.Items.Clear();
-
                 if (options.Tables[0].Rows.Count > 0)
                 {
                     foreach (DataRow dr in options.Tables[0].Rows)
@@ -131,12 +131,40 @@ public partial class home : System.Web.UI.Page
                 lblPropName.Visible = true;
                 btnEditPropList.Visible = false;
             }
+            if (ddlType.Text == "PERSON")
+            {
+                string pTrust = gvProperties.DataKeys[gvProperties.SelectedIndex]["trust_level"].ToString();
+                string pName = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString();
+                string pType = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString();
+                string oName = gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString();
+                string oMinTrust = gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString();
+                applyPersonPropertySecurity(oName, oMinTrust, pName, pType, pTrust);
+            }
+            if (Convert.ToInt32(Session["TrustLevel"].ToString()) < Convert.ToInt32(gvProperties.DataKeys[gvProperties.SelectedIndex]["trust_level"].ToString()))
+            {
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = false;
+                lblPropName.Visible = false;
+                lblSourceName.Visible = false;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = false;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = false;
+            }
         }
     }
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        if (Session["Username"] == null)
+            Response.Redirect("~/Default.aspx");
+
+        //int objSet = OSAEAdminManager.GetAdminSettingsByName("ObjectsTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < adSet.ObjectsTrust)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
 
         bool hideControls = Convert.ToBoolean(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Hide Controls").Value);
         if (hideControls)
@@ -213,6 +241,10 @@ public partial class home : System.Web.UI.Page
             //e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.originalcolor=this.style.backgroundColor;this.style.background='lightblue';");
            // e.Row.Attributes.Add("onmouseout", "this.style.background=this.originalcolor;");
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvProperties_" + e.Row.RowIndex.ToString()));
+            if(e.Row.Cells[0].Text == "Password" || e.Row.Cells[0].Text == "PIN")
+            {
+                e.Row.Cells[1].Text = new string('*', e.Row.Cells[1].Text.Length);
+            }
         }
     }
 
@@ -349,6 +381,7 @@ public partial class home : System.Web.UI.Page
             
         OSAEObjectType objtype = OSAEObjectTypeManager.ObjectTypeLoad(obj.Type);
         txtOwned.Text = objtype.OwnedBy;
+        applyObjectSecurity(obj.Name, obj.MinTrustLevel.ToString());
     }
 
     protected void btnPropSave_Click(object sender, EventArgs e)
@@ -421,4 +454,174 @@ public partial class home : System.Web.UI.Page
         loadPropertyList();
     }
 
+    #region Trust Settings
+    protected void applyPersonPropertySecurity(string objName, string objMinTrust, string propName, string propType, string propTrust)
+    {
+        if (Convert.ToInt32(Session["TrustLevel"].ToString()) < Convert.ToInt32(propTrust))
+        {
+            txtPropValue.Visible = false;
+            btnPropSave.Visible = false;
+            lblPropName.Visible = false;
+            lblSourceName.Visible = false;
+            lblTrustLevel.Visible = true;
+            lblInterestLevel.Visible = false;
+            btnEditPropList.Visible = false;
+            ddlPropValue.Visible = false;
+        }
+        else if (propName == "Security Level")
+        {
+            OSAEObjectCollection osaAdmins = OSAE.OSAEObjectManager.GetObjectsByPropertyValue("Security Level", "Admin");
+            string sL = OSAEObjectPropertyManager.GetObjectPropertyValue(objName, propName).Value;
+            if(sL =="Admin" && osaAdmins.Count()<2)
+            {
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = false;
+                lblPropName.Visible = false;
+                lblSourceName.Visible = false;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = false;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = false;
+            }
+            else if (Session["SecurityLevel"].ToString() == "Admin")
+            {
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = true;
+                lblPropName.Visible = true;
+                lblSourceName.Visible = false;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = true;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = true;
+            }
+            else
+            {
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = false;
+                lblPropName.Visible = false;
+                lblSourceName.Visible = false;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = false;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = false;
+            }
+        }
+        else if (propName == "Trust Level")
+        {
+            if (Session["SecurityLevel"].ToString() == "Admin")
+            {
+                txtPropValue.Visible = true;
+                btnPropSave.Visible = true;
+                lblPropName.Visible = true;
+                lblSourceName.Visible = false;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = true;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = false;
+            }
+            else
+            {
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = false;
+                lblPropName.Visible = false;
+                lblSourceName.Visible = false;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = false;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = false;
+            }
+        }
+        else if (Session["UserName"].ToString() != objName && Session["SecurityLevel"].ToString() != "Admin")
+        {
+            txtPropValue.Visible = false;
+            btnPropSave.Visible = false;
+            lblPropName.Visible = false;
+            lblSourceName.Visible = false;
+            lblTrustLevel.Visible = true;
+            lblInterestLevel.Visible = false;
+            btnEditPropList.Visible = false;
+            ddlPropValue.Visible = false;
+        }
+        else if (propType == "Password")
+        {
+            if (Session["SecurityLevel"].ToString() == "Admin" || Session["UserName"].ToString() == objName)
+            {
+                txtPropValue.Visible = true;
+                btnPropSave.Visible = true;
+                lblPropName.Visible = false;
+                lblSourceName.Visible = false;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = true;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = false;
+            }
+            else
+            {
+                txtPropValue.Visible = false;
+                btnPropSave.Visible = false;
+                lblPropName.Visible = false;
+                lblSourceName.Visible = false;
+                lblTrustLevel.Visible = true;
+                lblInterestLevel.Visible = false;
+                btnEditPropList.Visible = false;
+                ddlPropValue.Visible = false;
+            }
+        }
+    }
+
+    protected void applyObjectSecurity(string objName, string objMinTrust)
+    {
+        int sessTrust = Convert.ToInt32(Session["TrustLevel"].ToString());
+        txtName.Enabled = false;
+        txtAlias.Enabled = false;
+        txtAddress.Enabled = false;
+        txtDescr.Enabled = false;
+        txtTrustLevel.Enabled = false;
+        ddlType.Enabled = false;
+        chkEnabled.Enabled = false;
+        ddlState.Enabled = false;
+        ddlMethod.Enabled = false;
+        ddlEvent.Enabled = false;
+        ddlContainer.Enabled = false;
+        btnAdd.Enabled = false;
+        btnUpdate.Enabled = false;
+        btnDelete.Enabled = false;
+
+        if (sessTrust >= Convert.ToInt32(objMinTrust))
+        {
+            ddlState.Enabled = true;
+            ddlMethod.Enabled = true;
+            ddlEvent.Enabled = true;
+        }
+        if (sessTrust >= adSet.ObjectsDeleteTrust)
+        {
+            btnDelete.Enabled = true;
+        }
+        if (sessTrust >= adSet.ObjectsUpdateTrust)
+        {
+            btnUpdate.Enabled = true;
+            txtName.Enabled = true;
+            txtAlias.Enabled = true;
+            txtAddress.Enabled = true;
+            txtDescr.Enabled = true;
+            txtTrustLevel.Enabled = true;
+            ddlType.Enabled = true;
+            chkEnabled.Enabled = true;
+            ddlContainer.Enabled = true;
+        }
+        if (sessTrust >= adSet.ObjectsAddTrust)
+        {
+            btnAdd.Enabled = true;
+            txtName.Enabled = true;
+            txtAlias.Enabled = true;
+            txtAddress.Enabled = true;
+            txtDescr.Enabled = true;
+            txtTrustLevel.Enabled = true;
+            ddlType.Enabled = true;
+            chkEnabled.Enabled = true;
+            ddlContainer.Enabled = true;
+        }
+
+        #endregion
+    }
 }

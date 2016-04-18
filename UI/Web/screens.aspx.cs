@@ -9,7 +9,15 @@ public partial class screens : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("ScreenTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < objSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
         getRestPort();
+        hdnUserTrust.Value = Session["TrustLevel"].ToString();
         gScreen = Request.QueryString["id"];
         try
         {
@@ -112,6 +120,17 @@ public partial class screens : System.Web.UI.Page
             ctrl.screenObject = obj;
             ctrl.initialize();
             UpdatePlaceholder.Controls.Add(ctrl);
+        }
+        #endregion
+
+        #region Browser Control
+        else if (obj.Type == "CONTROL BROWSER")
+        {
+            // Create instance of the UserControl SimpleControl
+            ASP.ctrlBrowser ctrl = (ASP.ctrlBrowser)LoadControl("~/controls/ctrlBrowser.ascx");
+            // Set the Public Properties
+            ctrl.screenObject = OSAEObjectManager.GetObjectByName(obj.Name);
+            StaticPlaceholder.Controls.Add(ctrl);
         }
         #endregion
     }

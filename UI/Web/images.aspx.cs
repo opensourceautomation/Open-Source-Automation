@@ -5,17 +5,29 @@ using OSAE;
 
 public partial class images : System.Web.UI.Page
 {
-    
+    // Get current Admin Trust Settings
+    OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
+
     public void RaisePostBackEvent(string eventArgument)
     {
     }
     
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("ImagesTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < objSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
+        
         if (!Page.IsPostBack)
             loadImages();
         else
             if (fileUpload.HasFile) txtName.Text = fileUpload.FileName;
+
+        applyObjectSecurity();
     }
     
     //private void CreateDynamicTable()
@@ -104,6 +116,7 @@ public partial class images : System.Web.UI.Page
         }
     }
 
+
     protected void gvImages_RowCommand(object sender, GridViewCommandEventArgs e)
     {
         if (e.CommandName == "DeleteImage")
@@ -113,6 +126,30 @@ public partial class images : System.Web.UI.Page
             imgmrg.DeleteImage(Int32.Parse(gvImages.DataKeys[row.RowIndex].Value.ToString()));
 
             loadImages();
+        }
+    }
+
+    #region Trust Settings
+    protected void applyObjectSecurity()
+    {
+        int sessTrust = Convert.ToInt32(Session["TrustLevel"].ToString());
+        btnAdd.Enabled = false;
+        fileUpload.Enabled = false;
+        if (sessTrust >= adSet.ImagesAddTrust)
+        {
+            btnAdd.Enabled = true;
+            fileUpload.Enabled = true;
+        }
+    }
+    #endregion
+
+    protected void gvImages_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        int sessTrust = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if(sessTrust<adSet.ImagesDeleteTrust)
+        {
+            e.Row.Cells[6].Enabled = false;
+
         }
     }
 }

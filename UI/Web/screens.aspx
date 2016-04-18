@@ -7,6 +7,7 @@
 <%@ Reference Control="~/controls/ctrlClickImage.ascx"  %>
 <%@ Reference Control="~/controls/ctrlNavigationImage.ascx"  %>
 <%@ Reference Control="~/controls/ctrlEmbedded.ascx"  %>
+<%@ Reference Control="~/controls/ctrlBrowser.ascx"  %>
 <%@ Register src="~/controls/ctrlUserControl.ascx" TagName = "ctrlUserControl" TagPrefix ="ctrlUserControl"  %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server">
@@ -35,20 +36,33 @@
             $('#<%=UpdateButton.ClientID %>').click();
         }
 
-        function runMethod(object, method, p1, p2) {
-            if (p1 == '[ASK]') {
-                p1 = prompt('Enter the value for: ' + object + '-' + method + '-Parameter 1', '');
-                if (p1 == null) { p1 = 'null'; }  // Check to see if user clicked Cancel
-                if (p1.replace(/\s/g, "") == "") { p1 = 'null'; }   // Check to see if user entered any data, if NOT, Do not execute.
+        function runMethod(object, method, p1, p2, objTrust) 
+        {
+            if(Number(objTrust) <= Number(<%= hdnUserTrust.Value %>)) 
+            {
+                if (p1 == '[ASK]') {
+                    p1 = prompt('Enter the value for: ' + object + '-' + method + '-Parameter 1', '');
+                    if (p1 == null) { p1 = 'null'; }  // Check to see if user clicked Cancel
+                    if (p1.replace(/\s/g, "") == "") { p1 = 'null'; }   // Check to see if user entered any data, if NOT, Do not execute.
+                }
+                if (p2 == "[ASK]") {
+                    p2 = prompt('Enter the value for: ' + object + '-' + method + '-Parameter 2', '');
+                    if (p2 == null) { p2 = 'null'; }  // Check to see if user clicked Cancel
+                    if (p2.replace(/\s/g, "") == "") { p2 = 'null'; }   // Check to see if user entered any data, if NOT, Do not execute.
+                }   
+    	        if (p1 != 'null' && p2 != 'null') {
+	                $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
+	                return data;
+                });
+                }
             }
-            if (p2 == "[ASK]") {
-                p2 = prompt('Enter the value for: ' + object + '-' + method + '-Parameter 2', '');
-                if (p2 == null) { p2 = 'null'; }  // Check to see if user clicked Cancel
-                if (p2.replace(/\s/g, "") == "") { p2 = 'null'; }   // Check to see if user entered any data, if NOT, Do not execute.
-            }   
-	        if (p1 != 'null' && p2 != 'null') {
-	            $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
-	            return data;
+        }
+
+        function setProperty(object, prop, p1, objTrust) {
+            if (Number(objTrust) <= Number(<%= hdnUserTrust.Value %>)) {
+                var JSONObj = {};
+                $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/property/update?objName=' + object + '&propName=' + prop + '&propVal=' + p1 + '&callback=?', null, function (data) {
+                    return data;
                 });
             }
         }
@@ -69,5 +83,7 @@
     </div>
 
     <asp:HiddenField runat="server" ID="hdnRestPort" />
+    <asp:HiddenField runat="server" ID="hdnUserTrust" />
+
 </asp:Content>
 

@@ -8,7 +8,9 @@ using OSAE;
 
 public partial class schedules : System.Web.UI.Page
 {
-    
+    // Get current Admin Trust Settings
+    OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
+
     public void RaisePostBackEvent(string eventArgument)
     {
         string[] args = eventArgument.Split('_');
@@ -62,6 +64,13 @@ public partial class schedules : System.Web.UI.Page
     }
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("ScheduleTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < objSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
         loadQueue();
         loadRecurring();
         chkActive.Checked = true;
@@ -69,7 +78,7 @@ public partial class schedules : System.Web.UI.Page
         {
             loadDDLs();
         }
-        
+        applyObjectSecurity();
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
@@ -375,4 +384,28 @@ public partial class schedules : System.Web.UI.Page
             hdnSelectedQueueRow.Text = selectedRow.ToString();
         loadQueue();
     }
+
+    #region Trust Settings
+    protected void applyObjectSecurity()
+    {
+        int sessTrust = Convert.ToInt32(Session["TrustLevel"].ToString());
+        btnAdd.Enabled = false;
+        btnUpdate.Enabled = false;
+        btnDelete.Enabled = false;
+        btnQueueDelete.Enabled = false;
+        if (sessTrust >= adSet.ScheduleAddTrust)
+        {
+            btnAdd.Enabled = true;
+        }
+        if (sessTrust >= adSet.ScheduleUpdateTrust)
+        {
+            btnUpdate.Enabled = true;
+        }
+        if (sessTrust >= adSet.ScheduleDeleteTrust)
+        {
+            btnDelete.Enabled = true;
+            btnQueueDelete.Enabled = true;
+        }
+    }
+    #endregion
 }

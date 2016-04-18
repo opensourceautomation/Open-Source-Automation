@@ -8,7 +8,9 @@ using OSAE;
 
 public partial class readers : System.Web.UI.Page
 {
-    
+    // Get current Admin Trust Settings
+    OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
+
     public void RaisePostBackEvent(string eventArgument)
     {
         string[] args = eventArgument.Split('_');
@@ -22,6 +24,13 @@ public partial class readers : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("ReaderTrust");
+        int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+        if (tLevel < objSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
         loadReaders();
 
         if (!this.IsPostBack)
@@ -32,7 +41,7 @@ public partial class readers : System.Web.UI.Page
         if (hdnSelectedReadersRow.Text != "")
         { }
 
-    
+        applyObjectSecurity();
     }
 
     protected void Page_PreRender(object sender, EventArgs e)
@@ -122,4 +131,30 @@ public partial class readers : System.Web.UI.Page
     {
         loadProperties();
     }
+
+    #region Trust Settings
+    protected void applyObjectSecurity()
+    {
+        int sessTrust = Convert.ToInt32(Session["TrustLevel"].ToString());
+        btnReaderSave.Enabled = false;
+        btnReaderUpdate.Enabled = false;
+        btnReaderDelete.Enabled = false;
+
+        if (sessTrust >= adSet.PatternAddTrust)
+        {
+            btnReaderSave.Enabled = true;
+
+        }
+        if (sessTrust >= adSet.PatternUpdateTrust)
+        {
+            btnReaderUpdate.Enabled = true;
+
+        }
+        if (sessTrust >= adSet.PatternDeleteTrust)
+        {
+            btnReaderDelete.Enabled = true;
+
+        }
+    }
+    #endregion
 }

@@ -9,7 +9,7 @@ function callme()
     document.getElementById('<%=txtName.ClientID%>').value = document.getElementById('<%=fileUpload.ClientID %>').value.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, "");
             
   }
-</script></script>
+</script>
 
     <div class="row-fluid">
         <div class="span2">

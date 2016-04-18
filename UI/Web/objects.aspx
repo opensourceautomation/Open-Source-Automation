@@ -5,7 +5,6 @@
 <asp:Content runat="server" ContentPlaceHolderID="ContentPlaceHolder">
     <script type="text/javascript">
         var lastSelected = null;
-
         window.onload = function () {
             var strCook = document.cookie;
             if (strCook.indexOf("!~") != 0) {
@@ -44,7 +43,6 @@
             
             lastSelected = element;
         }
-
         $(function () {
             if ($('#<%=hdnEditingPropList.ClientID%>').val() == "1") {
                 $('#<%=hdnEditingPropList.ClientID%>').val("0");
@@ -68,7 +66,6 @@
         #gvObjects tr.rowHover {background-color: none;}
         #gvObjects tr.rowHoverAlt:hover {background-color: Yellow;}
         #gvObjects tr.rowHoverAlt {background-color: #f4f4f4;}
-
         #gvProperties tr.rowHover1:hover {background-color: Yellow;}
         #gvProperties tr.rowHover1 {background-color: none;}
         #gvProperties tr.rowHoverAlt1:hover {background-color: Yellow;}
@@ -229,7 +226,7 @@
                         <div class="span10" ID="propGrid" style="overflow: auto; max-height:500px;" onscroll="SetPropDivPosition()">
                             <asp:GridView runat="server" ID="gvProperties" AutoGenerateColumns="False" GridLines="None" CssClass="mGrid"  
                                 OnRowDataBound="gvProperties_RowDataBound" ClientIDMode="Static"
-                                DataKeyNames="property_name,property_value,property_datatype,object_property_id,property_object_type,last_updated,source_name,trust_level,interest_level" ShowHeaderWhenEmpty="True">  
+                                DataKeyNames="property_name,property_value,property_datatype,object_property_id,property_object_type,last_updated,source_name,trust_level,interest_level" ShowHeaderWhenEmpty="True" AllowSorting="True">  
                                 <RowStyle CssClass="rowHover1"></RowStyle>
                                 <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
                                 <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle>
