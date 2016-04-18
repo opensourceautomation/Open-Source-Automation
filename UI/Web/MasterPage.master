@@ -79,7 +79,11 @@
                             </li>
                             <li><a href="valuedisplay.aspx">Values</a></li>
                         </ul>
-                        <asp:ImageButton runat="server" ID="cog" AlternateText="Configuration" style="float:right; display:inline; padding-top:4px" Width="26px" Height="26px" ImageAlign="Middle" ImageUrl="~/Images/cog.png" OnClick="cog_Click" />
+                        <div>
+                            <asp:ImageButton runat="server" ID="cog" AlternateText="Configuration" style="float:right; display:inline; padding-top:4px" Width="26px" Height="26px" ImageAlign="Middle" ImageUrl="~/Images/cog.png" OnClick="cog_Click" />                            
+                            <asp:Button ID="btnUser" style="float:right; margin-right:20px; font-weight:bold; font-size:larger; width:auto;" runat="server" Text="" ToolTip="Log Off" CssClass="btn_logout" OnClick="btnUser_Click" />
+                            <asp:Button ID="btnAdmin" style="float:right; margin-right:10px " runat="server" Text="Admin" ToolTip="Admin Settings" Cssclass="btn_admin" OnClick="btnAdmin_Click" />
+                        </div>
                     </div>
 
                     <!--/.nav-collapse -->
@@ -97,7 +101,7 @@
             <hr>
 
             <footer>
-                <p>&copy; Open Source Automation 2013</p>
+                <p>&copy; Open Source Automation 2016</p>
             </footer>
 
         </div>

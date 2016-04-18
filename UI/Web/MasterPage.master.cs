@@ -38,10 +38,21 @@ public partial class MasterPage : System.Web.UI.MasterPage
             cog.ImageUrl = "~/Images/cog_red.png";
             cog.ToolTip = "OSA service is not running.";
         }
+
+        btnUser.Text = Session["UserName"].ToString();
+        if(Session["SecurityLevel"].ToString() != "Admin")
+        {
+            btnAdmin.Visible = false;
+        }
     }
 
     protected void cog_Click(object sender, ImageClickEventArgs e)
     {
+        int conSet = OSAEAdminManager.GetAdminSettingsByName("ConfigTrust");
+        if (Convert.ToInt32(Session["TrustLevel"].ToString()) < conSet)
+        {
+            Response.Redirect("~/permissionError.aspx");
+        }
         Response.Redirect("~/config.aspx");
     }
 
@@ -57,5 +68,18 @@ public partial class MasterPage : System.Web.UI.MasterPage
         }
         catch (Exception ex)
         { Log.Error("Error setting session timeout", ex); }
+    }
+
+    protected void btnUser_Click(object sender, EventArgs e)
+    {
+        Session.Clear();
+        Session.RemoveAll();
+        Session.Abandon();
+        Response.Redirect("default.aspx");
+    }
+
+    protected void btnAdmin_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("admin.aspx");
     }
 }
