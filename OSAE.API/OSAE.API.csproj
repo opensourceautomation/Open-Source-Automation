@@ -75,6 +75,8 @@
     <Compile Include="General\DBConnectionStatus.cs" />
     <Compile Include="General\OSAELog.cs" />
     <Compile Include="General\OSAESql.cs" />
+    <Compile Include="OSAEAdmin\OSAEAdmin.cs" />
+    <Compile Include="OSAEAdmin\OSAEAdminManager.cs" />
     <Compile Include="OSAEGrammar\OSAEGrammar.cs" />
     <Compile Include="OSAEImage\OSAEImageManager.cs" />
     <Compile Include="OSAEImage\OSAEImage.cs" />
