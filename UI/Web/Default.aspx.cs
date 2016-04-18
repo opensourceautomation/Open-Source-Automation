@@ -24,22 +24,45 @@ public partial class _Default : System.Web.UI.Page
         if (obj != null)
         {
             string pass = obj.Property("Password").Value;
-            if (pass == txtPassword.Text && pass != "")
+            if (pass == txtPassword.Text)
             {
-                // Success, create non-persistent authentication cookie.
-                FormsAuthentication.SetAuthCookie(
-                txtUserName.Text.Trim(), false);
-                Int32 cto = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value);
-                FormsAuthenticationTicket ticket1 = new FormsAuthenticationTicket(txtUserName.Text.Trim(),true,cto);
-                HttpCookie cookie1 = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket1));
-                Response.Cookies.Add(cookie1);
-                Session["UserName"] = OSAEObjectManager.GetObjectByName(this.txtUserName.Text.Trim()).Name;
+                if (pass != "")
+                {
+                    // Success, create non-persistent authentication cookie.
+                    FormsAuthentication.SetAuthCookie(txtUserName.Text.Trim(), false);
+                    Int32 cto = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value);
+                    FormsAuthenticationTicket ticket1 = new FormsAuthenticationTicket(txtUserName.Text.Trim(), true, cto);
+                    HttpCookie cookie1 = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket1));
+                    Response.Cookies.Add(cookie1);
+                    Session["UserName"] = OSAEObjectManager.GetObjectByName(this.txtUserName.Text.Trim()).Name;
+                    Session["TrustLevel"] = OSAEObjectPropertyManager.GetObjectPropertyValue(this.txtUserName.Text.Trim(), "Trust Level").Value;
+                    Session["SecurityLevel"] = OSAEObjectPropertyManager.GetObjectPropertyValue(this.txtUserName.Text.Trim(), "Security Level").Value;
+                }
+                else
+                {
+                    FormsAuthentication.SetAuthCookie(txtUserName.Text.Trim(), false);
+                    Int32 cto = Convert.ToInt32(OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value);
+                    FormsAuthenticationTicket ticket1 = new FormsAuthenticationTicket(txtUserName.Text.Trim(), true, cto);
+                    HttpCookie cookie1 = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket1));
+                    Response.Cookies.Add(cookie1);
+                    Session["UserName"] = OSAEObjectManager.GetObjectByName(this.txtUserName.Text.Trim()).Name;
+                    Session["TrustLevel"] = OSAEObjectPropertyManager.GetObjectPropertyValue(this.txtUserName.Text.Trim(), "Trust Level").Value;
+                    Session["SecurityLevel"] = OSAEObjectPropertyManager.GetObjectPropertyValue(this.txtUserName.Text.Trim(), "Security Level").Value;
+                }
                 // 4. Do the redirect. 
                 string returnUrl1;
+                OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
+                int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
+                if (Session["SecurityLevel"].ToString() != "Admin" & tLevel < adSet.ObjectsTrust)
+                {
+                    returnUrl1 = "screens.aspx?id=" + adSet.defaultScreen;
+                }
+                else
+                {
+                    if (Request.QueryString["ReturnUrl"] == null) returnUrl1 = "objects.aspx";  // the login is successful
+                    else returnUrl1 = Request.QueryString["ReturnUrl"];  //login not unsuccessful 
+                }
                 
-                if (Request.QueryString["ReturnUrl"] == null) returnUrl1 = "objects.aspx";  // the login is successful
-                else returnUrl1 = Request.QueryString["ReturnUrl"];  //login not unsuccessful 
-
                 Response.Redirect(returnUrl1);
             }
             else
