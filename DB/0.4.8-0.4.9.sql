@@ -627,4 +627,9 @@ CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Max Days','
 CALL osae_sp_object_type_property_add('SYSTEM','Detailed Occupancy Enabled','Boolean','','FALSE',0);
 CALL osae_sp_object_type_method_update('SETTTSVOLUME','SETTTSVOLUME','Set TTS Volume','SPEECH','Volume','','100','');
 CALL osae_sp_object_type_property_update('TTS Volume','TTS Volume','Integer','','100','SPEECH',0);
+CALL osae_sp_object_type_property_add('GUI CLIENT','Width','Integer','','640',0);
+CALL osae_sp_object_type_property_add('GUI CLIENT','Height','Integer','','480',0);
+CALL osae_sp_object_type_property_add('GUI CLIENT','Show Frame','Boolean','','TRUE',0);
+CALL osae_sp_object_type_property_add('GUI CLIENT','Use Global Screen Settings','Boolean','','FALSE',0);
+
 
