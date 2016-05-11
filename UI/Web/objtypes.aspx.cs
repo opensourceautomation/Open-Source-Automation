@@ -359,8 +359,15 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnPropSave_Click(object sender, EventArgs e)
     {
-        OSAEObjectTypeManager.ObjectTypePropertyUpdate(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString(), txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedValue, txtPropDefault.Text, hdnSelectedObjectName.Text, chkTrackChanges.Checked);
-        loadProperties();
+        if (ddlPropType.SelectedValue == "Object Type" && ddlBaseType2.SelectedValue != "")
+        {
+            OSAEObjectTypeManager.ObjectTypePropertyUpdate(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString(), txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedValue, txtPropDefault.Text, hdnSelectedObjectName.Text, chkTrackChanges.Checked);
+            loadProperties();
+        }
+        else
+        {
+            Response.Write("<script>alert('You must select an Object Type!');</script>");
+        }
     }
 
     protected void btnMethodSave_Click(object sender, EventArgs e)
@@ -379,8 +386,15 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnPropAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectTypeManager.ObjectTypePropertyAdd(hdnSelectedObjectName.Text, txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedItem.ToString(), txtPropDefault.Text, chkTrackChanges.Checked);
-        loadProperties();
+        if (ddlPropType.SelectedValue == "Object Type" && ddlBaseType2.SelectedValue != "")
+        {
+            OSAEObjectTypeManager.ObjectTypePropertyAdd(hdnSelectedObjectName.Text, txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedItem.ToString(), txtPropDefault.Text, chkTrackChanges.Checked);
+            loadProperties();
+        }
+        else
+        {
+            Response.Write("<script>alert('You must select an Object Type!');</script>");
+        }
     }
 
     protected void btnMethodAdd_Click(object sender, EventArgs e)
