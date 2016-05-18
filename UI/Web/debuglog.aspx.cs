@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using OSAE;
 
 public partial class debuglog : System.Web.UI.Page
@@ -17,12 +12,9 @@ public partial class debuglog : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
-        int objSet = OSAEAdminManager.GetAdminSettingsByName("DebugLogTrust");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("Debug Log Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
-        if (tLevel < objSet)
-        {
-            Response.Redirect("~/permissionError.aspx");
-        }
+        if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
         if (!IsPostBack) BindData();
         applySecurity();
     }

@@ -44,7 +44,6 @@
             });
          });
 
-
         $(document).ready(function () {
             $('#loading').hide();
             host = window.location.hostname;

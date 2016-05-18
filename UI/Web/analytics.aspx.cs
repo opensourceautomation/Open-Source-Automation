@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using OSAE;
 
 public partial class analytics : System.Web.UI.Page
 {
-
     private int restPort = 8732;
 
     public void RaisePostBackEvent(string eventArgument)
@@ -25,12 +19,9 @@ public partial class analytics : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
-        int objSet = OSAEAdminManager.GetAdminSettingsByName("AnalyticsTrust");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("Analytics Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
-        if (tLevel < objSet)
-        {
-            Response.Redirect("~/permissionError.aspx");
-        }
+        if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
         loadProperties();
         loadStates();
         getRestPort();
@@ -56,29 +47,19 @@ public partial class analytics : System.Web.UI.Page
         gvStates.DataSource = OSAESql.RunSQL("SELECT DISTINCT object_name FROM osae_v_object_state_change_history ORDER BY object_name");
         gvStates.DataBind();
     }
+
     private void getRestPort()
     {
-        
         if (!OSAEObjectPropertyManager.GetObjectPropertyValue("Rest", "REST Port").Id.Equals(String.Empty))
         {
             try
             {
                 restPort = int.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue("Rest", "REST Port").Value);
             }
-            catch (FormatException)
-            {
-                // do nothing and move on
-            }
-            catch (OverflowException)
-            {
-                // do nothing and move on
-            }
-            catch (ArgumentNullException)
-            {
-                // do nothing and move on
-            }
+            catch (FormatException) { }
+            catch (OverflowException) { }
+            catch (ArgumentNullException) { }
         }
-
         hdnRestPort.Value = restPort.ToString();
     }
 }

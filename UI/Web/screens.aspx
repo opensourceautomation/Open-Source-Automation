@@ -84,6 +84,6 @@
 
     <asp:HiddenField runat="server" ID="hdnRestPort" />
     <asp:HiddenField runat="server" ID="hdnUserTrust" />
-
+        <asp:Label runat="server" ID="debuglabel" />
 </asp:Content>
 

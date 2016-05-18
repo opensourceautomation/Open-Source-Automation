@@ -13,8 +13,6 @@ public partial class MasterPage : System.Web.UI.MasterPage
         if (Request.Headers["User-Agent"] != null && (Request.Browser["IsMobileDevice"] == "true" || Request.UserAgent.ToUpper().Contains("MIDP") || Request.UserAgent.ToUpper().Contains("CLDC") || Request.UserAgent.ToLower().Contains("iphone") || Request.UserAgent.ToLower().Contains("avant") || Request.UserAgent.ToLower().Contains("nokia") || Request.UserAgent.ToLower().Contains("pda") || Request.UserAgent.ToLower().Contains("moto") || Request.UserAgent.ToLower().Contains("windows ce") || Request.UserAgent.ToLower().Contains("hand") || Request.UserAgent.ToLower().Contains("mobi") || Request.UserAgent.ToUpper().Contains("HTC") || Request.UserAgent.ToLower().Contains("sony") || Request.UserAgent.ToLower().Contains("panasonic") || Request.UserAgent.ToLower().Contains("blackberry") || Request.UserAgent.ToLower().Contains("240x320") || Request.UserAgent.ToLower().Contains("voda")))
             Response.Redirect("mobile/index.aspx");
 
-        Log.Info("TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
         OSAEObjectCollection screens = OSAEObjectManager.GetObjectsByType("SCREEN");
 
         SetSessionTimeout();       
@@ -40,19 +38,14 @@ public partial class MasterPage : System.Web.UI.MasterPage
         }
 
         btnUser.Text = Session["UserName"].ToString();
-        if(Session["SecurityLevel"].ToString() != "Admin")
-        {
-            btnAdmin.Visible = false;
-        }
+       // if (Session["SecurityLevel"].ToString() != "Admin") btnAdmin.Visible = false;
     }
 
     protected void cog_Click(object sender, ImageClickEventArgs e)
     {
-        int conSet = OSAEAdminManager.GetAdminSettingsByName("ConfigTrust");
-        if (Convert.ToInt32(Session["TrustLevel"].ToString()) < conSet)
-        {
-            Response.Redirect("~/permissionError.aspx");
-        }
+        int conSet = OSAEAdminManager.GetAdminSettingsByName("Config Trust");
+        if (Convert.ToInt32(Session["TrustLevel"].ToString()) < conSet) Response.Redirect("~/permissionError.aspx");
+
         Response.Redirect("~/config.aspx");
     }
 
@@ -63,8 +56,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
             int timeout = 0;
             if (int.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value, out timeout))
                 Session.Timeout = timeout;
-            else
-                Session.Timeout = 60;
+            else Session.Timeout = 60;
         }
         catch (Exception ex)
         { Log.Error("Error setting session timeout", ex); }
@@ -78,8 +70,8 @@ public partial class MasterPage : System.Web.UI.MasterPage
         Response.Redirect("default.aspx");
     }
 
-    protected void btnAdmin_Click(object sender, EventArgs e)
-    {
-        Response.Redirect("admin.aspx");
-    }
+   // protected void btnAdmin_Click(object sender, EventArgs e)
+   // {
+   //     Response.Redirect("admin.aspx");
+   // }
 }

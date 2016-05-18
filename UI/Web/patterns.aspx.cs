@@ -40,17 +40,12 @@ public partial class patterns : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
-        int objSet = OSAEAdminManager.GetAdminSettingsByName("PatternTrust");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("Pattern Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
-        if (tLevel < objSet)
-        {
-            Response.Redirect("~/permissionError.aspx");
-        }
+        if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
+
         loadPatterns();
-        if (!this.IsPostBack)
-        {
-            loadScriptDDL();
-        }
+        if (!this.IsPostBack) loadScriptDDL();
 
         if (hdnSelectedPatternRow.Text != "")
         {

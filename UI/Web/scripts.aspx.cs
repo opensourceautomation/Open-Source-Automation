@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
 using OSAE;
 
 public partial class scripts : System.Web.UI.Page
@@ -20,11 +16,7 @@ public partial class scripts : System.Web.UI.Page
         {
             hdnSelectedRow.Text = args[1];
             hdnSelectedScriptName.Text = gvScripts.DataKeys[Int32.Parse(hdnSelectedRow.Text)]["script_name"].ToString();
-            Page.ClientScript.RegisterStartupScript(
-                GetType(),
-                "MyKey",
-                "setSytaxHighlighter();",
-                true);
+            Page.ClientScript.RegisterStartupScript(GetType(), "MyKey", "setSytaxHighlighter();", true);
         }
         else if (args[0] == "gvEventScripts")
         {
@@ -39,25 +31,20 @@ public partial class scripts : System.Web.UI.Page
             btnDeleteObjTypeEventScript.Visible = true;
         }
     }
-
-
+    
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
-        int objSet = OSAEAdminManager.GetAdminSettingsByName("ScriptTrust");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("Script Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
-        if (tLevel < objSet)
-        {
-            Response.Redirect("~/permissionError.aspx");
-        }
+        if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
+
         loadScripts();
         alert.Visible = false;
         saveAlert.Visible = false;
         deleteAlert.Visible = false;
-        if (!this.IsPostBack)
-        {
-            loadDDLs();
-        }
+        if (!this.IsPostBack) loadDDLs();
+
         applyObjectSecurity();
     }
 
@@ -94,11 +81,10 @@ public partial class scripts : System.Web.UI.Page
             e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
             if (e.Row.RowState == DataControlRowState.Alternate)
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
-            else
-                e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+            else e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvScripts_" + e.Row.RowIndex.ToString()));
         }
-
     }
 
     protected void gvEventScripts_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -108,11 +94,10 @@ public partial class scripts : System.Web.UI.Page
             e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
             if (e.Row.RowState == DataControlRowState.Alternate)
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
-            else
-                e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+            else e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvEventScripts_" + e.Row.RowIndex.ToString()));
         }
-
     }
 
     protected void gvObjTypeScripts_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -122,11 +107,10 @@ public partial class scripts : System.Web.UI.Page
             e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
             if (e.Row.RowState == DataControlRowState.Alternate)
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
-            else
-                e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+            else e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvObjTypeScripts_" + e.Row.RowIndex.ToString()));
         }
-
     }
 
     private void loadScripts()
@@ -140,11 +124,8 @@ public partial class scripts : System.Web.UI.Page
         gvEventScripts.DataSource = OSAESql.RunSQL("SELECT script_name, script_id, script_sequence, event_script_id FROM osae_v_object_event_script WHERE object_id = " + ddlObject.SelectedValue + " AND event_name = '" + ddlEvent.SelectedValue + "' ORDER BY script_sequence ASC");
         gvEventScripts.DataBind();
 
-        if (gvEventScripts.Rows.Count == 0)
-            pnlEventScripts.Visible = false;
-        else
-            pnlEventScripts.Visible = true;
-
+        if (gvEventScripts.Rows.Count == 0) pnlEventScripts.Visible = false;
+        else pnlEventScripts.Visible = true;
     }
 
     private void loadObjTypeEventScripts()
@@ -152,37 +133,31 @@ public partial class scripts : System.Web.UI.Page
         gvObjTypeScripts.DataSource = OSAESql.RunSQL("SELECT script_name, script_id, script_sequence, object_type_event_script_id FROM osae_v_object_type_event_script WHERE object_type_id = " + ddlObjectType.SelectedValue + " AND event_name = '" + ddlObjTypeEvent.SelectedValue + "' ORDER BY script_sequence ASC");
         gvObjTypeScripts.DataBind();
 
-        if (gvObjTypeScripts.Rows.Count == 0)
-            pnlObjTypeEventScripts.Visible = false;
-        else
-            pnlObjTypeEventScripts.Visible = true;
-
+        if (gvObjTypeScripts.Rows.Count == 0) pnlObjTypeEventScripts.Visible = false;
+        else pnlObjTypeEventScripts.Visible = true;
     }
 
     private void loadDDLs()
     {
         ddlScriptProcessor.DataSource = OSAESql.RunSQL("SELECT script_processor_name as Text, script_processor_name as Value FROM osae_script_processors ORDER BY script_processor_name"); ;
         ddlScriptProcessor.DataBind();
-        if (ddlScriptProcessor.Items.Count == 0)
-            ddlScriptProcessor.Visible = false;
-        else
-            ddlScriptProcessor.Visible = true;
+        if (ddlScriptProcessor.Items.Count == 0) ddlScriptProcessor.Visible = false;
+        else ddlScriptProcessor.Visible = true;
+
         ddlScriptProcessor.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
         ddlObject.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_id as Value FROM osae_object ORDER BY object_name"); ;
         ddlObject.DataBind();
-        if (ddlObject.Items.Count == 0)
-            ddlObject.Visible = false;
-        else
-            ddlObject.Visible = true;
+        if (ddlObject.Items.Count == 0) ddlObject.Visible = false;
+        else ddlObject.Visible = true;
+
         ddlObject.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
         ddlObjectType.DataSource = OSAESql.RunSQL("SELECT object_type as Text, object_type_id as Value FROM osae_object_type ORDER BY object_type"); ;
         ddlObjectType.DataBind();
-        if (ddlObjectType.Items.Count == 0)
-            ddlObjectType.Visible = false;
-        else
-            ddlObjectType.Visible = true;
+        if (ddlObjectType.Items.Count == 0) ddlObjectType.Visible = false;
+        else ddlObjectType.Visible = true;
+
         ddlObjectType.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
         ddlScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
@@ -190,8 +165,6 @@ public partial class scripts : System.Web.UI.Page
 
         ddlObjTypeScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
         ddlObjTypeScript.DataBind();
-
-
     }
 
     private void loadLinkage(string id)
@@ -203,9 +176,7 @@ public partial class scripts : System.Web.UI.Page
     protected void btnAdd_Click(object sender, EventArgs e)
     {
         if (txtName.Text == "" || ddlScriptProcessor.SelectedValue == "")
-        {
             alert.Visible = true;
-        }
         else
         {
             OSAEScriptManager.ScriptAdd(txtName.Text, ddlScriptProcessor.SelectedValue, hdnScript.Value);
@@ -218,9 +189,7 @@ public partial class scripts : System.Web.UI.Page
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
         if (txtName.Text == "" || ddlScriptProcessor.SelectedValue == "")
-        {
             alert.Visible = true;
-        }
         else
         {
             OSAEScriptManager.ScriptUpdate(hdnSelectedScriptName.Text, txtName.Text, ddlScriptProcessor.SelectedValue, hdnScript.Value);
@@ -229,11 +198,7 @@ public partial class scripts : System.Web.UI.Page
             saveAlert.Visible = true;
             hdnSelectedScriptName.Text = txtName.Text;
         }
-        Page.ClientScript.RegisterStartupScript(
-                GetType(),
-                "MyKey",
-                "setSytaxHighlighter();",
-                true);
+        Page.ClientScript.RegisterStartupScript(GetType(), "MyKey", "setSytaxHighlighter();", true);
     }
 
     protected void btnDelete_Click(object sender, EventArgs e)
@@ -243,10 +208,8 @@ public partial class scripts : System.Web.UI.Page
         loadDDLs();
         deleteAlert.Visible = true;
         int selectedRow = Int32.Parse(hdnSelectedRow.Text) - 1;
-        if (selectedRow < 0)
-            hdnSelectedRow.Text = "";
-        else
-            hdnSelectedRow.Text = selectedRow.ToString();
+        if (selectedRow < 0) hdnSelectedRow.Text = "";
+        else hdnSelectedRow.Text = selectedRow.ToString();
     }
 
     protected void btnTest_Click(object sender, EventArgs e)
@@ -255,7 +218,6 @@ public partial class scripts : System.Web.UI.Page
         OSAEScriptManager.ScriptAdd("Test Script", ddlScriptProcessor.SelectedValue, hdnScript.Value);
         OSAEScriptManager.RunScript("Test Script", txtTestParameter.Text, Session["Username"].ToString());
     }
-
 
     protected void ddlObject_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -281,10 +243,8 @@ public partial class scripts : System.Web.UI.Page
         OSAEScriptManager.ObjectEventScriptDelete(hdnSelectedEventScriptID.Text);
         loadEventScripts();
         int selectedRow = Int32.Parse(hdnSelectedEventScriptRow.Text) - 1;
-        if (selectedRow < 0)
-            hdnSelectedEventScriptRow.Text = "";
-        else
-            hdnSelectedEventScriptRow.Text = selectedRow.ToString();
+        if (selectedRow < 0) hdnSelectedEventScriptRow.Text = "";
+        else hdnSelectedEventScriptRow.Text = selectedRow.ToString();
     }
 
     protected void ddlObjectType_SelectedIndexChanged(object sender, EventArgs e)
@@ -305,13 +265,9 @@ public partial class scripts : System.Web.UI.Page
         OSAEScriptManager.ObjectTypeEventScriptDelete(hdnSelectedObjTypeEventScriptID.Text);
         loadObjTypeEventScripts();
         int selectedRow = Int32.Parse(hdnSelectedObjTypeEventScriptRow.Text) - 1;
-        if (selectedRow < 0)
-            hdnSelectedObjTypeEventScriptRow.Text = "";
-        else
-            hdnSelectedObjTypeEventScriptRow.Text = selectedRow.ToString();
+        if (selectedRow < 0) hdnSelectedObjTypeEventScriptRow.Text = "";
+        else hdnSelectedObjTypeEventScriptRow.Text = selectedRow.ToString();
     }
-
-
 
     protected void btnAddObjTypeEventScript_Click(object sender, EventArgs e)
     {
@@ -330,18 +286,9 @@ public partial class scripts : System.Web.UI.Page
         btnAddObjTypeEventScript.Enabled = false;
         btnDeleteEventScript.Enabled = false;
         btnDeleteObjTypeEventScript.Enabled = false;
-        if (sessTrust >= adSet.ScriptAddTrust)
-        {
-            btnAdd.Enabled = true;
-        }
-        if (sessTrust >= adSet.ScriptUpdateTrust)
-        {
-            btnUpdate.Enabled = true;
-        }
-        if (sessTrust >= adSet.ScriptDeleteTrust)
-        {
-            btnDelete.Enabled = true;
-        }
+        if (sessTrust >= adSet.ScriptAddTrust) btnAdd.Enabled = true;
+        if (sessTrust >= adSet.ScriptUpdateTrust) btnUpdate.Enabled = true;
+        if (sessTrust >= adSet.ScriptDeleteTrust) btnDelete.Enabled = true;
         if (sessTrust >= adSet.ScriptObjectAddTrust)
         {
             btnAddEventScript.Enabled = true;

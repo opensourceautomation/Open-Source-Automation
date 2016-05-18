@@ -1,18 +1,15 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="logs.aspx.cs" Inherits="logs"  %>
 <%@ MasterType virtualpath="~/MasterPage.master" %>
 
-
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" runat="Server">
     <script type="text/javascript">
     </script>
     <div class="row-fluid">
         <div class="span1">
             <div id="ObjPanel">
-                
             </div>
         </div>
         <div class="span10">
-            
             <br />
             <asp:Button runat="server" ID="btnRefresh" Text="Refresh" class="btn" OnClick="btnRefresh_Click"/>
             <asp:Button runat="server" ID="btnClear" Text="Clear" class="btn" OnClick="btnClear_Click"/>
@@ -20,12 +17,8 @@
             DEBUG: <asp:CheckBox ID="chkDebug" runat="server" Checked="true" OnCheckedChanged="CheckedChanged" AutoPostBack="true" />
             ERROR: <asp:CheckBox ID="chkError" runat="server" Checked="true" OnCheckedChanged="CheckedChanged" AutoPostBack="true" />
             <br />
-            <asp:GridView ID="gvLog" runat="server"
-                AutoGenerateColumns="False"
-                GridLines="None"
-                CssClass="mGrid"
-                AlternatingRowStyle-CssClass="alt" >
-<AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
+            <asp:GridView ID="gvLog" runat="server" AutoGenerateColumns="False" GridLines="None" CssClass="mGrid" AlternatingRowStyle-CssClass="alt" >
+                <AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
                 <Columns>
                     <asp:BoundField HeaderText="Time" DataField="log_time" ItemStyle-Width="10em" DataFormatString="{0:MM-dd HH:mm:ss.ff}" />
                     <asp:BoundField HeaderText="Level" DataField="Level"/>
@@ -52,7 +45,6 @@
         <div class="span1">
         </div>
     </div>
-
     <asp:Label runat="server" ID="hdnSelectedRow" Visible="false" />
 </asp:Content>
 

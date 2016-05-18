@@ -65,19 +65,15 @@ public partial class schedules : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
-        int objSet = OSAEAdminManager.GetAdminSettingsByName("ScheduleTrust");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("Schedule Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
-        if (tLevel < objSet)
-        {
-            Response.Redirect("~/permissionError.aspx");
-        }
+        if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
+
         loadQueue();
         loadRecurring();
         chkActive.Checked = true;
-        if (!Page.IsPostBack)
-        {
-            loadDDLs();
-        }
+        if (!Page.IsPostBack) loadDDLs();
+
         applyObjectSecurity();
     }
 
@@ -105,6 +101,7 @@ public partial class schedules : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvQueue_" + e.Row.RowIndex.ToString()));
         }
 
@@ -118,16 +115,15 @@ public partial class schedules : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvRecurring_" + e.Row.RowIndex.ToString()));
 
 
             CheckBox active = ((CheckBox)e.Row.FindControl("chkActive"));
 
             Label lbl = ((Label)e.Row.FindControl("lblActive"));
-            if (lbl.Text == "1")
-                active.Checked = true;
-            else
-                active.Checked = false;
+            if (lbl.Text == "1") active.Checked = true;
+            else active.Checked = false;
         }
     }
 
@@ -150,12 +146,10 @@ public partial class schedules : System.Web.UI.Page
 
         ddlObject.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_name as Value FROM osae_object ORDER BY object_name"); ;
         ddlObject.DataBind();
-        if (ddlObject.Items.Count == 0)
-            ddlObject.Visible = false;
-        else
-            ddlObject.Visible = true;
-        ddlObject.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+        if (ddlObject.Items.Count == 0) ddlObject.Visible = false;
+        else ddlObject.Visible = true;
 
+        ddlObject.Items.Insert(0, new ListItem(String.Empty, String.Empty));
     }
 
     private void loadMethods()

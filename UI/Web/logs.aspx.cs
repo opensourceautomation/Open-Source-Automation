@@ -1,8 +1,6 @@
 ﻿using OSAE;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Data;
 using System.Web.UI.WebControls;
 
@@ -14,18 +12,14 @@ public partial class logs : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
-        int objSet = OSAEAdminManager.GetAdminSettingsByName("ServerLogTrust");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("Server Log Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
-        if (tLevel < objSet)
-        {
-            Response.Redirect("~/permissionError.aspx");
-        }
+        if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
         if (!IsPostBack) GetLogs();
 
         // Apply Security Admin Settings
         applySecurity();
     }
-
 
     private void GetLogs()
     {
@@ -35,9 +29,7 @@ public partial class logs : System.Web.UI.Page
             DropDownList ddlSource = (DropDownList)gvLog.HeaderRow.FindControl("ddlSource");
             source = ddlSource.SelectedValue;
         }
-        catch
-        {         
-        }
+        catch { }
 
         gvLog.DataSource = OSAE.General.OSAELog.Load(chkInfo.Checked, chkDebug.Checked, chkError.Checked, source);
         gvLog.DataBind();

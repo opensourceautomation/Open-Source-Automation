@@ -1,11 +1,6 @@
 ﻿namespace OSAE
 {
-
-    using MySql.Data.MySqlClient;
     using System;
-    using System.Data;
-    using System.Runtime.Serialization;
-
 
     /// <summary>
     /// Class used for WebUI Admin settings
@@ -13,7 +8,6 @@
     [Serializable]
     public class OSAEAdmin
     {
-
         public int Id = 1; // Only 1 record in this table, Primarykey is always 1
 
         public int ScreenTrust { get; set; }

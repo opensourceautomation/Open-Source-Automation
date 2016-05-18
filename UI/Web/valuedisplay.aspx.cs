@@ -1,28 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using OSAE;
 using System.Data;
 
 public partial class valuedisplay : System.Web.UI.Page
 {
-    
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
-        int objSet = OSAEAdminManager.GetAdminSettingsByName("ValuesTrust");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("Values Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
-        if (tLevel < objSet)
-        {
-            Response.Redirect("~/permissionError.aspx");
-        }
-        if (!IsPostBack)
-        {
-            BindData();
-        }
+        if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
+        if (!IsPostBack) BindData();
     }
 
     private void BindData()
@@ -36,18 +24,15 @@ public partial class valuedisplay : System.Web.UI.Page
             //Response.Write("Rows= " + CustomTable.Rows.Count);
             foreach (DataRow row in CustomTable.Rows)
             {
-                String[] SplitString = row.Field<String>(0).Split(new string[] { ":=" }, StringSplitOptions.None);
-                String MyLabel = row.Field<String>(1);
+                string[] SplitString = row.Field<String>(0).Split(new string[] { ":=" }, StringSplitOptions.None);
+                string MyLabel = row.Field<String>(1);
                 				
-				if (String.Equals(SplitString[1], "State", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(SplitString[1], "State", StringComparison.OrdinalIgnoreCase))
 				{
 					//Response.Write("<br>State");
 					DataRow MyRow = OSAESql.RunSQL("SELECT CONCAT(object_name, ' - State') As Item, state_name As 'Value'  FROM osae_v_object WHERE Object_name= '" + SplitString[0] + "'").Tables[0].Rows[0];
 					
-					if (MyLabel == "")
-					{
-						MyLabel = MyRow[0].ToString();
-					}
+					if (MyLabel == "") MyLabel = MyRow[0].ToString();
 					GridData.Rows.Add(MyLabel, MyRow[1]);
 				}
 				else
@@ -55,10 +40,7 @@ public partial class valuedisplay : System.Web.UI.Page
 					//Response.Write("<br>Property");
 					DataRow MyRow = OSAESql.RunSQL("SELECT CONCAT(object_name, ' - ', property_name) As Item, property_value As 'Value'  FROM osae_v_object_property WHERE Object_name= '" + SplitString[0] + "' AND property_name= '" + SplitString[1] + "'").Tables[0].Rows[0];
 					
-					if (MyLabel == "")
-					{
-						MyLabel = MyRow[0].ToString();
-					}
+					if (MyLabel == "") MyLabel = MyRow[0].ToString();
 					GridData.Rows.Add(MyLabel, MyRow[1]);
 				}
             }
@@ -66,8 +48,6 @@ public partial class valuedisplay : System.Web.UI.Page
             valueDisplayGridView.DataBind();
         }
         catch (Exception ex)
-        {
-            Master.Log.Error("Error retreiving values", ex);
-        }
+        { Master.Log.Error("Error retreiving values", ex); }
     }
 }

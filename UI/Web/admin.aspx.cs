@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Data;
 using OSAE;
 
 public partial class admin : System.Web.UI.Page
@@ -19,10 +15,7 @@ public partial class admin : System.Web.UI.Page
         if (!Page.IsPostBack)
         {
             if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
-            if (Session["SecurityLevel"].ToString() != "Admin")
-            {
-                Response.Redirect("~/permissionError.aspx");
-            }
+            if (Session["SecurityLevel"].ToString() != "Admin") Response.Redirect("~/permissionError.aspx");
             OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
             screensLev.Text = adSet.ScreenTrust.ToString();
             string dScreen = adSet.defaultScreen;
@@ -69,10 +62,7 @@ public partial class admin : System.Web.UI.Page
             foreach (OSAEObject s in screens)
             {
                 ListItem li = new ListItem(s.Name);
-                if(s.Name == dScreen)
-                {
-                    li.Selected = true;
-                }
+                if(s.Name == dScreen) li.Selected = true;
                 mainScreen.Items.Add(li);
             }
             saveSuc.Visible = false;
@@ -128,10 +118,7 @@ public partial class admin : System.Web.UI.Page
             OSAEAdminManager.UpdateAdminSettings(newadSet);
             saveSuc.Visible = true;
         }
-        catch
-        {
-            
-        }
+        catch { }
     }
 
     protected void btnAdminCancel_Click(object sender, EventArgs e)

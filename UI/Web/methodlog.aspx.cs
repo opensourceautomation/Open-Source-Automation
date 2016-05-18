@@ -15,16 +15,10 @@ public partial class methodlog : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
-        int objSet = OSAEAdminManager.GetAdminSettingsByName("MethodLogTrust");
+        int objSet = OSAEAdminManager.GetAdminSettingsByName("Method Log Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
-        if (tLevel < objSet)
-        {
-            Response.Redirect("~/permissionError.aspx");
-        }
-        if (!IsPostBack)
-        {
-            BindData();
-        }
+        if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
+        if (!IsPostBack) BindData();
         applySecurity();
     }
 

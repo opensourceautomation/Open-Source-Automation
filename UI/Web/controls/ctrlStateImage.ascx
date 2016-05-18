@@ -6,9 +6,7 @@
         sI.setAttribute('src', img);
         runMethod(object, method, p1, p2, objTrust);
     }
-    
 </script>
-
 <asp:Image ID="imgStateImage" runat="server"/>
 <asp:HiddenField ID="hdnCurState" runat="server" />
 <asp:HiddenField ID="hdnObjName" runat="server" />
