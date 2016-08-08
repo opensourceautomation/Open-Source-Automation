@@ -75,28 +75,50 @@
             string ipAddress = computer.Address;
 
             //check to make sure computer object has address, if not assume local host
-            if (ipAddress.Equals("", StringComparison.Ordinal)) 
-                ipAddress = "Localhost";
-
+            if (ipAddress.Equals("", StringComparison.Ordinal)) ipAddress = "Localhost";
             OSAEObjectProperty portAddress = OSAEObjectPropertyManager.GetObjectPropertyValue(computer.Name, "Port");
-            
-            //if not value for port use default value of 33333
+            //if no value for port use default value of 33333
+            Log.Debug("The port being used is: " + portAddress.Value);
             int port = 0;
+            //Log.Debug("The port being used is: " + portAddress.Value);
 
-            if ((portAddress.Value).Equals("",StringComparison.Ordinal))
+            if ((portAddress.Value).Equals("", StringComparison.Ordinal))
                 port = 33333;
             else
+            {
                 port = Int32.Parse(portAddress.Value);
+                Log.Debug("The port being used is: " + portAddress.Value);
 
+            }
             //logging.AddToLog(port, true);
             //logging.AddToLog(ipAddress, true);
             IPAddress serverAddr = IPAddress.Parse(ipAddress);
             IPEndPoint endPoint = new IPEndPoint(serverAddr, port);
-          
+            Log.Debug("The ipEndPoint is:" + ipAddress + ":" + port);
+
             //send the updpacket
             UdpClient udp = new UdpClient();
-            byte[] sendBytes = Encoding.ASCII.GetBytes(combinedString); 
-            udp.Send(sendBytes, sendBytes.Length, endPoint);          
+            byte[] sendBytes = Encoding.ASCII.GetBytes(combinedString);
+            udp.Send(sendBytes, sendBytes.Length, endPoint);
+
+            
+            ////if not value for port use default value of 33333
+            //int port = 0;
+
+            //if ((portAddress.Value).Equals("",StringComparison.Ordinal))
+            //    port = 33333;
+            //else
+            //    port = Int32.Parse(portAddress.Value);
+
+            ////logging.AddToLog(port, true);
+            ////logging.AddToLog(ipAddress, true);
+            //IPAddress serverAddr = IPAddress.Parse(ipAddress);
+            //IPEndPoint endPoint = new IPEndPoint(serverAddr, port);
+
+            ////send the updpacket
+            //UdpClient udp = new UdpClient();
+            //byte[] sendBytes = Encoding.ASCII.GetBytes(combinedString); 
+            //udp.Send(sendBytes, sendBytes.Length, endPoint);          
         }
 
         /// <summary>
@@ -106,7 +128,7 @@
         public override void RunInterface(string pluginName)
         {
             pName = pluginName;
-            Log = new General.OSAELog("pName");
+            Log = new General.OSAELog(pName);
             try
             {
                 Log.Info("Starting EventGhost...");
