@@ -352,14 +352,14 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnPropSave_Click(object sender, EventArgs e)
     {
-        if (ddlPropType.SelectedValue == "Object Type" && ddlBaseType2.SelectedValue != "")
+        if (ddlPropType.SelectedValue == "Object Type" & ddlBaseType2.SelectedValue == "")
         {
-            OSAEObjectTypeManager.ObjectTypePropertyUpdate(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString(), txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedValue, txtPropDefault.Text, hdnSelectedObjectName.Text, chkTrackChanges.Checked);
-            loadProperties();
+            Response.Write("<script>alert('You must select an Object Type!');</script>");
         }
         else
         {
-            Response.Write("<script>alert('You must select an Object Type!');</script>");
+            OSAEObjectTypeManager.ObjectTypePropertyUpdate(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString(), txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedValue, txtPropDefault.Text, hdnSelectedObjectName.Text, chkTrackChanges.Checked);
+            loadProperties();
         }
     }
 
