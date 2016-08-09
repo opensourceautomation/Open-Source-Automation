@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>Tellstick</plugin-name>
+<plugin-id>c470ccaf-f4d5-4690-aa4a-92160b26d69c</plugin-id>
+<plugin-version>0.4.5</plugin-version>
+<plugin-state>beta</plugin-state>
+<short-description>OSA plugin for Tellstick devices</short-description>
+<author>Per Tobiasson</author>
+<destination-folder>Tellstick</destination-folder>
+<main-file>OSAE.Tellstick.dll</main-file>
+<wiki-url></wiki-url>
+<additional-assemblies>
+<name>TelldusNETWrapper.dll</name>
+</additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
+</plugin-description>
