@@ -632,4 +632,49 @@ CALL osae_sp_object_type_property_add('GUI CLIENT','Height','Integer','','480',0
 CALL osae_sp_object_type_property_add('GUI CLIENT','Show Frame','Boolean','','TRUE',0);
 CALL osae_sp_object_type_property_add('GUI CLIENT','Use Global Screen Settings','Boolean','','FALSE',0);
 
+CALL osae_sp_object_type_property_add('WEB SERVER','Config Trust','Integer','','69',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Analytics Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Debug Log Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Default Screen','String','','',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Event Log Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Images Add Trust','Integer','','55',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Images Delete Trust','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Images Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Logs Clear Trust','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Logs Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Management Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Method Log Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Objects Add Trust','Integer','','50',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Objects Delete Trust','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Objects Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Objects Update Trust','Integer','','55',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Add Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Delete Trust','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Object Type Update Trust','Integer','','55',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Add Trust','Integer','','50',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Delete Trust','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Trust','Integer','','50',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Update Trust','Integer','','55',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Reader Add Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Reader Delete Trust','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Reader Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Reader Update Trust','Integer','','55',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Add Trust','Integer','','50',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Delete Trust','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Trust','Integer','','50',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Update Trust','Integer','','55',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Screen Trust','Integer','','20',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Add Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Delete Trust','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Object Add Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Script ObjectType Add Trust','Integer','','60',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Update Trust','Integer','','55',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Server Log Trust','Integer','','50',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Values Trust','Integer','','45',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Update Trust','Integer','','50',0);
+CALL osae_sp_object_type_property_add('WEB SERVER','Hide Controls','Boolean','','FALSE',0);
+
+
 
