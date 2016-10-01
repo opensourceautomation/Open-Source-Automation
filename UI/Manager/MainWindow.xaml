@@ -19,6 +19,7 @@
             </MenuItem>
             <MenuItem Header="Screens" Name="mnuScreens" Click="hypScreens_Click" IsEnabled="True"/>
             <MenuItem Header="WebUI" Name="mnuWebUI" Click="hypWebUI_Click" IsEnabled="True"/>
+            <MenuItem x:Name="mnuVoice" Header="Voice" Click="MenuItem_Click"/>
         </Menu>
         <Grid Margin="0,0,0,0" Width="auto">
             <!--Top Menu Area-->

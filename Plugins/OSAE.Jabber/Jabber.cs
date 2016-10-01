@@ -18,6 +18,7 @@ namespace OSAE.Jabber
         string gCurrentAddress = "";
         string gAnswerObject = "";
         string gAnswerProperty = "";
+        string gSystemName = "SYSTEM";
         private OSAE.General.OSAELog Log;// = new General.OSAELog();
         private agsXMPP.protocol.client.Message oldMmsg;
 
@@ -35,6 +36,9 @@ namespace OSAE.Jabber
             Log.Info("Debug Mode Set to " + gDebug);
 
             OwnTypes();
+
+            OSAE.OSAEObject tempAlias = OSAE.OSAEObjectManager.GetObjectByName(gSystemName);
+            if (tempAlias.Alias.Length > 0) gSystemName = tempAlias.Alias;
 
             try
             {
@@ -297,6 +301,8 @@ namespace OSAE.Jabber
             try
             {
                 xmppCon.Open();
+                if (gDebug) Log.Debug("ID: " + xmppCon.MyJID.ToString());
+                if (gDebug) Log.Debug("Authenticated: " + xmppCon.Authenticated.ToString());
             }
             catch (Exception ex)
             { Log.Error("Error connecting: ", ex);}
@@ -325,19 +331,19 @@ namespace OSAE.Jabber
                 {
                     string temp = e.Result.Semantics["PARAM1"].Value.ToString().Replace("'s", "").Replace("'S", "");
                     if (temp.ToUpper() == "I" || temp.ToUpper() == "ME" || temp.ToUpper() == "MY") temp = gCurrentUser;
-                    if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = "SYSTEM";
+                    if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = gSystemName;
                     scriptParameter = temp;
                     if (e.Result.Semantics.ContainsKey("PARAM2"))
                     {
                         temp = e.Result.Semantics["PARAM2"].Value.ToString().Replace("'s", "").Replace("'S", "");
                         if (temp.ToUpper() == "I" || temp.ToUpper() == "ME" || temp.ToUpper() == "MY") temp = gCurrentUser;
-                        if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = "SYSTEM";
+                        if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = gSystemName;
                         scriptParameter += "," + temp;
                         if (e.Result.Semantics.ContainsKey("PARAM3"))
                         {
                             temp = e.Result.Semantics["PARAM3"].Value.ToString().Replace("'s", "").Replace("'S", "");
                             if (temp.ToUpper() == "I" || temp.ToUpper() == "ME" || temp.ToUpper() == "MY") temp = gCurrentUser;
-                            if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = "SYSTEM";
+                            if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = gSystemName;
                             scriptParameter += "," + temp;
                         }
                     }

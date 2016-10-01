@@ -752,5 +752,9 @@
             }
         }
 
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(Common.ApiPath + "\\OSAE.Voice.exe");
+        }
     }
 }

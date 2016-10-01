@@ -6,7 +6,7 @@ using System.Data;
 using System.Threading;
 using System.ComponentModel; 
 using OSAE;
-namespace VR2
+namespace Voice
 
 {
     /// <summary>
@@ -26,6 +26,7 @@ namespace VR2
         string gSpeechPlugin = "";
         string gUser = "";
         bool gAppClosing = false;
+        string gSystemName = "SYSTEM";
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
 
         public MainWindow()
@@ -41,6 +42,10 @@ namespace VR2
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Load_App_Name();
+
+            OSAE.OSAEObject tempAlias = OSAE.OSAEObjectManager.GetObjectByName(gSystemName);
+            if (tempAlias.Alias.Length > 0) gSystemName = tempAlias.Alias;
+
             try
             {
                 oRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(oRecognizer_SpeechRecognized);
@@ -209,19 +214,19 @@ namespace VR2
               {
                   string temp = e.Result.Semantics["PARAM1"].Value.ToString().Replace("'s", "").Replace("'S", "");
                   if (temp.ToUpper() == "I" || temp.ToUpper() == "ME" || temp.ToUpper() == "MY") temp = gUser;
-                  if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = "SYSTEM";
+                  if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = gSystemName;
                   scriptParameter = temp;
                   if (e.Result.Semantics.ContainsKey("PARAM2"))
                   {
                       temp = e.Result.Semantics["PARAM2"].Value.ToString().Replace("'s", "").Replace("'S", "");
                       if (temp.ToUpper() == "I" || temp.ToUpper() == "ME" || temp.ToUpper() == "MY") temp = gUser;
-                      if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = "SYSTEM";
+                      if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = gSystemName;
                       scriptParameter += "," + temp;
                       if (e.Result.Semantics.ContainsKey("PARAM3"))
                       {
                           temp = e.Result.Semantics["PARAM3"].Value.ToString().Replace("'s", "").Replace("'S", "");
                           if (temp.ToUpper() == "I" || temp.ToUpper() == "ME" || temp.ToUpper() == "MY") temp = gUser;
-                          if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = "SYSTEM";
+                          if (temp.ToUpper() == "YOU" || temp.ToUpper() == "YOUR") temp = gSystemName;
                           scriptParameter += "," + temp;
                       }
                   }
