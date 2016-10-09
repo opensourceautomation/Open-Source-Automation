@@ -14,8 +14,8 @@
                 <Separator/>
                 <MenuItem Header="Exit"/>
             </MenuItem>
-            <MenuItem Header="Plugins">
-                <MenuItem Header="Install Plugin" Name="mnuInstall" Click="InstallPlugin_Click" IsEnabled="False"/>
+            <MenuItem Header="Plugins" Click="MenuItem_Click_1">
+                <MenuItem Header="Install Plugin" x:Name="mnuInstall" Click="InstallPlugin_Click" IsEnabled="False"/>
             </MenuItem>
             <MenuItem Header="Screens" Name="mnuScreens" Click="hypScreens_Click" IsEnabled="True"/>
             <MenuItem Header="WebUI" Name="mnuWebUI" Click="hypWebUI_Click" IsEnabled="True"/>
