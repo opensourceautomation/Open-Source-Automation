@@ -5,7 +5,6 @@
 
 USE osae;
 
-
 DELIMITER $$
 
 --
@@ -34,18 +33,22 @@ DECLARE vOldTrustLevel INT DEFAULT 0;
 DECLARE vNewTrustLevel INT DEFAULT 50;
 DECLARE vTrustLevelExists INT DEFAULT 0;
 DECLARE vEventCount INT;
+  #This proc runs thousands of times and must use efficient SQL, edit out the use of generic views
   SET vDebugTrace = CONCAT(pdebuginfo,' -> object_property_set');
+  # 049 The following function was improved to not use the v_object view and should save likes of work
   SET vObjectCount = osae_fn_object_exists(pfromobject);
   IF vObjectCount = 1 THEN
+    # 049 View replaced with efficient sql below 
     SET vPropertyCount = osae_fn_object_property_exists(pname, pproperty);
     IF vPropertyCount > 0 THEN
+      # 049 Below call optomized to replace all views
       SET vTrustLevelExists = osae_fn_trust_level_property_exists(pfromobject);
       SET vObjectID = osae_fn_object_getid(pname);
       SELECT object_type_id,min_trust_level INTO vObjectTypeID,vMinTrustLevel FROM osae_object WHERE object_id=vObjectID;
       SELECT trust_level,object_type_property_id INTO vOldTrustLevel,vObjectTypePropertyID FROM osae_v_object_property WHERE object_id=vObjectID AND property_name=pproperty AND (property_value IS NULL OR property_value != pvalue);        
       SELECT property_value INTO vNewTrustLevel FROM osae_v_object_property WHERE object_name=pfromobject AND property_name='TRUST LEVEL';
       SELECT property_id,COALESCE(property_value,'') INTO vPropertyID, vPropertyValue FROM osae_v_object_property WHERE object_id=vObjectID AND property_name=pproperty AND (property_value IS NULL OR property_value != pvalue);
-      #Insert Trust Level Rejection Code Here, maybe shppech command until converstaion tracking is in
+      #Insert Trust Level Rejection Code Here, maybe shppech command until conversation tracking is in
       IF vNewTrustLevel >= vMinTrustLevel THEN
         UPDATE osae_object_property SET property_value=pvalue,trust_level=vNewTrustLevel,source_name=pfromobject,interest_level=0 WHERE object_id=vObjectID AND object_type_property_id=vPropertyID;
         SELECT COUNT(event_id) INTO vEventCount FROM osae_object_type_event WHERE object_type_id=vObjectTypeID AND event_name=pproperty;
@@ -151,15 +154,21 @@ DECLARE bDone INT;
 DECLARE vOutput VARCHAR(200);
 DECLARE oCount INT;
 DECLARE var1 CHAR(40);
-DECLARE curs CURSOR FOR SELECT object_name FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1 AND state_name='OFF';
+# 049 Optomised below, making the new view, which is as light weight as possible, but maybe should be a proc, not a view.
+DECLARE curs CURSOR FOR SELECT object_name FROM osae_v_system_plugins_errored;
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET bDone = 1;
     SET vOldCount = (SELECT property_value FROM osae_v_object_property WHERE object_name='SYSTEM' AND property_name='Plugins Errored');  
-    SET iPluginErrorCount = (SELECT COUNT(object_name) FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1 AND state_name='OFF' AND container_state_name='ON');
+    # 049 the count should be able to be gotten from the above cursor source view, not v_object, modifyinh the view above.
+    #SET iPluginErrorCount = (SELECT COUNT(object_name) FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1 AND state_name='OFF' AND container_state_name='ON');
+    SET iPluginErrorCount = (SELECT COUNT(object_name) FROM osae_v_system_plugins_errored);
  
     IF vOldCount != iPluginErrorCount THEN  
-        SET iPluginCount = (SELECT COUNT(object_id) FROM osae_v_object WHERE base_type='PLUGIN');
-        SET iPluginEnabledCount = (SELECT COUNT(object_id) FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1);
-        SET iPluginRunningCount = (SELECT COUNT(object_id) FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1 AND state_name='ON');
+        #SET iPluginCount = (SELECT COUNT(object_id) FROM osae_v_object WHERE base_type='PLUGIN');
+        SET iPluginCount = osae_fn_plugin_count();
+        #SET iPluginEnabledCount = (SELECT COUNT(object_id) FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1);
+        SET iPluginEnabledCount = osae_fn_plugin_enabled_count();
+        #SET iPluginRunningCount = (SELECT COUNT(object_id) FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1 AND state_name='ON');
+        SET iPluginRunningCount = osae_fn_plugin_running_count();
 
         CALL osae_sp_object_property_set('SYSTEM','Plugins Found',iPluginCount,'SYSTEM','system_count_plugins');
         CALL osae_sp_object_property_set('SYSTEM','Plugins Enabled',iPluginEnabledCount,'SYSTEM','system_count_plugins');
@@ -171,6 +180,7 @@ DECLARE CONTINUE HANDLER FOR NOT FOUND SET bDone = 1;
             SET vOutput = 'All Plugins are Running';
             CALL osae_sp_object_property_set('SYSTEM','Plugins',vOutput,'SYSTEM','system_count_plugins');            
           WHEN 1 THEN 
+          # TODO This only runs rarely, so skipping for now, but should not be using v_object
             SET vOutput = (SELECT COALESCE(object_name,'Unknown') FROM osae_v_object WHERE base_type='PLUGIN' AND enabled=1 AND state_name='OFF' LIMIT 1);
             SET vOutput = CONCAT(vOutput,' is Stopped!');
             CALL osae_sp_object_property_set('SYSTEM','Plugins',vOutput,'SYSTEM','system_count_plugins');
@@ -420,7 +430,8 @@ CREATE FUNCTION osae_fn_object_exists(pobjectname varchar(200))
   RETURNS int(11)
 BEGIN
 DECLARE vObjectCount INT DEFAULT 0;
-  SELECT COUNT(object_id) INTO vObjectCount FROM osae_v_object WHERE object_name=pobjectname OR object_alias=pobjectname;
+  #Bad Bad, the following line was hitting the object view and only hitting the table was needed!!!!
+  SELECT COUNT(object_id) INTO vObjectCount FROM osae_object WHERE object_name=pobjectname OR object_alias=pobjectname;
   IF vObjectCount = 0 THEN
     RETURN 0;
   ELSE
@@ -436,11 +447,7 @@ CREATE FUNCTION osae_fn_object_getid(pobjectname varchar(200))
   RETURNS int(11)
 BEGIN
   DECLARE vObjectID int;
-  SELECT
-    object_id INTO vObjectID
-  FROM osae_object
-  WHERE object_name = pobjectname
-  OR object_alias = pobjectname;
+  SELECT object_id INTO vObjectID FROM osae_object WHERE object_name = pobjectname OR object_alias = pobjectname;
   RETURN vObjectID;
 END
 $$
@@ -452,12 +459,88 @@ CREATE FUNCTION osae_fn_object_property_exists(pobjectname varchar(200), pproper
   RETURNS int(11)
 BEGIN
 DECLARE vObjectCount INT DEFAULT 0;
-  SELECT COUNT(object_id) INTO vObjectCount FROM osae_v_object_property WHERE (object_name=pobjectname OR object_alias=pobjectname) AND property_name=ppropertyname;
+
+  #SELECT COUNT(object_id) INTO vObjectCount FROM osae_v_object_property WHERE (object_name=pobjectname OR object_alias=pobjectname) AND property_name=ppropertyname;
+  SELECT COUNT(object_id) INTO vObjectCount FROM osae_object_property 
+    INNER JOIN osae_object ON osae_object_property.object_id = osae_object.object_id
+    INNER JOIN osae_object_type_property ON osae_object_property.object_type_property_id = osae_object_type_property.property_id
+    WHERE (object_name=pobjectname OR object_alias=pobjectname) AND property_name=ppropertyname;
   IF vObjectCount = 0 THEN
     RETURN 0;
   ELSE
     RETURN 1;
   END IF;
+END
+$$
+
+--
+-- Create function "osae_fn_plugin_count"
+--
+CREATE FUNCTION osae_fn_plugin_count()
+  RETURNS int(11)
+BEGIN
+DECLARE vObjectCount INT DEFAULT 0;
+SELECT 
+  COUNT(osae_object.object_name) INTO vObjectCount
+FROM
+  osae_object
+Inner Join osae_object_type ON 
+  osae_object.object_type_id = osae_object_type.object_type_id
+Inner Join osae_object_type osae_object_base_type ON 
+  osae_object_type.base_type_id = osae_object_base_type.object_type_id
+WHERE
+  osae_object_base_type.object_type = 'PLUGIN';
+
+RETURN vObjectCount;
+END
+$$
+
+--
+-- Create function "osae_fn_plugin_enabled_count"
+--
+CREATE FUNCTION osae_fn_plugin_enabled_count()
+  RETURNS int(11)
+BEGIN
+DECLARE vObjectCount INT DEFAULT 0;
+SELECT 
+  COUNT(osae_object.object_name) INTO vObjectCount
+FROM
+  osae_object
+Inner Join osae_object_type ON 
+  osae_object.object_type_id = osae_object_type.object_type_id
+Inner Join osae_object_type osae_object_base_type ON 
+  osae_object_type.base_type_id = osae_object_base_type.object_type_id
+WHERE
+  osae_object_base_type.object_type = 'PLUGIN'
+  AND osae_object.enabled = 1;
+
+RETURN vObjectCount;
+END
+$$
+
+--
+-- Create function "osae_fn_plugin_running_count"
+--
+CREATE FUNCTION osae_fn_plugin_running_count()
+  RETURNS int(11)
+BEGIN
+
+DECLARE vObjectCount INT DEFAULT 0;
+SELECT
+  COUNT(osae_object.object_name) INTO vObjectCount
+FROM osae_object
+  INNER JOIN osae_object_type
+    ON osae_object.object_type_id = osae_object_type.object_type_id
+  INNER JOIN osae_object_type osae_object_base_type
+    ON osae_object_type.base_type_id = osae_object_base_type.object_type_id
+  INNER JOIN osae_object_type_state
+    ON osae_object.state_id = osae_object_type_state.state_id
+    AND osae_object.object_type_id = osae_object_type_state.object_type_id
+WHERE osae_object_base_type.object_type = 'PLUGIN'
+AND osae_object.enabled = 1
+AND osae_object_type_state.state_name = 'ON';
+
+RETURN vObjectCount;
 END
 $$
 
@@ -471,9 +554,18 @@ DECLARE vObjectTrustCount INT DEFAULT 0;
 DECLARE vFromObjectType VARCHAR(255);
 
   # Verify the FromObject has a trust_level and add one if not
-  SELECT COUNT(object_property_id) INTO vObjectTrustCount FROM osae_v_object_property WHERE property_name='Trust Level' AND object_name=pname OR object_alias=pname;
+  # 049 ^^^^ Stupid expensive, runs too much, replaced with direct SQL
+  #SELECT COUNT(object_property_id) INTO vObjectTrustCount FROM osae_v_object_property WHERE property_name='Trust Level' AND object_name=pname OR object_alias=pname;
+  SELECT COUNT(object_id) INTO vObjectTrustCount FROM osae_object_property 
+    INNER JOIN osae_object ON osae_object_property.object_id = osae_object.object_id
+    INNER JOIN osae_object_type_property ON osae_object_property.object_type_property_id = osae_object_type_property.property_id
+    WHERE (object_name=pobjectname OR object_alias=pobjectname) AND property_name='Trust Level';
   IF vObjectTrustCount = 0 THEN
-    SELECT object_type INTO vFromObjectType FROM osae_v_object WHERE object_name=pfromobject OR object_alias=pfromobject;
+    # 049 Replaced View
+    #SELECT object_type INTO vFromObjectType FROM osae_v_object WHERE object_name=pfromobject OR object_alias=pfromobject;
+    SELECT osae_object_type.object_type INTO vFromObjectType FROM osae_object
+      INNER JOIN osae_object_type ON osae_object.object_type_id = osae_object_type.object_type_id
+      WHERE object_name=pfromobject OR object_alias=pfromobject;
     CALL osae_sp_object_type_property_add(vFromObjectType,'Trust Level','Integer','','50',0);
   END IF;
 RETURN 1;
@@ -525,12 +617,68 @@ AS
 	select `osae_method_queue`.`method_queue_id` AS `method_queue_id`,`osae_method_queue`.`entry_time` AS `entry_time`,`osae_object`.`object_name` AS `object_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_method_queue`.`parameter_1` AS `parameter_1`,`osae_method_queue`.`parameter_2` AS `parameter_2`,`osae_from_object`.`object_name` AS `from_object`,`osae_method_queue`.`debug_trace` AS `debug_trace`,`osae_object`.`object_id` AS `object_id`,`osae_object`.`object_description` AS `object_description`,`osae_method_queue`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_method_queue`.`from_object_id` AS `from_object_id`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_types1`.`object_type` AS `base_type`,`osae_owner_object`.`object_name` AS `object_owner`,`osae_owner_object`.`object_id` AS `object_owner_id` from ((((((`osae_object_type` left join `osae_object` `osae_owner_object` on((`osae_object_type`.`plugin_object_id` = `osae_owner_object`.`object_id`))) left join `osae_object_type` `osae_object_types1` on((`osae_object_type`.`base_type_id` = `osae_object_types1`.`object_type_id`))) join `osae_object` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) join `osae_method_queue` on(((`osae_object`.`object_id` = `osae_method_queue`.`object_id`) and (`osae_object_type_method`.`method_id` = `osae_method_queue`.`method_id`)))) left join `osae_object` `osae_from_object` on((`osae_from_object`.`object_id` = `osae_method_queue`.`from_object_id`)));
 
 --
+-- Create view "osae_v_object_off_timer_ready"
+--
+CREATE
+VIEW osae_v_object_off_timer_ready
+AS
+SELECT
+  `osae_object`.`object_name` AS `object_name`
+FROM (((`osae_object`
+  JOIN `osae_object_type_state`
+    ON ((`osae_object`.`state_id` = `osae_object_type_state`.`state_id`)))
+  JOIN `osae_object_property`
+    ON ((`osae_object_property`.`object_id` = `osae_object`.`object_id`)))
+  JOIN `osae_object_type_property`
+    ON ((`osae_object_property`.`object_type_property_id` = `osae_object_type_property`.`property_id`)))
+WHERE ((`osae_object_type_state`.`state_name` <> 'OFF')
+AND (`osae_object_type_property`.`property_name` = 'OFF TIMER')
+AND (`osae_object_property`.`property_value` IS NOT NULL)
+AND (`osae_object_property`.`property_value` <> '')
+AND (`osae_object_property`.`property_value` <> '-1')
+AND (subtime(now(), sec_to_time(`osae_object_property`.`property_value`)) >= `osae_object`.`last_updated`));
+
+--
 -- Alter view "osae_v_object_type_method"
 --
 CREATE OR REPLACE 
 VIEW osae_v_object_type_method
 AS
 	select `osae_object_type_1`.`object_type` AS `base_type`,`osae_object_type_method`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_object_type_method`.`object_type_id` AS `object_type_id`,coalesce(`osae_object_type_method`.`param_1_label`,'') AS `param_1_label`,coalesce(`osae_object_type_method`.`param_2_label`,'') AS `param_2_label`,coalesce(`osae_object_type_method`.`param_1_default`,'') AS `param_1_default`,coalesce(`osae_object_type_method`.`param_2_default`,'') AS `param_2_default`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden` from ((`osae_object_type` join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) join `osae_object_type` `osae_object_type_1` on((`osae_object_type`.`base_type_id` = `osae_object_type_1`.`object_type_id`)));
+
+--
+-- Alter view "osae_v_system_occupied_rooms"
+--
+CREATE OR REPLACE 
+VIEW osae_v_system_occupied_rooms
+AS
+	select `osae_rooms`.`object_name` AS `room`,count(`osae_occupants`.`object_name`) AS `occupant` from ((`osae_object` `osae_rooms` join `osae_object_type` `osae_room_type` on((`osae_rooms`.`object_type_id` = `osae_room_type`.`object_type_id`))) left join `osae_object` `osae_occupants` on((`osae_rooms`.`object_id` = `osae_occupants`.`container_id`))) where (`osae_room_type`.`object_type` = 'ROOM') group by `osae_rooms`.`object_name`;
+
+--
+-- Create view "osae_v_system_plugins_errored"
+--
+CREATE
+VIEW osae_v_system_plugins_errored
+AS
+SELECT
+  `osae_object`.`object_name` AS `object_name`
+FROM (((((`osae_object`
+  JOIN `osae_object_type_state` `osae_object_state`
+    ON (((`osae_object`.`state_id` = `osae_object_state`.`state_id`)
+    AND (`osae_object`.`object_type_id` = `osae_object_state`.`object_type_id`))))
+  JOIN `osae_object_type`
+    ON ((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`)))
+  JOIN `osae_object_type` `osae_object_base_type`
+    ON ((`osae_object_type`.`base_type_id` = `osae_object_base_type`.`object_type_id`)))
+  JOIN `osae_object` `osae_container`
+    ON ((`osae_object`.`container_id` = `osae_container`.`object_id`)))
+  JOIN `osae_object_type_state` `osae_contianer_state`
+    ON (((`osae_container`.`state_id` = `osae_contianer_state`.`state_id`)
+    AND (`osae_container`.`object_type_id` = `osae_contianer_state`.`object_type_id`))))
+WHERE ((`osae_object_state`.`state_name` = 'OFF')
+AND (`osae_object_base_type`.`object_type` = 'PLUGIN')
+AND (`osae_object`.`enabled` = 1)
+AND (`osae_contianer_state`.`state_name` = 'ON'));
 
 --
 -- Alter view "osae_v_object"
@@ -574,10 +722,13 @@ BEGIN
   DECLARE iStateCount  INT DEFAULT 0;
   DECLARE done         INT DEFAULT 0;
   #This cursor is the first problem.   String indexing and date compairisons are pretty intense, must optimize this.   Maybe move to a function and run metrics on it.
-  DECLARE cur1 CURSOR FOR SELECT object_name FROM osae_v_object_property WHERE state_name <> 'OFF' AND property_name = 'OFF TIMER' AND property_value IS NOT NULL AND property_value <> '' AND property_value <> '-1' AND subtime(now(), sec_to_time(property_value)) > object_last_updated;
+  #Optomized this cursor to not use a generic view and use a custom view instead
+  #DECLARE cur1 CURSOR FOR SELECT object_name FROM osae_v_object_property WHERE state_name <> 'OFF' AND property_name = 'OFF TIMER' AND property_value IS NOT NULL AND property_value <> '' AND property_value <> '-1' AND subtime(now(), sec_to_time(property_value)) > object_last_updated;
+  DECLARE cur1 CURSOR FOR SELECT object_name FROM osae_v_object_off_tmer_ready;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
   DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
-  SET iServiceRunning = (SELECT COUNT(object_id) FROM osae_v_object WHERE object_name = 'SERVICE' and state_name = 'ON');
+  #The following was switched from v_object to v_object_state as it is a lighter view
+  SET iServiceRunning = (SELECT COUNT(object_id) FROM osae_v_object_state WHERE object_name = 'SERVICE' and state_name = 'ON');
   IF iServiceRunning > 0 THEN
   CALL osae_sp_object_property_set('SYSTEM', 'Time', curtime(), 'SYSTEM', 'osae_ev_off_timer');
   CALL osae_sp_object_property_set('SYSTEM', 'Time AMPM', DATE_FORMAT(now(), '%h:%i %p'), 'SYSTEM', 'osae_ev_off_timer');
