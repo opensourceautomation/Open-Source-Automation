@@ -379,7 +379,7 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnPropAdd_Click(object sender, EventArgs e)
     {
-        if (ddlPropType.SelectedValue == "Object Type" && ddlBaseType2.SelectedValue != "")
+        if (ddlPropType.SelectedValue == "Object Type" & ddlBaseType2.SelectedValue != "")
         {
             OSAEObjectTypeManager.ObjectTypePropertyAdd(hdnSelectedObjectName.Text, txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedItem.ToString(), txtPropDefault.Text, chkTrackChanges.Checked);
             loadProperties();
