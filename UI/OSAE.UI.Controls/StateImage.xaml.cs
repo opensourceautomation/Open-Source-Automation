@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Windows.Media.Imaging;
 using System.Data;
+using WpfAnimatedGif;
 
 namespace OSAE.UI.Controls
 {
@@ -37,7 +38,6 @@ namespace OSAE.UI.Controls
         private MemoryStream ms2;
         private MemoryStream ms3;
         private MemoryStream ms4;
-        private MemoryStream[] msArray;
 
         private int imageFrames = 0;
         private int currentFrame = 0;
@@ -55,7 +55,6 @@ namespace OSAE.UI.Controls
             gAppName = appName;
             screenObject = sObject;
             ObjectName = screenObject.Property("Object Name").Value;
-            //    ObjectType = screenObject.Property("Object Name").Value;
             LinkedObject = OSAEObjectManager.GetObjectByName(ObjectName);
             SliderMethod = screenObject.Property("Slider Method").Value;
             CurState = OSAEObjectStateManager.GetObjectStateValue(ObjectName).Value;
@@ -104,8 +103,24 @@ namespace OSAE.UI.Controls
                     OSAEObjectPropertyManager.ObjectPropertySet(screenObject.Name, "Frame Delay", "100", gAppName);
                 }
                 OSAEImage img1 = imgMgr.GetImage(imgName);
-                if (img1 != null)
+                if (img1.Type == "gif")
                 {
+                    ms1 = new MemoryStream(img1.Data);
+                    BitmapImage bitmapImage = new BitmapImage();
+
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = ms1;
+                    bitmapImage.EndInit();
+
+                    //Image.Source = bitmapImage;
+                    ImageWidth = bitmapImage.Width;
+                    ImageHeight = bitmapImage.Height;
+                    ImageBehavior.SetAnimatedSource(Image, bitmapImage);
+
+                    Image.Visibility = System.Windows.Visibility.Visible;
+                }
+                else if (img1 != null)
+                {   
                     ms1 = new MemoryStream(img1.Data);
                     BitmapImage bitmapImage = new BitmapImage();
 
@@ -265,13 +280,33 @@ namespace OSAE.UI.Controls
                     if (imgName != "")
                     {
                         OSAEImage img1 = imgMgr.GetImage(imgName);
-                        if (img1 != null)
+                        if (img1.Type == "gif")
+                        {
+                            ms1 = new MemoryStream(img1.Data);
+                            Dispatcher.Invoke((Action)(() =>
+                            {
+                                Image.Source = null;
+                                Image.ToolTip = ObjectName + " " + CurStateLabel + "\n" + "since: " + LastStateChange;
+                                BitmapImage bitmapImage = new BitmapImage();
+                                bitmapImage.BeginInit();
+                                bitmapImage.StreamSource = ms1;
+                                bitmapImage.EndInit();
+                                ImageWidth = bitmapImage.Width;
+                                ImageHeight = bitmapImage.Height;
+                                ImageBehavior.SetAnimatedSource(Image, bitmapImage);
+                                Image.Visibility = System.Windows.Visibility.Visible;
+                            }));
+                            
+                        }
+                        else if (img1 != null)
                         {
                             ms1 = new MemoryStream(img1.Data);
                             imageFrames = 1;
                             currentFrame = 1;
                             Dispatcher.Invoke((Action)(() =>
                             {
+                                Image.Source = null;
+                                Image.ToolTip = ObjectName + " " + CurStateLabel + "\n" + "since: " + LastStateChange;
                                 BitmapImage bitmapImage = new BitmapImage();
                                 bitmapImage.BeginInit();
                                 bitmapImage.StreamSource = ms1;
@@ -279,6 +314,7 @@ namespace OSAE.UI.Controls
                                 Image.Source = bitmapImage;
                                 ImageWidth = bitmapImage.Width;
                                 ImageHeight = bitmapImage.Height;
+                                ImageBehavior.SetAnimatedSource(Image, bitmapImage);
                             }));
 
                             // Primary Frame is loaded, load up additional frames for the time to display.

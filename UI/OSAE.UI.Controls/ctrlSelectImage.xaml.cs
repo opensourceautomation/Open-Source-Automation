@@ -74,8 +74,9 @@
             //Configure open file dialog box 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.FileName = "Document"; // Default file name 
-            dlg.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
+            dlg.Filter = "All supported graphics|*.jpg;*.jpeg;*.gif;*.png;|" +
                 "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
+                "Gif (*.gif)|*.gif|" +
                 "Portable Network Graphic (*.png)|*.png"; // Filter files by extension 
 
             if (dlg.ShowDialog() == true)
@@ -102,7 +103,7 @@
                 }
                 else if (ext.ToLower() == "gif")
                 {
-                    byt = imgMgr.GetGIFFromImageControl(img);
+                    byt = imgMgr.GetGIFFromFileStream(dlg.FileName);
                     imgID = imgMgr.AddImage(fileName, ext, byt);
                 }
 

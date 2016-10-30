@@ -2,6 +2,7 @@
 {
     using System;
     using System.Drawing;
+    using System.Drawing.Imaging;
     using System.Data;
     using MySql.Data.MySqlClient;
     using System.IO;
@@ -14,9 +15,9 @@
     public class OSAEImageManager
     {
         /// <summary>
-        /// Used to get access to the logging facility
+        /// There should be No logging in the API 
         /// </summary>
-        private Logging logging = Logging.GetLogger();
+        //private Logging logging = Logging.GetLogger();
 
         /// <summary>
         /// Adds an image to the DB
@@ -254,6 +255,15 @@
             encoder.Save(memStream);
             return memStream.GetBuffer();
         }
+        
+        public byte[] GetGIFFromFileStream(String path)
+        {
+            FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+            Byte[] byt = new byte[fs.Length];
+            fs.Read(byt, 0, System.Convert.ToInt32(fs.Length));
+            fs.Close();
+            return byt;
+        }		        
 
         public byte[] GifToByteArray(Image imageIn)
         {
