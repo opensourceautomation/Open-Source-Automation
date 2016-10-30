@@ -1,4 +1,10 @@
-﻿Public Class PhidgetIK
+﻿Imports System.Collections.ObjectModel
+Imports System.Management.Automation
+Imports System.Management.Automation.Runspaces
+Imports System.Text
+Imports System.IO
+
+Public Class PhidgetIK
     Inherits OSAEPluginBase
     Dim WithEvents phidgetIFK As Phidgets.InterfaceKit
     Private Log As OSAE.General.OSAELog
@@ -245,19 +251,58 @@
             If e.Value > 0 Then sState = "ON" Else sState = "OFF"
             Log.Info(gAINames(e.Index) & " " & sState)
             OSAEObjectStateManager.ObjectStateSet(gDONames(e.Index), sState, gAppName)
-            Dim SC As New MSScriptControl.ScriptControl
-            SC.Language = "VBSCRIPT"
             Dim iResults As Integer
-            Dim sFormula As String = OSAEObjectPropertyManager.GetObjectPropertyValue(gDONames(e.Index), "Formula").Value.ToString()
-            sFormula = sFormula.Replace("Analog Value", e.Value.ToString())
+            Dim MyRunSpace As Runspace = RunspaceFactory.CreateRunspace()
+            MyRunSpace.Open()
+            ' create a pipeline and feed it the script text 
+            Dim MyPipeline As Pipeline = MyRunSpace.CreatePipeline()
+
+
+            Dim sFormula As String = ""
+            Dim oFormula As OSAEObjectProperty
+            Try
+                Log.Debug("Loading Forumla for: " & gAINames(e.Index))
+                oFormula = OSAEObjectPropertyManager.GetObjectPropertyValue(gAINames(e.Index), "Formula")
+                'sFormula = "" & OSAEObjectPropertyManager.GetObjectPropertyValue(gDONames(e.Index), "Formula").Value.ToString()
+                Log.Debug("Formula Loaded")
+                If oFormula Is Nothing Then
+                    sFormula = ""
+                Else
+                    sFormula = oFormula.Value.ToString()
+                End If
+
+            Catch ex As Exception
+                Log.Error("Formula Error:  ", ex)
+            End Try
+
             If sFormula = "" Then
                 iResults = e.Value.ToString()
             Else
-                iResults = SC.Eval(sFormula)
-            End If
-            OSAEObjectPropertyManager.ObjectPropertySet(gAINames(e.Index), "Analog Value", iResults, gAppName)
-        Catch ex As Exception
-            Log.Error("phidgetIFK_SensorChange: " & ex.Message)
+                ' iResults = SC.Eval(sFormula)
+                sFormula = sFormula.Replace("Analog Value", e.Value.ToString())
+                    Log.Debug("Formula: " & sFormula)
+
+
+                    MyPipeline.Commands.AddScript(sFormula)
+                    ' add an extra command to transform the script output objects into nicely formatted strings 
+                    ' remove this line to get the actual objects that the script returns. For example, the script 
+                    ' "Get-Process" returns a collection of System.Diagnostics.Process instances. 
+                    MyPipeline.Commands.Add("Out-String")
+                    ' execute the script 
+                    Dim results As Collection(Of PSObject) = MyPipeline.Invoke()
+                    ' close the runspace 
+                    MyRunSpace.Close()
+                    ' convert the script result into a single string 
+                    Dim MyStringBuilder As New StringBuilder()
+                    For Each obj As PSObject In results
+                        MyStringBuilder.AppendLine(obj.ToString())
+                    Next
+                    iResults = CInt(MyStringBuilder.ToString)
+                End If
+
+                OSAEObjectPropertyManager.ObjectPropertySet(gAINames(e.Index), "Analog Value", iResults, gAppName)
+            Catch ex As Exception
+                Log.Error("phidgetIFK_SensorChange: " & ex.Message)
         End Try
     End Sub
 

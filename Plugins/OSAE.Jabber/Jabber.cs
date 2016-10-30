@@ -259,7 +259,7 @@ namespace OSAE.Jabber
                 else
                 {
                     Log.Info(String.Format("Creating new Object {0} for {1}", item.Name, jID));
-                    OSAEObjectManager.ObjectAdd(item.Name, "", "Discovered Jabber contact", "PERSON", "", "Unknown", 10, true);
+                    OSAEObjectManager.ObjectAdd(item.Name, "", "Discovered Jabber contact", "PERSON", "", "Unknown", 10, false);
                 }
                 Log.Info(String.Format("Updating JabberID for {0}", item.Name));
                 OSAEObjectPropertyManager.ObjectPropertySet(item.Name, "JabberID", jID, gAppName);
