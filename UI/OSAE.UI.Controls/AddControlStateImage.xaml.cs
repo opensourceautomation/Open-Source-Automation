@@ -7,6 +7,7 @@ namespace OSAE.UI.Controls
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media.Imaging;
+    using WpfAnimatedGif;
 
     /// <summary>
     /// Interaction logic for AddControlStateImage.xaml
@@ -67,7 +68,14 @@ namespace OSAE.UI.Controls
                 if (sCheckName != "")
                 {
                     State1Img1 = imgMgr.GetImage(sCheckName);
-                    imgState1Img1.Source = LoadImage(State1Img1.Data);
+                    MemoryStream ms1 = new MemoryStream(State1Img1.Data);
+                    BitmapImage bitmapImage = new BitmapImage();
+
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = ms1;
+                    bitmapImage.EndInit();
+                    ImageBehavior.SetAnimatedSource(imgState1Img1, bitmapImage);
+                    //imgState1Img1.Source = LoadImage(State1Img1.Data);
                     Validate_Initial_Coordinates();
                     lblState1X.IsEnabled = false;
                     lblState1Y.IsEnabled = false;
@@ -75,8 +83,11 @@ namespace OSAE.UI.Controls
                     txtState1Y.IsEnabled = true;
                     lblZOrder.IsEnabled = true;
                     txtZOrder.IsEnabled = true;
-                    btnLoadS1I2.IsEnabled = true;
-                    imgState1Img2.IsEnabled = true;
+                    if (State1Img1.Type != "gif")
+                    {
+                        btnLoadS1I2.IsEnabled = true;
+                        imgState1Img2.IsEnabled = true;
+                    }
                 }
             }
             catch { }
@@ -136,7 +147,14 @@ namespace OSAE.UI.Controls
                 if (sCheckName != "")
                 {
                     State2Img1 = imgMgr.GetImage(sCheckName);
-                    imgState2Img1.Source = LoadImage(State2Img1.Data);
+                    MemoryStream ms1 = new MemoryStream(State2Img1.Data);
+                    BitmapImage bitmapImage = new BitmapImage();
+
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = ms1;
+                    bitmapImage.EndInit();
+                    ImageBehavior.SetAnimatedSource(imgState2Img1, bitmapImage);
+                    //imgState2Img1.Source = LoadImage(State2Img1.Data);
                     Validate_Initial_Coordinates();
                     lblState2X.IsEnabled = true;
                     lblState2Y.IsEnabled = true;
@@ -144,7 +162,11 @@ namespace OSAE.UI.Controls
                     txtState2Y.IsEnabled = true;
                     lblZOrder.IsEnabled = true;
                     txtZOrder.IsEnabled = true;
-                    btnLoadS2I2.IsEnabled = true;
+                    if (State1Img1.Type != "gif")
+                    {
+                        btnLoadS2I2.IsEnabled = true;
+                        imgState1Img2.IsEnabled = true;
+                    }
                 }
             }
             catch { }
@@ -559,7 +581,14 @@ namespace OSAE.UI.Controls
             OSAEImageManager imgMgr = new OSAEImageManager();
 
             State1Img1 = imgMgr.GetImage((int)sender);
-            imgState1Img1.Source = LoadImage(State1Img1.Data);
+            MemoryStream ms1 = new MemoryStream(State1Img1.Data);
+            BitmapImage bitmapImage = new BitmapImage();
+
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = ms1;
+            bitmapImage.EndInit();
+            ImageBehavior.SetAnimatedSource(imgState1Img1, bitmapImage);
+            //imgState1Img1.Source = LoadImage(State1Img1.Data);
             imgState1Img1.ToolTip = "Width:" + imgState1Img1.Width + " Height:" + imgState1Img1.Height;
             Validate_Initial_Coordinates();
             lblState1X.IsEnabled = false;
@@ -568,8 +597,11 @@ namespace OSAE.UI.Controls
             txtState1Y.IsEnabled = true;
             lblZOrder.IsEnabled = true;
             txtZOrder.IsEnabled = true;
-            btnLoadS1I2.IsEnabled = true;
-            imgState1Img2.IsEnabled = true;
+            if (State1Img1.Type != "gif")
+            {
+                btnLoadS1I2.IsEnabled = true;
+                imgState1Img2.IsEnabled = true;
+            }
         }
 
         protected void si_S1I2ImagePicked(object sender, EventArgs e)
@@ -615,7 +647,14 @@ namespace OSAE.UI.Controls
             OSAEImageManager imgMgr = new OSAEImageManager();
 
             State2Img1 = imgMgr.GetImage((int)sender);
-            imgState2Img1.Source = LoadImage(State2Img1.Data);
+            MemoryStream ms1 = new MemoryStream(State1Img1.Data);
+            BitmapImage bitmapImage = new BitmapImage();
+
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = ms1;
+            bitmapImage.EndInit();
+            ImageBehavior.SetAnimatedSource(imgState2Img1, bitmapImage);
+            //imgState2Img1.Source = LoadImage(State2Img1.Data);
             imgState2Img1.ToolTip = "Width:" + imgState2Img1.Width + " Height:" + imgState2Img1.Height;
             Validate_Initial_Coordinates();
             lblState2X.IsEnabled = true;
@@ -624,8 +663,11 @@ namespace OSAE.UI.Controls
             txtState2Y.IsEnabled = true;
             lblZOrder.IsEnabled = true;
             txtZOrder.IsEnabled = true;
-            btnLoadS2I2.IsEnabled = true;
-            imgState2Img2.IsEnabled = true;
+            if (State2Img1.Type != "gif")
+            {
+                btnLoadS2I2.IsEnabled = true;
+                imgState2Img2.IsEnabled = true;
+            }
         }
 
         protected void si_S2I2ImagePicked(object sender, EventArgs e)
