@@ -12,6 +12,27 @@ DELIMITER $$
 --
 DROP FUNCTION IF EXISTS osae_fn_lookup_object_id$$
 
+DELIMITER ;
+
+--
+-- Alter table "osae_object_property"
+--
+ALTER TABLE osae_object_property
+  ADD COLUMN property_integer INT(11) DEFAULT NULL AFTER interest_level,
+  ADD COLUMN propery_decimal DECIMAL(10, 4) DEFAULT NULL AFTER property_integer,
+  ADD COLUMN property_boolean INT(1) DEFAULT NULL AFTER propery_decimal;
+
+--
+-- Alter table "osae_object_property_history"
+--
+ALTER TABLE osae_object_property_history
+  ADD COLUMN property_integer INT(11) DEFAULT NULL AFTER property_value,
+  ADD COLUMN property_decimal DECIMAL(12, 4) DEFAULT NULL AFTER property_integer,
+  ADD COLUMN property_boolean INT(1) DEFAULT NULL AFTER property_decimal,
+  ADD COLUMN property_float FLOAT DEFAULT NULL AFTER property_boolean;
+
+DELIMITER $$
+
 --
 -- Alter procedure "osae_sp_object_property_set"
 --
@@ -430,7 +451,7 @@ CREATE FUNCTION osae_fn_object_exists(pobjectname varchar(200))
   RETURNS int(11)
 BEGIN
 DECLARE vObjectCount INT DEFAULT 0;
-  #Bad Bad, the following line was hitting the object view and only hitting the table was needed!!!!
+  # 049 the following line WAS hitting the object view and only hitting the table was needed!!!!
   SELECT COUNT(object_id) INTO vObjectCount FROM osae_object WHERE object_name=pobjectname OR object_alias=pobjectname;
   IF vObjectCount = 0 THEN
     RETURN 0;
@@ -461,7 +482,7 @@ BEGIN
 DECLARE vObjectCount INT DEFAULT 0;
 
   #SELECT COUNT(object_id) INTO vObjectCount FROM osae_v_object_property WHERE (object_name=pobjectname OR object_alias=pobjectname) AND property_name=ppropertyname;
-  SELECT COUNT(object_id) INTO vObjectCount FROM osae_object_property 
+  SELECT COUNT(osae_object.object_id) INTO vObjectCount FROM osae_object_property 
     INNER JOIN osae_object ON osae_object_property.object_id = osae_object.object_id
     INNER JOIN osae_object_type_property ON osae_object_property.object_type_property_id = osae_object_type_property.property_id
     WHERE (object_name=pobjectname OR object_alias=pobjectname) AND property_name=ppropertyname;
@@ -556,10 +577,10 @@ DECLARE vFromObjectType VARCHAR(255);
   # Verify the FromObject has a trust_level and add one if not
   # 049 ^^^^ Stupid expensive, runs too much, replaced with direct SQL
   #SELECT COUNT(object_property_id) INTO vObjectTrustCount FROM osae_v_object_property WHERE property_name='Trust Level' AND object_name=pname OR object_alias=pname;
-  SELECT COUNT(object_id) INTO vObjectTrustCount FROM osae_object_property 
+  SELECT COUNT(osae_object.object_id) INTO vObjectTrustCount FROM osae_object_property 
     INNER JOIN osae_object ON osae_object_property.object_id = osae_object.object_id
     INNER JOIN osae_object_type_property ON osae_object_property.object_type_property_id = osae_object_type_property.property_id
-    WHERE (object_name=pobjectname OR object_alias=pobjectname) AND property_name='Trust Level';
+    WHERE (object_name=pname OR object_alias=pname) AND property_name='Trust Level';
   IF vObjectTrustCount = 0 THEN
     # 049 Replaced View
     #SELECT object_type INTO vFromObjectType FROM osae_v_object WHERE object_name=pfromobject OR object_alias=pfromobject;
@@ -606,6 +627,31 @@ BEGIN
 END
 $$
 
+--
+-- Alter trigger "osae_tr_object_property_after_update"
+--
+DROP TRIGGER IF EXISTS osae_tr_object_property_after_update$$
+CREATE TRIGGER osae_tr_object_property_after_update
+	AFTER UPDATE
+	ON osae_object_property
+	FOR EACH ROW
+BEGIN
+  DECLARE vTrack Boolean;
+  DECLARE vDataType VARCHAR(100);
+    SELECT track_history, property_datatype INTO vTrack, vDataType FROM osae_v_object_type_property WHERE property_id=NEW.object_type_property_id;
+    IF vTrack THEN
+  #     INSERT INTO osae_object_property_history (object_property_id,property_value) VALUES(NEW.object_property_id,NEW.property_value);
+      CASE vDataType
+        WHEN "String" THEN INSERT INTO osae_object_property_history (object_property_id,property_value) VALUES(NEW.object_property_id,NEW.property_value);
+        WHEN "Integer" THEN INSERT INTO osae_object_property_history (object_property_id,property_value,property_integer) VALUES(NEW.object_property_id,NEW.property_value,NEW.property_value);
+        WHEN "Decimal" THEN INSERT INTO osae_object_property_history (object_property_id,property_value,property_decimal) VALUES(NEW.object_property_id,NEW.property_value,NEW.property_value);
+        WHEN "Boolean" THEN INSERT INTO osae_object_property_history (object_property_id,property_value,property_boolean) VALUES(NEW.object_property_id,NEW.property_value,NEW.property_value);
+        WHEN "Float" THEN INSERT INTO osae_object_property_history (object_property_id,property_value,property_float) VALUES(NEW.object_property_id,NEW.property_value,NEW.property_value);
+     END CASE;
+   END IF;
+END
+$$
+
 DELIMITER ;
 
 --
@@ -639,6 +685,14 @@ AND (`osae_object_property`.`property_value` <> '-1')
 AND (subtime(now(), sec_to_time(`osae_object_property`.`property_value`)) >= `osae_object`.`last_updated`));
 
 --
+-- Alter view "osae_v_object_property_history"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_property_history
+AS
+	select `osae_object_property_history`.`history_id` AS `history_id`,`osae_object_property_history`.`history_timestamp` AS `history_timestamp`,(case `osae_object_type_property`.`property_datatype` when 'Boolean' then if((`osae_object_property_history`.`property_value` = 'TRUE'),1,0) when 'Integer' then `osae_object_property_history`.`property_integer` when 'Float' then `osae_object_property_history`.`property_float` else `osae_object_property_history`.`property_value` end) AS `property_value`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object_property_history`.`object_property_id` AS `object_property_id`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object`.`object_description` AS `object_description` from ((((`osae_object_property_history` join `osae_object_property` on((`osae_object_property_history`.`object_property_id` = `osae_object_property`.`object_property_id`))) join `osae_object` on((`osae_object_property`.`object_id` = `osae_object`.`object_id`))) join `osae_object_type_property` on((`osae_object_property`.`object_type_property_id` = `osae_object_type_property`.`property_id`))) join `osae_object_type` on(((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`) and (`osae_object_type_property`.`object_type_id` = `osae_object_type`.`object_type_id`))));
+
+--
 -- Alter view "osae_v_object_type_method"
 --
 CREATE OR REPLACE 
@@ -652,7 +706,7 @@ AS
 CREATE OR REPLACE 
 VIEW osae_v_system_occupied_rooms
 AS
-	select `osae_rooms`.`object_name` AS `room`,count(`osae_occupants`.`object_name`) AS `occupant` from ((`osae_object` `osae_rooms` join `osae_object_type` `osae_room_type` on((`osae_rooms`.`object_type_id` = `osae_room_type`.`object_type_id`))) left join `osae_object` `osae_occupants` on((`osae_rooms`.`object_id` = `osae_occupants`.`container_id`))) where (`osae_room_type`.`object_type` = 'ROOM') group by `osae_rooms`.`object_name`;
+	select `osae_rooms`.`object_name` AS `room`,count(`osae_occupants`.`object_name`) AS `occupant_count` from ((`osae_object` `osae_rooms` join `osae_object_type` `osae_room_type` on((`osae_rooms`.`object_type_id` = `osae_room_type`.`object_type_id`))) left join `osae_object` `osae_occupants` on((`osae_rooms`.`object_id` = `osae_occupants`.`container_id`))) where (`osae_room_type`.`object_type` = 'ROOM') group by `osae_rooms`.`object_name`;
 
 --
 -- Create view "osae_v_system_plugins_errored"
@@ -707,6 +761,30 @@ AND `osae_v_object_type_method`.`object_type` IN (SELECT DISTINCT
 DELIMITER $$
 
 --
+-- Alter event "osae_ev_day_timer"
+--
+ALTER EVENT osae_ev_day_timer
+	DO 
+BEGIN
+    CALL osae_sp_object_property_set('SYSTEM','Day Of Week',DAYOFWEEK(CURDATE()),'SYSTEM','osae_ev_minute_maint'); 
+    CALL osae_sp_object_property_set('SYSTEM','Day Of Month',DAYOFMONTH(CURDATE()),'SYSTEM','osae_ev_minute_maint'); 
+    UPDATE osae_object_state_history SET times_this_day=0;
+END
+$$
+
+--
+-- Alter event "osae_ev_minute_maint"
+--
+ALTER EVENT osae_ev_minute_maint
+	DO 
+BEGIN
+    CALL osae_sp_object_property_set('SYSTEM','Date',CURDATE(),'SYSTEM','osae_ev_minute_maint'); 
+    CALL osae_sp_run_scheduled_methods; 
+    #CALL osae_sp_debug_log_add('Minute timer','SYSTEM');  
+END
+$$
+
+--
 -- Alter event "osae_ev_off_timer"
 --
 ALTER EVENT osae_ev_off_timer
@@ -724,7 +802,7 @@ BEGIN
   #This cursor is the first problem.   String indexing and date compairisons are pretty intense, must optimize this.   Maybe move to a function and run metrics on it.
   #Optomized this cursor to not use a generic view and use a custom view instead
   #DECLARE cur1 CURSOR FOR SELECT object_name FROM osae_v_object_property WHERE state_name <> 'OFF' AND property_name = 'OFF TIMER' AND property_value IS NOT NULL AND property_value <> '' AND property_value <> '-1' AND subtime(now(), sec_to_time(property_value)) > object_last_updated;
-  DECLARE cur1 CURSOR FOR SELECT object_name FROM osae_v_object_off_tmer_ready;
+  DECLARE cur1 CURSOR FOR SELECT object_name FROM osae_v_object_off_timer_ready;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
   DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
   #The following was switched from v_object to v_object_state as it is a lighter view
@@ -769,7 +847,6 @@ DELIMITER ;
 -- Enable foreign keys
 --
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-
 CALL osae_sp_object_property_set('SYSTEM','DB Version','049','SYSTEM','');
 CALL osae_sp_object_type_property_update('Show Slider','Show Slider','Boolean','','FALSE','CONTROL STATE IMAGE',0);
 CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Height','Integer','','270',0);
