@@ -71,7 +71,7 @@ Public Class ScriptProcessor
         Dim sType As String = ""
         Dim iLoop As Integer
         Dim sObject As String = "", sOption As String = "", sMethod As String = "", sParam1 As String = "", sParam2 As String = ""
-        Dim iObjectPos As Integer, iOptionPos As Integer, iMethodPos As Integer
+        Dim iObjectPos As Integer, iOptionPos As Integer, iMethodPos As Integer, iValueObjectPos As Integer
         'Dim oObject As OSAEObject
         Dim iParam1Pos As Integer ', iParam2Pos As Integer
         Dim iQuotePos As Integer, iCommaPos As Integer
@@ -175,23 +175,32 @@ Public Class ScriptProcessor
                                 OSAESql.RunSQL(sWorking)
                             Else
                                 'Now we have our object, and the rest of the line is stored in sWorking
+                                'Option here is Set Property, Set State, Run Method, Set Container, Set Address, etc
                                 iOptionPos = sWorking.IndexOf(".")
                                 If iOptionPos > 0 Then
                                     sOption = sWorking.Substring(0, iOptionPos).Trim
                                     sWorking = sWorking.Substring(iOptionPos + 1, sWorking.Length - (iOptionPos + 1)).Trim
-                                    If sOption.ToUpper = "SET PROPERTY" Then
-                                        sMethod = sWorking.Substring(0, iMethodPos)
-                                    Else
-                                        iMethodPos = sWorking.IndexOf(".")
-                                        If iMethodPos = -1 Then
-                                            sMethod = sWorking
-                                            sWorking = ""
-                                        Else
-                                            sMethod = sWorking.Substring(0, iMethodPos)
-                                            sWorking = sWorking.Substring(iMethodPos + 1, sWorking.Length - (iMethodPos + 1))
-                                        End If
-                                    End If
-                                    If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " !!!!!!!!!!!!: " & sObject & "." & sMethod)
+                                    'sWorking = xxxxx   ;   Object.Set Property.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                                    'iMethodPos = sWorking.IndexOf(".")
+                                    ' If sOption.ToUpper = "SET PROPERTY" Then
+                                    ' sMethod = sWorking.Substring(0, iMethodPos)
+                                    'Else
+                                    ' iMethodPos = sWorking.IndexOf(".")
+                                    '  If iMethodPos = -1 Then
+                                    ' sMethod = sWorking
+                                    '  sWorking = ""
+                                    'Else
+                                    ' sMethod = sWorking.Substring(0, iMethodPos)
+                                    '  sWorking = sWorking.Substring(iMethodPos + 1, sWorking.Length - (iMethodPos + 1))
+                                    'End If
+                                    'End If
+
+                                    ' If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " !!!!!!!!!!!!: " & sObject & "." & sMethod)
+
+
+
+
+
                                     ' Find First parameter based on a pair of "" or a Comma
                                     sParam1 = ""
                                     sParam2 = ""
@@ -199,6 +208,8 @@ Public Class ScriptProcessor
                                     iQuotePos = sWorking.IndexOf(Chr(34))
                                     iCommaPos = sWorking.IndexOf(",")
                                     ' Check to see if first parameter is using quote by comparing to position of ,
+
+
                                     If (iQuotePos < iCommaPos And iQuotePos >= 0) Or (iQuotePos >= 0 And iCommaPos = -1) Then
                                         'First Parameter is quoted.  Delete first quote and find closing quote
                                         sWorking = sWorking.Substring(iQuotePos + 1, sWorking.Length - (iQuotePos + 1))
@@ -243,31 +254,62 @@ Public Class ScriptProcessor
                                     ElseIf sOption.ToUpper = "SET CONTAINER" Then
                                         OSAEObjectManager.ObjectUpdate(oCurrentObject.Name, oCurrentObject.Name, oCurrentObject.Alias, oCurrentObject.Description, oCurrentObject.Type, oCurrentObject.Address, sMethod, oCurrentObject.MinTrustLevel, oCurrentObject.Enabled)
                                         If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Container: " & sObject & "." & sMethod)
+
+
+
+
+
+
                                     ElseIf sOption.ToUpper = "SET PROPERTY" Then
                                         iOptionPos = sWorking.IndexOf("+=")
                                         If iOptionPos <= 0 Then iOptionPos = sWorking.IndexOf("=")
                                         If iOptionPos > 0 Then
+                                            ' Param1 = the property we are setting, on working becomes the value we assign to it
                                             sParam1 = sWorking.Substring(0, iOptionPos)
                                             sWorking = sWorking.Substring(iOptionPos, sWorking.Length - (iOptionPos))
                                             iOptionPos = sWorking.IndexOf(" ")
+                                            'OptionPos is looking for a space after = or +=
                                             If iOptionPos > 0 Then
+                                                'sMethod becomes the operator aka = or += and sworking becomes the value
                                                 sMethod = sWorking.Substring(0, iOptionPos)
                                                 sWorking = sWorking.Substring(iOptionPos + 1, sWorking.Length - (iOptionPos + 1))
                                                 sValue = sWorking
-                                                If sMethod = "=" Then
-                                                    OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, sValue, gAppName)
-                                                    If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sParam1 & " = " & sValue)
-                                                ElseIf sMethod = "+=" Then
-                                                    sWorking = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sParam1).Value
-                                                    OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue), gAppName)
-                                                    If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sParam1 & " = " & sValue)
-                                                End If
-                                            End If
+                                                'Here is the 049 upgrade.   Parse sValue for a period and do on object.property check.
+                                                iValueObjectPos = sValue.IndexOf(".")
+                                                If iValueObjectPos > 0 Then
+                                                    Dim tmpObject As String = ""
+                                                    Dim tmpProperty As String = ""
+                                                    Dim tmpExists As Boolean
+                                                    tmpObject = sValue.Substring(0, iValueObjectPos)
+                                                    tmpProperty = sValue.Substring(iValueObjectPos + 1, sValue.Length - (iValueObjectPos + 1))
 
-                                        End If
+                                                    If gDebug Then Log.Debug("    Looking for:EXEC: Set Property: " & tmpObject & "." & tmpProperty)
+
+                                                    tmpExists = OSAE.OSAEObjectPropertyManager.ObjectPropertyExists(tmpObject, tmpProperty)
+                                                    If tmpExists Then
+                                                        sValue = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(tmpObject, tmpProperty).Value
+                                                    End If
+                                                End If
+
+                                                If sMethod = "=" Then
+                                                        OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, sValue, gAppName)
+                                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sObject & "." & sParam1 & " = " & sValue)
+                                                    ElseIf sMethod = "+=" Then
+                                                        sWorking = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sParam1).Value
+                                                        OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue), gAppName)
+                                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sObject & "." & sParam1 & " = " & sValue)
+                                                    End If
+                                                End If
+
+                                            End If
                                         'OSAEApi.ObjectPropertySet(sObject, sParam1, sParam2)
                                         'lstResults.Items.Add("Set Property: " & sObject & "." & sParam1 & " = " & sParam2)
                                     End If
+
+
+
+
+
 
                                 Else
                                     'Set properties for an object
