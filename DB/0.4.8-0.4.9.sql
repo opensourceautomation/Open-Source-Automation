@@ -502,7 +502,7 @@ $$
 --
 -- Create function "osae_fn_plugin_count"
 --
-DROP FUNCTION IF EXISTS osae_fn_plugin_count
+DROP FUNCTION IF EXISTS osae_fn_plugin_count$$
 CREATE FUNCTION osae_fn_plugin_count()
   RETURNS int(11)
 BEGIN
@@ -525,7 +525,7 @@ $$
 --
 -- Create function "osae_fn_plugin_enabled_count"
 --
-DROP FUNCTION IF EXISTS osae_fn_plugin_enabled_count
+DROP FUNCTION IF EXISTS osae_fn_plugin_enabled_count$$
 CREATE FUNCTION osae_fn_plugin_enabled_count()
   RETURNS int(11)
 BEGIN
@@ -549,7 +549,7 @@ $$
 --
 -- Create function "osae_fn_plugin_running_count"
 --
-DROP FUNCTION IF EXISTS osae_fn_plugin_running_count
+DROP FUNCTION IF EXISTS osae_fn_plugin_running_count$$
 CREATE FUNCTION osae_fn_plugin_running_count()
   RETURNS int(11)
 BEGIN
@@ -576,7 +576,7 @@ $$
 --
 -- Create function "osae_fn_trust_level_property_exists"
 --
-DROP FUNCTION IF EXISTS osae_fn_trust_level_property_exists
+DROP FUNCTION IF EXISTS osae_fn_trust_level_property_exists$$
 CREATE FUNCTION osae_fn_trust_level_property_exists(pname      varchar(200))
   RETURNS int(11)
 BEGIN
