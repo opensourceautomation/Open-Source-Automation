@@ -149,6 +149,17 @@ namespace OSAE.Service
         protected override void OnStop()
         {
             Log.Info("OnStop Invoked");
+
+            try
+            {
+                OSAE.OSAESql.RunSQL("SET GLOBAL event_scheduler = OFF;");
+                Log.Info("MySQL Event Scheduler Stopped");
+            }
+            catch (Exception ex)
+            { Log.Fatal("Error setting the event scheduler: " + ex.Message, ex); }
+
+
+
             OSAE.OSAEObjectStateManager.ObjectStateSet(serviceObject, "OFF", serviceObject);
             Log.Info("Set my Object to Stopped");
             NetworkComms.Shutdown();
