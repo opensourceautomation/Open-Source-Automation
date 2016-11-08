@@ -161,17 +161,26 @@ Public Class ScriptProcessor
                 '------------------------------------------------------------------------------------------------
                 ' This Section Executes Commands ------
                 If sNesting(iNestingLevel) = "PASS" Then
-
-
+                    ' Recognized Patterns
+                    ' SQL.SELECT blah FROM blahtable WHERE blah condition
+                    ' Object.Set Property.Property += Value (Object Property)
+                    ' Object.Run Method.Method.Param1,Param2
+                    ' Object.Set State.State
+                    ' Object.Set Container.Object
                     If sType = "SET" Then
+                        'Statements Start with an Object and all Objects will have a period after the name in scripts
                         iObjectPos = scriptArray(iLoop).IndexOf(".")
-                        'Looking for Object Name.
-                        If iObjectPos > 0 Then
+                        If iObjectPos > 0 Then ' Found 1st Object
                             sObject = scriptArray(iLoop).Substring(0, iObjectPos)
-                            Dim oCurrentObject As OSAEObject
+                            Dim oCurrentObject As OSAEObject ' Read in the full Object we will be acting upon
                             oCurrentObject = OSAEObjectManager.GetObjectByName(sObject)
+                            ' sWorking, the remainer of the command, whould be
+                            ' Set Property.Property += Value (Object Property)
+                            ' Run Method.Method.Param1,Param2
+                            ' Set State.State
+                            ' Set Container.Object
                             sWorking = scriptArray(iLoop).Substring(iObjectPos + 1, scriptArray(iLoop).Length - (iObjectPos + 1))
-                            If sObject.ToUpper = "SQL" Then
+                            If sObject.ToUpper = "SQL" Then ' SQL is the only line that will only have 1 key word.   
                                 OSAESql.RunSQL(sWorking)
                             Else
                                 'Now we have our object, and the rest of the line is stored in sWorking
@@ -179,87 +188,75 @@ Public Class ScriptProcessor
                                 iOptionPos = sWorking.IndexOf(".")
                                 If iOptionPos > 0 Then
                                     sOption = sWorking.Substring(0, iOptionPos).Trim
+                                    ' sWorking, the remainer of the command, whould be
+                                    ' Property += Value (Object Property)
+                                    ' Method.Param1,Param2
+                                    ' State
+                                    ' Object
                                     sWorking = sWorking.Substring(iOptionPos + 1, sWorking.Length - (iOptionPos + 1)).Trim
-                                    'sWorking = xxxxx   ;   Object.Set Property.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                                    'iMethodPos = sWorking.IndexOf(".")
-                                    ' If sOption.ToUpper = "SET PROPERTY" Then
-                                    ' sMethod = sWorking.Substring(0, iMethodPos)
-                                    'Else
-                                    ' iMethodPos = sWorking.IndexOf(".")
-                                    '  If iMethodPos = -1 Then
-                                    ' sMethod = sWorking
-                                    '  sWorking = ""
-                                    'Else
-                                    ' sMethod = sWorking.Substring(0, iMethodPos)
-                                    '  sWorking = sWorking.Substring(iMethodPos + 1, sWorking.Length - (iMethodPos + 1))
-                                    'End If
-                                    'End If
-
-                                    ' If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " !!!!!!!!!!!!: " & sObject & "." & sMethod)
-
-
-
-
-
-                                    ' Find First parameter based on a pair of "" or a Comma
-                                    sParam1 = ""
-                                    sParam2 = ""
-                                    iParam1Pos = sWorking.IndexOf(Chr(34))
-                                    iQuotePos = sWorking.IndexOf(Chr(34))
-                                    iCommaPos = sWorking.IndexOf(",")
-                                    ' Check to see if first parameter is using quote by comparing to position of ,
-
-
-                                    If (iQuotePos < iCommaPos And iQuotePos >= 0) Or (iQuotePos >= 0 And iCommaPos = -1) Then
-                                        'First Parameter is quoted.  Delete first quote and find closing quote
-                                        sWorking = sWorking.Substring(iQuotePos + 1, sWorking.Length - (iQuotePos + 1))
-                                        ' Now we reuse the Quote variable and look for the closing quote
-                                        iQuotePos = sWorking.IndexOf(Chr(34))
-                                        sParam1 = sWorking.Substring(0, iQuotePos)
-                                        sWorking = sWorking.Replace(sParam1, "")
-                                        iCommaPos = sWorking.IndexOf(",")
-                                        If iCommaPos > -1 Then
-                                            'Set the 2nd parameter
-                                            sWorking = sWorking.Substring(iCommaPos + 1, sWorking.Length - (iCommaPos + 1))
-                                            sParam2 = sWorking.Replace(Chr(34), "")
-                                        End If
-                                    ElseIf iQuotePos >= 0 And iCommaPos = -1 Then
-                                        'Only 1 paramter, and it is quoted
-                                        sWorking = sWorking.Substring(iQuotePos + 1, sWorking.Length - (iQuotePos + 1))
-                                        ' Now we reuse the Quote variable and look for the closing quote
-                                        iQuotePos = sWorking.IndexOf(Chr(34))
-                                        sParam1 = sWorking.Substring(0, iQuotePos)
-                                        sWorking = sWorking.Replace(sParam1, "")
-                                    ElseIf iQuotePos = -1 And iCommaPos = -1 Then
-                                        'Only 1 paramter, and it is NOT quoted
-                                        'sParam1 = ""
-                                        'This was changed in 0.3.1 due to a ticket saying command was showing up as first parameter
-                                        sParam1 = sWorking
-                                    ElseIf iQuotePos = -1 And iCommaPos > -1 Then
-                                        'Only 1 paramter, and it is NOT quoted
-                                        sParam1 = sWorking.Substring(0, iCommaPos)
-                                        sParam2 = sWorking.Substring(iCommaPos + 1, sWorking.Length - (iCommaPos + 1))
-                                    ElseIf iQuotePos > -1 And iQuotePos > iCommaPos Then
-                                        'Only 1 paramter, and it is NOT quoted
-                                        sParam1 = sWorking.Substring(0, iCommaPos)
-                                        sParam2 = sWorking.Substring(iCommaPos + 1, sWorking.Length - (iCommaPos + 1))
-                                        sParam2 = sParam2.Replace(Chr(34), "")
-                                    End If
+                                    'Here each type of input has different parsing, sObject we will check and process seperately
                                     If sOption.ToUpper = "RUN METHOD" Then
+                                        ' Find Method name.   Either a . if it has parameters, or the rest of the line.
+                                        iMethodPos = sWorking.IndexOf(".")
+                                        If iMethodPos = -1 Then
+                                            sMethod = sWorking
+                                            sWorking = ""
+                                        Else
+                                            sMethod = sWorking.Substring(0, iMethodPos)
+                                            sWorking = sWorking.Substring(iMethodPos + 1, sWorking.Length - (iMethodPos + 1))
+                                        End If
+
+                                        ' Find First parameter based on a pair of "" or a Comma
+                                        sParam1 = ""
+                                        sParam2 = ""
+                                        iParam1Pos = sWorking.IndexOf(Chr(34))
+                                        iQuotePos = sWorking.IndexOf(Chr(34))
+                                        iCommaPos = sWorking.IndexOf(",")
+                                        ' Check to see if first parameter is using quote by comparing to position of ,
+                                        If (iQuotePos < iCommaPos And iQuotePos >= 0) Or (iQuotePos >= 0 And iCommaPos = -1) Then
+                                            'First Parameter is quoted.  Delete first quote and find closing quote
+                                            sWorking = sWorking.Substring(iQuotePos + 1, sWorking.Length - (iQuotePos + 1))
+                                            ' Now we reuse the Quote variable and look for the closing quote
+                                            iQuotePos = sWorking.IndexOf(Chr(34))
+                                            sParam1 = sWorking.Substring(0, iQuotePos)
+                                            sWorking = sWorking.Replace(sParam1, "")
+                                            iCommaPos = sWorking.IndexOf(",")
+                                            If iCommaPos > -1 Then
+                                                'Set the 2nd parameter
+                                                sWorking = sWorking.Substring(iCommaPos + 1, sWorking.Length - (iCommaPos + 1))
+                                                sParam2 = sWorking.Replace(Chr(34), "")
+                                            End If
+                                        ElseIf iQuotePos >= 0 And iCommaPos = -1 Then
+                                            'Only 1 paramter, and it is quoted
+                                            sWorking = sWorking.Substring(iQuotePos + 1, sWorking.Length - (iQuotePos + 1))
+                                            ' Now we reuse the Quote variable and look for the closing quote
+                                            iQuotePos = sWorking.IndexOf(Chr(34))
+                                            sParam1 = sWorking.Substring(0, iQuotePos)
+                                            sWorking = sWorking.Replace(sParam1, "")
+                                        ElseIf iQuotePos = -1 And iCommaPos = -1 Then
+                                            'Only 1 paramter, and it is NOT quoted
+                                            'sParam1 = ""
+                                            'This was changed in 0.3.1 due to a ticket saying command was showing up as first parameter
+                                            sParam1 = sWorking
+                                        ElseIf iQuotePos = -1 And iCommaPos > -1 Then
+                                            'Only 1 paramter, and it is NOT quoted
+                                            sParam1 = sWorking.Substring(0, iCommaPos)
+                                            sParam2 = sWorking.Substring(iCommaPos + 1, sWorking.Length - (iCommaPos + 1))
+                                        ElseIf iQuotePos > -1 And iQuotePos > iCommaPos Then
+                                            'Only 1 paramter, and it is NOT quoted
+                                            sParam1 = sWorking.Substring(0, iCommaPos)
+                                            sParam2 = sWorking.Substring(iCommaPos + 1, sWorking.Length - (iCommaPos + 1))
+                                            sParam2 = sParam2.Replace(Chr(34), "")
+                                        End If
+                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " Run Method: " & sObject & "." & sMethod)
                                         OSAEMethodManager.MethodQueueAdd(sObject, sMethod, sParam1, sParam2, gAppName)
-                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Ran Method: " & sObject & "." & sMethod & " (" & sParam1 & "," & sParam2 & ")")
+                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Ran Method: " & sObject & "." & sMethod & "." & sParam1 & "," & sParam2)
                                     ElseIf sOption.ToUpper = "SET STATE" Then
                                         OSAEObjectStateManager.ObjectStateSet(sObject, sMethod, gAppName)
                                         If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set State: " & sObject & "." & sMethod)
                                     ElseIf sOption.ToUpper = "SET CONTAINER" Then
                                         OSAEObjectManager.ObjectUpdate(oCurrentObject.Name, oCurrentObject.Name, oCurrentObject.Alias, oCurrentObject.Description, oCurrentObject.Type, oCurrentObject.Address, sMethod, oCurrentObject.MinTrustLevel, oCurrentObject.Enabled)
                                         If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Container: " & sObject & "." & sMethod)
-
-
-
-
-
-
                                     ElseIf sOption.ToUpper = "SET PROPERTY" Then
                                         iOptionPos = sWorking.IndexOf("+=")
                                         If iOptionPos <= 0 Then iOptionPos = sWorking.IndexOf("=")
@@ -292,25 +289,19 @@ Public Class ScriptProcessor
                                                 End If
 
                                                 If sMethod = "=" Then
-                                                        OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, sValue, gAppName)
-                                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sObject & "." & sParam1 & " = " & sValue)
-                                                    ElseIf sMethod = "+=" Then
-                                                        sWorking = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sParam1).Value
-                                                        OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue), gAppName)
-                                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sObject & "." & sParam1 & " = " & sValue)
-                                                    End If
+                                                    OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, sValue, gAppName)
+                                                    If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sObject & "." & sParam1 & " = " & sValue)
+                                                ElseIf sMethod = "+=" Then
+                                                    sWorking = OSAEObjectPropertyManager.GetObjectPropertyValue(sObject, sParam1).Value
+                                                    OSAEObjectPropertyManager.ObjectPropertySet(sObject, sParam1, Val(sWorking) + Val(sValue), gAppName)
+                                                    If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Property: " & sObject & "." & sParam1 & " = " & sValue)
                                                 End If
-
                                             End If
+
+                                        End If
                                         'OSAEApi.ObjectPropertySet(sObject, sParam1, sParam2)
                                         'lstResults.Items.Add("Set Property: " & sObject & "." & sParam1 & " = " & sParam2)
                                     End If
-
-
-
-
-
-
                                 Else
                                     'Set properties for an object
                                     iOptionPos = sWorking.IndexOf("+=")
