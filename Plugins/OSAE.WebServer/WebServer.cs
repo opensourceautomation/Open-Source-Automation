@@ -43,7 +43,7 @@
 
             if (oType.OwnedBy == "")
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip);
                 Log.Info("Web Server Plugin took ownership of the WEB SERVER Object Type.");
             }
             else

@@ -59,7 +59,7 @@ namespace OSAE.NetworkMonitor
 
             if (oType.OwnedBy == "")
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip);
                 Log.Info("Network Monitor Plugin took ownership of the NETWORK MONITOR Object Type.");
             }
             else

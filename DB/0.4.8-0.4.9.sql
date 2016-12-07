@@ -33,6 +33,37 @@ ALTER TABLE osae_object_property_history
   ADD COLUMN property_boolean INT(1) DEFAULT NULL AFTER property_decimal,
   ADD COLUMN property_float FLOAT DEFAULT NULL AFTER property_boolean;
 
+--
+-- Alter table "osae_object_type"
+--
+ALTER TABLE osae_object_type
+  ADD COLUMN object_type_tooltip VARCHAR(255) DEFAULT NULL AFTER hide_redundant_events;
+
+--
+-- Alter table "osae_object_type_event"
+--
+ALTER TABLE osae_object_type_event
+  ADD COLUMN event_tooltip VARCHAR(255) DEFAULT NULL AFTER object_type_id;
+
+--
+-- Alter table "osae_object_type_method"
+--
+ALTER TABLE osae_object_type_method
+  ADD COLUMN method_tooltip VARCHAR(255) DEFAULT NULL AFTER param_2_default;
+
+--
+-- Alter table "osae_object_type_property"
+--
+ALTER TABLE osae_object_type_property
+  ADD COLUMN property_tooltip VARCHAR(255) DEFAULT NULL AFTER property_object_type_id,
+  ADD COLUMN property_required TINYINT(1) NOT NULL DEFAULT -1 AFTER property_tooltip;
+
+--
+-- Alter table "osae_object_type_state"
+--
+ALTER TABLE osae_object_type_state
+  ADD COLUMN state_tooltip VARCHAR(255) DEFAULT NULL AFTER object_type_id;
+
 DELIMITER $$
 
 --
@@ -86,6 +117,334 @@ DECLARE vEventCount INT;
       END IF;
         END IF;
     END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_add"
+--
+DROP PROCEDURE osae_sp_object_type_add$$
+CREATE PROCEDURE osae_sp_object_type_add(IN pname VARCHAR(200), IN pdesc VARCHAR(200), IN pownedby VARCHAR(200), IN pbasetype VARCHAR(200), IN ptypeowner TINYINT, IN psystem TINYINT, IN pcontainer TINYINT, IN phideredundantevents TINYINT, IN ptooltip VARCHAR(255))
+BEGIN
+DECLARE vOwnerTypeCount INT;
+DECLARE vOwnerTypeID INT Default NULL;
+DECLARE vBaseTypeCount INT;
+DECLARE vBaseTypeID INT Default NULL;
+    SELECT COUNT(object_name) INTO vOwnerTypeCount FROM osae_v_object WHERE object_name=pownedby;
+    IF vOwnerTypeCount > 0 THEN
+        SELECT object_id INTO vOwnerTypeID FROM osae_v_object WHERE object_name=pownedby;
+    END IF; 
+    SELECT COUNT(object_type) INTO vBaseTypeCount FROM osae_v_object_type WHERE object_type=pbasetype;
+    IF vBaseTypeCount > 0 THEN
+        SELECT object_type_id INTO vBaseTypeID FROM osae_v_object_type WHERE object_type=pbasetype;
+    END IF; 
+    INSERT INTO osae_object_type (object_type,object_type_description,plugin_object_id,base_type_id,system_hidden,object_type_owner,container,hide_redundant_events,object_type_tooltip) VALUES(UPPER(pname),pdesc,vOwnerTypeID,vBaseTypeID,psystem,ptypeowner,pcontainer,phideredundantevents,ptooltip) ON DUPLICATE KEY UPDATE object_type_description=pdesc,plugin_object_id=vOwnerTypeID,base_type_id=vBaseTypeID,system_hidden=psystem,object_type_owner=ptypeowner,container=pcontainer,hide_redundant_events=phideredundantevents,object_type_tooltip=ptooltip;
+    IF vBaseTypeCount = 0 THEN
+        SELECT object_type_id INTO vBaseTypeID FROM osae_object_type WHERE object_type=UPPER(pname);
+        UPDATE osae_object_type SET base_type_id=vBaseTypeID WHERE object_type_id=vBaseTypeID;
+    END IF;
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_clone"
+--
+DROP PROCEDURE osae_sp_object_type_clone$$
+CREATE PROCEDURE osae_sp_object_type_clone(IN pnewname varchar(200), IN pbasename varchar(200))
+BEGIN
+DECLARE vBaseTypeID INT DEFAULT 0; 
+DECLARE vNewTypeID INT;
+    SELECT object_type_id INTO vBaseTypeID FROM osae_v_object_type WHERE object_type=pbasename;
+    IF vBaseTypeID != 0 THEN
+      # CALL OBJECT_TYPE_DOES_NOT_EXIST();
+   # ELSE
+      INSERT INTO osae_object_type (object_type,object_type_description,plugin_object_id,system_hidden,object_type_owner,base_type_id,container,object_type_tooltip) SELECT pnewname,t.object_type_description,t.plugin_object_id,t.system_hidden,t.object_type_owner,t.base_type_id,t.container,t.object_type_tooltip FROM osae_object_type t WHERE object_type=pbasename;
+      SELECT object_type_id INTO vNewTypeID FROM osae_object_type WHERE object_type=pnewname;
+      INSERT INTO osae_object_type_state (state_name,state_label,object_type_id) SELECT state_name,state_label,vNewTypeID FROM osae_object_type_state t WHERE object_type_id=vBaseTypeID;
+      INSERT INTO osae_object_type_event (event_name,event_label,object_type_id) SELECT event_name,event_label,vNewTypeID FROM osae_object_type_event t WHERE object_type_id=vBaseTypeID;
+      INSERT INTO osae_object_type_method (method_name,method_label,object_type_id) SELECT method_name,method_label,vNewTypeID FROM osae_object_type_method t WHERE object_type_id=vBaseTypeID;
+      INSERT INTO osae_object_type_property (property_name,property_datatype,object_type_id) SELECT property_name,property_datatype,vNewTypeID FROM osae_object_type_property t WHERE object_type_id=vBaseTypeID;
+    END IF;
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_event_add"
+--
+DROP PROCEDURE osae_sp_object_type_event_add$$
+CREATE PROCEDURE osae_sp_object_type_event_add(IN pobjecttype VARCHAR(200), IN pname VARCHAR(200), IN plabel VARCHAR(200), IN ptooltip VARCHAR(255))
+BEGIN
+DECLARE vObjectTypeCount INT;
+DECLARE vObjectTypeID INT;
+    SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
+    IF vObjectTypeCount > 0 THEN
+        SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
+        INSERT INTO osae_object_type_event (event_name,event_label,event_tooltip,object_type_id) VALUES(UPPER(pname),plabel,ptooltip,vObjectTypeID) ON DUPLICATE KEY UPDATE event_label=plabelevent_tooltip=ptooltip,object_type_id=vObjectTypeID;
+    END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_event_update"
+--
+DROP PROCEDURE osae_sp_object_type_event_update$$
+CREATE PROCEDURE osae_sp_object_type_event_update(IN poldname VARCHAR(200), IN pnewname VARCHAR(200), IN plabel VARCHAR(200), IN pobjecttype VARCHAR(200), IN ptooltip VARCHAR(255))
+BEGIN
+DECLARE vObjectTypeCount INT;
+DECLARE vObjectTypeID INT;
+    SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
+    IF vObjectTypeCount > 0 THEN
+        SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
+        UPDATE osae_object_type_event SET event_name=UPPER(pnewname),event_label=plabel,event_tooltip=ptooltip WHERE event_name=UPPER(poldname) AND object_type_id=vObjectTypeID;
+    END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_export"
+--
+DROP PROCEDURE osae_sp_object_type_export$$
+CREATE PROCEDURE osae_sp_object_type_export(IN pObjectType VARCHAR(255))
+BEGIN
+  DECLARE vObjectType VARCHAR(200);
+  DECLARE vResults TEXT;
+  DECLARE vDescription VARCHAR(200);
+  DECLARE vOwner VARCHAR(200);
+  DECLARE vBaseType VARCHAR(200);
+  DECLARE vTypeOwner INT;
+  DECLARE vSystemType INT;
+  DECLARE vContainer INT;
+  DECLARE vHideRedundant INT;
+  DECLARE v_finished INT; 
+  DECLARE vName VARCHAR(200);
+  DECLARE vLabel VARCHAR(200);
+  DECLARE vParam1Name VARCHAR(200);
+  DECLARE vParam1Default VARCHAR(200);
+  DECLARE vParam2Name VARCHAR(200);
+  DECLARE vParam2Default VARCHAR(200);
+  DECLARE vDataType VARCHAR(200);
+  DECLARE vDefault VARCHAR(200);
+  DECLARE vTrackHistory VARCHAR(200);
+  DECLARE vPropertyObjectType VARCHAR(200);
+  DECLARE vPropertyOption VARCHAR(200);
+  DECLARE vObjectTypeTooltip VARCHAR(255);
+
+  DECLARE state_cursor CURSOR FOR SELECT state_name,state_label FROM osae_v_object_type_state WHERE object_type=vObjectType;
+  DECLARE event_cursor CURSOR FOR SELECT event_name,event_label FROM osae_v_object_type_event WHERE object_type=vObjectType;
+  DECLARE method_cursor CURSOR FOR SELECT method_name,method_label,param_1_label,param_1_default,param_2_label,param_2_default FROM osae_v_object_type_method WHERE object_type=vObjectType;
+  DECLARE property_cursor CURSOR FOR SELECT property_name,property_datatype,property_default,property_object_type,track_history FROM osae_v_object_type_property WHERE object_type=vObjectType;
+  DECLARE property_option_cursor CURSOR FOR SELECT option_name FROM osae_v_object_type_property_option WHERE object_type=vObjectType and property_name=vname;
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_finished = TRUE;
+
+  #SET vObjectType = CONCAT(objectName,'2');
+
+  SELECT object_type,object_type_description,COALESCE(object_name,''),base_type,object_type_owner,system_hidden,container,hide_redundant_events,object_type_tooltip INTO vObjectType,vDescription,vOwner,vBaseType,vTypeOwner,vSystemType,vContainer,vHideRedundant,vObjectTypeTooltip FROM osae_v_object_type WHERE object_type=pObjectType;
+  SET vResults = CONCAT('CALL osae_sp_object_type_add (\'', REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vDescription,'\'','\\\''),'\',\'',vOwner,'\',\'',vBaseType,'\',',vTypeOwner,',', vSystemType,',',vContainer,',',vHideRedundant,',',vObjectTypeTooltip,');','\r\n');
+
+  OPEN state_cursor;
+    get_states: LOOP
+    SET v_finished = FALSE;
+      FETCH state_cursor INTO vName,vLabel;
+      IF v_finished THEN 
+        LEAVE get_states;
+      END IF;
+      SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_state_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',REPLACE(vLabel,'\'','\\\''),'\');','\r\n');
+    END LOOP get_states;
+  CLOSE state_cursor;
+
+
+  OPEN event_cursor;
+  get_events: LOOP
+    SET v_finished = FALSE;
+    FETCH event_cursor INTO vName,vLabel;
+    IF v_finished THEN 
+      LEAVE get_events;
+    END IF;
+    SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_event_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',REPLACE(vLabel,'\'','\\\''),'\');','\r\n');
+  END LOOP get_events;
+  CLOSE event_cursor;
+
+  OPEN method_cursor;
+  get_methods: LOOP
+    SET v_finished = FALSE;
+    FETCH method_cursor INTO vName,vLabel,vParam1Name,vParam1Default,vParam2Name,vParam2Default;
+    IF v_finished THEN 
+      LEAVE get_methods;
+    END IF;
+    SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_method_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',REPLACE(vLabel,'\'','\\\''),'\',\'',vParam1Name,'\',\'',vParam2Name,'\',\'',vParam1Default,'\',\'',vParam2Default,'\');','\r\n');
+  END LOOP get_methods;
+  CLOSE method_cursor;
+  SET v_finished = 0;
+
+  OPEN property_cursor;
+  get_properties: LOOP
+    SET v_finished = FALSE;
+    FETCH property_cursor INTO vName,vDataType,vDefault,vPropertyObjectType,vTrackHistory;
+    IF v_finished THEN 
+      LEAVE get_properties;
+    END IF;
+    SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_property_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',vDataType,'\',\'',vPropertyObjectType,'\',\'',vDefault,'\',',vTrackHistory,');','\r\n');
+  
+    OPEN property_option_cursor;
+    get_property_options: LOOP
+      SET v_finished = FALSE;
+      FETCH property_option_cursor INTO vPropertyOption;
+      IF v_finished THEN
+        SET v_finished := false;
+        LEAVE get_property_options;
+      END IF;
+      SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_property_option_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',vPropertyOption,'\');','\r\n');
+ 
+    END LOOP get_property_options;
+    CLOSE property_option_cursor;
+  
+  
+  
+  END LOOP get_properties;
+  CLOSE property_cursor;
+
+  SELECT vResults;
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_method_add"
+--
+DROP PROCEDURE osae_sp_object_type_method_add$$
+CREATE PROCEDURE osae_sp_object_type_method_add(IN pobjecttype VARCHAR(200), IN pname VARCHAR(200), IN plabel VARCHAR(200), IN pparam1 VARCHAR(100), IN pparam2 VARCHAR(100), IN pparam1default VARCHAR(1024), IN pparam2default VARCHAR(1024), IN ptooltip VARCHAR(255))
+BEGIN
+DECLARE vObjectTypeCount INT;
+DECLARE vObjectTypeID INT;
+    SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
+    IF vObjectTypeCount > 0 THEN
+        SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
+        INSERT INTO osae_object_type_method (method_name,method_label,object_type_id,param_1_label,param_2_label,param_1_default,param_2_default,method_tooltip) VALUES(UPPER(pname),plabel,vObjectTypeID,pparam1,pparam2,pparam1default,pparam2default,ptooltip) ON DUPLICATE KEY UPDATE method_label=plabel,object_type_id=vObjectTypeID,param_1_label=pparam1,param_2_label=pparam2,param_1_default=pparam1default,param_2_default=pparam2default,method_tooltip=ptooltip;
+    END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_method_update"
+--
+DROP PROCEDURE osae_sp_object_type_method_update$$
+CREATE PROCEDURE osae_sp_object_type_method_update(IN poldname VARCHAR(200), IN pnewname VARCHAR(200), IN plabel VARCHAR(200), IN pobjecttype VARCHAR(200), IN pparam1 VARCHAR(100), IN pparam2 VARCHAR(100), IN pparam1default VARCHAR(1024), IN pparam2default VARCHAR(1024), IN ptooltip VARCHAR(255))
+BEGIN
+DECLARE vObjectTypeCount INT;
+DECLARE vObjectTypeID INT;
+    SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
+    IF vObjectTypeCount = 1 THEN
+        SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
+        UPDATE osae_object_type_method SET method_name=UPPER(pnewname),method_label=plabel,param_1_label=pparam1,param_2_label=pparam2,param_1_default=pparam1default,param_2_default=pparam2default,method_tooltip=ptooltip WHERE method_name=UPPER(poldname) AND object_type_id=vObjectTypeID;
+    END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_property_add"
+--
+DROP PROCEDURE osae_sp_object_type_property_add$$
+CREATE PROCEDURE osae_sp_object_type_property_add(IN pobjecttype VARCHAR(200), IN ppropertyname VARCHAR(200), IN ppropertytype VARCHAR(50), IN ppropertyobjecttype VARCHAR(200), IN pdefault VARCHAR(255), IN ptrackhistory TINYINT(1), IN prequired TINYINT(1))
+BEGIN
+DECLARE vObjectTypeCount INT;
+DECLARE vObjectTypeID INT;
+DECLARE vPropertyObjectTypeCount INT;
+DECLARE vPropertyObjectTypeID INT;
+
+    SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
+    IF vObjectTypeCount > 0 THEN
+        SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
+        IF UPPER(ppropertytype) = 'OBJECTTYPE' THEN
+            SELECT COUNT(object_type_id) INTO vPropertyObjectTypeCount FROM osae_object_type WHERE UPPER(object_type)=UPPER(ppropertyobjecttype);
+            IF vPropertyObjectTypeCount > 0 THEN
+                SELECT object_type_id INTO vPropertyObjectTypeID FROM osae_object_type WHERE UPPER(object_type)=UPPER(ppropertyobjecttype);
+            END IF;
+        END IF;
+        INSERT INTO osae_object_type_property (property_name,property_datatype,property_object_type_id,property_default,object_type_id,track_history,property_required) VALUES(ppropertyname,ppropertytype,vPropertyObjectTypeID,pdefault,vObjectTypeID,ptrackhistory,prequired) ON DUPLICATE KEY UPDATE property_datatype=ppropertytype,object_type_id=vObjectTypeID,property_required=prequired;
+    END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_property_update"
+--
+DROP PROCEDURE osae_sp_object_type_property_update$$
+CREATE PROCEDURE osae_sp_object_type_property_update(IN poldname VARCHAR(200), IN pnewname VARCHAR(200), IN pparamtype VARCHAR(50), IN ppropertyobjecttype VARCHAR(200), IN pdefault VARCHAR(255), IN pobjecttype VARCHAR(200), IN ptooltip VARCHAR(255), IN ptrackhistory TINYINT(1), IN prequired TINYINT(1))
+BEGIN
+DECLARE vObjectTypeCount INT;
+DECLARE vObjectTypeID INT;
+DECLARE vPropertyObjectTypeCount INT;
+DECLARE vPropertyObjectTypeID INT;
+
+    SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
+    IF vObjectTypeCount > 0 THEN
+        SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
+        IF UPPER(pparamtype) = 'OBJECT TYPE' THEN
+            SELECT COUNT(object_type_id) INTO vPropertyObjectTypeCount FROM osae_object_type WHERE object_type=ppropertyobjecttype;
+            IF vPropertyObjectTypeCount > 0 THEN
+                SELECT object_type_id INTO vPropertyObjectTypeID FROM osae_object_type WHERE object_type=ppropertyobjecttype;
+            END IF;
+        END IF;
+
+        IF vObjectTypeCount > 0 THEN
+            SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=ppropertyobjecttype;
+        END IF;
+        UPDATE osae_object_type_property SET property_name=pnewname,property_datatype=pparamtype,property_object_type_id=vPropertyObjectTypeID,property_default=pdefault,property_tooltip=ptooltip,track_history=ptrackhistory,property_required=prequired WHERE property_name=poldname AND object_type_id=vObjectTypeID;
+    END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_state_add"
+--
+DROP PROCEDURE osae_sp_object_type_state_add$$
+CREATE PROCEDURE osae_sp_object_type_state_add(IN pobjecttype VARCHAR(200), IN pname VARCHAR(200), IN plabel VARCHAR(200), IN ptooltip VARCHAR(255))
+BEGIN
+DECLARE vObjectTypeCount INT;
+DECLARE vObjectTypeID INT;
+    SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
+    IF vObjectTypeCount > 0 THEN
+        SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
+        INSERT INTO osae_object_type_state (state_name,state_label,state_tooltip,object_type_id) VALUES(UPPER(pname),plabel,ptooltip,vObjectTypeID) ON DUPLICATE KEY UPDATE state_label=plabel,object_type_id=vObjectTypeID;
+    END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_state_update"
+--
+DROP PROCEDURE osae_sp_object_type_state_update$$
+CREATE PROCEDURE osae_sp_object_type_state_update(IN poldname VARCHAR(200), IN pnewname VARCHAR(200), IN plabel VARCHAR(200), IN pobjecttype VARCHAR(200), IN ptooltip VARCHAR(255))
+BEGIN
+DECLARE vObjectTypeCount INT;
+DECLARE vObjectTypeID INT;
+    SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
+    IF vObjectTypeCount > 0 THEN
+        SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
+        UPDATE osae_object_type_state SET state_name=UPPER(pnewname),state_label=plabel,state_tooltip=ptooltip WHERE state_name=UPPER(poldname) AND object_type_id=vObjectTypeID;
+    END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_update"
+--
+DROP PROCEDURE osae_sp_object_type_update$$
+CREATE PROCEDURE osae_sp_object_type_update(IN poldname VARCHAR(200), IN pnewname VARCHAR(200), IN pdesc VARCHAR(200), IN pownedby VARCHAR(200), IN pbasetype VARCHAR(200), IN ptypeowner TINYINT, IN psystem TINYINT, IN pcontainer TINYINT, IN phideredundantevents TINYINT, IN ptooltip VARCHAR(255))
+BEGIN
+DECLARE vOwnerTypeCount INT;
+DECLARE vOwnerTypeID INT Default NULL;
+DECLARE vBaseTypeCount INT;
+DECLARE vBaseTypeID INT Default NULL;
+    SELECT COUNT(object_name) INTO vOwnerTypeCount FROM osae_v_object WHERE UPPER(object_name)=UPPER(pownedby);
+    IF vOwnerTypeCount = 1 THEN
+        SELECT object_id INTO vOwnerTypeID FROM osae_v_object WHERE  UPPER(object_name)=UPPER(pownedby);
+    END IF; 
+    SELECT COUNT(object_type) INTO vBaseTypeCount FROM osae_v_object_type WHERE object_type=pbasetype;
+    IF vBaseTypeCount = 1 THEN
+        SELECT object_type_id INTO vBaseTypeID FROM osae_v_object_type WHERE object_type=pbasetype;
+    END IF;     
+    UPDATE osae_object_type SET object_type=UPPER(pnewname),object_type_description=pdesc,plugin_object_id=vOwnerTypeID,base_type_id=vBaseTypeID,system_hidden=psystem,object_type_owner=ptypeowner,container=pcontainer,hide_redundant_events=phideredundantevents,object_type_tooltip=ptooltip WHERE object_type=poldname;
 END
 $$
 
@@ -672,6 +1031,30 @@ AS
 	select `osae_method_queue`.`method_queue_id` AS `method_queue_id`,`osae_method_queue`.`entry_time` AS `entry_time`,`osae_object`.`object_name` AS `object_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_method_queue`.`parameter_1` AS `parameter_1`,`osae_method_queue`.`parameter_2` AS `parameter_2`,`osae_from_object`.`object_name` AS `from_object`,`osae_method_queue`.`debug_trace` AS `debug_trace`,`osae_object`.`object_id` AS `object_id`,`osae_object`.`object_description` AS `object_description`,`osae_method_queue`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_method_queue`.`from_object_id` AS `from_object_id`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_types1`.`object_type` AS `base_type`,`osae_owner_object`.`object_name` AS `object_owner`,`osae_owner_object`.`object_id` AS `object_owner_id` from ((((((`osae_object_type` left join `osae_object` `osae_owner_object` on((`osae_object_type`.`plugin_object_id` = `osae_owner_object`.`object_id`))) left join `osae_object_type` `osae_object_types1` on((`osae_object_type`.`base_type_id` = `osae_object_types1`.`object_type_id`))) join `osae_object` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) join `osae_method_queue` on(((`osae_object`.`object_id` = `osae_method_queue`.`object_id`) and (`osae_object_type_method`.`method_id` = `osae_method_queue`.`method_id`)))) left join `osae_object` `osae_from_object` on((`osae_from_object`.`object_id` = `osae_method_queue`.`from_object_id`)));
 
 --
+-- Alter view "osae_v_object"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`last_updated` AS `last_updated`,`osae_object`.`last_state_change` AS `last_state_change`,`osae_object`.`min_trust_level` AS `min_trust_level`,`osae_object`.`enabled` AS `enabled`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object_type_state`.`state_id` AS `state_id`,coalesce(`osae_object_type_state`.`state_name`,'') AS `state_name`,coalesce(`osae_object_type_state`.`state_label`,'') AS `state_label`,`objects_2`.`object_name` AS `owned_by`,`object_types_2`.`object_type` AS `base_type`,`objects_1`.`object_name` AS `container_name`,`osae_object`.`container_id` AS `container_id`,(select max(`osae_v_object_property`.`last_updated`) AS `expr1` from `osae_v_object_property` where ((`osae_v_object_property`.`object_id` = `osae_object`.`object_id`) and (`osae_v_object_property`.`property_name` <> 'Time'))) AS `property_last_updated`,timestampdiff(SECOND,`osae_object`.`last_state_change`,now()) AS `time_in_state`,`osae_object_type_state_1`.`state_name` AS `container_state_name`,`osae_object_type_state_1`.`state_label` AS `container_state_label` from ((((((`osae_object` left join `osae_object_type` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) left join `osae_object_type` `object_types_2` on((`osae_object_type`.`base_type_id` = `object_types_2`.`object_type_id`))) left join `osae_object` `objects_2` on((`osae_object_type`.`plugin_object_id` = `objects_2`.`object_id`))) left join `osae_object_type_state` on(((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`) and (`osae_object_type_state`.`state_id` = `osae_object`.`state_id`)))) left join `osae_object` `objects_1` on((`objects_1`.`object_id` = `osae_object`.`container_id`))) left join `osae_object_type_state` `osae_object_type_state_1` on((`objects_1`.`state_id` = `osae_object_type_state_1`.`state_id`)));
+
+--
+-- Alter view "osae_v_object_event"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_event
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`container_id` AS `container_id`,`osae_object`.`enabled` AS `enabled`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object_type`.`object_type_tooltip` AS `object_type_tooltip`,`osae_object_type_event`.`event_id` AS `event_id`,`osae_object_type_event`.`event_name` AS `event_name`,`osae_object_type_event`.`event_label` AS `event_label`,coalesce(`osae_object_type_event`.`event_tooltip`,'') AS `event_tooltip` from ((`osae_object` join `osae_object_type` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) join `osae_object_type_event` on((`osae_object_type`.`object_type_id` = `osae_object_type_event`.`object_type_id`)));
+
+--
+-- Alter view "osae_v_object_method"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_method
+AS
+	select `osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object`.`object_id` AS `object_id`,`osae_object_type`.`object_type_id` AS `object_type_id`,coalesce(`osae_object_type`.`object_type_tooltip`,'') AS `object_type_tooltip`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_object_type_method`.`param_1_label` AS `param_1_label`,`osae_object_type_method`.`param_2_label` AS `param_2_label`,`osae_object_type_method`.`param_1_default` AS `param_1_default`,`osae_object_type_method`.`param_2_default` AS `param_2_default`,`osae_object_type_method`.`method_id` AS `method_id`,`osae_object_type_method`.`method_tooltip` AS `method_tooltip` from ((`osae_object` left join `osae_object_type` on((`osae_object_type`.`object_type_id` = `osae_object`.`object_type_id`))) join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`)));
+
+--
 -- Create view "osae_v_object_off_timer_ready"
 --
 CREATE
@@ -694,6 +1077,14 @@ AND (`osae_object_property`.`property_value` <> '-1')
 AND (subtime(now(), sec_to_time(`osae_object_property`.`property_value`)) >= `osae_object`.`last_updated`));
 
 --
+-- Alter view "osae_v_object_property"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_property
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`container_id` AS `container_id`,`osae_object`.`min_trust_level` AS `min_trust_level`,`osae_object`.`enabled` AS `enabled`,`osae_object`.`last_updated` AS `object_last_updated`,coalesce(`osae_object`.`last_state_change`,now()) AS `last_state_change`,`osae_object_property`.`last_updated` AS `last_updated`,`osae_object_property`.`object_property_id` AS `object_property_id`,`osae_object_property`.`object_type_property_id` AS `object_type_property_id`,`osae_object_property`.`trust_level` AS `trust_level`,`osae_object_property`.`interest_level` AS `interest_level`,coalesce(`osae_object_property`.`source_name`,'') AS `source_name`,coalesce(`osae_object_property`.`property_value`,'') AS `property_value`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_default` AS `property_default`,`osae_object_type_property`.`property_id` AS `property_id`,`osae_object_type_property`.`track_history` AS `track_history`,`osae_object_type_property`.`property_tooltip` AS `property_tooltip`,`osae_object_type_property`.`property_required` AS `property_required`,`ot1`.`object_type` AS `base_type`,`osae_object_type_state`.`state_name` AS `state_name`,`osae_object_type_property`.`property_object_type_id` AS `property_object_type_id`,`osae_object_type_1`.`object_type` AS `property_object_type`,`osae_object_1`.`object_name` AS `container_name`,timestampdiff(SECOND,`osae_object`.`last_state_change`,now()) AS `time_in_state` from (((((((`osae_object` join `osae_object_property` on((`osae_object`.`object_id` = `osae_object_property`.`object_id`))) join `osae_object_type` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) join `osae_object_type_property` on(((`osae_object_type`.`object_type_id` = `osae_object_type_property`.`object_type_id`) and (`osae_object_property`.`object_type_property_id` = `osae_object_type_property`.`property_id`)))) left join `osae_object_type_state` on((`osae_object`.`state_id` = `osae_object_type_state`.`state_id`))) join `osae_object_type` `ot1` on((`osae_object_type`.`base_type_id` = `ot1`.`object_type_id`))) left join `osae_object_type` `osae_object_type_1` on((`osae_object_type_property`.`property_object_type_id` = `osae_object_type_1`.`object_type_id`))) left join `osae_object` `osae_object_1` on((`osae_object`.`container_id` = `osae_object_1`.`object_id`)));
+
+--
 -- Alter view "osae_v_object_property_history"
 --
 CREATE OR REPLACE 
@@ -702,12 +1093,68 @@ AS
 	select `osae_object_property_history`.`history_id` AS `history_id`,`osae_object_property_history`.`history_timestamp` AS `history_timestamp`,(case `osae_object_type_property`.`property_datatype` when 'Boolean' then if((`osae_object_property_history`.`property_value` = 'TRUE'),1,0) when 'Integer' then `osae_object_property_history`.`property_integer` when 'Float' then `osae_object_property_history`.`property_float` else `osae_object_property_history`.`property_value` end) AS `property_value`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object_property_history`.`object_property_id` AS `object_property_id`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object`.`object_description` AS `object_description` from ((((`osae_object_property_history` join `osae_object_property` on((`osae_object_property_history`.`object_property_id` = `osae_object_property`.`object_property_id`))) join `osae_object` on((`osae_object_property`.`object_id` = `osae_object`.`object_id`))) join `osae_object_type_property` on((`osae_object_property`.`object_type_property_id` = `osae_object_type_property`.`property_id`))) join `osae_object_type` on(((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`) and (`osae_object_type_property`.`object_type_id` = `osae_object_type`.`object_type_id`))));
 
 --
+-- Alter view "osae_v_object_state"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_state
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`object_type_id` AS `object_type_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type_state`.`state_id` AS `state_id`,`osae_object_type_state`.`state_name` AS `state_name`,`osae_object_type_state`.`state_label` AS `state_label`,coalesce(`osae_object_type_state`.`state_tooltip`,'') AS `state_tooltip` from ((`osae_object` left join `osae_object_type` on((`osae_object_type`.`object_type_id` = `osae_object`.`object_type_id`))) join `osae_object_type_state` on((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`)));
+
+--
+-- Alter view "osae_v_object_type"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type
+AS
+	select `osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object_type`.`object_type_tooltip` AS `object_type_tooltip`,`osae_object_type`.`hide_redundant_events` AS `hide_redundant_events`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object`.`object_description` AS `object_description`,`ot1`.`object_type` AS `base_type` from ((`osae_object_type` left join `osae_object` on((`osae_object`.`object_id` = `osae_object_type`.`plugin_object_id`))) left join `osae_object_type` `ot1` on((`osae_object_type`.`base_type_id` = `ot1`.`object_type_id`)));
+
+--
+-- Alter view "osae_v_object_type_event"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type_event
+AS
+	select `osae_object_type_event`.`event_id` AS `event_id`,`osae_object_type_event`.`event_name` AS `event_name`,`osae_object_type_event`.`event_label` AS `event_label`,coalesce(`osae_object_type_event`.`event_tooltip`,'') AS `event_tooltip`,`osae_object_type_event`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`hide_redundant_events` AS `hide_redundant_events`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id` from (`osae_object_type` join `osae_object_type_event` on((`osae_object_type`.`object_type_id` = `osae_object_type_event`.`object_type_id`)));
+
+--
 -- Alter view "osae_v_object_type_method"
 --
 CREATE OR REPLACE 
 VIEW osae_v_object_type_method
 AS
-	select `osae_object_type_1`.`object_type` AS `base_type`,`osae_object_type_method`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_object_type_method`.`object_type_id` AS `object_type_id`,coalesce(`osae_object_type_method`.`param_1_label`,'') AS `param_1_label`,coalesce(`osae_object_type_method`.`param_2_label`,'') AS `param_2_label`,coalesce(`osae_object_type_method`.`param_1_default`,'') AS `param_1_default`,coalesce(`osae_object_type_method`.`param_2_default`,'') AS `param_2_default`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden` from ((`osae_object_type` join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) join `osae_object_type` `osae_object_type_1` on((`osae_object_type`.`base_type_id` = `osae_object_type_1`.`object_type_id`)));
+	select `osae_object_type_1`.`object_type` AS `base_type`,`osae_object_type_method`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,coalesce(`osae_object_type_method`.`method_tooltip`,'') AS `method_tooltip`,`osae_object_type_method`.`object_type_id` AS `object_type_id`,coalesce(`osae_object_type_method`.`param_1_label`,'') AS `param_1_label`,coalesce(`osae_object_type_method`.`param_2_label`,'') AS `param_2_label`,coalesce(`osae_object_type_method`.`param_1_default`,'') AS `param_1_default`,coalesce(`osae_object_type_method`.`param_2_default`,'') AS `param_2_default`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden` from ((`osae_object_type` join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) join `osae_object_type` `osae_object_type_1` on((`osae_object_type`.`base_type_id` = `osae_object_type_1`.`object_type_id`)));
+
+--
+-- Create view "osae_v_object_type_method_list_full"
+--
+CREATE
+VIEW osae_v_object_type_method_list_full
+AS
+SELECT
+  `osae_v_object_type_method`.`base_type` AS `base_type`,
+  `osae_v_object_type_method`.`object_type` AS `object_type`,
+  `osae_v_object_type_method`.`method_label` AS `method_label`
+FROM `osae_v_object_type_method`
+WHERE ((`osae_v_object_type_method`.`base_type` NOT IN ('CONTROL', 'SCREEN', 'LIST'))
+AND `osae_v_object_type_method`.`object_type` IN (SELECT DISTINCT
+    `osae_v_object`.`object_type`
+  FROM `osae_v_object`));
+
+--
+-- Alter view "osae_v_object_type_property"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type_property
+AS
+	select `osae_object_type_property`.`property_id` AS `property_id`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type_property`.`property_default` AS `property_default`,`osae_object_type_property`.`object_type_id` AS `object_type_id`,`osae_object_type_property`.`property_object_type_id` AS `property_object_type_id`,`osae_object_type_property`.`property_tooltip` AS `property_tooltip`,`osae_object_type_property`.`track_history` AS `track_history`,`osae_object_type_property`.`property_required` AS `property_required`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`system_hidden` AS `system_hidden`,coalesce(`osae_object_type_1`.`object_type`,'') AS `property_object_type` from ((`osae_object_type` join `osae_object_type_property` on((`osae_object_type`.`object_type_id` = `osae_object_type_property`.`object_type_id`))) left join `osae_object_type` `osae_object_type_1` on((`osae_object_type_property`.`property_object_type_id` = `osae_object_type_1`.`object_type_id`)));
+
+--
+-- Alter view "osae_v_object_type_state"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object_type_state
+AS
+	select `osae_object_type_1`.`object_type` AS `base_type`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type_state`.`state_label` AS `state_label`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type_state`.`state_name` AS `state_name`,coalesce(`osae_object_type_state`.`state_tooltip`,'') AS `state_tooltip`,`osae_object_type_state`.`state_id` AS `state_id` from ((`osae_object_type` join `osae_object_type_state` on((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`))) join `osae_object_type` `osae_object_type_1` on((`osae_object_type`.`base_type_id` = `osae_object_type_1`.`object_type_id`))) order by `osae_object_type`.`object_type`;
 
 --
 -- Alter view "osae_v_system_occupied_rooms"
@@ -742,30 +1189,6 @@ WHERE ((`osae_object_state`.`state_name` = 'OFF')
 AND (`osae_object_base_type`.`object_type` = 'PLUGIN')
 AND (`osae_object`.`enabled` = 1)
 AND (`osae_contianer_state`.`state_name` = 'ON'));
-
---
--- Alter view "osae_v_object"
---
-CREATE OR REPLACE 
-VIEW osae_v_object
-AS
-	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`last_updated` AS `last_updated`,`osae_object`.`last_state_change` AS `last_state_change`,`osae_object`.`min_trust_level` AS `min_trust_level`,`osae_object`.`enabled` AS `enabled`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object_type_state`.`state_id` AS `state_id`,coalesce(`osae_object_type_state`.`state_name`,'') AS `state_name`,coalesce(`osae_object_type_state`.`state_label`,'') AS `state_label`,`objects_2`.`object_name` AS `owned_by`,`object_types_2`.`object_type` AS `base_type`,`objects_1`.`object_name` AS `container_name`,`osae_object`.`container_id` AS `container_id`,(select max(`osae_v_object_property`.`last_updated`) AS `expr1` from `osae_v_object_property` where ((`osae_v_object_property`.`object_id` = `osae_object`.`object_id`) and (`osae_v_object_property`.`property_name` <> 'Time'))) AS `property_last_updated`,timestampdiff(SECOND,`osae_object`.`last_state_change`,now()) AS `time_in_state`,`osae_object_type_state_1`.`state_name` AS `container_state_name`,`osae_object_type_state_1`.`state_label` AS `container_state_label` from ((((((`osae_object` left join `osae_object_type` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) left join `osae_object_type` `object_types_2` on((`osae_object_type`.`base_type_id` = `object_types_2`.`object_type_id`))) left join `osae_object` `objects_2` on((`osae_object_type`.`plugin_object_id` = `objects_2`.`object_id`))) left join `osae_object_type_state` on(((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`) and (`osae_object_type_state`.`state_id` = `osae_object`.`state_id`)))) left join `osae_object` `objects_1` on((`objects_1`.`object_id` = `osae_object`.`container_id`))) left join `osae_object_type_state` `osae_object_type_state_1` on((`objects_1`.`state_id` = `osae_object_type_state_1`.`state_id`)));
-
---
--- Create view "osae_v_object_type_method_list_full"
---
-CREATE
-VIEW osae_v_object_type_method_list_full
-AS
-SELECT
-  `osae_v_object_type_method`.`base_type` AS `base_type`,
-  `osae_v_object_type_method`.`object_type` AS `object_type`,
-  `osae_v_object_type_method`.`method_label` AS `method_label`
-FROM `osae_v_object_type_method`
-WHERE ((`osae_v_object_type_method`.`base_type` NOT IN ('CONTROL', 'SCREEN', 'LIST'))
-AND `osae_v_object_type_method`.`object_type` IN (SELECT DISTINCT
-    `osae_v_object`.`object_type`
-  FROM `osae_v_object`));
 
 DELIMITER $$
 

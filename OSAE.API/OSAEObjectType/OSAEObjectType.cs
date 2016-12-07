@@ -53,5 +53,11 @@
         /// </summary>
         [DataMember]
         public bool HideRedundant { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember]
+        public string Tooltip { get; set; }
     }
 }

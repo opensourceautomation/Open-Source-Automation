@@ -80,7 +80,7 @@
 
             if (oType.OwnedBy == "")
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip);
                 Log.Info("Bluetooth Plugin took ownership of the BLUETOOTH Object Type.");
             }
             else

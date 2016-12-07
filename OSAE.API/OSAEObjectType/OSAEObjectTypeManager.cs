@@ -47,7 +47,7 @@
             DataSet dataset = new DataSet();
             try
             {
-                command.CommandText = "SELECT object_type, object_type_description, object_type_owner, container, hide_redundant_events, base_type, object_name, system_hidden FROM osae_v_object_type WHERE object_type=@Name";
+                command.CommandText = "SELECT object_type, object_type_description, object_type_owner, container, hide_redundant_events, base_type, object_name, system_hidden, object_type_tooltip FROM osae_v_object_type WHERE object_type=@Name";
                 command.Parameters.AddWithValue("@Name", name);
                 dataset = OSAESql.RunQuery(command);
 
@@ -58,6 +58,7 @@
                     type.Description = dataset.Tables[0].Rows[0]["object_type_description"].ToString();
                     type.Name = dataset.Tables[0].Rows[0]["object_type"].ToString();
                     type.OwnedBy = dataset.Tables[0].Rows[0]["object_name"].ToString();
+                    type.Tooltip = dataset.Tables[0].Rows[0]["object_type_tooltip"].ToString();
                     type.Owner = false;
                     if (dataset.Tables[0].Rows[0]["object_type_owner"].ToString() == "1") type.Owner = true;
                     type.SysType = false;
@@ -143,7 +144,7 @@
         /// <param name="TypeOwner"></param>
         /// <param name="System"></param>
         /// <param name="Container">The container for the object type</param>
-        public static void ObjectTypeUpdate(string oldName, string newName, string Description, string OwnedBy, string BaseType, bool TypeOwner, bool SystemType, bool Container, bool HideRedundantEvents)
+        public static void ObjectTypeUpdate(string oldName, string newName, string Description, string OwnedBy, string BaseType, bool TypeOwner, bool SystemType, bool Container, bool HideRedundantEvents, string Tooltip)
         {
             int iTypeOwner = 0, iSystemType = 0, iContainer = 0, iHideRedundantEvents = 0;
             if (TypeOwner) iTypeOwner = 1;
@@ -152,7 +153,7 @@
             if (HideRedundantEvents) iHideRedundantEvents = 1;
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_update (@oldName, @newName, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents)";
+                command.CommandText = "CALL osae_sp_object_type_update (@oldName, @newName, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents, @Tooltip)";
                 command.Parameters.AddWithValue("@oldName", oldName);
                 command.Parameters.AddWithValue("@newName", newName);
                 command.Parameters.AddWithValue("@Description", Description);
@@ -162,7 +163,7 @@
                 command.Parameters.AddWithValue("@System", iSystemType);
                 command.Parameters.AddWithValue("@Container", iContainer);
                 command.Parameters.AddWithValue("@HideRedundantEvents", iHideRedundantEvents);
-
+                command.Parameters.AddWithValue("@Tooltip", Tooltip);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)
@@ -208,14 +209,15 @@
         /// <param name="Name"></param>
         /// <param name="Label"></param>
         /// <param name="ObjectType"></param>
-        public static void ObjectTypeEventAdd(string ObjectType, string Name, string Label)
+        public static void ObjectTypeEventAdd(string ObjectType, string Name, string Label, string tooltip)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_event_add (@ObjectType, @Name, @Label)";
+                command.CommandText = "CALL osae_sp_object_type_event_add (@ObjectType, @Name, @Label, @Tooltip)";
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@Label", Label);
+                command.Parameters.AddWithValue("@Tooltip", tooltip);
 
                 try
                 { OSAESql.RunQuery(command); }
@@ -250,15 +252,16 @@
         /// <param name="newName"></param>
         /// <param name="label"></param>
         /// <param name="objectType"></param>
-        public static void ObjectTypeEventUpdate(string oldName, string newName, string label, string objectType)
+        public static void ObjectTypeEventUpdate(string oldName, string newName, string label, string objectType, string tooltip)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_event_update (@OldName, @NewName, @Label, @ObjectType)";
+                command.CommandText = "CALL osae_sp_object_type_event_update (@OldName, @NewName, @Label, @ObjectType, @Tooltip)";
                 command.Parameters.AddWithValue("@OldName", oldName);
                 command.Parameters.AddWithValue("@NewName", newName);
                 command.Parameters.AddWithValue("@Label", label);
                 command.Parameters.AddWithValue("@ObjectType", objectType);
+                command.Parameters.AddWithValue("@Tooltip", tooltip);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)
@@ -294,11 +297,11 @@
         /// <param name="Name"></param>
         /// <param name="Label"></param>
         /// <param name="ObjectType"></param>
-        public static void ObjectTypeMethodAdd(string ObjectType, string Name, string Label, string ParamLabel1, string ParamLabel2, string ParamDefault1, string ParamDefault2)
+        public static void ObjectTypeMethodAdd(string ObjectType, string Name, string Label, string ParamLabel1, string ParamLabel2, string ParamDefault1, string ParamDefault2, string tooltip)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_method_add (@ObjectType, @Name, @Label, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2)";
+                command.CommandText = "CALL osae_sp_object_type_method_add (@ObjectType, @Name, @Label, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2, @Tooltip)";
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@Label", Label);
@@ -306,6 +309,7 @@
                 command.Parameters.AddWithValue("@ParamLabel2", ParamLabel2);
                 command.Parameters.AddWithValue("@ParamDefault1", ParamDefault1);
                 command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
+                command.Parameters.AddWithValue("@Tooltip", tooltip);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)
@@ -341,11 +345,11 @@
         /// <param name="objectType"></param>
         /// <param name="ParamLabel1"></param>
         /// <param name="ParamLabel2"></param>
-        public static void ObjectTypeMethodUpdate(string oldName, string newName, string label, string objectType, string paramLabel1, string paramLabel2, string ParamDefault1, string ParamDefault2)
+        public static void ObjectTypeMethodUpdate(string oldName, string newName, string label, string objectType, string paramLabel1, string paramLabel2, string ParamDefault1, string ParamDefault2, string tooltip)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_method_update (@OldName, @NewName, @Label, @ObjectType, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2)";
+                command.CommandText = "CALL osae_sp_object_type_method_update (@OldName, @NewName, @Label, @ObjectType, @ParamLabel1, @ParamLabel2, @ParamDefault1, @ParamDefault2, @Tooltip)";
                 command.Parameters.AddWithValue("@OldName", oldName);
                 command.Parameters.AddWithValue("@NewName", newName);
                 command.Parameters.AddWithValue("@Label", label);
@@ -354,6 +358,7 @@
                 command.Parameters.AddWithValue("@ParamLabel2", paramLabel2);
                 command.Parameters.AddWithValue("@ParamDefault1", ParamDefault1);
                 command.Parameters.AddWithValue("@ParamDefault2", ParamDefault2);
+                command.Parameters.AddWithValue("@Tooltip", tooltip);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)
@@ -367,17 +372,18 @@
     /// <param name="Name"></param>
     /// <param name="ParameterType"></param>
     /// <param name="ObjectType"></param>
-    public static void ObjectTypePropertyAdd(string ObjectType, string Name, string ParameterType, string ParameterObjectType, string ParameterDefault, bool TrackHistory)
+    public static void ObjectTypePropertyAdd(string ObjectType, string Name, string ParameterType, string ParameterObjectType, string ParameterDefault, bool TrackHistory, bool Required)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_property_add (@ObjectType, @Name, @ParameterType, @ParameterObjectType, @ParameterDefault, @TrackHistory)";
+                command.CommandText = "CALL osae_sp_object_type_property_add (@ObjectType, @Name, @ParameterType, @ParameterObjectType, @ParameterDefault, @TrackHistory, @Required)";
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@ParameterType", ParameterType);
                 command.Parameters.AddWithValue("@ParameterObjectType", ParameterObjectType);
                 command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
+                command.Parameters.AddWithValue("@Required", Required);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)
@@ -411,18 +417,20 @@
         /// <param name="newName"></param>
         /// <param name="ParameterType"></param>
         /// <param name="objectType"></param>
-        public static void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterObjectType, string ParameterDefault, string objectType, bool TrackHistory)
+        public static void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterObjectType, string ParameterDefault, string objectType, string tooltip, bool TrackHistory, bool Required)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_property_update (@OldName, @NewName, @ParameterType, @ParameterObjectType, @ParameterDefault, @ObjectType, @TrackHistory)";
+                command.CommandText = "CALL osae_sp_object_type_property_update (@OldName, @NewName, @ParameterType, @ParameterObjectType, @ParameterDefault, @ObjectType, @ToolTip, @TrackHistory, @Required)";
                 command.Parameters.AddWithValue("@OldName", oldName);
                 command.Parameters.AddWithValue("@NewName", newName);
                 command.Parameters.AddWithValue("@ParameterType", ParameterType);
                 command.Parameters.AddWithValue("@ParameterObjectType", ParameterObjectType);
                 command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
                 command.Parameters.AddWithValue("@ObjectType", objectType);
+                command.Parameters.AddWithValue("ToolTip", tooltip);
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
+                command.Parameters.AddWithValue("@Required", Required);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)
@@ -482,14 +490,15 @@
         /// <param name="Name"></param>
         /// <param name="Label"></param>
         /// <param name="ObjectType"></param>
-        public static void ObjectTypeStateAdd(string ObjectType, string Name, string Label)
+        public static void ObjectTypeStateAdd(string ObjectType, string Name, string Label, string tooltip)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_state_add (@ObjectType, @Name, @Label)";
+                command.CommandText = "CALL osae_sp_object_type_state_add (@ObjectType, @Name, @Label, @Tooltip)";
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@Label", Label);
+                command.Parameters.AddWithValue("@Tooltip", tooltip);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)
@@ -523,15 +532,16 @@
         /// <param name="newName"></param>
         /// <param name="label"></param>
         /// <param name="objectType"></param>
-        public static void ObjectTypeStateUpdate(string oldName, string newName, string newLabel, string objectType)
+        public static void ObjectTypeStateUpdate(string oldName, string newName, string newLabel, string objectType, string tooltip)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_state_update (@OldName, @NewName, @Label, @ObjectType)";
+                command.CommandText = "CALL osae_sp_object_type_state_update (@OldName, @NewName, @Label, @ObjectType, @Tooltip)";
                 command.Parameters.AddWithValue("@OldName", oldName);
                 command.Parameters.AddWithValue("@NewName", newName);
                 command.Parameters.AddWithValue("@Label", newLabel);
                 command.Parameters.AddWithValue("@ObjectType", objectType);
+                command.Parameters.AddWithValue("@Tooltip", tooltip);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)

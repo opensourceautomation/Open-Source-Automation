@@ -105,7 +105,8 @@
                         <Columns>  
                             <asp:BoundField DataField="base_type" HeaderText="Base Type" SortExpression="base_type"/>  
                             <asp:BoundField DataField="object_type" HeaderText="Object Type" SortExpression="object_type"/>  
-                            <asp:BoundField DataField="object_type_description" HeaderText="Description" SortExpression="object_type_description"/>  
+                            <asp:BoundField DataField="object_type_description" HeaderText="Description" SortExpression="object_type_description"/> 
+                            <asp:BoundField DataField="object_type_tooltip" HeaderText="Tooltip" Visible="false" />
                         </Columns>  
                     </asp:GridView>
                 </div>
@@ -143,6 +144,10 @@
                     </div>
                 </div>
                 <div class="row-fluid">
+
+                   Tooltip:  <asp:TextBox class="input" runat="server" ID="txtObjectTypeTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="415px"></asp:TextBox>
+                </div>
+                <div class="row-fluid">
                     <div class="span7" style="text-align:left;">
                         <asp:CheckBox runat="server" ID="chkOwner" /> Object Type Owner &nbsp;
                         <asp:CheckBox runat="server" ID="chkContainer" /> Container &nbsp;
@@ -170,10 +175,11 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvStates_RowDataBound" DataKeyNames="state_name, state_label" ShowHeaderWhenEmpty="true">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvStates_RowDataBound" DataKeyNames="state_name, state_label, state_tooltip" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="state_name" HeaderText="Name" /> 
                                     <asp:BoundField DataField="state_label" HeaderText="Label" /> 
+                                    <asp:BoundField DataField="state_tooltip" HeaderText="Tooltip" Visible="false" /> 
                                 </Columns>  
 
                             </asp:GridView>
@@ -185,6 +191,9 @@
                                     <br />
                                     Label: <asp:TextBox  runat="server" ID="txtStateLabel" style="width:225px;"></asp:TextBox>
                                     <br />
+                                    Tooltip: <asp:TextBox  runat="server" ID="txtStateTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px"></asp:TextBox>
+                                    <br />
+
                                     <asp:Button class="btn btn" runat="server" ID="btnStateSave" Text="Save" OnClick="btnStateSave_Click"/>
                                     <asp:Button class="btn btn" runat="server" ID="btnStateAdd" Text="Add" OnClick="btnStateAdd_Click"/>
                                     <asp:Button class="btn btn" runat="server" ID="btnStateDelete" Text="Delete" OnClick="btnStateDelete_Click"/>
@@ -202,7 +211,7 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvMethods_RowDataBound" DataKeyNames="method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default" ShowHeaderWhenEmpty="true">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvMethods_RowDataBound" DataKeyNames="method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default, method_tooltip" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="method_name" HeaderText="Name" /> 
                                     <asp:BoundField DataField="method_label" HeaderText="Label" />  
@@ -210,6 +219,7 @@
                                     <asp:BoundField DataField="param_2_label" Visible="false" /> 
                                     <asp:BoundField DataField="param_1_default" Visible="false" />  
                                     <asp:BoundField DataField="param_2_default" Visible="false" /> 
+                                    <asp:BoundField DataField="method_tooltip" Visible="false" /> 
                                 </Columns>  
 
                             </asp:GridView>
@@ -226,6 +236,8 @@
                                     <asp:TextBox  runat="server" ID="txtParam1Label" style="width:100px;"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam1Default" style="width:100px;"></asp:TextBox>
                                     <br />
                                     <asp:TextBox  runat="server" ID="txtParam2Label" style="width:100px;"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam2Default" style="width:100px;"></asp:TextBox>
+                                    <br />
+                                    Tooltip: <asp:TextBox  runat="server" ID="txtMethodTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px"></asp:TextBox>
                                     <br />
                                     <asp:Button class="btn btn" runat="server" ID="btnMethodSave" Text="Save" OnClick="btnMethodSave_Click"/>
                                     <asp:Button class="btn btn" runat="server" ID="btnMethodAdd" Text="Add" OnClick="btnMethodAdd_Click"/>
@@ -245,10 +257,11 @@
                                 AutoGenerateColumns="False"  
                                 GridLines="None"  
                                 CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvEvents_RowDataBound" DataKeyNames="event_name, event_label" ShowHeaderWhenEmpty="true">  
+                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvEvents_RowDataBound" DataKeyNames="event_name, event_label, event_tooltip" ShowHeaderWhenEmpty="true">  
                                 <Columns>  
                                     <asp:BoundField DataField="event_name" HeaderText="Name" /> 
                                     <asp:BoundField DataField="event_label" HeaderText="Label" /> 
+                                    <asp:BoundField DataField="event_tooltip" HeaderText="Label" Visible="false"/> 
                                 </Columns>  
 
                             </asp:GridView>
@@ -260,6 +273,9 @@
                                     <br />
                                     Label: <asp:TextBox  runat="server" ID="txtEventLabel" style="width:225px;"></asp:TextBox>
                                     <br />
+                                    Tooltip: <asp:TextBox  runat="server" ID="txtEventTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px"></asp:TextBox>
+                                    <br />
+
                                     <asp:Button class="btn btn" runat="server" ID="btnEventSave" Text="Save" OnClick="btnEventSave_Click"/>
                                     <asp:Button class="btn btn" runat="server" ID="btnEventAdd" Text="Add" OnClick="btnEventAdd_Click"/>
                                     <asp:Button class="btn btn" runat="server" ID="btnEventDelete" Text="Delete" OnClick="btnEventDelete_Click"/>
@@ -276,7 +292,7 @@
                         <div class="span5" id="propGrid" style="overflow: auto; max-height:300px;" onscroll="SetPropDivPosition()">
                             <asp:GridView runat="server" ID="gvProperties"
                                 AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static"  
-                                OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_object_type, property_default, track_history, property_id" ShowHeaderWhenEmpty="true"> 
+                                OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_object_type, property_default, property_tooltip, track_history, property_required, property_id" ShowHeaderWhenEmpty="true"> 
                                 <RowStyle CssClass="rowHover1"></RowStyle>
                                 <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
                                 <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle> 
@@ -285,7 +301,9 @@
                                     <asp:BoundField DataField="property_datatype" HeaderText="Type" /> 
                                     <asp:BoundField DataField="property_object_type" visible="false" />
                                     <asp:BoundField DataField="property_default" visible="false" />
+                                    <asp:BoundField DataField="property_tooltip" visible="false" />
                                     <asp:BoundField DataField="track_history" visible="false" />
+                                    <asp:BoundField DataField="property_required" visible="true" />
                                 </Columns>  
 
                             </asp:GridView>
@@ -315,7 +333,11 @@
                                 <br />
                                 Default: <asp:TextBox  runat="server" ID="txtPropDefault" style="width:215px;"></asp:TextBox>
                                 <br />
+                                ToolTip: <asp:TextBox runat="server" ID="txtPropertyTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px"></asp:TextBox>
+                                <br />
                                 <asp:CheckBox runat="server" ID="chkTrackChanges" /> Track Changes &nbsp;
+                                <br />
+                                <asp:CheckBox runat="server" ID="chkRequired" /> Required &nbsp;
                                 <br />
                                 <asp:Button class="btn btn" runat="server" ID="btnPropSave" Text="Save" OnClick="btnPropSave_Click"/>
                                 <asp:Button class="btn btn" runat="server" ID="btnPropAdd" Text="Add" OnClick="btnPropAdd_Click"/>

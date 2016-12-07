@@ -60,7 +60,7 @@ Public Class ScriptProcessor
         'This should become the standard in plugins to try and avoid ever having to manually set the owners
         oType = OSAEObjectTypeManager.ObjectTypeLoad("SCRIPT PROCESSOR")
         If oType.OwnedBy = "" Then
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip)
             Log.Info("Script Processor Plugin took ownership of the Script Processor Object Type.")
         Else
             Log.Info("The Plugin correctly owns the Script Processor Object Type.")

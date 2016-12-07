@@ -130,9 +130,12 @@
                             if (found)
                             {
                                 OSAEObjectManager.ObjectAdd(plugin.PluginName, "", plugin.PluginName + " plugin's Object", plugin.PluginType, "", serviceName, 50, false);
-                                Log.Info(obj.Name + ":  Plugin Object Not found.  Plugin Object Created.");
+                                
                                 obj = OSAEObjectManager.GetObjectByName(plugin.PluginName);
-                                if (obj == null) Log.Info(obj.Name + ":  I failed to create the Plugin Object!");
+                                if (obj == null)
+                                    Log.Info(plugin.PluginName + ":  I failed to create the Plugin Object!");
+                                else
+                                    Log.Info(obj.Name + ":  Plugin Object was Not found, so I created a new Plugin Object.");
                             }
                             else
                                 Log.Info(":  Plugin Object Type Not found for: " + plugin.PluginType + ".  Plugin Object Cannot be Created.");

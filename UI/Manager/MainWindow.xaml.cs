@@ -252,13 +252,13 @@
                 {
                     setMySQLLabel(Brushes.Green, "RUNNING");
                     setMySQLButton("Stop", true);
+
                     MySQLstarting = false;
                 }
                 else
                 {
                     setMySQLLabel(Brushes.Red, "STOPPED");
                     setMySQLButton("Start", true);
-
                     if (!MySQLclicked)
                     {
                         Log.Info("MySQL Services died.  Attempting to restart.");
@@ -285,13 +285,14 @@
                 {
                     setLabel(Brushes.Green, "RUNNING");
                     setButton("Stop", true);
+                    setInstallButton(true);
                     starting = false;
                 }
                 else
                 {
                     setLabel(Brushes.Red, "STOPPED");
                     setButton("Start", true);
-
+                    setInstallButton(false);
                     if (!clicked)
                     {
                         Log.Info("OSAE Services died.  Attempting to restart.");
@@ -507,6 +508,23 @@
             {
                 btnWebService.IsEnabled = enabled;
                 btnWebService.Content = text;
+            }));
+        }
+
+        private void setInstallButton(bool enabled)
+        {
+            mnuInstall.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(delegate
+            {
+                if (enabled)
+                    {
+                    mnuInstall.IsEnabled = true;
+                    mnuInstall.ToolTip = "You are clear to Install Plugins";
+                }
+                else
+                {
+                    mnuInstall.IsEnabled = false;
+                    mnuInstall.ToolTip = "Service Must be Running";
+                }
             }));
         }
 

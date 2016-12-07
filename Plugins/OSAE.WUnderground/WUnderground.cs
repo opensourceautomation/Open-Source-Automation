@@ -625,7 +625,7 @@
 
             if (oType.OwnedBy == "")
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip);
                 Log.Info("WUnderground Plugin took ownership of the WUNDERGROUND Object Type.");
             }
             else
@@ -636,7 +636,7 @@
 
             if (oType.OwnedBy == "")
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, "SYSTEM", oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, "SYSTEM", oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip);
                 Log.Info("SYSTEM took ownership of the WEATHER Object Type.");
             }
             else
