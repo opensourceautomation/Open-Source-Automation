@@ -295,7 +295,7 @@ DropOut:
         Try
             Dim oType As OSAEObjectType = OSAEObjectTypeManager.ObjectTypeLoad("W800RF")
             If oType.OwnedBy = "" Then
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, "Plugin Object for the W800RF antenna")
                 Log.Info("W800RF Plugin took ownership of the W800RF Object Type.")
             Else
                 Log.Info("W800RF Object Type is correctly owned by: " & oType.OwnedBy)

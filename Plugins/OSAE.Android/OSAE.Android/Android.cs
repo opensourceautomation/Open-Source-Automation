@@ -34,7 +34,7 @@ namespace OSAE.Android
             OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("ANDROID");
             if (oType.OwnedBy == "")
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip);
                 Log.Info("Android Plugin took ownership of the ANDROID Object Type.");
             }
             else
@@ -43,7 +43,7 @@ namespace OSAE.Android
             oType = OSAEObjectTypeManager.ObjectTypeLoad("ANDROID DEVICE");
             if (oType.OwnedBy == "")
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant,oType.Tooltip);
                 Log.Info("Android Plugin took ownership of the ANDROID DEVICE Object Type.");
             }
             else

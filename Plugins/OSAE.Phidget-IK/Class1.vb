@@ -325,7 +325,7 @@ Public Class PhidgetIK
         'This should become the standard in plugins to try and avoid ever having to manually set the owners
         oType = OSAEObjectTypeManager.ObjectTypeLoad("PHIDGET ANALOG INPUT")
         If oType.OwnedBy = "" Then
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0), oType.Tooltip)
             Log.Info(gAppName & " Plugin took ownership of the PHIDGET ANALOG INPUT Object Type.")
         Else
             Log.Info(oType.OwnedBy & " Plugin correctlly owns the PHIDGET ANALOG INPUT Object Type.")
@@ -334,7 +334,7 @@ Public Class PhidgetIK
         oType = OSAEObjectTypeManager.ObjectTypeLoad("PHIDGET DIGITAL INPUT")
         Log.Info("Checking on the PHIDGET DIGITAL INPUT Object Type.")
         If oType.OwnedBy = "" Then
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0), oType.Tooltip)
             Log.Info(gAppName & " Plugin took ownership of the PHIDGET DIGITAL INPUT Object Type.")
         Else
             Log.Info(oType.OwnedBy & " Plugin correctlly owns the PHIDGET DIGITAL INPUT Object Type.")
@@ -342,7 +342,7 @@ Public Class PhidgetIK
 
         oType = OSAEObjectTypeManager.ObjectTypeLoad("PHIDGET DIGITAL INPUT OC")
         If oType.OwnedBy = "" Then
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0), oType.Tooltip)
             Log.Info(gAppName & " Plugin took ownership of the PHIDGET DIGITAL INPUT OC Object Type.")
         Else
             Log.Info(oType.OwnedBy & " Plugin correctlly owns the PHIDGET DIGITAL INPUT OC Object Type.")
@@ -350,7 +350,7 @@ Public Class PhidgetIK
 
         oType = OSAEObjectTypeManager.ObjectTypeLoad("PHIDGET DIGITAL OUTPUT")
         If oType.OwnedBy = "" Then
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0))
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, 0, 0, 0, IIf(oType.HideRedundant, 1, 0), oType.Tooltip)
             Log.Info(gAppName & " Plugin took ownership of the PHIDGET DIGITAL OUTPUT Object Type.")
         Else
             Log.Info(oType.OwnedBy & " Plugin correctlly owns the PHIDGET DIGITAL OUTPUT Object Type.")
