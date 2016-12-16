@@ -113,53 +113,52 @@
                 <br />
                 <div class="row-fluid">
                     <div class="span1" style="text-align:right;">
-                        <label>Name</label>
+                        <label title="The proper Name of this object (This is a REQUIRED property!)">Name</label>
                     </div>
                     <div class="span4" style="text-align:left;">
-                        <asp:TextBox class="input" runat="server" ID="txtName" style="width:100%;"></asp:TextBox>
+                        <asp:TextBox class="input" runat="server" ID="txtName" style="width:100%;" ToolTip="The proper Name of this object (This is a REQUIRED property!)"></asp:TextBox>
                     </div>
                     <div class="span2" style="text-align:right;">
-                        <label>Owned By</label>
+                        <label title="The controling object for this Object (All object should be Owned!)">Owned By</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:DropDownList runat="server" ID="ddlOwnedBy" datatextfield="Text" datavaluefield="Value" style="width:100%;">
+                        <asp:DropDownList runat="server" ID="ddlOwnedBy" datatextfield="Text" datavaluefield="Value" style="width:100%;" ToolTip="The controling object for this Object (All object should be Owned!)">
                             <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                 </div>
                 <div class="row-fluid">
                     <div class="span1" style="text-align:right;">
-                        <label>Desc</label>
+                        <label title="A description that describes this object (This property is Optional)">Desc</label>
                     </div>
                     <div class="span4" style="text-align:left;">
-                        <asp:TextBox class="input" runat="server" ID="txtDescr" style="width:100%;"></asp:TextBox>
+                        <asp:TextBox class="input" runat="server" ID="txtDescr" style="width:100%;" ToolTip="A description that describes this object (This property is Optional)"></asp:TextBox>
                     </div>
                     <div class="span2" style="text-align:right;">
-                        <label>Base Type</label>
+                        <label title="This is the Base-Type for this object. (All Objects require a Base-Type)">Base Type</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:DropDownList runat="server" ID="ddlBaseType" datatextfield="Text" datavaluefield="Value" style="width:100%;">
+                        <asp:DropDownList runat="server" ID="ddlBaseType" datatextfield="Text" datavaluefield="Value" style="width:100%;" ToolTip="This is the Base-Type for this object. (All Objects require a Base-Type)">
                             <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                 </div>
                 <div class="row-fluid">
-
-                   Tooltip:  <asp:TextBox class="input" runat="server" ID="txtObjectTypeTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="415px"></asp:TextBox>
+                   Tooltip:  <asp:TextBox class="input" runat="server" ID="txtObjectTypeTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="415px" ToolTip="Enter Help Text to be displayed on the Objects page for this object."></asp:TextBox>
                 </div>
                 <div class="row-fluid">
                     <div class="span7" style="text-align:left;">
-                        <asp:CheckBox runat="server" ID="chkOwner" /> Object Type Owner &nbsp;
-                        <asp:CheckBox runat="server" ID="chkContainer" /> Container &nbsp;
+                        <asp:CheckBox runat="server" ID="chkOwner" ToolTip="Select if this object will be an Object Owner Type." /> Object Type Owner &nbsp;
+                        <asp:CheckBox runat="server" ID="chkContainer" ToolTip="Select if this object will be a Container object." /> Container &nbsp;
                         <br />
-                        <asp:CheckBox runat="server" ID="chkSysType" /> Required Type &nbsp;
-                        <asp:CheckBox runat="server" ID="chkHideEvents" /> Hide Redundant Events &nbsp;
+                        <asp:CheckBox runat="server" ID="chkSysType" ToolTip="Select if this object will be a Rquired Type." /> Required Type &nbsp;
+                        <asp:CheckBox runat="server" ID="chkHideEvents" ToolTip="Select to hide all Redundent Events." /> Hide Redundant Events &nbsp;
                     </div>
                     <div class="span5" style="text-align:center;" >
-                        <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
-                        <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click"/>&nbsp
-                        <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object type?');"/>
-                        <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
+                        <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click" ToolTip="This will ADD the newly enter Object information above." />&nbsp
+                        <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" ToolTip="This will UPDATE the above Object information." />&nbsp
+                        <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object type?');" ToolTip="This will Delete the above selected Object." />
+                        <a href="#linkModal" role="button" class="btn" data-toggle="modal" title="This display the Export SQL for the above selected object."  >Export</a>
                     </div>
                 </div>
             </div>
@@ -187,16 +186,16 @@
                         <div class="span6">
                             <asp:Panel runat="server" ID="pnlStateForm">
                                 
-                                    Name: <asp:TextBox  runat="server" ID="txtStateName" style="width:225px;"></asp:TextBox>
+                                    Name: <asp:TextBox  runat="server" ID="txtStateName" style="width:225px;" ToolTip="Enter the Name of the State. (On/Off)"></asp:TextBox>
                                     <br />
-                                    Label: <asp:TextBox  runat="server" ID="txtStateLabel" style="width:225px;"></asp:TextBox>
+                                    Label: <asp:TextBox  runat="server" ID="txtStateLabel" style="width:225px;" ToolTip="Enter the Stae Lable. (Running/Stopped, Online/Offline)"></asp:TextBox>
                                     <br />
-                                    Tooltip: <asp:TextBox  runat="server" ID="txtStateTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px"></asp:TextBox>
+                                    Tooltip: <asp:TextBox  runat="server" ID="txtStateTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's state."></asp:TextBox>
                                     <br />
 
-                                    <asp:Button class="btn btn" runat="server" ID="btnStateSave" Text="Save" OnClick="btnStateSave_Click"/>
-                                    <asp:Button class="btn btn" runat="server" ID="btnStateAdd" Text="Add" OnClick="btnStateAdd_Click"/>
-                                    <asp:Button class="btn btn" runat="server" ID="btnStateDelete" Text="Delete" OnClick="btnStateDelete_Click"/>
+                                    <asp:Button class="btn btn" runat="server" ID="btnStateSave" Text="Save" OnClick="btnStateSave_Click" ToolTip="This will UPDATE the State information above." />
+                                    <asp:Button class="btn btn" runat="server" ID="btnStateAdd" Text="Add" OnClick="btnStateAdd_Click" ToolTip="This will ADD the newly entered State information above." />
+                                    <asp:Button class="btn btn" runat="server" ID="btnStateDelete" Text="Delete" OnClick="btnStateDelete_Click"  ToolTip="This will DELETE the selected State above." />
                                 
                            </asp:Panel>
                         </div>
@@ -227,21 +226,21 @@
                         <div class="span6">
                             <asp:Panel runat="server" ID="pnlMethodForm">
                                 
-                                    Name: <asp:TextBox  runat="server" ID="txtMethodName" style="width:225px;"></asp:TextBox>
+                                    Name: <asp:TextBox  runat="server" ID="txtMethodName" style="width:225px;" ToolTip="Enter the name of this Method"></asp:TextBox>
                                     <br />
-                                    Label: <asp:TextBox  runat="server" ID="txtMethodLabel" style="width:225px;"></asp:TextBox>
+                                    Label: <asp:TextBox  runat="server" ID="txtMethodLabel" style="width:225px;" ToolTip="Enter the Lable for this method"></asp:TextBox>
                                     <br />
                                     Parameter Labels / Default Values
                                     <br />
-                                    <asp:TextBox  runat="server" ID="txtParam1Label" style="width:100px;"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam1Default" style="width:100px;"></asp:TextBox>
+                                    <asp:TextBox  runat="server" ID="txtParam1Label" style="width:100px;" ToolTip="Enter Parmeter-1 Lable"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam1Default" style="width:100px;" ToolTip="Enter Parmeter-1 Default Value"></asp:TextBox>
                                     <br />
-                                    <asp:TextBox  runat="server" ID="txtParam2Label" style="width:100px;"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam2Default" style="width:100px;"></asp:TextBox>
+                                    <asp:TextBox  runat="server" ID="txtParam2Label" style="width:100px;" ToolTip="Enter Parameter-2 Lable"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam2Default" style="width:100px;" ToolTip="Enter Parameter-2 Default Value"></asp:TextBox>
                                     <br />
-                                    Tooltip: <asp:TextBox  runat="server" ID="txtMethodTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px"></asp:TextBox>
+                                    Tooltip: <asp:TextBox  runat="server" ID="txtMethodTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's method."></asp:TextBox>
                                     <br />
-                                    <asp:Button class="btn btn" runat="server" ID="btnMethodSave" Text="Save" OnClick="btnMethodSave_Click"/>
-                                    <asp:Button class="btn btn" runat="server" ID="btnMethodAdd" Text="Add" OnClick="btnMethodAdd_Click"/>
-                                    <asp:Button class="btn btn" runat="server" ID="btnMethodDelete" Text="Delete" OnClick="btnMethodDelete_Click"/>
+                                    <asp:Button class="btn btn" runat="server" ID="btnMethodSave" Text="Save" OnClick="btnMethodSave_Click" ToolTip="This will UPDATE Method information above." />
+                                    <asp:Button class="btn btn" runat="server" ID="btnMethodAdd" Text="Add" OnClick="btnMethodAdd_Click" ToolTip="This will ADD the newly entered Method information above." />
+                                    <asp:Button class="btn btn" runat="server" ID="btnMethodDelete" Text="Delete" OnClick="btnMethodDelete_Click" ToolTip="This will DELETE the selected Method above." />
                                 
                            </asp:Panel>
                         </div>
@@ -269,16 +268,16 @@
                         <div class="span6">
                             <asp:Panel runat="server" ID="pnlEventForm">
                                 
-                                    Name: <asp:TextBox  runat="server" ID="txtEventName" style="width:225px;"></asp:TextBox>
+                                    Name: <asp:TextBox  runat="server" ID="txtEventName" style="width:225px;" ToolTip="Enter the Name of this Event"></asp:TextBox>
                                     <br />
-                                    Label: <asp:TextBox  runat="server" ID="txtEventLabel" style="width:225px;"></asp:TextBox>
+                                    Label: <asp:TextBox  runat="server" ID="txtEventLabel" style="width:225px;" ToolTip="Enter the Label of this Event"></asp:TextBox>
                                     <br />
-                                    Tooltip: <asp:TextBox  runat="server" ID="txtEventTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px"></asp:TextBox>
+                                    Tooltip: <asp:TextBox  runat="server" ID="txtEventTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's event."></asp:TextBox>
                                     <br />
 
-                                    <asp:Button class="btn btn" runat="server" ID="btnEventSave" Text="Save" OnClick="btnEventSave_Click"/>
-                                    <asp:Button class="btn btn" runat="server" ID="btnEventAdd" Text="Add" OnClick="btnEventAdd_Click"/>
-                                    <asp:Button class="btn btn" runat="server" ID="btnEventDelete" Text="Delete" OnClick="btnEventDelete_Click"/>
+                                    <asp:Button class="btn btn" runat="server" ID="btnEventSave" Text="Save" OnClick="btnEventSave_Click" ToolTip="This will UPDATE the Event information above."/>
+                                    <asp:Button class="btn btn" runat="server" ID="btnEventAdd" Text="Add" OnClick="btnEventAdd_Click" ToolTip="This will ADD the newly entered Event information above."/>
+                                    <asp:Button class="btn btn" runat="server" ID="btnEventDelete" Text="Delete" OnClick="btnEventDelete_Click" ToolTip="This will DELETE the selected Event above."/>
                                 
                            </asp:Panel>
                         </div>
@@ -290,7 +289,7 @@
                         <h3 style="float:right; margin-right:10px;">Properties</h3>
                         <br />
                         <div class="span5" id="propGrid" style="overflow: auto; max-height:300px;" onscroll="SetPropDivPosition()">
-                            <asp:GridView runat="server" ID="gvProperties"
+                            <asp:GridView runat="server" ID="gvProperties" 
                                 AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static"  
                                 OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_object_type, property_default, property_tooltip, track_history, property_required, property_id" ShowHeaderWhenEmpty="true"> 
                                 <RowStyle CssClass="rowHover1"></RowStyle>
@@ -303,7 +302,7 @@
                                     <asp:BoundField DataField="property_default" visible="false" />
                                     <asp:BoundField DataField="property_tooltip" visible="false" />
                                     <asp:BoundField DataField="track_history" visible="false" />
-                                    <asp:BoundField DataField="property_required" visible="true" />
+                                    <asp:BoundField DataField="property_required" visible="false" />
                                 </Columns>  
 
                             </asp:GridView>
@@ -311,9 +310,9 @@
                         <div class="span6">
                             <asp:Panel runat="server" ID="panelPropForm">
                                 
-                                Name: <asp:TextBox  runat="server" ID="txtPropName" style="width:225px;"></asp:TextBox>
+                                Name: <asp:TextBox  runat="server" ID="txtPropName" style="width:225px;" ToolTip="Enter the Name of this Property"></asp:TextBox>
                                 <br />
-                                Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;"  AutoPostBack="true" OnSelectedIndexChanged="ddlPropType_SelectedIndexChanged">
+                                Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;"  AutoPostBack="true" OnSelectedIndexChanged="ddlPropType_SelectedIndexChanged" ToolTip="Choose the Data Type of this property.">
                                         <asp:ListItem Selected = "True" Text = "String" Value = "String"></asp:ListItem>
                                         <asp:ListItem Text = "Boolean" Value = "Boolean"></asp:ListItem>
                                         <asp:ListItem Text = "DateTime" Value = "DateTime"></asp:ListItem>
@@ -327,22 +326,22 @@
                                 </asp:DropDownList>
                                 <br />
                                 <asp:Label runat="server" ID="lblPropObjectType" Text="Object Type: "></asp:Label>
-                                <asp:DropDownList runat="server" ID="ddlBaseType2" datatextfield="Text" datavaluefield="Value" style="width:200px;">
+                                <asp:DropDownList runat="server" ID="ddlBaseType2" datatextfield="Text" datavaluefield="Value" style="width:200px;" ToolTip="Select the Object-Type for this Property.">
                                     <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                                 </asp:DropDownList>
                                 <br />
-                                Default: <asp:TextBox  runat="server" ID="txtPropDefault" style="width:215px;"></asp:TextBox>
+                                Default: <asp:TextBox  runat="server" ID="txtPropDefault" style="width:215px;" ToolTip="Enter the Default Value for this Property."></asp:TextBox>
                                 <br />
-                                ToolTip: <asp:TextBox runat="server" ID="txtPropertyTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px"></asp:TextBox>
+                                ToolTip: <asp:TextBox runat="server" ID="txtPropertyTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's property."></asp:TextBox>
                                 <br />
-                                <asp:CheckBox runat="server" ID="chkTrackChanges" /> Track Changes &nbsp;
+                                <asp:CheckBox runat="server" ID="chkTrackChanges" ToolTip="Enable/Disable the Tracking of changes for this property." /> Track Changes &nbsp;
                                 <br />
-                                <asp:CheckBox runat="server" ID="chkRequired" /> Required &nbsp;
+                                <asp:CheckBox runat="server" ID="chkRequired" tooltip="Select this option to make this Property REQUIRED. (Not Empty)"/> Required &nbsp;
                                 <br />
-                                <asp:Button class="btn btn" runat="server" ID="btnPropSave" Text="Save" OnClick="btnPropSave_Click"/>
-                                <asp:Button class="btn btn" runat="server" ID="btnPropAdd" Text="Add" OnClick="btnPropAdd_Click"/>
-                                <asp:Button class="btn btn" runat="server" ID="btnPropDelete" Text="Delete" OnClick="btnPropDelete_Click"/>
-                                <asp:Button class="btn btn" runat="server" ID="btnEditPropOptions" Text="Edit Options" href="#myPropOptionsModal" data-toggle="modal"/>
+                                <asp:Button class="btn btn" runat="server" ID="btnPropSave" Text="Save" OnClick="btnPropSave_Click" ToolTip="This will UPDATE the Property information above."/>
+                                <asp:Button class="btn btn" runat="server" ID="btnPropAdd" Text="Add" OnClick="btnPropAdd_Click" ToolTip="This will ADD the newly entered Property information above."/>
+                                <asp:Button class="btn btn" runat="server" ID="btnPropDelete" Text="Delete" OnClick="btnPropDelete_Click" ToolTip="This will DELETE the selected Property above."/>
+                                <asp:Button class="btn btn" runat="server" ID="btnEditPropOptions" Text="Edit Options" href="#myPropOptionsModal" data-toggle="modal" ToolTip="This will allow editing of this Properties Options."/>
                            </asp:Panel>
                         </div>
                     </div>
@@ -353,8 +352,7 @@
     <!-- Property Options Modal -->
     <div id="myPropOptionsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Edit Property Options</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
       </div>
       <div ID="dvmodalbody" class="modal-body">
         <asp:GridView runat="server" ID="gvPropOptions"

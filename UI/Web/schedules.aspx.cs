@@ -68,12 +68,10 @@ public partial class schedules : System.Web.UI.Page
         int objSet = OSAEAdminManager.GetAdminSettingsByName("Schedule Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
-
         loadQueue();
         loadRecurring();
         chkActive.Checked = true;
         if (!Page.IsPostBack) loadDDLs();
-
         applyObjectSecurity();
     }
 
@@ -101,7 +99,6 @@ public partial class schedules : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
-
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvQueue_" + e.Row.RowIndex.ToString()));
         }
 
@@ -115,7 +112,6 @@ public partial class schedules : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
-
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvRecurring_" + e.Row.RowIndex.ToString()));
 
 
@@ -148,8 +144,8 @@ public partial class schedules : System.Web.UI.Page
         ddlObject.DataBind();
         if (ddlObject.Items.Count == 0) ddlObject.Visible = false;
         else ddlObject.Visible = true;
-
         ddlObject.Items.Insert(0, new ListItem(String.Empty, String.Empty));
+
     }
 
     private void loadMethods()

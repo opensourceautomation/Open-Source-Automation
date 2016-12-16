@@ -44,6 +44,7 @@
             });
          });
 
+
         $(document).ready(function () {
             $('#loading').hide();
             host = window.location.hostname;
@@ -315,7 +316,7 @@
                         <Columns>  
                             <asp:TemplateField HeaderText="View" Visible="True">
                                 <ItemTemplate>
-                                    <asp:CheckBox ID="chkEnabled" runat="server" onclick="load();"/>
+                                    <asp:CheckBox ID="chkEnabled" runat="server" onclick="load();" title="Select to view this Property in the Analytics chart."/>
                                 </ItemTemplate>
                                 <ItemStyle HorizontalAlign="Center" />
                             </asp:TemplateField>
@@ -324,7 +325,7 @@
                             <asp:BoundField DataField="property_datatype" Visible="True" HeaderText="Type" ItemStyle-HorizontalAlign="Center" />  
                             <asp:TemplateField HeaderText="Step" Visible="True">
                                 <ItemTemplate>
-                                    <asp:CheckBox ID="chkStep" runat="server" onclick="load();"/>
+                                    <asp:CheckBox ID="chkStep" runat="server" onclick="load();" title="Select to view Step."/>
                                 </ItemTemplate>
                                 <ItemStyle HorizontalAlign="Center" />
                             </asp:TemplateField>
@@ -341,7 +342,7 @@
                         <Columns>  
                             <asp:TemplateField HeaderText="View" Visible="True">
                                 <ItemTemplate>
-                                    <asp:CheckBox ID="chkEnabled" runat="server" onclick="load();"/>
+                                    <asp:CheckBox ID="chkEnabled" runat="server" onclick="load();" title="Select to view this State in the Analytics chart."/>
                                 </ItemTemplate>
                                 <ItemStyle HorizontalAlign="Center" />
                             </asp:TemplateField>
@@ -353,11 +354,11 @@
         </div>
         <div class="span9">
             <div class="row-fluid">
-                From: <asp:TextBox runat="server" ID="datepickerFrom" style="margin-top:10px;"></asp:TextBox>
-                To: <asp:TextBox runat="server" ID="datepickerTo" style="margin-top:10px;"></asp:TextBox>
+                From: <asp:TextBox runat="server" ID="datepickerFrom" style="margin-top:10px;" title="Enter the Start Date to display"></asp:TextBox>
+                To: <asp:TextBox runat="server" ID="datepickerTo" style="margin-top:10px;" title="Enter the Stop Date to display"></asp:TextBox>
                 <br>
-                Time: <asp:TextBox runat="server" ID="timepickerFrom" style="margin-top:10px;"></asp:TextBox>
-                &nbsp; &nbsp; &nbsp; <asp:TextBox runat="server" ID="timepickerTo" style="margin-top:10px;"></asp:TextBox>
+                Time: <asp:TextBox runat="server" ID="timepickerFrom" style="margin-top:10px;" title="Enter the Start Time to display"></asp:TextBox>
+                &nbsp; &nbsp; &nbsp; <asp:TextBox runat="server" ID="timepickerTo" style="margin-top:10px;" title="Enter the Stop Time to display"></asp:TextBox>
 
                 &nbsp; &nbsp; <img src="Images/refresh.png" onclick="load();" style="margin-top:auto;">
             </div>

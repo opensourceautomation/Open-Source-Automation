@@ -23,5 +23,10 @@ public partial class error : System.Web.UI.Page
             errorDetailTextBox.Text = sb.ToString();
             Server.ClearError();
         }
+        else 
+        {
+            string unError = "There was an Unknown error that orrcured on the previous page." + Environment.NewLine + "Please try again." + Environment.NewLine + "If you continue to get the same Error, please see resolutions at bottom of this page.";
+            errorDetailTextBox.Text = unError;
+        }
     }    
 }

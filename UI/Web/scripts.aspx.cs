@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using OSAE;
@@ -31,20 +34,18 @@ public partial class scripts : System.Web.UI.Page
             btnDeleteObjTypeEventScript.Visible = true;
         }
     }
-    
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
         int objSet = OSAEAdminManager.GetAdminSettingsByName("Script Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
-
         loadScripts();
         alert.Visible = false;
         saveAlert.Visible = false;
         deleteAlert.Visible = false;
         if (!this.IsPostBack) loadDDLs();
-
         applyObjectSecurity();
     }
 
@@ -82,7 +83,6 @@ public partial class scripts : System.Web.UI.Page
             if (e.Row.RowState == DataControlRowState.Alternate)
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
-
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvScripts_" + e.Row.RowIndex.ToString()));
         }
     }
@@ -95,7 +95,6 @@ public partial class scripts : System.Web.UI.Page
             if (e.Row.RowState == DataControlRowState.Alternate)
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
-
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvEventScripts_" + e.Row.RowIndex.ToString()));
         }
     }
@@ -108,7 +107,6 @@ public partial class scripts : System.Web.UI.Page
             if (e.Row.RowState == DataControlRowState.Alternate)
                 e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
             else e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
-
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvObjTypeScripts_" + e.Row.RowIndex.ToString()));
         }
     }
@@ -126,6 +124,7 @@ public partial class scripts : System.Web.UI.Page
 
         if (gvEventScripts.Rows.Count == 0) pnlEventScripts.Visible = false;
         else pnlEventScripts.Visible = true;
+
     }
 
     private void loadObjTypeEventScripts()
@@ -143,21 +142,18 @@ public partial class scripts : System.Web.UI.Page
         ddlScriptProcessor.DataBind();
         if (ddlScriptProcessor.Items.Count == 0) ddlScriptProcessor.Visible = false;
         else ddlScriptProcessor.Visible = true;
-
         ddlScriptProcessor.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
         ddlObject.DataSource = OSAESql.RunSQL("SELECT object_name as Text, object_id as Value FROM osae_object ORDER BY object_name"); ;
         ddlObject.DataBind();
         if (ddlObject.Items.Count == 0) ddlObject.Visible = false;
         else ddlObject.Visible = true;
-
         ddlObject.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
         ddlObjectType.DataSource = OSAESql.RunSQL("SELECT object_type as Text, object_type_id as Value FROM osae_object_type ORDER BY object_type"); ;
         ddlObjectType.DataBind();
         if (ddlObjectType.Items.Count == 0) ddlObjectType.Visible = false;
         else ddlObjectType.Visible = true;
-
         ddlObjectType.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
         ddlScript.DataSource = OSAESql.RunSQL("SELECT script_name as Text, script_id as Value  FROM osae_script ORDER BY script_name"); ;
@@ -176,7 +172,9 @@ public partial class scripts : System.Web.UI.Page
     protected void btnAdd_Click(object sender, EventArgs e)
     {
         if (txtName.Text == "" || ddlScriptProcessor.SelectedValue == "")
+        {
             alert.Visible = true;
+        }
         else
         {
             OSAEScriptManager.ScriptAdd(txtName.Text, ddlScriptProcessor.SelectedValue, hdnScript.Value);
@@ -189,7 +187,9 @@ public partial class scripts : System.Web.UI.Page
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
         if (txtName.Text == "" || ddlScriptProcessor.SelectedValue == "")
+        {
             alert.Visible = true;
+        }
         else
         {
             OSAEScriptManager.ScriptUpdate(hdnSelectedScriptName.Text, txtName.Text, ddlScriptProcessor.SelectedValue, hdnScript.Value);
@@ -198,7 +198,7 @@ public partial class scripts : System.Web.UI.Page
             saveAlert.Visible = true;
             hdnSelectedScriptName.Text = txtName.Text;
         }
-        Page.ClientScript.RegisterStartupScript(GetType(), "MyKey", "setSytaxHighlighter();", true);
+        Page.ClientScript.RegisterStartupScript( GetType(), "MyKey", "setSytaxHighlighter();", true);
     }
 
     protected void btnDelete_Click(object sender, EventArgs e)

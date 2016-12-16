@@ -261,8 +261,13 @@ public partial class objtypes : System.Web.UI.Page
 
     private void loadDDLs()
     {
-        ddlBaseType.DataSource = OSAESql.RunSQL("SELECT object_type as Text, object_type as Value FROM osae_object_type ORDER BY object_type"); ;
+        DataSet baseTypeData = OSAESql.RunSQL("SELECT object_type as Text, object_type as Value, object_type_tooltip as Tooltip FROM osae_object_type ORDER BY object_type");
+        ddlBaseType.DataSource = baseTypeData;
         ddlBaseType.DataBind();
+        for (int i = 0; i < ddlBaseType.Items.Count; i++)
+        {
+            ddlBaseType.Items[i].Attributes.Add("title", baseTypeData.Tables[0].Rows[i]["Tooltip"].ToString());
+        }
         if (ddlBaseType.Items.Count == 0)
             ddlBaseType.Visible = false;
         else
@@ -384,13 +389,15 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void btnPropAdd_Click(object sender, EventArgs e)
     {
-        if (ddlPropType.SelectedValue == "Object Type" & ddlBaseType2.SelectedValue != "")
+        if (ddlPropType.SelectedValue == "Object Type" & ddlBaseType2.SelectedValue == "")
+        {
+            Response.Write("<script>alert('You must select an Object Type!');</script>");
+        }
+        else
         {
             OSAEObjectTypeManager.ObjectTypePropertyAdd(hdnSelectedObjectName.Text, txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedItem.ToString(), txtPropDefault.Text, chkTrackChanges.Checked, chkRequired.Checked);
             loadProperties();
         }
-        else
-            Response.Write("<script>alert('You must select an Object Type!');</script>");
     }
 
     protected void btnMethodAdd_Click(object sender, EventArgs e)

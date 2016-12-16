@@ -18,9 +18,6 @@ public partial class plugins : System.Web.UI.Page
 {
     private BindingList<PluginDescription> pluginList = new BindingList<PluginDescription>();
 
-    //OSAELog
-    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("WebUI");
-
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!Page.IsPostBack) loadPlugins();
@@ -43,7 +40,7 @@ public partial class plugins : System.Web.UI.Page
                 desc.Status = "Stopped";
 
             pluginList.Add(desc);
-            Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
+            Master.Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
         }
 
         /*
@@ -80,7 +77,7 @@ public partial class plugins : System.Web.UI.Page
                         desc.Status = "Stopped";
 
                     pluginList.Add(desc);
-                    Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
+                    Master.Log.Info("Plugin found: Name:" + desc.Name + " Desc ID: " + desc.ID);
                 }
             }
         }
@@ -140,7 +137,7 @@ public partial class plugins : System.Web.UI.Page
             }
 
             NetworkComms.SendObject("Plugin", Common.LocalIPAddress(), 10051, pluginName + "|" + enabled);
-            Log.Info("Sending message: " + "ENABLEPLUGIN|" + pluginName + "|" + enabled);
+            Master.Log.Info("Sending message: " + "ENABLEPLUGIN|" + pluginName + "|" + enabled);
 
             foreach (PluginDescription plugin in pluginList)
             {
@@ -153,7 +150,7 @@ public partial class plugins : System.Web.UI.Page
             loadPlugins();
         }
         catch (Exception ex)
-        { Log.Info("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException); }
+        { Master.Log.Info("Error enabling plugin: " + ex.Message + " Inner Exception: " + ex.InnerException); }
     }
 
 

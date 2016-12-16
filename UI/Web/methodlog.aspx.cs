@@ -8,9 +8,9 @@ using OSAE;
 
 public partial class methodlog : System.Web.UI.Page
 {
-    Logging logging = Logging.GetLogger("Web UI");
     // Get current Admin Trust Settings
     OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();
+    Logging logging = Logging.GetLogger("Web UI");
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -31,7 +31,7 @@ public partial class methodlog : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            logging.AddToLog("Error retreiving method log: " + ex.Message, true);
+            Master.Log.Error("Error retreiving method log: " + ex.Message);
         }
     }
    

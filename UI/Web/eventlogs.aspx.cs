@@ -8,7 +8,6 @@ using OSAE;
 
 public partial class eventlogs : System.Web.UI.Page
 {
-    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("SYSTEM");
 
     // Get current Admin Trust Settings
     OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();

@@ -10,7 +10,6 @@ function callme()
             
   }
 </script>
-
     <div class="row-fluid">
         <div class="span2">
         </div>
@@ -20,7 +19,7 @@ function callme()
                     AutoGenerateColumns="False"  
                     GridLines="None"  
                     CssClass="mGrid"  
-                    AlternatingRowStyle-CssClass="alt" DataKeyNames="image_id" OnRowCommand="gvImages_RowCommand">  
+                    AlternatingRowStyle-CssClass="alt" DataKeyNames="image_id" OnRowCommand="gvImages_RowCommand" OnRowDataBound="gvImages_RowDataBound">  
                     <Columns>
                         <asp:TemplateField HeaderText="Image" Visible="True">
                             <ItemTemplate>
@@ -36,7 +35,7 @@ function callme()
                         <asp:TemplateField HeaderText="Delete" Visible="True">
                             <ItemTemplate>
                                 <center>
-                                    <asp:ImageButton ID="hypDelete" runat="server" CommandName="DeleteImage" ImageUrl="~/images/delete.jpg" tooltip="Delete"></asp:ImageButton>
+                                    <asp:ImageButton ID="hypDelete" runat="server" CommandName="DeleteImage" ImageUrl="~/images/delete.jpg" tooltip="Delete this Image."></asp:ImageButton>
                                 </center>
                             </ItemTemplate>
                         </asp:TemplateField>
@@ -58,9 +57,9 @@ function callme()
         </div>
         <div class="span8">
             <h3>add a new image</h3>
-            <asp:FileUpload ID="fileUpload" runat="server" onchange="callme(this)" />
-            <asp:TextBox ID="txtName" runat="server" CssClass="input"></asp:TextBox>
-            <asp:Button ID="btnAdd" runat="server" OnClick="btnAdd_Click" Text="Add" />
+            <asp:FileUpload ID="fileUpload" runat="server" ToolTip="Browse for the Image File to ADD." />
+            <asp:TextBox ID="txtName" runat="server" CssClass="input" ToolTip="Enter the Image Name."></asp:TextBox>
+            <asp:Button ID="btnAdd" runat="server" OnClick="btnAdd_Click" Text="Add" ToolTip="ADDs the Image to the database." />
         </div>
         <div class="span2">
         </div>

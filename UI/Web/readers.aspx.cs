@@ -28,7 +28,6 @@ public partial class readers : System.Web.UI.Page
         int objSet = OSAEAdminManager.GetAdminSettingsByName("Reader Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
-
         loadReaders();
 
         if (!this.IsPostBack) loadObjects();

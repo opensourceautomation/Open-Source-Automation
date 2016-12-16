@@ -70,37 +70,37 @@
     </asp:Panel>
     <asp:Panel ID="pnlDropDowns" runat="server" Height="55px" Width="775px">
         <asp:Label ID="Label5" runat="server" Text="Object  "></asp:Label>
-        <asp:DropDownList runat="server" ID="ddlObjects" datatextfield="object_name" datavaluefield="object_id" style="width:280px;" OnSelectedIndexChanged="ddlObjects_SelectedIndexChanged" AutoPostBack="true">
+        <asp:DropDownList runat="server" ID="ddlObjects" datatextfield="object_name" datavaluefield="object_id" style="width:280px;" OnSelectedIndexChanged="ddlObjects_SelectedIndexChanged" AutoPostBack="true" ToolTip="Select the Object for this Reader.">
             <asp:ListItem Selected = "True"  Text = "" Value = ""></asp:ListItem>
         </asp:DropDownList>
         &nbsp;&nbsp;&nbsp;
         <asp:Label ID="Label6" runat="server" Text="  Property  "></asp:Label>
-        <asp:DropDownList ID="ddlProperties" runat="server" datatextfield="property_name" datavaluefield="property_id" style="width:280px;">
+        <asp:DropDownList ID="ddlProperties" runat="server" datatextfield="property_name" datavaluefield="property_id" style="width:280px;" ToolTip="Select the Property this Reader will populate.">
             <asp:ListItem Selected="True" Text="" Value=""></asp:ListItem>
          </asp:DropDownList>
      </asp:Panel>
      <asp:Panel ID="pnlURL" runat="server" Height="55px" Width="775px">
          <asp:Label ID="Label7" runat="server" Text="URL  "></asp:Label>
-         <asp:TextBox ID="txtURL" runat="server" Width="714px"></asp:TextBox>
+         <asp:TextBox ID="txtURL" runat="server" Width="714px" ToolTip="Enter the full URL for this Reader."></asp:TextBox>
      </asp:Panel>
      <asp:Panel ID="pnlSettings" runat="server" Height="55px" Width="775px">
          <asp:Label ID="Label1" runat="server" Text="Prefix  "></asp:Label>
-         <asp:TextBox ID="txtPrefix" runat="server"></asp:TextBox>
+         <asp:TextBox ID="txtPrefix" runat="server" ToolTip="Enter the Prefix this Reader will locate."></asp:TextBox>
          &nbsp;
          <asp:Label ID="Label2" runat="server" Text="Prefix Offset  "></asp:Label>
-         <asp:TextBox ID="txtPrefixOffset" runat="server" Width="36px"></asp:TextBox>
+         <asp:TextBox ID="txtPrefixOffset" runat="server" Width="36px" ToolTip="Enter the Prefix Offset for this Reader."></asp:TextBox>
          &nbsp;
          <asp:Label ID="Label3" runat="server" Text="Suffix  "></asp:Label>
-         <asp:TextBox ID="txtSuffix" runat="server" Width="145px"></asp:TextBox>
+         <asp:TextBox ID="txtSuffix" runat="server" Width="145px" ToolTip="Enter the Suffix for this Reader to locate."></asp:TextBox>
          &nbsp;
          <asp:Label ID="Label4" runat="server" Text="Interval  "></asp:Label>
-         <asp:TextBox ID="txtInterval" runat="server" Width="64px"></asp:TextBox>
+         <asp:TextBox ID="txtInterval" runat="server" Width="64px" ToolTip="Enter the Interval Timer for this Reader to execute."></asp:TextBox>
      </asp:Panel>
-     <asp:Panel ID="pnlButtons" runat="server" Height="55px" Width="775px">
+     <asp:Panel ID="pnlButtons" runat="server" Height="55px" Width="775px" ToolTip="ADDS the above information to a new Reader in the database.">
          <asp:Button runat="server" ID="btnReaderSave" class="btn" OnClick="btnReaderAdd_Click" Text="Add" /> &nbsp;
-         <asp:Button runat="server" ID="btnReaderUpdate" class="btn" OnClick="btnReaderUpdate_Click" Text="Update" /> &nbsp;
-         <asp:Button runat="server" ID="btnReaderDelete" class="btn" OnClick="btnReaderDelete_Click" Text="Delete"/>
-         <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
+         <asp:Button runat="server" ID="btnReaderUpdate" class="btn" OnClick="btnReaderUpdate_Click" Text="Update" ToolTip="UPDATEs the above information in to the selected Reader." /> &nbsp;
+         <asp:Button runat="server" ID="btnReaderDelete" class="btn" OnClick="btnReaderDelete_Click" Text="Delete" ToolTip="DELETEs the above selected Reader from the database."/>
+         <a href="#linkModal" role="button" class="btn" data-toggle="modal" title="Displays the SQL information of this Reader for Export/Import." >Export</a>
      </asp:Panel>
     <br />
 

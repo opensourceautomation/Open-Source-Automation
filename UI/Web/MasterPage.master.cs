@@ -6,10 +6,11 @@ using OSAE;
 
 public partial class MasterPage : System.Web.UI.MasterPage
 {
-    public OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Web Server");
+    public OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Web Server");      
     
     protected void Page_Load(object sender, EventArgs e)
     {
+
         if (Request.Headers["User-Agent"] != null && (Request.Browser["IsMobileDevice"] == "true" || Request.UserAgent.ToUpper().Contains("MIDP") || Request.UserAgent.ToUpper().Contains("CLDC") || Request.UserAgent.ToLower().Contains("iphone") || Request.UserAgent.ToLower().Contains("avant") || Request.UserAgent.ToLower().Contains("nokia") || Request.UserAgent.ToLower().Contains("pda") || Request.UserAgent.ToLower().Contains("moto") || Request.UserAgent.ToLower().Contains("windows ce") || Request.UserAgent.ToLower().Contains("hand") || Request.UserAgent.ToLower().Contains("mobi") || Request.UserAgent.ToUpper().Contains("HTC") || Request.UserAgent.ToLower().Contains("sony") || Request.UserAgent.ToLower().Contains("panasonic") || Request.UserAgent.ToLower().Contains("blackberry") || Request.UserAgent.ToLower().Contains("240x320") || Request.UserAgent.ToLower().Contains("voda")))
             Response.Redirect("mobile/index.aspx");
 
@@ -34,7 +35,11 @@ public partial class MasterPage : System.Web.UI.MasterPage
         if (sc.Status != ServiceControllerStatus.Running)
         {
             cog.ImageUrl = "~/Images/cog_red.png";
-            cog.ToolTip = "OSA service is not running.";
+            cog.ToolTip = "Config Settings: OSA service is not running.";
+        }
+        else
+        {
+            cog.ToolTip = "Config Settings: OSA service is running.";
         }
 
         btnUser.Text = Session["UserName"].ToString();
@@ -59,7 +64,10 @@ public partial class MasterPage : System.Web.UI.MasterPage
             else Session.Timeout = 60;
         }
         catch (Exception ex)
-        { Log.Error("Error setting session timeout", ex); }
+        {
+            Log.Error("Error setting session timeout", ex);
+            Response.Redirect("~/error.aspx");
+        }
     }
 
     protected void btnUser_Click(object sender, EventArgs e)

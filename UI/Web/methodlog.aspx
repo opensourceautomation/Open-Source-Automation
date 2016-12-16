@@ -5,8 +5,8 @@
     <div class="row-fluid">
         <div class="span1"></div>
         <div class="span10">
-            <asp:Button class="btn" runat="server" ID="clearLogButton" Text="Clear Method Log" OnClick="clearLogButton_Click" />
-            <asp:Button runat="server" ID="btnRefresh" Text="Refresh" class="btn" OnClick="btnRefresh_Click"/>
+            <asp:Button class="btn" runat="server" ID="clearLogButton" Text="Clear Method Log" OnClick="clearLogButton_Click" ToolTip="Clears the Method Log." />
+            <asp:Button runat="server" ID="btnRefresh" Text="Refresh" class="btn" OnClick="btnRefresh_Click" ToolTip="Refreshes the Method Log."/>
             <asp:GridView ID="methodLogGridView" AutoGenerateColumns="False" runat="server" GridLines="None" CssClass="mGrid" AlternatingRowStyle-CssClass="alt" EmptyDataText="No Entries Found">
 <AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
                 <Columns>
@@ -18,8 +18,8 @@
                     <asp:BoundField DataField="from_object" HeaderText="From" />
                 </Columns>
             </asp:GridView>
-            <asp:Button class="btn" runat="server" ID="clearLogButton2" Text="Clear Method Log" OnClick="clearLogButton_Click" />
-            <asp:Button runat="server" ID="btnRefresh2" Text="Refresh" class="btn" OnClick="btnRefresh_Click"/>
+            <asp:Button class="btn" runat="server" ID="clearLogButton2" Text="Clear Method Log" OnClick="clearLogButton_Click" ToolTip="Clears the Method Log." />
+            <asp:Button runat="server" ID="btnRefresh2" Text="Refresh" class="btn" OnClick="btnRefresh_Click" ToolTip="Refreshes the method log."/>
         </div>   
         <div class="span1"></div>           
     </div>

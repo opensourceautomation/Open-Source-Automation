@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 using OSAE;
 
 public partial class debuglog : System.Web.UI.Page
 {
-    //OSAELog
-    private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("WebUI");
 
     // Get current Admin Trust Settings
     OSAEAdmin adSet = OSAEAdminManager.GetAdminSettings();

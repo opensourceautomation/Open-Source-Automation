@@ -104,11 +104,11 @@
             <div class="row-fluid">
                 <div class="span4" style="text-align:left;">
                     <br />
-                    <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Linkage</a>
-                    <a href="#copyModal" role="button" class="btn" data-toggle="modal" >Copy</a>
-                    <asp:TextBox ID="txtTestParameter" runat="server"></asp:TextBox>
-                    <asp:Button runat="server" ID="btnTest" class="btn" OnClick="btnTest_Click" Text="Test" /> 
-                    <a href="#exportModal" role="button" class="btn" data-toggle="modal" >Export</a>
+                    <a href="#linkModal" role="button" class="btn" data-toggle="modal" title="Displays the selected Script's Linkage Information." >Linkage</a>
+                    <a href="#copyModal" role="button" class="btn" data-toggle="modal" title="Displays the above selected Script Text for Copying." >Copy</a>
+                    <asp:TextBox ID="txtTestParameter" runat="server" ToolTip="Paste Script text here to run Test."></asp:TextBox>
+                    <asp:Button runat="server" ID="btnTest" class="btn" OnClick="btnTest_Click" Text="Test" ToolTip="Will Execute Script text in Textbox." /> 
+                    <a href="#exportModal" role="button" class="btn" data-toggle="modal" title="Displays Script SQL for Export/Import" >Export</a>
                 </div>
                 <div class="span6" style="text-align:left;">
                     <div class="alert alert-error" runat="server" id="alert" visible="false"  >Must enter script name and Script Processor</div> &nbsp;
@@ -117,9 +117,9 @@
                 </div>
                 <div class="span3" style="text-align:right;">
                     <br />
-                    <asp:Button runat="server" ID="btnAdd" class="btn" OnClientClick="saveScriptAdd(); return false;" Text="Add" /> &nbsp;
-                    <asp:Button runat="server" ID="btnUpdate" class="btn" OnClientClick="saveScriptUpdate(); return false;" Text="Update" /> &nbsp;
-                    <asp:Button runat="server" ID="btnDelete" class="btn" OnClick="btnDelete_Click" Text="Delete" OnClientClick="return confirm('Are you sure you want to delete the script?');"/>
+                    <asp:Button runat="server" ID="btnAdd" class="btn" OnClientClick="saveScriptAdd(); return false;" Text="Add" ToolTip="ADDs the above Script to the database." /> &nbsp;
+                    <asp:Button runat="server" ID="btnUpdate" class="btn" OnClientClick="saveScriptUpdate(); return false;" Text="Update" ToolTip="UPDATES the above Script information." /> &nbsp;
+                    <asp:Button runat="server" ID="btnDelete" class="btn" OnClick="btnDelete_Click" Text="Delete" OnClientClick="return confirm('Are you sure you want to delete the script?');" ToolTip="DELETES the above selected Script from the database."/>
                     &nbsp;
                     <asp:Button runat="server" ID="btnAdd2" OnClick="btnAdd_Click" style="display:none;" /> &nbsp;
                     <asp:Button runat="server" ID="btnUpdate2" OnClick="btnUpdate_Click" style="display:none;" /> &nbsp;
@@ -159,7 +159,7 @@
                             <asp:DropDownList runat="server" ID="ddlScript" datatextfield="Text" datavaluefield="Value" title="The script you want to run when the event occurs" style="width:100%"></asp:DropDownList>
                         </div>
                     </div>
-                    <div class="row-fluid">
+                    <div class="row-fluid" title="Add the above Object Event Script">
                         <asp:Button runat="server" ID="btnAddEventScript" class="btn" OnClick="btnAddEventScript_Click" Text="Add" style="float:right;"/>
                     </div>
                 </div>
@@ -180,7 +180,7 @@
                         </div>
                     <div class="row-fluid">
                         <br />
-                        <asp:Button runat="server" ID="btnDeleteEventScript" class="btn" OnClick="btnDeleteEventScript_Click" Text="Delete" style="float:right;" Visible="false"/>
+                        <asp:Button runat="server" ID="btnDeleteEventScript" class="btn" OnClick="btnDeleteEventScript_Click" Text="Delete" style="float:right;" Visible="false" ToolTip="Deletes the above selected Object Event Script."/>
                     </div>
 
                     </asp:Panel>
@@ -198,7 +198,7 @@
                             <label>Object Type:</label>
                         </div>
                         <div class="span10" style="text-align:left;">
-                            <asp:DropDownList runat="server" ID="ddlObjectType" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlObjectType_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
+                            <asp:DropDownList runat="server" ID="ddlObjectType" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlObjectType_SelectedIndexChanged" AutoPostBack="true" ToolTip="The Object-Type you want to associate this script to."></asp:DropDownList>
                         </div>
                     </div>
                     <div class="row-fluid">
@@ -206,7 +206,7 @@
                             <label>Event:</label>
                         </div>
                         <div class="span10" style="text-align:left;">
-                            <asp:DropDownList runat="server" ID="ddlObjTypeEvent" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlObjTypeEvent_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
+                            <asp:DropDownList runat="server" ID="ddlObjTypeEvent" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlObjTypeEvent_SelectedIndexChanged" AutoPostBack="true" ToolTip="The Event of the Object-Type you want this script associated to."></asp:DropDownList>
                         </div>
                     </div>
                     <div class="row-fluid">       
@@ -214,11 +214,11 @@
                             <label>Script:</label>
                         </div>
                         <div class="span10" style="text-align:left;">
-                            <asp:DropDownList runat="server" ID="ddlObjTypeScript" datatextfield="Text" datavaluefield="Value" style="width:100%"></asp:DropDownList>
+                            <asp:DropDownList runat="server" ID="ddlObjTypeScript" datatextfield="Text" datavaluefield="Value" style="width:100%" ToolTip="The Script you want to run when the event occurs."></asp:DropDownList>
                         </div>
                     </div>
                     <div class="row-fluid">
-                        <asp:Button runat="server" ID="btnAddObjTypeEventScript" class="btn" OnClick="btnAddObjTypeEventScript_Click" Text="Add" style="float:right;"/>
+                        <asp:Button runat="server" ID="btnAddObjTypeEventScript" class="btn" OnClick="btnAddObjTypeEventScript_Click" Text="Add" style="float:right;" ToolTip="Adds the above Object-Type script"/>
                     </div>
                 </div>
                 <div class="span6">
@@ -238,7 +238,7 @@
                         </div>
                     <div class="row-fluid">
                         <br />
-                        <asp:Button runat="server" ID="btnDeleteObjTypeEventScript" class="btn" OnClick="btnDeleteObjTypeEventScript_Click" Text="Delete" style="float:right;" Visible="false"/>
+                        <asp:Button runat="server" ID="btnDeleteObjTypeEventScript" class="btn" OnClick="btnDeleteObjTypeEventScript_Click" Text="Delete" style="float:right;" Visible="false" ToolTip="Deletes the above selected Object-Type Event Script."/>
                     </div>
 
                     </asp:Panel>

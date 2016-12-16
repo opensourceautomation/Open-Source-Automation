@@ -110,7 +110,7 @@
                             Name: 
                         </div>
                         <div class="span10">
-                            <asp:TextBox class="input-xlarge" runat="server" ID="txtName" AutoPostBack="True" OnTextChanged="txtName_TextChanged"></asp:TextBox>
+                            <asp:TextBox class="input-xlarge" runat="server" ID="txtName" AutoPostBack="True" OnTextChanged="txtName_TextChanged" ToolTip="Enter the Name for this Schedule."></asp:TextBox>
                         </div>
                     </div>
                     <div class="row-fluid">
@@ -118,7 +118,7 @@
                             Time: 
                         </div>
                         <div class="span10">
-                            <asp:TextBox runat="server" name="timepicker" ID="tsTime"></asp:TextBox>
+                            <asp:TextBox runat="server" name="timepicker" ID="tsTime" ToolTip="Enter the Time to execute this Schedule."></asp:TextBox>
                          
                         </div>
                     </div>
@@ -127,7 +127,7 @@
                             Active: 
                         </div>
                         <div class="span10">
-                            <asp:CheckBox runat="server" ID="chkActive" />
+                            <asp:CheckBox runat="server" ID="chkActive" ToolTip="Enable/Disable if this Schedule is Active." />
                         </div>
                     </div>
                     <div class="row-fluid">
@@ -135,31 +135,31 @@
                             <asp:RadioButtonList runat="server" ID="rbScheduleType" OnSelectedIndexChanged="rbScheduleType_SelectedIndexChanged"  CssClass="radioButtonList"
                                 AutoPostBack="true"
                                 RepeatDirection="Vertical">
-                                <asp:ListItem Text="Single Entry" Value="1"></asp:ListItem>
-                                <asp:ListItem Text="Every # of Minutes" Value="T"></asp:ListItem>
-                                <asp:ListItem Text="Daily" Value="D"></asp:ListItem>
-                                <asp:ListItem Text="Monthly" Value="M"></asp:ListItem>
-                                <asp:ListItem Text="Anually" Value="Y"></asp:ListItem>
+                                <asp:ListItem Text="Single Entry" Value="1" title="Execute this Schedule ONLY Once."></asp:ListItem>
+                                <asp:ListItem Text="Every # of Minutes" Value="T" title="Execute this Schedule every specified minutes."></asp:ListItem>
+                                <asp:ListItem Text="Daily" Value="D" title="Execute this Schedule every selected day."></asp:ListItem>
+                                <asp:ListItem Text="Monthly" Value="M" title="Execute this Schedule every selected Month."></asp:ListItem>
+                                <asp:ListItem Text="Anually" Value="Y" title="Execute this Schedule every selected Year."></asp:ListItem>
                             </asp:RadioButtonList>
                         </div>
                     </div>
                     <div class="row-fluid">
                         <div class="span12">    
                             <br />
-                            <asp:TextBox runat="server" ID="datepicker" Visible="false"></asp:TextBox>
-                            <asp:TextBox runat="server" ID="txtMinutes" class="input-small" Visible="false">20</asp:TextBox>
+                            <asp:TextBox runat="server" ID="datepicker" Visible="false" ToolTip="Enter the Date to Execute this Schedule."></asp:TextBox>
+                            <asp:TextBox runat="server" ID="txtMinutes" class="input-small" Visible="false" ToolTip="Enter the number of minutes to execute this Schedule.">20</asp:TextBox>
                             <asp:Panel runat="server" ID="pnlDaily" Visible="false">
-                                <asp:CheckBox runat="server" ID="chkSunday" /> Sunday<br />
-                                <asp:CheckBox runat="server" ID="chkMonday" /> Monday<br />
-                                <asp:CheckBox runat="server" ID="chkTuesday" /> Tuesady<br />
-                                <asp:CheckBox runat="server" ID="chkWednesday" /> Wednesday<br />
-                                <asp:CheckBox runat="server" ID="chkThursday" /> Thursday<br />
-                                <asp:CheckBox runat="server" ID="chkFriday" /> Friday<br />
-                                <asp:CheckBox runat="server" ID="chkSaturday" /> Saturday
+                                <asp:CheckBox runat="server" ID="chkSunday" title="Select to execute on this day."/> Sunday<br />
+                                <asp:CheckBox runat="server" ID="chkMonday" title="Select to execute on this day."/> Monday<br />
+                                <asp:CheckBox runat="server" ID="chkTuesday" title="Select to execute on this day."/> Tuesady<br />
+                                <asp:CheckBox runat="server" ID="chkWednesday" title="Select to execute on this day."/> Wednesday<br />
+                                <asp:CheckBox runat="server" ID="chkThursday" title="Select to execute on this day."/> Thursday<br />
+                                <asp:CheckBox runat="server" ID="chkFriday" title="Select to execute on this day."/> Friday<br />
+                                <asp:CheckBox runat="server" ID="chkSaturday" title="Select to execute on this day."/> Saturday
                             </asp:Panel>
                             <asp:Panel runat="server" ID="pnlMonthly" Visible="false">
                                 Day of the month: 
-                                <asp:DropDownList runat="server" ID="ddlMonthDay">
+                                <asp:DropDownList runat="server" ID="ddlMonthDay" ToolTip="Select the day of the month to execute this Schedule.">
                                     <asp:ListItem Text="1" Value="1"></asp:ListItem>
                                     <asp:ListItem Text="2" Value="2"></asp:ListItem>
                                     <asp:ListItem Text="3" Value="3"></asp:ListItem>
@@ -204,21 +204,21 @@
                     <asp:RadioButtonList runat="server" ID="rblAction" OnSelectedIndexChanged="rblAction_SelectedIndexChanged"  CssClass="radioButtonList"
                         AutoPostBack="true"
                         RepeatDirection="Vertical">
-                        <asp:ListItem Text="Run a Script" Value="1"></asp:ListItem>
-                        <asp:ListItem Text="Run an Object Method" Value="2"></asp:ListItem>
+                        <asp:ListItem Text="Run a Script" Value="1" title="Select to execute a Script for this Schedule."></asp:ListItem>
+                        <asp:ListItem Text="Run an Object Method" Value="2" title="Select to execute an Object Method for this Schedule."></asp:ListItem>
                     </asp:RadioButtonList>
                     <br />
-                    <asp:DropDownList runat="server" ID="ddlScript" datatextfield="Text" datavaluefield="Value" title="The script you want to run when the schedule occurs" style="width:100%" Visible="false"></asp:DropDownList>
+                    <asp:DropDownList runat="server" ID="ddlScript" datatextfield="Text" datavaluefield="Value" title="Select the script you want to run when the schedule occurs" style="width:100%" Visible="false"></asp:DropDownList>
                     <asp:Panel runat="server" ID="pnlMethod" Visible="false">
-                        Object: <asp:DropDownList runat="server" ID="ddlObject" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlObject_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
-                        Method: <asp:DropDownList runat="server" ID="ddlMethod" datatextfield="Text" datavaluefield="Value" style="width:100%"></asp:DropDownList>
-                        Parameter 1: <asp:TextBox class="input-xlarge" runat="server" ID="txtParam1"></asp:TextBox>
-                        <br />Parameter 2: <asp:TextBox class="input-xlarge" runat="server" ID="txtParam2"></asp:TextBox>
+                        Object: <asp:DropDownList runat="server" ID="ddlObject" datatextfield="Text" datavaluefield="Value" style="width:100%" OnSelectedIndexChanged="ddlObject_SelectedIndexChanged" AutoPostBack="true" ToolTip="Select the Object with the Method to Execute."></asp:DropDownList>
+                        Method: <asp:DropDownList runat="server" ID="ddlMethod" datatextfield="Text" datavaluefield="Value" style="width:100%" ToolTip="Select the Method to Execute for this Schedule."></asp:DropDownList>
+                        Parameter 1: <asp:TextBox class="input-xlarge" runat="server" ID="txtParam1" ToolTip="Enter Parameter-1 to send with the above Method."></asp:TextBox>
+                        <br />Parameter 2: <asp:TextBox class="input-xlarge" runat="server" ID="txtParam2" ToolTip="Enter Parameter-2 to send with the above Method."></asp:TextBox>
                     </asp:Panel>
                     <br />
-                    <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click" Visible="false"/>&nbsp
-                    <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" Visible="false"/>&nbsp
-                    <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" Visible="false" OnClientClick="return confirm('Are you sure you want to delete the schedule?');" />
+                    <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click" Visible="false" ToolTip="ADDs the above enterd Schedule to the database."/>&nbsp
+                    <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" Visible="false" ToolTip="UPDATEs the above information to the selected Schedule above."/>&nbsp
+                    <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" Visible="false" OnClientClick="return confirm('Are you sure you want to delete the schedule?');" ToolTip="DELETEs the above selected Schedule." />
                     <br />
                     <br />
                     <div class="alert alert-success" runat="server" id="alert" visible="false">

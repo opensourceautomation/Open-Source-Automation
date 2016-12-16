@@ -78,12 +78,12 @@
                 <div class="span12">
                     <br />
 
-                    <asp:TextBox runat="server" ID="txtPattern" class="input-large" Width="341px"></asp:TextBox>
+                    <asp:TextBox runat="server" ID="txtPattern" class="input-large" Width="341px" ToolTip="Enter the Pattern Text."></asp:TextBox>
                     <br />
-                    <asp:Button runat="server" ID="btnPatternSave" class="btn" OnClick="btnPatternAdd_Click" Text="Add" /> &nbsp;
-                    <asp:Button runat="server" ID="btnPatternUpdate" class="btn" OnClick="btnPatternUpdate_Click" Text="Update" /> &nbsp;
-                    <asp:Button runat="server" ID="btnPatternDelete" class="btn" OnClick="btnPatternDelete_Click" Text="Delete"/>
-                    <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
+                    <asp:Button runat="server" ID="btnPatternSave" class="btn" OnClick="btnPatternAdd_Click" Text="Add" ToolTip="ADDs the above Pattern text to the database." /> &nbsp;
+                    <asp:Button runat="server" ID="btnPatternUpdate" class="btn" OnClick="btnPatternUpdate_Click" Text="Update" ToolTip="UPDATES the above selected Pattern with the new text." /> &nbsp;
+                    <asp:Button runat="server" ID="btnPatternDelete" class="btn" OnClick="btnPatternDelete_Click" Text="Delete" ToolTip="DELETEs the above selected Pattern."/>
+                    <a href="#linkModal" role="button" class="btn" data-toggle="modal" title="Displays the SQL of the selected Pattern for Export/Import." >Export</a>
                 </div>
             </div>
         </div>
@@ -109,11 +109,11 @@
                 <div class="span12" style="text-align:right;">
                     <asp:Panel runat="server" ID="pnlMatchForm" Visible ="false">
                         <br />
-                        <asp:TextBox runat="server" ID="txtMatch" class="input-large" Width="344px"></asp:TextBox>
+                        <asp:TextBox runat="server" ID="txtMatch" class="input-large" Width="344px" ToolTip="Enter Pattern Match Text."></asp:TextBox>
                         <br />
-                        <asp:Button runat="server" ID="btnMatchAdd" class="btn" OnClick="btnMatchAdd_Click" Text="Add" /> &nbsp;
-                        <asp:Button runat="server" ID="btnMatchUpdate" class="btn" OnClick="btnMatchUpdate_Click" Text="Update" /> &nbsp;
-                        <asp:Button runat="server" ID="btnMatchDelete" class="btn" OnClick="btnMatchDelete_Click" Text="Delete"/>
+                        <asp:Button runat="server" ID="btnMatchAdd" class="btn" OnClick="btnMatchAdd_Click" Text="Add" ToolTip="ADDs the above Pattern Match Text." /> &nbsp;
+                        <asp:Button runat="server" ID="btnMatchUpdate" class="btn" OnClick="btnMatchUpdate_Click" Text="Update" ToolTip="UPDATES the above selected Pattern Match Text." /> &nbsp;
+                        <asp:Button runat="server" ID="btnMatchDelete" class="btn" OnClick="btnMatchDelete_Click" Text="Delete" ToolTip="DELETEs the above selected Pattern Match Text."/>
                     </asp:Panel>
                 </div>
             </div>
@@ -140,9 +140,9 @@
                 <div class="span12" style="text-align:right;">
                     <asp:Panel runat="server" ID="pnlScriptForm" Visible ="false">
                         <br />
-                        <asp:DropDownList runat="server" ID="ddlScript" datatextfield="Text" datavaluefield="Value" ></asp:DropDownList>
-                        <asp:Button runat="server" ID="btnScriptAdd" class="btn" OnClick="btnScriptAdd_Click" Text="Add" /> &nbsp;
-                        <asp:Button runat="server" ID="btnScriptDelete" class="btn" OnClick="btnScriptDelete_Click" Text="Delete"/>
+                        <asp:DropDownList runat="server" ID="ddlScript" datatextfield="Text" datavaluefield="Value" ToolTip="Select Script to execute when Pattern is detected." ></asp:DropDownList>
+                        <asp:Button runat="server" ID="btnScriptAdd" class="btn" OnClick="btnScriptAdd_Click" Text="Add" ToolTip="ADDS the selected Script." /> &nbsp;
+                        <asp:Button runat="server" ID="btnScriptDelete" class="btn" OnClick="btnScriptDelete_Click" Text="Delete" ToolTip="DELETEs the above selected Script."/>
                     </asp:Panel>
                 </div>
             </div>

@@ -1,6 +1,8 @@
 ﻿using OSAE;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Data;
 using System.Web.UI.WebControls;
 

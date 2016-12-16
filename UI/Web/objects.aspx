@@ -78,95 +78,96 @@
                 <div class="row-fluid" ID="ObjGrid" style="overflow: auto; max-height:600px;" onscroll="SetDivPosition()">
                     <asp:GridView runat="server" ID="gvObjects" AllowSorting="True" OnSorting="gvObjects_OnSorting"
                         AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static"
-                        OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name" ShowHeaderWhenEmpty="true" >
+                        OnRowDataBound="gvObjects_RowDataBound" DataKeyNames="object_name, object_type_tooltip" ShowHeaderWhenEmpty="true" >
                         <RowStyle CssClass="rowHover"></RowStyle>
                         <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
                         <AlternatingRowStyle CssClass="rowHoverAlt"></AlternatingRowStyle>
-                        <Columns>  
+                        <Columns>
                             <asp:BoundField DataField="container_name" HeaderText="Container" SortExpression="container_name"/>  
                             <asp:BoundField DataField="object_name" HeaderText="Object" SortExpression="object_name" />  
                             <asp:BoundField DataField="object_type" HeaderText="Type" SortExpression="object_type" />  
                             <asp:BoundField DataField="state_label" HeaderText="State" SortExpression="state_label" />  
-                            <asp:BoundField DataField="last_updated" HeaderText="Updated" ItemStyle-Width="10em" SortExpression="last_updated" >  
-                                   <ItemStyle Width="10em"></ItemStyle>
-                            </asp:BoundField>
-                            <asp:BoundField DataField="address" HeaderText="Address" SortExpression="address" />  
-                        </Columns> 
+                            <asp:BoundField DataField="last_updated" HeaderText="Updated" ItemStyle-Width="10em" SortExpression="last_updated" />
+                            <asp:BoundField DataField="address" HeaderText="Address" SortExpression="address" />
+                            <asp:BoundField DataField="object_type_tooltip" Visible="false" />  
+                        </Columns>
                     </asp:GridView>
                 </div>
                 <br />
                 <div class="row-fluid">
                     <div class="span1" style="text-align:right;">
-                        <label>Name</label>
+                        <label title="The proper Name of this object (This is a REQUIRED property!)">Name</label>
                     </div>
                     <div class="span4" style="text-align:left;">
-                        <asp:TextBox class="input-xlarge" runat="server" ID="txtName"></asp:TextBox>
+                        <asp:TextBox class="input-xlarge" runat="server" ID="txtName" title="The proper Name of this object (This is a REQUIRED property!)"></asp:TextBox>
                     </div>
                     <div class="span2" style="text-align:right;">
-                        <label>Container</label>
+                        <label title="The container in which this object resides (not all objects require a Container)">Container</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:DropDownList runat="server" ID="ddlContainer" datatextfield="Text" datavaluefield="Value" style="width:280px;">
+                        <asp:DropDownList runat="server" ID="ddlContainer" datatextfield="Text" datavaluefield="Value" style="width:280px;" title="The container in which this object resides (not all objects require a Container)">
                             <asp:ListItem Selected = "True"  Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                 </div>
                 <div class="row-fluid">
                     <div class="span1" style="text-align:right;">
-                        <label>Alias</label>
+                        <label title="The Alias or Nickname of this object. (This is currently optional)">Alias</label>
                     </div>
                     <div class="span4" style="text-align:left;">
-                        <asp:TextBox class="input-xlarge" runat="server" ID="txtAlias"></asp:TextBox>
+                        <asp:TextBox class="input-xlarge" runat="server" ID="txtAlias" title="The Alias or Nickname of this object. (This is currently optional)"></asp:TextBox>
                     </div>
                     <div class="span2" style="text-align:right;">
-                        <label>Address</label>
+                        <label title="The protocol address of the object (not all objects require an address)">Address</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:TextBox class="input-xlarge" runat="server" ID="txtAddress" title="The protocal address of the object (not all objects require an address)"></asp:TextBox>
+                        <asp:TextBox class="input-xlarge" runat="server" ID="txtAddress" title="The protocol address of the object (not all objects require an address)"></asp:TextBox>
                     </div>
                 </div>
                 <div class="row-fluid">
                     <div class="span1" style="text-align:right;">
-                        <label>Type</label>
+                        <label title="The Object-Type of this object (All objects require a Type)">Type</label>
                     </div>
                     <div class="span4" style="text-align:left;">
-                        <asp:DropDownList runat="server" ID="ddlType" datatextfield="Text" datavaluefield="Value" style="width:280px;">
+                        <asp:DropDownList runat="server" ID="ddlType" datatextfield="Text" datavaluefield="Value" style="width:280px;" title="The Object-Type of this object (All objects require a Type)">
                             <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="span2" style="text-align:right;">
-                        <label>Owned By</label>
+                        <label title="The controling object for this Object (All objects should be owned)">Owned By</label>
                     </div>
                     <div class="span5" style="text-align:left;">
-                        <asp:TextBox class="input-xlarge" runat="server" ID="txtOwned" disabled="true"></asp:TextBox>
+                        <asp:TextBox class="input-xlarge" runat="server" ID="txtOwned" disabled="true" title="The controling object for this Object (All objects should be owned)"></asp:TextBox>
                     </div>
                 </div>
                 <div class="row-fluid">
                     <div class="span1" style="text-align:right;">
-                        <label>Desc</label>
+                        <label title="A description that describes this object (This is currently optional)">Desc</label>
                     </div>
                     <div class="span4" style="text-align:left;">
-                        <asp:TextBox class="input-xlarge" runat="server" ID="txtDescr"></asp:TextBox>
+                        <asp:TextBox class="input-xlarge" runat="server" ID="txtDescr" title="A description that describes this object (This is currently optional)"></asp:TextBox>
                     </div>
 
                     <div class="span2" style="text-align:right;" >
-                        <label>Min Trust Level</label>
+                        <label title="The minimal trust level an object must have to make changes to this object (All objects should have a Mim Trust Level)">Min Trust Level</label>
                     </div>
                     <div class="span1" style="text-align:left;">
-                        <asp:TextBox class="input" runat="server" ID="txtTrustLevel" Width="40px"></asp:TextBox>
+                        <asp:TextBox class="input" runat="server" ID="txtTrustLevel" Width="40px" title="The minimal trust level an object must have to make changes to this object (All objects should have a Mim Trust Level)"></asp:TextBox>
                     </div>
                     <div class="span4" style="text-align:left;" >
-                        <asp:CheckBox runat="server" ID="chkEnabled" /> Enabled 
+                        <asp:CheckBox runat="server" ID="chkEnabled" title="Set if this object is Enabled or Disabled." /> Enabled 
                     </div>
                 </div>
                 <div class="row-fluid">
                     <div class="span5" style="text-align:right;" >
                     </div>
                     <div class="span5" style="text-align:right;" >
-                        <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click"/>&nbsp
-                        <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" Visible="false"/>&nbsp
-                        <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object?');" />
-                        <a href="#linkModal" role="button" class="btn" data-toggle="modal" >Export</a>
+                        <asp:Button runat="server" ID="btnAdd" Text="<%$ Resources:Resources, Add %>" class="btn" OnClick="btnAdd_Click" title="Adds a new object to the Database."/>&nbsp
+                        <asp:Button runat="server" ID="btnUpdate" Text="<%$ Resources:Resources, Update %>" class="btn" OnClick="btnUpdate_Click" Visible="false" title="Updates the above selected object."/>&nbsp
+                        <asp:Button runat="server" ID="btnDelete" Text="<%$ Resources:Resources, Delete %>" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object?');" title="Deletes the above selected object."/>
+                        <a href="#linkModal" role="button" class="btn" data-toggle="modal" title="Creates an Export text for the above selected object.">Export</a><br />
+                        <asp:Label runat="server" ID="objAddError" Text="Invalid Entry, please try again!" ForeColor="Red" /><br />
+                        <asp:Label runat="server" ID="objAddErrorMsg" Text="Some information may still be missing!" ForeColor="Orange" />
                     </div>
                     <div class="span2" style="text-align:right;" >
                     </div>
@@ -184,7 +185,7 @@
                             State:
                         </div>
                         <div class="span9" style="text-align:left;">
-                            <asp:DropDownList runat="server" ID="ddlState" datatextfield="Text" datavaluefield="Value" style="width:100%;" AutoPostBack="true" OnSelectedIndexChanged="ddlState_SelectedIndexChanged">
+                            <asp:DropDownList runat="server" ID="ddlState" datatextfield="Text" datavaluefield="Value" style="width:100%;" AutoPostBack="true" OnSelectedIndexChanged="ddlState_SelectedIndexChanged">                          
                                 <asp:ListItem Selected = "True" Text = "" Value = ""></asp:ListItem>
                             </asp:DropDownList>
                         </div>
@@ -224,9 +225,11 @@
                     <div class="row-fluid">
                         <div class="span1"></div>
                         <div class="span10" ID="propGrid" style="overflow: auto; max-height:500px;" onscroll="SetPropDivPosition()">
+                        <asp:Label runat="server" ID="propEmpty" Text="This Object has Empty Properties!" Visible="false" ForeColor="Orange" /><br />
+                        <asp:Label runat="server" ID="propError" Text="This Object is missing Required Properties!" Visible="false" ForeColor="Red" />
                             <asp:GridView runat="server" ID="gvProperties" AutoGenerateColumns="False" GridLines="None" CssClass="mGrid"  
                                 OnRowDataBound="gvProperties_RowDataBound" ClientIDMode="Static"
-                                DataKeyNames="property_name,property_value,property_datatype,object_property_id,property_object_type,last_updated,source_name,trust_level,interest_level" ShowHeaderWhenEmpty="True" AllowSorting="True">  
+                                DataKeyNames="property_name,property_value,property_datatype,object_property_id,property_object_type,last_updated,source_name,trust_level,interest_level,property_tooltip,property_required" ShowHeaderWhenEmpty="True" AllowSorting="True">  
                                 <RowStyle CssClass="rowHover1"></RowStyle>
                                 <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
                                 <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle>
@@ -240,6 +243,8 @@
                                     <asp:BoundField DataField="source_name" Visible="false" />
                                     <asp:BoundField DataField="trust_level" Visible="false" />
                                     <asp:BoundField DataField="interest_level" Visible="false" />
+                                    <asp:BoundField DataField="property_tooltip" Visible="false" />
+                                    <asp:BoundField DataField="property_required" Visible="false" />
                                 </Columns>
                             </asp:GridView>
                         </div>
@@ -259,7 +264,8 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <asp:Label ID="lblSourceName" runat="server"></asp:Label>
                                 <br />
-                                <strong><asp:Label ID="lblPropName" runat="server"></asp:Label>&nbsp;<br /> </strong>
+                                <strong><asp:Label ID="lblPropName" runat="server"></asp:Label>&nbsp;&nbsp;
+                                <asp:Label ID="lblRequired" runat="server" Font-Bold="True" ForeColor="Red" Visible="False">- Required</asp:Label><br /></strong>
                                 <asp:Textbox class="input-xlarge" runat="server" ID="txtPropValue"></asp:Textbox>
                                 <asp:DropDownList runat="server" ID="ddlPropValue">
                                 </asp:DropDownList>
@@ -267,6 +273,7 @@
                                 <asp:Button class="btn btn-primary" runat="server" ID="btnEditPropList" Text="Edit List" href="#myPropListModal" data-toggle="modal"/>
                             </form>
                         </asp:Panel>
+                            <asp:Label runat="server" ID="propSaveError" Text="Invalid Entry, please try again!" Visible="false" ForeColor="Red" />
                         </div>
                         <div class="span1"></div>
                     </div>

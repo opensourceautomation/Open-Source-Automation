@@ -16,6 +16,6 @@ public partial class permissionError : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        
+        Master.Log.Error("A Permission Error has occured.");
     }
 }
