@@ -52,7 +52,7 @@ public partial class home : System.Web.UI.Page
             lblPropLastUpd.Text = "Last Updated: " + gvProperties.DataKeys[gvProperties.SelectedIndex]["last_updated"].ToString();
             hdnSelectedPropType.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString();
             lblPropType.Text = "Type: " + hdnSelectedPropType.Text;
-            if(propRequired) blRequired.Visible = true;
+            if(propRequired) lblRequired.Visible = true;
             else lblRequired.Visible = false;
 
             if (gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString() == "List")
