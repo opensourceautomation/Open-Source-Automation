@@ -37,7 +37,7 @@ public partial class valuedisplay : System.Web.UI.Page
 					//Response.Write("<br>State");
 					DataRow MyRow = OSAESql.RunSQL("SELECT CONCAT(object_name, ' - State') As Item, state_name As 'Value'  FROM osae_v_object WHERE Object_name= '" + SplitString[0] + "'").Tables[0].Rows[0];
 					
-					if (MyLabel == "") MyLabel = MyRow[0].ToString();=
+					if (MyLabel == "") MyLabel = MyRow[0].ToString();
 					GridData.Rows.Add(MyLabel, MyRow[1]);
 				}
 				else

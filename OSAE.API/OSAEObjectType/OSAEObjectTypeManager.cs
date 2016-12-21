@@ -372,11 +372,11 @@
     /// <param name="Name"></param>
     /// <param name="ParameterType"></param>
     /// <param name="ObjectType"></param>
-    public static void ObjectTypePropertyAdd(string ObjectType, string Name, string ParameterType, string ParameterObjectType, string ParameterDefault, bool TrackHistory, bool Required)
+    public static void ObjectTypePropertyAdd(string ObjectType, string Name, string ParameterType, string ParameterObjectType, string ParameterDefault, bool TrackHistory, bool Required, string tooltip)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_property_add (@ObjectType, @Name, @ParameterType, @ParameterObjectType, @ParameterDefault, @TrackHistory, @Required)";
+                command.CommandText = "CALL osae_sp_object_type_property_add (@ObjectType, @Name, @ParameterType, @ParameterObjectType, @ParameterDefault, @TrackHistory, @Required, @ToolTip)";
                 command.Parameters.AddWithValue("@ObjectType", ObjectType);
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@ParameterType", ParameterType);
@@ -384,6 +384,7 @@
                 command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
                 command.Parameters.AddWithValue("@Required", Required);
+                command.Parameters.AddWithValue("@ToolTip", tooltip);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)
@@ -417,20 +418,20 @@
         /// <param name="newName"></param>
         /// <param name="ParameterType"></param>
         /// <param name="objectType"></param>
-        public static void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterObjectType, string ParameterDefault, string objectType, string tooltip, bool TrackHistory, bool Required)
+        public static void ObjectTypePropertyUpdate(string oldName, string newName, string ParameterType, string ParameterObjectType, string ParameterDefault, string objectType, bool TrackHistory, bool Required, string tooltip)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_property_update (@OldName, @NewName, @ParameterType, @ParameterObjectType, @ParameterDefault, @ObjectType, @ToolTip, @TrackHistory, @Required)";
+                command.CommandText = "CALL osae_sp_object_type_property_update (@OldName, @NewName, @ParameterType, @ParameterObjectType, @ParameterDefault, @ObjectType, @TrackHistory, @Required, @ToolTip)";
                 command.Parameters.AddWithValue("@OldName", oldName);
                 command.Parameters.AddWithValue("@NewName", newName);
                 command.Parameters.AddWithValue("@ParameterType", ParameterType);
                 command.Parameters.AddWithValue("@ParameterObjectType", ParameterObjectType);
                 command.Parameters.AddWithValue("@ParameterDefault", ParameterDefault);
                 command.Parameters.AddWithValue("@ObjectType", objectType);
-                command.Parameters.AddWithValue("ToolTip", tooltip);
                 command.Parameters.AddWithValue("@TrackHistory", TrackHistory);
                 command.Parameters.AddWithValue("@Required", Required);
+                command.Parameters.AddWithValue("@ToolTip", tooltip);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)

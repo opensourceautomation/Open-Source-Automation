@@ -17,23 +17,6 @@ DROP FUNCTION IF EXISTS osae_fn_lookup_object_id$$
 DELIMITER ;
 
 --
--- Alter table "osae_object_property"
---
-ALTER TABLE osae_object_property
-  ADD COLUMN property_integer INT(11) DEFAULT NULL AFTER interest_level,
-  ADD COLUMN propery_decimal DECIMAL(10, 4) DEFAULT NULL AFTER property_integer,
-  ADD COLUMN property_boolean INT(1) DEFAULT NULL AFTER propery_decimal;
-
---
--- Alter table "osae_object_property_history"
---
-ALTER TABLE osae_object_property_history
-  ADD COLUMN property_integer INT(11) DEFAULT NULL AFTER property_value,
-  ADD COLUMN property_decimal DECIMAL(12, 4) DEFAULT NULL AFTER property_integer,
-  ADD COLUMN property_boolean INT(1) DEFAULT NULL AFTER property_decimal,
-  ADD COLUMN property_float FLOAT DEFAULT NULL AFTER property_boolean;
-
---
 -- Alter table "osae_object_type"
 --
 ALTER TABLE osae_object_type
@@ -64,7 +47,81 @@ ALTER TABLE osae_object_type_property
 ALTER TABLE osae_object_type_state
   ADD COLUMN state_tooltip VARCHAR(255) DEFAULT NULL AFTER object_type_id;
 
+--
+-- Alter table "osae_object_property"
+--
+ALTER TABLE osae_object_property
+  ADD COLUMN property_integer INT(11) DEFAULT NULL AFTER interest_level,
+  ADD COLUMN propery_decimal DECIMAL(10, 4) DEFAULT NULL AFTER property_integer,
+  ADD COLUMN property_boolean INT(1) DEFAULT NULL AFTER propery_decimal;
+
+--
+-- Alter table "osae_object_property_history"
+--
+ALTER TABLE osae_object_property_history
+  ADD COLUMN property_integer INT(11) DEFAULT NULL AFTER property_value,
+  ADD COLUMN property_decimal DECIMAL(12, 4) DEFAULT NULL AFTER property_integer,
+  ADD COLUMN property_boolean INT(1) DEFAULT NULL AFTER property_decimal,
+  ADD COLUMN property_float FLOAT DEFAULT NULL AFTER property_boolean;
+
 DELIMITER $$
+
+--
+-- Alter procedure "osae_sp_object_export"
+--
+DROP PROCEDURE osae_sp_object_export$$
+CREATE PROCEDURE osae_sp_object_export(IN objectName VARCHAR(255))
+BEGIN
+  DECLARE vObjectName VARCHAR(255);
+  DECLARE vDescription VARCHAR(200);
+  DECLARE vObjectType VARCHAR(200);
+  DECLARE vAddress VARCHAR(200);
+  DECLARE vContainer VARCHAR(200);
+  DECLARE vItemName VARCHAR(2000);
+  DECLARE vItemLabel VARCHAR(2000);
+  DECLARE vEnabled INT;
+  DECLARE vProcResults INT;
+  DECLARE vMinTrustLevel INT;
+  DECLARE vPropertyName VARCHAR(200);
+  DECLARE vPropertyValue VARCHAR(2000);
+
+  DECLARE vResults TEXT;
+  DECLARE v_finished BOOL; 
+
+  DECLARE property_cursor CURSOR FOR SELECT property_name,COALESCE(property_value,'') AS property_value FROM osae_v_object_property WHERE (UPPER(object_name)=UPPER(objectName) OR UPPER(object_name)=UPPER(objectName)) AND property_datatype != "List";
+  DECLARE property_list_cursor CURSOR FOR SELECT property_name,COALESCE(item_name,'') AS item_name,COALESCE(item_label,'') AS item_label FROM osae_v_object_property_array WHERE (UPPER(object_name)=UPPER(objectName) OR UPPER(object_name)=UPPER(objectName)) AND property_datatype = "List";
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_finished = TRUE;
+
+  #SET vObjectType = CONCAT(objectName,'2');
+  SELECT object_name,object_description,object_type,COALESCE(address,''),COALESCE(container_name,''),min_trust_level,enabled INTO vObjectName,vDescription,vObjectType,vAddress,vContainer,vMinTrustLevel,vEnabled FROM osae_v_object WHERE (UPPER(object_name)=UPPER(objectName) OR UPPER(object_name)=UPPER(objectName));
+  SET vResults = CONCAT('CALL osae_sp_object_add (\'', REPLACE(vObjectName,'\'','\\\''),'\',\'',REPLACE(vDescription,'\'','\\\''),'\',\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',vAddress,'\',\'',REPLACE(vContainer,'\'','\\\''),'\',',vMinTrustLevel,',',vEnabled,',@results);','\r\n');
+
+  OPEN property_cursor;
+  get_properties: LOOP
+    SET v_finished = FALSE;
+    FETCH property_cursor INTO vPropertyName,vPropertyValue;
+    IF v_finished THEN 
+      LEAVE get_properties;
+    END IF;
+    SET vResults = CONCAT(vResults,'CALL osae_sp_object_property_set(\'',REPLACE(vObjectName,'\'','\\\''),'\',\'',REPLACE(vPropertyName,'\'','\\\''),'\',\'',REPLACE(vPropertyValue,'\'','\\\''),'\',\'SYSTEM\',\'Import\');','\r\n');
+  END LOOP get_properties;
+  CLOSE property_cursor;
+
+  OPEN property_list_cursor;
+  get_properties_list: LOOP
+    SET v_finished = FALSE;
+    FETCH property_list_cursor INTO vPropertyName,vItemName,vItemLabel;
+    IF v_finished THEN 
+      LEAVE get_properties_list;
+    END IF;
+    SET vResults = CONCAT(vResults,'CALL osae_sp_object_property_array_add(\'',REPLACE(vObjectName,'\'','\\\''),'\',\'',REPLACE(vPropertyName,'\'','\\\''),'\',\'',REPLACE(vItemName,'\'','\\\''),'\',\'',vItemLabel,'\');','\r\n');
+  END LOOP get_properties_list;
+  CLOSE property_list_cursor;
+
+ SELECT vResults; 
+END
+$$
 
 --
 -- Alter procedure "osae_sp_object_property_set"
@@ -160,10 +217,10 @@ DECLARE vNewTypeID INT;
    # ELSE
       INSERT INTO osae_object_type (object_type,object_type_description,plugin_object_id,system_hidden,object_type_owner,base_type_id,container,object_type_tooltip) SELECT pnewname,t.object_type_description,t.plugin_object_id,t.system_hidden,t.object_type_owner,t.base_type_id,t.container,t.object_type_tooltip FROM osae_object_type t WHERE object_type=pbasename;
       SELECT object_type_id INTO vNewTypeID FROM osae_object_type WHERE object_type=pnewname;
-      INSERT INTO osae_object_type_state (state_name,state_label,object_type_id) SELECT state_name,state_label,vNewTypeID FROM osae_object_type_state t WHERE object_type_id=vBaseTypeID;
-      INSERT INTO osae_object_type_event (event_name,event_label,object_type_id) SELECT event_name,event_label,vNewTypeID FROM osae_object_type_event t WHERE object_type_id=vBaseTypeID;
-      INSERT INTO osae_object_type_method (method_name,method_label,object_type_id) SELECT method_name,method_label,vNewTypeID FROM osae_object_type_method t WHERE object_type_id=vBaseTypeID;
-      INSERT INTO osae_object_type_property (property_name,property_datatype,object_type_id) SELECT property_name,property_datatype,vNewTypeID FROM osae_object_type_property t WHERE object_type_id=vBaseTypeID;
+      INSERT INTO osae_object_type_state (state_name,state_label,state_tooltip,object_type_id) SELECT state_name,state_label,state_tooltip,vNewTypeID FROM osae_object_type_state t WHERE object_type_id=vBaseTypeID;
+      INSERT INTO osae_object_type_event (event_name,event_label,event_tooltip,object_type_id) SELECT event_name,event_label,event_tooltip,vNewTypeID FROM osae_object_type_event t WHERE object_type_id=vBaseTypeID;
+      INSERT INTO osae_object_type_method (method_name,method_label,method_tooltip,object_type_id) SELECT method_name,method_label,method_tooltip,vNewTypeID FROM osae_object_type_method t WHERE object_type_id=vBaseTypeID;
+      INSERT INTO osae_object_type_property (property_name,property_datatype,property_tooltip,object_type_id) SELECT property_name,property_datatype,property_tooltip,vNewTypeID FROM osae_object_type_property t WHERE object_type_id=vBaseTypeID;
     END IF;
 END
 $$
@@ -179,7 +236,7 @@ DECLARE vObjectTypeID INT;
     SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
     IF vObjectTypeCount > 0 THEN
         SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
-        INSERT INTO osae_object_type_event (event_name,event_label,event_tooltip,object_type_id) VALUES(UPPER(pname),plabel,ptooltip,vObjectTypeID) ON DUPLICATE KEY UPDATE event_label=plabelevent_tooltip=ptooltip,object_type_id=vObjectTypeID;
+        INSERT INTO osae_object_type_event (event_name,event_label,event_tooltip,object_type_id) VALUES(UPPER(pname),plabel,ptooltip,vObjectTypeID) ON DUPLICATE KEY UPDATE event_label=plabel,event_tooltip=ptooltip,object_type_id=vObjectTypeID;
     END IF; 
 END
 $$
@@ -218,6 +275,8 @@ BEGIN
   DECLARE v_finished INT; 
   DECLARE vName VARCHAR(200);
   DECLARE vLabel VARCHAR(200);
+  DECLARE vRequired INT;
+  DECLARE vTooltip VARCHAR(255);
   DECLARE vParam1Name VARCHAR(200);
   DECLARE vParam1Default VARCHAR(200);
   DECLARE vParam2Name VARCHAR(200);
@@ -229,27 +288,27 @@ BEGIN
   DECLARE vPropertyOption VARCHAR(200);
   DECLARE vObjectTypeTooltip VARCHAR(255);
 
-  DECLARE state_cursor CURSOR FOR SELECT state_name,state_label FROM osae_v_object_type_state WHERE object_type=vObjectType;
-  DECLARE event_cursor CURSOR FOR SELECT event_name,event_label FROM osae_v_object_type_event WHERE object_type=vObjectType;
-  DECLARE method_cursor CURSOR FOR SELECT method_name,method_label,param_1_label,param_1_default,param_2_label,param_2_default FROM osae_v_object_type_method WHERE object_type=vObjectType;
-  DECLARE property_cursor CURSOR FOR SELECT property_name,property_datatype,property_default,property_object_type,track_history FROM osae_v_object_type_property WHERE object_type=vObjectType;
+  DECLARE state_cursor CURSOR FOR SELECT state_name,state_label,state_tooltip FROM osae_v_object_type_state WHERE object_type=vObjectType;
+  DECLARE event_cursor CURSOR FOR SELECT event_name,event_label,event_tooltip FROM osae_v_object_type_event WHERE object_type=vObjectType;
+  DECLARE method_cursor CURSOR FOR SELECT method_name,method_label,param_1_label,param_1_default,param_2_label,param_2_default,method_tooltip FROM osae_v_object_type_method WHERE object_type=vObjectType;
+  DECLARE property_cursor CURSOR FOR SELECT property_name,property_datatype,property_default,property_object_type,track_history,property_required,property_tooltip FROM osae_v_object_type_property WHERE object_type=vObjectType;
   DECLARE property_option_cursor CURSOR FOR SELECT option_name FROM osae_v_object_type_property_option WHERE object_type=vObjectType and property_name=vname;
 
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_finished = TRUE;
 
   #SET vObjectType = CONCAT(objectName,'2');
 
-  SELECT object_type,object_type_description,COALESCE(object_name,''),base_type,object_type_owner,system_hidden,container,hide_redundant_events,object_type_tooltip INTO vObjectType,vDescription,vOwner,vBaseType,vTypeOwner,vSystemType,vContainer,vHideRedundant,vObjectTypeTooltip FROM osae_v_object_type WHERE object_type=pObjectType;
-  SET vResults = CONCAT('CALL osae_sp_object_type_add (\'', REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vDescription,'\'','\\\''),'\',\'',vOwner,'\',\'',vBaseType,'\',',vTypeOwner,',', vSystemType,',',vContainer,',',vHideRedundant,',',vObjectTypeTooltip,');','\r\n');
+  SELECT object_type,object_type_description,COALESCE(object_name,''),base_type,object_type_owner,system_hidden,container,hide_redundant_events,COALESCE(object_type_tooltip,'') INTO vObjectType,vDescription,vOwner,vBaseType,vTypeOwner,vSystemType,vContainer,vHideRedundant,vObjectTypeTooltip FROM osae_v_object_type WHERE object_type=pObjectType;
+  SET vResults = CONCAT('CALL osae_sp_object_type_add (\'', REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vDescription,'\'','\\\''),'\',\'',vOwner,'\',\'',vBaseType,'\',',vTypeOwner,',', vSystemType,',',vContainer,',',vHideRedundant,',\'',vObjectTypeTooltip,'\');','\r\n');
 
   OPEN state_cursor;
     get_states: LOOP
     SET v_finished = FALSE;
-      FETCH state_cursor INTO vName,vLabel;
-      IF v_finished THEN 
+      FETCH state_cursor INTO vName,vLabel,vTooltip;
+      IF v_finished OR vName IS NULL THEN 
         LEAVE get_states;
       END IF;
-      SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_state_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',REPLACE(vLabel,'\'','\\\''),'\');','\r\n');
+      SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_state_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',REPLACE(vLabel,'\'','\\\''),'\',\'',REPLACE(vTooltip,'\'','\\\''),'\');','\r\n');
     END LOOP get_states;
   CLOSE state_cursor;
 
@@ -257,22 +316,22 @@ BEGIN
   OPEN event_cursor;
   get_events: LOOP
     SET v_finished = FALSE;
-    FETCH event_cursor INTO vName,vLabel;
+    FETCH event_cursor INTO vName,vLabel,vTooltip;
     IF v_finished THEN 
       LEAVE get_events;
     END IF;
-    SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_event_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',REPLACE(vLabel,'\'','\\\''),'\');','\r\n');
+    SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_event_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',REPLACE(vLabel,'\'','\\\''),'\',\'',REPLACE(vTooltip,'\'','\\\''),'\');','\r\n');
   END LOOP get_events;
   CLOSE event_cursor;
 
   OPEN method_cursor;
   get_methods: LOOP
     SET v_finished = FALSE;
-    FETCH method_cursor INTO vName,vLabel,vParam1Name,vParam1Default,vParam2Name,vParam2Default;
-    IF v_finished THEN 
+    FETCH method_cursor INTO vName,vLabel,vParam1Name,vParam1Default,vParam2Name,vParam2Default,vTooltip;
+    IF v_finished OR vName IS NULL THEN 
       LEAVE get_methods;
     END IF;
-    SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_method_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',REPLACE(vLabel,'\'','\\\''),'\',\'',vParam1Name,'\',\'',vParam2Name,'\',\'',vParam1Default,'\',\'',vParam2Default,'\');','\r\n');
+    SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_method_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',REPLACE(vLabel,'\'','\\\''),'\',\'',vParam1Name,'\',\'',vParam2Name,'\',\'',vParam1Default,'\',\'',vParam2Default,'\',\'',REPLACE(vTooltip,'\'','\\\''),'\');','\r\n');
   END LOOP get_methods;
   CLOSE method_cursor;
   SET v_finished = 0;
@@ -280,11 +339,11 @@ BEGIN
   OPEN property_cursor;
   get_properties: LOOP
     SET v_finished = FALSE;
-    FETCH property_cursor INTO vName,vDataType,vDefault,vPropertyObjectType,vTrackHistory;
+    FETCH property_cursor INTO vName,vDataType,vDefault,vPropertyObjectType,vTrackHistory,vRequired,vTooltip;
     IF v_finished THEN 
       LEAVE get_properties;
     END IF;
-    SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_property_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',vDataType,'\',\'',vPropertyObjectType,'\',\'',vDefault,'\',',vTrackHistory,');','\r\n');
+    SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_property_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',vDataType,'\',\'',vPropertyObjectType,'\',\'',vDefault,'\',',vTrackHistory,',',vRequired,',\'',REPLACE(vTooltip,'\'','\\\''),'\');','\r\n');
   
     OPEN property_option_cursor;
     get_property_options: LOOP
@@ -295,17 +354,12 @@ BEGIN
         LEAVE get_property_options;
       END IF;
       SET vResults = CONCAT(vResults,'CALL osae_sp_object_type_property_option_add(\'',REPLACE(vObjectType,'\'','\\\''),'\',\'',REPLACE(vName,'\'','\\\''),'\',\'',vPropertyOption,'\');','\r\n');
- 
     END LOOP get_property_options;
     CLOSE property_option_cursor;
-  
-  
-  
   END LOOP get_properties;
   CLOSE property_cursor;
 
-  SELECT vResults;
-END
+  SELECT vResults;END
 $$
 
 --
@@ -344,7 +398,7 @@ $$
 -- Alter procedure "osae_sp_object_type_property_add"
 --
 DROP PROCEDURE osae_sp_object_type_property_add$$
-CREATE PROCEDURE osae_sp_object_type_property_add(IN pobjecttype VARCHAR(200), IN ppropertyname VARCHAR(200), IN ppropertytype VARCHAR(50), IN ppropertyobjecttype VARCHAR(200), IN pdefault VARCHAR(255), IN ptrackhistory TINYINT(1), IN prequired TINYINT(1))
+CREATE PROCEDURE osae_sp_object_type_property_add(IN pobjecttype VARCHAR(200), IN ppropertyname VARCHAR(200), IN ppropertytype VARCHAR(50), IN ppropertyobjecttype VARCHAR(200), IN pdefault VARCHAR(255), IN ptrackhistory TINYINT(1), IN prequired TINYINT(1), IN ptooltip VARCHAR(255))
 BEGIN
 DECLARE vObjectTypeCount INT;
 DECLARE vObjectTypeID INT;
@@ -360,7 +414,7 @@ DECLARE vPropertyObjectTypeID INT;
                 SELECT object_type_id INTO vPropertyObjectTypeID FROM osae_object_type WHERE UPPER(object_type)=UPPER(ppropertyobjecttype);
             END IF;
         END IF;
-        INSERT INTO osae_object_type_property (property_name,property_datatype,property_object_type_id,property_default,object_type_id,track_history,property_required) VALUES(ppropertyname,ppropertytype,vPropertyObjectTypeID,pdefault,vObjectTypeID,ptrackhistory,prequired) ON DUPLICATE KEY UPDATE property_datatype=ppropertytype,object_type_id=vObjectTypeID,property_required=prequired;
+        INSERT INTO osae_object_type_property (property_name,property_datatype,property_object_type_id,property_default,object_type_id,track_history,property_required,property_tooltip) VALUES(ppropertyname,ppropertytype,vPropertyObjectTypeID,pdefault,vObjectTypeID,ptrackhistory,prequired,ptooltip) ON DUPLICATE KEY UPDATE property_datatype=ppropertytype,object_type_id=vObjectTypeID,property_required=prequired,property_tooltip=ptooltip;
     END IF; 
 END
 $$
@@ -369,7 +423,7 @@ $$
 -- Alter procedure "osae_sp_object_type_property_update"
 --
 DROP PROCEDURE osae_sp_object_type_property_update$$
-CREATE PROCEDURE osae_sp_object_type_property_update(IN poldname VARCHAR(200), IN pnewname VARCHAR(200), IN pparamtype VARCHAR(50), IN ppropertyobjecttype VARCHAR(200), IN pdefault VARCHAR(255), IN pobjecttype VARCHAR(200), IN ptooltip VARCHAR(255), IN ptrackhistory TINYINT(1), IN prequired TINYINT(1))
+CREATE PROCEDURE osae_sp_object_type_property_update(IN poldname VARCHAR(200), IN pnewname VARCHAR(200), IN pparamtype VARCHAR(50), IN ppropertyobjecttype VARCHAR(200), IN pdefault VARCHAR(255), IN pobjecttype VARCHAR(200), IN ptrackhistory TINYINT(1), IN prequired TINYINT(1), IN ptooltip VARCHAR(255))
 BEGIN
 DECLARE vObjectTypeCount INT;
 DECLARE vObjectTypeID INT;
@@ -405,7 +459,7 @@ DECLARE vObjectTypeID INT;
     SELECT COUNT(object_type_id) INTO vObjectTypeCount FROM osae_object_type WHERE object_type=pobjecttype;
     IF vObjectTypeCount > 0 THEN
         SELECT object_type_id INTO vObjectTypeID FROM osae_object_type WHERE object_type=pobjecttype;
-        INSERT INTO osae_object_type_state (state_name,state_label,state_tooltip,object_type_id) VALUES(UPPER(pname),plabel,ptooltip,vObjectTypeID) ON DUPLICATE KEY UPDATE state_label=plabel,object_type_id=vObjectTypeID;
+        INSERT INTO osae_object_type_state (state_name,state_label,state_tooltip,object_type_id) VALUES(UPPER(pname),plabel,ptooltip,vObjectTypeID) ON DUPLICATE KEY UPDATE state_label=plabel,state_tooltip=ptooltip,object_type_id=vObjectTypeID;
     END IF; 
 END
 $$
@@ -1031,14 +1085,6 @@ AS
 	select `osae_method_queue`.`method_queue_id` AS `method_queue_id`,`osae_method_queue`.`entry_time` AS `entry_time`,`osae_object`.`object_name` AS `object_name`,`osae_object_type_method`.`method_label` AS `method_label`,`osae_method_queue`.`parameter_1` AS `parameter_1`,`osae_method_queue`.`parameter_2` AS `parameter_2`,`osae_from_object`.`object_name` AS `from_object`,`osae_method_queue`.`debug_trace` AS `debug_trace`,`osae_object`.`object_id` AS `object_id`,`osae_object`.`object_description` AS `object_description`,`osae_method_queue`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_method_queue`.`from_object_id` AS `from_object_id`,`osae_object`.`state_id` AS `state_id`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_types1`.`object_type` AS `base_type`,`osae_owner_object`.`object_name` AS `object_owner`,`osae_owner_object`.`object_id` AS `object_owner_id` from ((((((`osae_object_type` left join `osae_object` `osae_owner_object` on((`osae_object_type`.`plugin_object_id` = `osae_owner_object`.`object_id`))) left join `osae_object_type` `osae_object_types1` on((`osae_object_type`.`base_type_id` = `osae_object_types1`.`object_type_id`))) join `osae_object` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) join `osae_method_queue` on(((`osae_object`.`object_id` = `osae_method_queue`.`object_id`) and (`osae_object_type_method`.`method_id` = `osae_method_queue`.`method_id`)))) left join `osae_object` `osae_from_object` on((`osae_from_object`.`object_id` = `osae_method_queue`.`from_object_id`)));
 
 --
--- Alter view "osae_v_object"
---
-CREATE OR REPLACE 
-VIEW osae_v_object
-AS
-	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`last_updated` AS `last_updated`,`osae_object`.`last_state_change` AS `last_state_change`,`osae_object`.`min_trust_level` AS `min_trust_level`,`osae_object`.`enabled` AS `enabled`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object_type_state`.`state_id` AS `state_id`,coalesce(`osae_object_type_state`.`state_name`,'') AS `state_name`,coalesce(`osae_object_type_state`.`state_label`,'') AS `state_label`,`objects_2`.`object_name` AS `owned_by`,`object_types_2`.`object_type` AS `base_type`,`objects_1`.`object_name` AS `container_name`,`osae_object`.`container_id` AS `container_id`,(select max(`osae_v_object_property`.`last_updated`) AS `expr1` from `osae_v_object_property` where ((`osae_v_object_property`.`object_id` = `osae_object`.`object_id`) and (`osae_v_object_property`.`property_name` <> 'Time'))) AS `property_last_updated`,timestampdiff(SECOND,`osae_object`.`last_state_change`,now()) AS `time_in_state`,`osae_object_type_state_1`.`state_name` AS `container_state_name`,`osae_object_type_state_1`.`state_label` AS `container_state_label` from ((((((`osae_object` left join `osae_object_type` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) left join `osae_object_type` `object_types_2` on((`osae_object_type`.`base_type_id` = `object_types_2`.`object_type_id`))) left join `osae_object` `objects_2` on((`osae_object_type`.`plugin_object_id` = `objects_2`.`object_id`))) left join `osae_object_type_state` on(((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`) and (`osae_object_type_state`.`state_id` = `osae_object`.`state_id`)))) left join `osae_object` `objects_1` on((`objects_1`.`object_id` = `osae_object`.`container_id`))) left join `osae_object_type_state` `osae_object_type_state_1` on((`objects_1`.`state_id` = `osae_object_type_state_1`.`state_id`)));
-
---
 -- Alter view "osae_v_object_event"
 --
 CREATE OR REPLACE 
@@ -1057,7 +1103,7 @@ AS
 --
 -- Create view "osae_v_object_off_timer_ready"
 --
-CREATE
+CREATE OR REPLACE
 VIEW osae_v_object_off_timer_ready
 AS
 SELECT
@@ -1122,23 +1168,7 @@ AS
 CREATE OR REPLACE 
 VIEW osae_v_object_type_method
 AS
-	select `osae_object_type_1`.`object_type` AS `base_type`,`osae_object_type_method`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,coalesce(`osae_object_type_method`.`method_tooltip`,'') AS `method_tooltip`,`osae_object_type_method`.`object_type_id` AS `object_type_id`,coalesce(`osae_object_type_method`.`param_1_label`,'') AS `param_1_label`,coalesce(`osae_object_type_method`.`param_2_label`,'') AS `param_2_label`,coalesce(`osae_object_type_method`.`param_1_default`,'') AS `param_1_default`,coalesce(`osae_object_type_method`.`param_2_default`,'') AS `param_2_default`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden` from ((`osae_object_type` join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) join `osae_object_type` `osae_object_type_1` on((`osae_object_type`.`base_type_id` = `osae_object_type_1`.`object_type_id`)));
-
---
--- Create view "osae_v_object_type_method_list_full"
---
-CREATE
-VIEW osae_v_object_type_method_list_full
-AS
-SELECT
-  `osae_v_object_type_method`.`base_type` AS `base_type`,
-  `osae_v_object_type_method`.`object_type` AS `object_type`,
-  `osae_v_object_type_method`.`method_label` AS `method_label`
-FROM `osae_v_object_type_method`
-WHERE ((`osae_v_object_type_method`.`base_type` NOT IN ('CONTROL', 'SCREEN', 'LIST'))
-AND `osae_v_object_type_method`.`object_type` IN (SELECT DISTINCT
-    `osae_v_object`.`object_type`
-  FROM `osae_v_object`));
+	select `osae_object_type_1`.`object_type` AS `base_type`,`osae_object_type_method`.`method_id` AS `method_id`,`osae_object_type_method`.`method_name` AS `method_name`,`osae_object_type_method`.`method_label` AS `method_label`,coalesce(`osae_object_type_method`.`method_tooltip`,'') AS `method_tooltip`,`osae_object_type_method`.`object_type_id` AS `object_type_id`,coalesce(`osae_object_type_method`.`param_1_label`,'') AS `param_1_label`,coalesce(`osae_object_type_method`.`param_2_label`,'') AS `param_2_label`,coalesce(`osae_object_type_method`.`param_1_default`,'') AS `param_1_default`,coalesce(`osae_object_type_method`.`param_2_default`,'') AS `param_2_default`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden` from ((`osae_object_type` left join `osae_object_type_method` on((`osae_object_type`.`object_type_id` = `osae_object_type_method`.`object_type_id`))) left join `osae_object_type` `osae_object_type_1` on((`osae_object_type`.`base_type_id` = `osae_object_type_1`.`object_type_id`)));
 
 --
 -- Alter view "osae_v_object_type_property"
@@ -1146,7 +1176,7 @@ AND `osae_v_object_type_method`.`object_type` IN (SELECT DISTINCT
 CREATE OR REPLACE 
 VIEW osae_v_object_type_property
 AS
-	select `osae_object_type_property`.`property_id` AS `property_id`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type_property`.`property_default` AS `property_default`,`osae_object_type_property`.`object_type_id` AS `object_type_id`,`osae_object_type_property`.`property_object_type_id` AS `property_object_type_id`,`osae_object_type_property`.`property_tooltip` AS `property_tooltip`,`osae_object_type_property`.`track_history` AS `track_history`,`osae_object_type_property`.`property_required` AS `property_required`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`system_hidden` AS `system_hidden`,coalesce(`osae_object_type_1`.`object_type`,'') AS `property_object_type` from ((`osae_object_type` join `osae_object_type_property` on((`osae_object_type`.`object_type_id` = `osae_object_type_property`.`object_type_id`))) left join `osae_object_type` `osae_object_type_1` on((`osae_object_type_property`.`property_object_type_id` = `osae_object_type_1`.`object_type_id`)));
+	select `osae_object_type_property`.`property_id` AS `property_id`,`osae_object_type_property`.`property_name` AS `property_name`,`osae_object_type_property`.`property_datatype` AS `property_datatype`,`osae_object_type_property`.`property_default` AS `property_default`,`osae_object_type_property`.`object_type_id` AS `object_type_id`,`osae_object_type_property`.`property_object_type_id` AS `property_object_type_id`,coalesce(`osae_object_type_property`.`property_tooltip`,'') AS `property_tooltip`,`osae_object_type_property`.`track_history` AS `track_history`,`osae_object_type_property`.`property_required` AS `property_required`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`system_hidden` AS `system_hidden`,coalesce(`osae_object_type_1`.`object_type`,'') AS `property_object_type` from ((`osae_object_type` join `osae_object_type_property` on((`osae_object_type`.`object_type_id` = `osae_object_type_property`.`object_type_id`))) left join `osae_object_type` `osae_object_type_1` on((`osae_object_type_property`.`property_object_type_id` = `osae_object_type_1`.`object_type_id`)));
 
 --
 -- Alter view "osae_v_object_type_state"
@@ -1154,7 +1184,7 @@ AS
 CREATE OR REPLACE 
 VIEW osae_v_object_type_state
 AS
-	select `osae_object_type_1`.`object_type` AS `base_type`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type_state`.`state_label` AS `state_label`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type_state`.`state_name` AS `state_name`,coalesce(`osae_object_type_state`.`state_tooltip`,'') AS `state_tooltip`,`osae_object_type_state`.`state_id` AS `state_id` from ((`osae_object_type` join `osae_object_type_state` on((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`))) join `osae_object_type` `osae_object_type_1` on((`osae_object_type`.`base_type_id` = `osae_object_type_1`.`object_type_id`))) order by `osae_object_type`.`object_type`;
+	select `osae_object_type_1`.`object_type` AS `base_type`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type_state`.`state_label` AS `state_label`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type_state`.`state_name` AS `state_name`,coalesce(`osae_object_type_state`.`state_tooltip`,'') AS `state_tooltip`,`osae_object_type_state`.`state_id` AS `state_id` from ((`osae_object_type` left join `osae_object_type_state` on((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`))) left join `osae_object_type` `osae_object_type_1` on((`osae_object_type`.`base_type_id` = `osae_object_type_1`.`object_type_id`)));
 
 --
 -- Alter view "osae_v_system_occupied_rooms"
@@ -1167,7 +1197,7 @@ AS
 --
 -- Create view "osae_v_system_plugins_errored"
 --
-CREATE
+CREATE OR REPLACE
 VIEW osae_v_system_plugins_errored
 AS
 SELECT
@@ -1189,6 +1219,30 @@ WHERE ((`osae_object_state`.`state_name` = 'OFF')
 AND (`osae_object_base_type`.`object_type` = 'PLUGIN')
 AND (`osae_object`.`enabled` = 1)
 AND (`osae_contianer_state`.`state_name` = 'ON'));
+
+--
+-- Alter view "osae_v_object"
+--
+CREATE OR REPLACE 
+VIEW osae_v_object
+AS
+	select `osae_object`.`object_id` AS `object_id`,`osae_object`.`object_name` AS `object_name`,`osae_object`.`object_alias` AS `object_alias`,`osae_object`.`object_description` AS `object_description`,`osae_object`.`object_value` AS `object_value`,`osae_object`.`address` AS `address`,`osae_object`.`last_updated` AS `last_updated`,`osae_object`.`last_state_change` AS `last_state_change`,`osae_object`.`min_trust_level` AS `min_trust_level`,`osae_object`.`enabled` AS `enabled`,`osae_object_type`.`object_type_id` AS `object_type_id`,`osae_object_type`.`object_type` AS `object_type`,`osae_object_type`.`object_type_description` AS `object_type_description`,`osae_object_type`.`plugin_object_id` AS `plugin_object_id`,`osae_object_type`.`system_hidden` AS `system_hidden`,`osae_object_type`.`object_type_owner` AS `object_type_owner`,`osae_object_type`.`base_type_id` AS `base_type_id`,`osae_object_type`.`container` AS `container`,`osae_object_type`.`object_type_tooltip` AS `object_type_tooltip`,`osae_object_type_state`.`state_id` AS `state_id`,coalesce(`osae_object_type_state`.`state_name`,'') AS `state_name`,coalesce(`osae_object_type_state`.`state_label`,'') AS `state_label`,`objects_2`.`object_name` AS `owned_by`,`object_types_2`.`object_type` AS `base_type`,`objects_1`.`object_name` AS `container_name`,`osae_object`.`container_id` AS `container_id`,(select max(`osae_v_object_property`.`last_updated`) AS `expr1` from `osae_v_object_property` where ((`osae_v_object_property`.`object_id` = `osae_object`.`object_id`) and (`osae_v_object_property`.`property_name` <> 'Time'))) AS `property_last_updated`,timestampdiff(SECOND,`osae_object`.`last_state_change`,now()) AS `time_in_state`,`osae_object_type_state_1`.`state_name` AS `container_state_name`,`osae_object_type_state_1`.`state_label` AS `container_state_label` from ((((((`osae_object` left join `osae_object_type` on((`osae_object`.`object_type_id` = `osae_object_type`.`object_type_id`))) left join `osae_object_type` `object_types_2` on((`osae_object_type`.`base_type_id` = `object_types_2`.`object_type_id`))) left join `osae_object` `objects_2` on((`osae_object_type`.`plugin_object_id` = `objects_2`.`object_id`))) left join `osae_object_type_state` on(((`osae_object_type`.`object_type_id` = `osae_object_type_state`.`object_type_id`) and (`osae_object_type_state`.`state_id` = `osae_object`.`state_id`)))) left join `osae_object` `objects_1` on((`objects_1`.`object_id` = `osae_object`.`container_id`))) left join `osae_object_type_state` `osae_object_type_state_1` on((`objects_1`.`state_id` = `osae_object_type_state_1`.`state_id`)));
+
+--
+-- Create view "osae_v_object_type_method_list_full"
+--
+CREATE OR REPLACE
+VIEW osae_v_object_type_method_list_full
+AS
+SELECT
+  `osae_v_object_type_method`.`base_type` AS `base_type`,
+  `osae_v_object_type_method`.`object_type` AS `object_type`,
+  `osae_v_object_type_method`.`method_label` AS `method_label`
+FROM `osae_v_object_type_method`
+WHERE ((`osae_v_object_type_method`.`base_type` NOT IN ('CONTROL', 'SCREEN', 'LIST'))
+AND `osae_v_object_type_method`.`object_type` IN (SELECT DISTINCT
+    `osae_v_object`.`object_type`
+  FROM `osae_v_object`));
 
 DELIMITER $$
 
@@ -1279,62 +1333,191 @@ DELIMITER ;
 -- Enable foreign keys
 --
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-CALL osae_sp_object_property_set('SYSTEM','DB Version','049','SYSTEM','');
-CALL osae_sp_object_type_property_update('Show Slider','Show Slider','Boolean','','FALSE','CONTROL STATE IMAGE','',0,1);
-CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Height','Integer','','270',0,1);
-CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Minimized','Boolean','','TRUE',0,1);
-CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Max Days','Integer','','5',0,1);
-CALL osae_sp_object_type_property_add('SYSTEM','Detailed Occupancy Enabled','Boolean','','FALSE',0,1);
-CALL osae_sp_object_type_method_update('SETTTSVOLUME','SETTTSVOLUME','Set TTS Volume','SPEECH','Volume','','100','','Set the Volume from 0 to 100');
-CALL osae_sp_object_type_property_update('TTS Volume','TTS Volume','Integer','','100','SPEECH','Current Volume Level from 0 to 100',0,1);
-CALL osae_sp_object_type_property_add('GUI CLIENT','Width','Integer','','640',0,1);
-CALL osae_sp_object_type_property_add('GUI CLIENT','Height','Integer','','480',0,1);
-CALL osae_sp_object_type_property_add('GUI CLIENT','Show Frame','Boolean','','TRUE',0,1);
-CALL osae_sp_object_type_property_add('GUI CLIENT','Use Global Screen Settings','Boolean','','FALSE',0,1);
 
-CALL osae_sp_object_type_property_add('WEB SERVER','Config Trust','Integer','','69',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Analytics Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Debug Log Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Default Screen','String','','',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Event Log Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Images Add Trust','Integer','','55',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Images Delete Trust','Integer','','60',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Images Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Logs Clear Trust','Integer','','60',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Logs Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Management Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Method Log Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Objects Add Trust','Integer','','50',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Objects Delete Trust','Integer','','60',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Objects Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Objects Update Trust','Integer','','55',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Add Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Delete Trust','Integer','','60',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Object Type Update Trust','Integer','','55',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Add Trust','Integer','','50',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Delete Trust','Integer','','60',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Trust','Integer','','50',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Update Trust','Integer','','55',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Reader Add Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Reader Delete Trust','Integer','','60',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Reader Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Reader Update Trust','Integer','','55',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Add Trust','Integer','','50',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Delete Trust','Integer','','60',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Trust','Integer','','50',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Update Trust','Integer','','55',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Screen Trust','Integer','','20',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Script Add Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Script Delete Trust','Integer','','60',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Script Object Add Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Script ObjectType Add Trust','Integer','','60',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Script Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Script Update Trust','Integer','','55',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Server Log Trust','Integer','','50',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Values Trust','Integer','','45',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Update Trust','Integer','','50',0,1);
-CALL osae_sp_object_type_property_add('WEB SERVER','Hide Controls','Boolean','','FALSE',0,1);
+CALL osae_sp_object_type_add ('CONTROL STATE IMAGE','Control - Object State','','CONTROL',0,1,0,1,'Displays Images matching different States in the Screens app.');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','Object Name','String','','',0,1,'The Object whos State is represented by this Control.');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 1 Name','String','','',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 2 Name','String','','',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 3 Name','String','','',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 1 Image','File','','',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 2 Image','File','','',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 3 Image','File','','',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 1 X','Integer','','100',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 1 Y','Integer','','100',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 2 X','Integer','','100',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 2 Y','Integer','','100',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 3 X','Integer','','100',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 3 Y','Integer','','100',0,0,'');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','ZOrder','Integer','','1',0,1,'The Stacking Order when overlapping other Images.   Highest Values are on Top.');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 1 Image 2','File','','',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 1 Image 3','File','','',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 1 Image 4','File','','',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 2 Image 2','File','','',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 2 Image 3','File','','',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 2 Image 4','File','','',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','Repeat Animation','Boolean','','TRUE',0,0,'Depricated.');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','Frame Delay','Integer','','100',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','Show Slider','Boolean','','FALSE',0,1,'Show a Slider Bar to set a 0 to 100 value for the associated Method.');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 3 Image 2','File','','',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 3 Image 3','File','','',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','State 3 Image 4','File','','',0,0,'Depricated');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','Slider Method','String','','',0,0,'The Method that the Slider Value is sent to.');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','Contained X','Integer','','100',0,0,'The X for the Default position of another Control displayed within this Control');
+CALL osae_sp_object_type_property_add('CONTROL STATE IMAGE','Contained Y','Integer','','100',0,0,'The Y for the Default position of another Control displayed within this Control');
+
+CALL osae_sp_object_type_add ('USER CONTROL WEATHERCONTROL','Custom User Control','SYSTEM','USER CONTROL',0,1,0,1,'This combines many basic controls into a single customizable Weather Control.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Control Type','String','','',0,0,'');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Object Name','String','','',0,1,'The Weather Object\'s Name where all the weather data is stored.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','X','Integer','','0',0,1,'The Left most position of the Weather Control.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Y','Integer','','0',0,1,'The Left most position of the Weather Control.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','ZOrder','Integer','','0',0,0,'');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Width','Integer','','440',0,1,'The Width of the Maximized Weather Control.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Font Name','String','','Arial',0,1,'The Font of the main text.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Font Size','Integer','','14',0,1,'The Size of the main text.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Back Color','String','','Gray',0,1,'The Background Color of the Weather Control.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Fore Color','String','','Black',0,1,'The Color of the main text.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Height','Integer','','270',0,1,'The overall Height of the Weather Control.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Minimized','Boolean','','TRUE',0,1,'Display Only Today\'s Weather.');
+CALL osae_sp_object_type_property_add('USER CONTROL WEATHERCONTROL','Max Days','Integer','','5',0,1,'How many Days of Weather to Display.');
+
+CALL osae_sp_object_type_add ('SPEECH','Generic Plugin Class','Speech','PLUGIN',1,0,0,1,'Speech Plugin handles Text-to-Speech output to the Default sound device.');
+CALL osae_sp_object_type_state_add('SPEECH','ON','Running','Speech Plugin is Running.');
+CALL osae_sp_object_type_state_add('SPEECH','OFF','Stopped','Speech Plugin is Stopped.');
+CALL osae_sp_object_type_event_add('SPEECH','ON','Started','This Speech Plugin has Started.');
+CALL osae_sp_object_type_event_add('SPEECH','OFF','Stopped','This Speech Plugin has Stopped.');
+CALL osae_sp_object_type_method_add('SPEECH','ON','Start','','','','','Start this Speech plugin.');
+CALL osae_sp_object_type_method_add('SPEECH','OFF','Stop','','','','','Stop this Speech plugin.');
+CALL osae_sp_object_type_method_add('SPEECH','SPEAK','Say','Message','','Hello','','Speak this Text.');
+CALL osae_sp_object_type_method_add('SPEECH','SPEAKFROM','Say From List','Object Name','Property Name','Speech List','Greetings','Speak from a List of Text.');
+CALL osae_sp_object_type_method_add('SPEECH','PLAY','Play','File','','','','Play Media File.');
+CALL osae_sp_object_type_method_add('SPEECH','PLAYFROM','Play From List','List','','','','Play a Random entry from a list of Media Files.');
+CALL osae_sp_object_type_method_add('SPEECH','STOP','Stop Playing','','','','','');
+CALL osae_sp_object_type_method_add('SPEECH','PAUSE','Pause','','','','','Pause media playback.');
+CALL osae_sp_object_type_method_add('SPEECH','MUTEVR','Mute the Microphone','','','','','Mute the Microphone.');
+CALL osae_sp_object_type_method_add('SPEECH','SETVOICE','Set Voice','Voice','','Anna','','Pick a Voice from the installed Windows Voices.');
+CALL osae_sp_object_type_method_add('SPEECH','SETTTSRATE','Set TTS Rate','Rate','','0','','Set Speech Speed from -10 to 10.');
+CALL osae_sp_object_type_method_add('SPEECH','SETTTSVOLUME','Set TTS Volume','Volume','','100','','Set Volume Level from 0 to 100.');
+CALL osae_sp_object_type_property_add('SPEECH','Voice','String','','',0,0,'The currently selected Voice.');
+CALL osae_sp_object_type_property_add('SPEECH','Voices','List','','',0,0,'List of Voices loaded in Windows.');
+CALL osae_sp_object_type_property_add('SPEECH','System Plugin','Boolean','','FALSE',0,0,'');
+CALL osae_sp_object_type_property_add('SPEECH','TTS Rate','Integer','','0',0,1,'The current Rate of Speech from -10 to 10.');
+CALL osae_sp_object_type_property_add('SPEECH','TTS Volume','Integer','','100',0,1,'The current Volume Level from 0 to 100.');
+CALL osae_sp_object_type_property_add('SPEECH','Speaking','Boolean','','FALSE',0,1,'This Speech Client is currently Talking.');
+CALL osae_sp_object_type_property_add('SPEECH','Debug','Boolean','','FALSE',0,1,'Add Debug Info to the Logs.');
+CALL osae_sp_object_type_property_add('SPEECH','Trust Level','Integer','','90',0,1,'The Trust Level this plugin has to control other Objects.');
+CALL osae_sp_object_type_property_add('SPEECH','Version','String','','',0,0,'The Version of the Speech plugin.');
+CALL osae_sp_object_type_property_add('SPEECH','Author','String','','',0,0,'Who wrote this Speech Plugin.');
+
+CALL osae_sp_object_type_add ('GUI CLIENT','Touch Screen App','','THING',1,1,0,1,'');
+CALL osae_sp_object_type_state_add('GUI CLIENT','ON','Running','This Screens App is Running.');
+CALL osae_sp_object_type_state_add('GUI CLIENT','OFF','Stopped','This Screens App is Not Running.');
+CALL osae_sp_object_type_event_add('GUI CLIENT','ON','Started','This Screen app Started.');
+CALL osae_sp_object_type_event_add('GUI CLIENT','OFF','Stopped','This Screen app shutdown.');
+CALL osae_sp_object_type_method_add('GUI CLIENT','SCREEN SET','Screen Set','Screen Name','','','','Force this Screen app to Switch Screens.');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Current Screen','String','','',0,0,'The Screen currently being Displayed on this Screen app.');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Default Screen','String','','',0,0,'The First Screen to display when this Screens app starts.');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Current User','String','','',0,0,'The Person logged into this Screen app.');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Debug','Boolean','','FALSE',0,1,'Add Debug info to the Log.');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Title','String','','OSA Screens',0,0,'');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Logout on Close','Boolean','','FALSE',0,1,'Reset the User when this app closes.');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Trust Level','Integer','','50',0,1,'');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Width','Integer','','640',0,0,'');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Height','Integer','','480',0,0,'');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Show Frame','Boolean','','TRUE',0,1,'Show Windows Frame around the Screen with Min/Max/Resizing.');
+CALL osae_sp_object_type_property_add('GUI CLIENT','Use Global Screen Settings','Boolean','','FALSE',0,0,'');
+
+CALL osae_sp_object_type_add ('WEB SERVER','OSA Web Server Plugin','Web Server','PLUGIN',1,0,0,1,'');
+CALL osae_sp_object_type_state_add('WEB SERVER','ON','Running','Web Service is Running.');
+CALL osae_sp_object_type_state_add('WEB SERVER','OFF','Stopped','Web Service is Stopped.');
+CALL osae_sp_object_type_event_add('WEB SERVER','ON','Started','Web Service Started.');
+CALL osae_sp_object_type_event_add('WEB SERVER','OFF','Stopped','Web Serviced Stopped!');
+CALL osae_sp_object_type_method_add('WEB SERVER','ON','Start','','','','','Start the Web Service.');
+CALL osae_sp_object_type_method_add('WEB SERVER','OFF','Stop','','','','','Stop the Web Service.');
+CALL osae_sp_object_type_property_add('WEB SERVER','System Plugin','Boolean','','TRUE',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Timeout','Integer','','60',0,0,'How long you can sit idle on the Web UI before you are required to sign in again.');
+CALL osae_sp_object_type_property_add('WEB SERVER','Version','String','','',0,0,'The Version of the Web Server Plugin.');
+CALL osae_sp_object_type_property_add('WEB SERVER','Author','String','','',0,0,'Who Created the Web Service');
+CALL osae_sp_object_type_property_add('WEB SERVER','Config Trust','Integer','','69',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Analytics Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Debug Log Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Default Screen','String','','',0,0,'The First Screen displayed after logging into the Web UI.');
+CALL osae_sp_object_type_property_add('WEB SERVER','Event Log Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Images Add Trust','Integer','','55',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Images Delete Trust','Integer','','60',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Images Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Logs Clear Trust','Integer','','60',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Logs Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Management Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Method Log Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Objects Add Trust','Integer','','50',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Objects Delete Trust','Integer','','60',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Objects Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Objects Update Trust','Integer','','55',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Add Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Delete Trust','Integer','','60',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Object Type Update Trust','Integer','','55',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Add Trust','Integer','','50',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Delete Trust','Integer','','60',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Trust','Integer','','50',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Pattern Update Trust','Integer','','55',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Reader Add Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Reader Delete Trust','Integer','','60',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Reader Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Reader Update Trust','Integer','','55',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Add Trust','Integer','','50',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Delete Trust','Integer','','60',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Trust','Integer','','50',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Schedule Update Trust','Integer','','55',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Screen Trust','Integer','','20',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Add Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Delete Trust','Integer','','60',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Object Add Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Script ObjectType Add Trust','Integer','','60',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Script Update Trust','Integer','','55',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Server Log Trust','Integer','','50',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Values Trust','Integer','','45',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','ObjectType Update Trust','Integer','','50',0,0,'');
+CALL osae_sp_object_type_property_add('WEB SERVER','Hide Controls','Boolean','','FALSE',0,0,'Hide the Controls that make up Screens on the Object page.');
+
+CALL osae_sp_object_type_add ('SYSTEM','Core System Data','SYSTEM','SYSTEM',1,1,1,1,'The main system object.');
+CALL osae_sp_object_type_state_add('SYSTEM','HOME','Home','System is in Home mode.');
+CALL osae_sp_object_type_state_add('SYSTEM','AWAY','Away','System is in Away mode.');
+CALL osae_sp_object_type_state_add('SYSTEM','SLEEP','Sleep','System is in Sleep mode.');
+CALL osae_sp_object_type_event_add('SYSTEM','OCCUPANTS','Set Occupants','');
+CALL osae_sp_object_type_event_add('SYSTEM','AWAY','Away','System was set to Away mode.');
+CALL osae_sp_object_type_event_add('SYSTEM','HOME','State Set to Home','System was set to Home mode.');
+CALL osae_sp_object_type_event_add('SYSTEM','SLEEP','Sleep','System was set to Sleep mode.');
+CALL osae_sp_object_type_event_add('SYSTEM','OCCUPIED LOCATIONS','Occupied Locations Set','');
+CALL osae_sp_object_type_event_add('SYSTEM','PLUGINS ERRORED','Plugins Errored','');
+CALL osae_sp_object_type_method_add('SYSTEM','OCCUPANTS','Set Occupants','Number of Occupants','','0','','');
+CALL osae_sp_object_type_method_add('SYSTEM','AWAY','Away','','','','','Set System to Away mode.');
+CALL osae_sp_object_type_method_add('SYSTEM','HOME','Home','','','','','Set System to Home mode.');
+CALL osae_sp_object_type_method_add('SYSTEM','SLEEP','Sleep','','','','','Set System to Sleep mode.');
+CALL osae_sp_object_type_property_add('SYSTEM','ZIP Code','String','','',0,0,'');
+CALL osae_sp_object_type_property_add('SYSTEM','Latitude','Integer','','0',0,0,'');
+CALL osae_sp_object_type_property_add('SYSTEM','Longitude','Integer','','0',0,0,'');
+CALL osae_sp_object_type_property_add('SYSTEM','Date','DateTime','','',0,0,'This is the current Date.');
+CALL osae_sp_object_type_property_add('SYSTEM','Time','DateTime','','',0,0,'Current Time in Military format.');
+CALL osae_sp_object_type_property_add('SYSTEM','Day Of Week','Integer','','0',0,0,'Current Day of the Week.');
+CALL osae_sp_object_type_property_add('SYSTEM','Violations','Integer','','0',0,0,'Total alarm violations in series.');
+CALL osae_sp_object_type_property_add('SYSTEM','Day Of Month','Integer','','0',0,0,'Current Day of the Month.');
+CALL osae_sp_object_type_property_add('SYSTEM','Time AMPM','DateTime','','',0,0,'Time in AM/PM format.');
+CALL osae_sp_object_type_property_add('SYSTEM','DB Version','String','','',0,0,'');
+CALL osae_sp_object_type_property_add('SYSTEM','Debug','Boolean','','TRUE',0,1,'Debug control the amount of details in the logs.');
+CALL osae_sp_object_type_property_add('SYSTEM','Prune Logs','Boolean','','TRUE',0,0,'');
+CALL osae_sp_object_type_property_add('SYSTEM','Plugins Found','Integer','','0',1,0,'');
+CALL osae_sp_object_type_property_add('SYSTEM','Plugins Running','Integer','','0',1,0,'The number of Plugins that started successfully. ');
+CALL osae_sp_object_type_property_add('SYSTEM','Plugins Enabled','Integer','','0',1,0,'Total number of Plugins that are Enabled and will startup automatically.');
+CALL osae_sp_object_type_property_add('SYSTEM','Plugins Errored','Integer','','0',1,0,'The number of Plugins that failed to start.');
+CALL osae_sp_object_type_property_add('SYSTEM','Plugins','String','','',0,0,'Total number of Plugins that the system is aware of.');
+CALL osae_sp_object_type_property_add('SYSTEM','AI Focused on Object Type','String','','',0,0,'System is curious about this Object Type.');
+CALL osae_sp_object_type_property_add('SYSTEM','AI Focused on Property','String','','',0,0,'This is what property of the object the system is curious about.');
+CALL osae_sp_object_type_property_add('SYSTEM','Trust Level','Integer','','50',0,0,'This is how much the system is trusted.  ');
+CALL osae_sp_object_type_property_add('SYSTEM','Detailed Occupancy Enabled','Boolean','','FALSE',0,0,'If TRUE, it will try to guess where everyone is.   Works best with single occupancy.');
+
+
 
 
 

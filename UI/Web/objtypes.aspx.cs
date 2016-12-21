@@ -15,7 +15,6 @@ public partial class objtypes : System.Web.UI.Page
         {
             gvObjectTypes.SelectedIndex = Int32.Parse(args[1]);
             panelEditForm.Visible = true;
-            gvProperties.SelectedIndex = 0;
             hdnSelectedStateRow.Text = "";
             hdnSelectedMethodRow.Text = "";
             hdnSelectedEventRow.Text = "";
@@ -24,6 +23,8 @@ public partial class objtypes : System.Web.UI.Page
             loadProperties();
             hdnSelectedPropDataType.Text = "";
             panelPropForm.Visible = true;
+                        
+            gvProperties.SelectedIndex = 0;
             try
             {
                 txtPropName.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString();
@@ -33,14 +34,40 @@ public partial class objtypes : System.Web.UI.Page
                 ddlPropType.SelectedValue = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString();
                 txtPropertyTooltip.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_tooltip"].ToString();
             }
-            catch 
-                (Exception ex)
-            { }
+            catch (Exception ex) { }
             
             loadStates();
+            gvStates.SelectedIndex = 0;
+            try
+            {
+                txtStateName.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_name"].ToString();
+                txtStateLabel.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_label"].ToString();
+                txtStateTooltip.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_tooltip"].ToString();
+            }
+            catch (Exception ex) { }
+
             loadMethods();
+            gvMethods.SelectedIndex = 0;
+            try
+            {
+                txtMethodName.Text = gvMethods.DataKeys[gvMethods.SelectedIndex]["method_name"].ToString();
+                txtMethodLabel.Text = gvMethods.DataKeys[gvMethods.SelectedIndex]["method_label"].ToString();
+                txtMethodTooltip.Text = gvMethods.DataKeys[gvMethods.SelectedIndex]["method_tooltip"].ToString();
+            }
+            catch (Exception ex) { }
+
             loadEvents();
+            gvEvents.SelectedIndex = 0;
+            try
+            {
+                txtMethodName.Text = gvEvents.DataKeys[gvEvents.SelectedIndex]["event_name"].ToString();
+                txtMethodLabel.Text = gvEvents.DataKeys[gvEvents.SelectedIndex]["event_label"].ToString();
+                txtMethodTooltip.Text = gvEvents.DataKeys[gvEvents.SelectedIndex]["event_tooltip"].ToString();
+            }
+            catch (Exception ex) { }
+
             loadDetails();
+
         }
         else if (args[0] == "gvProperties")
         {
@@ -57,18 +84,24 @@ public partial class objtypes : System.Web.UI.Page
         }
         else if (args[0] == "gvStates")
         {
+            gvStates.SelectedIndex = Int32.Parse(args[1]);
             hdnSelectedStateRow.Text = args[1];
             pnlStateForm.Visible = true;
             hdnSelectedStateName.Text = gvStates.DataKeys[Int32.Parse(hdnSelectedStateRow.Text)]["state_name"].ToString();
+            txtStateName.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_name"].ToString(); ;
+            txtStateLabel.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_label"].ToString(); ;
+            txtStateTooltip.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_tooltip"].ToString();
         }
         else if (args[0] == "gvMethods")
         {
+            gvMethods.SelectedIndex = Int32.Parse(args[1]);
             hdnSelectedMethodRow.Text = args[1];
             pnlMethodForm.Visible = true;
             hdnSelectedMethodName.Text = gvMethods.DataKeys[Int32.Parse(hdnSelectedMethodRow.Text)]["method_name"].ToString();
         }
         else if (args[0] == "gvEvents")
         {
+            gvEvents.SelectedIndex = Int32.Parse(args[1]);
             hdnSelectedEventRow.Text = args[1];
             pnlEventForm.Visible = true;
             hdnSelectedEventName.Text = gvEvents.DataKeys[Int32.Parse(hdnSelectedEventRow.Text)]["event_name"].ToString();
@@ -137,16 +170,16 @@ public partial class objtypes : System.Web.UI.Page
 
         if (hdnSelectedStateRow.Text != "")
         {
-            gvStates.Rows[Int32.Parse(hdnSelectedStateRow.Text)].Attributes.Remove("onmouseout");
-            gvStates.Rows[Int32.Parse(hdnSelectedStateRow.Text)].Style.Add("background", "lightblue");
+            //gvStates.Rows[Int32.Parse(hdnSelectedStateRow.Text)].Attributes.Remove("onmouseout");
+            //gvStates.Rows[Int32.Parse(hdnSelectedStateRow.Text)].Style.Add("background", "lightblue");
             txtStateName.Text = hdnSelectedStateName.Text;
             txtStateLabel.Text = gvStates.DataKeys[Int32.Parse(hdnSelectedStateRow.Text)]["state_label"].ToString();
             txtStateTooltip.Text = gvStates.DataKeys[Int32.Parse(hdnSelectedStateRow.Text)]["state_tooltip"].ToString();
         }
         if (hdnSelectedMethodRow.Text != "")
         {
-            gvMethods.Rows[Int32.Parse(hdnSelectedMethodRow.Text)].Attributes.Remove("onmouseout");
-            gvMethods.Rows[Int32.Parse(hdnSelectedMethodRow.Text)].Style.Add("background", "lightblue");
+            //gvMethods.Rows[Int32.Parse(hdnSelectedMethodRow.Text)].Attributes.Remove("onmouseout");
+            //gvMethods.Rows[Int32.Parse(hdnSelectedMethodRow.Text)].Style.Add("background", "lightblue");
             txtMethodName.Text = hdnSelectedMethodName.Text;
             txtMethodLabel.Text = gvMethods.DataKeys[Int32.Parse(hdnSelectedMethodRow.Text)]["method_label"].ToString();
             txtParam1Label.Text = gvMethods.DataKeys[Int32.Parse(hdnSelectedMethodRow.Text)]["param_1_label"].ToString();
@@ -157,8 +190,8 @@ public partial class objtypes : System.Web.UI.Page
         }
         if (hdnSelectedEventRow.Text != "")
         {
-            gvEvents.Rows[Int32.Parse(hdnSelectedEventRow.Text)].Attributes.Remove("onmouseout");
-            gvEvents.Rows[Int32.Parse(hdnSelectedEventRow.Text)].Style.Add("background", "lightblue");
+           // gvEvents.Rows[Int32.Parse(hdnSelectedEventRow.Text)].Attributes.Remove("onmouseout");
+            //gvEvents.Rows[Int32.Parse(hdnSelectedEventRow.Text)].Style.Add("background", "lightblue");
             txtEventName.Text = hdnSelectedEventName.Text;
             txtEventLabel.Text = gvEvents.DataKeys[Int32.Parse(hdnSelectedEventRow.Text)]["event_label"].ToString();
             txtEventTooltip.Text = gvEvents.DataKeys[Int32.Parse(hdnSelectedEventRow.Text)]["event_tooltip"].ToString();
@@ -207,11 +240,11 @@ public partial class objtypes : System.Web.UI.Page
     {
         if ((e.Row.RowType == DataControlRowType.DataRow))
         {
-            e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='Yellow';");
-            if (e.Row.RowState == DataControlRowState.Alternate)
-                e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
-            else
-                e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+          //  e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='Yellow';");
+          //  if (e.Row.RowState == DataControlRowState.Alternate)
+         //       e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
+         //   else
+         //       e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
 
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvStates_" + e.Row.RowIndex.ToString()));
         }
@@ -221,11 +254,11 @@ public partial class objtypes : System.Web.UI.Page
     {
         if ((e.Row.RowType == DataControlRowType.DataRow))
         {
-            e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='Yellow';");
-            if (e.Row.RowState == DataControlRowState.Alternate)
-                e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
-            else
-                e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+          //  e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='Yellow';");
+           // if (e.Row.RowState == DataControlRowState.Alternate)
+         //       e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(Images/grd_alt.png) repeat-x top';");
+         //   else
+          //      e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
 
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvMethods_" + e.Row.RowIndex.ToString()));
         }
@@ -235,11 +268,11 @@ public partial class objtypes : System.Web.UI.Page
     {
         if ((e.Row.RowType == DataControlRowType.DataRow))
         {
-            e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='Yellow';");
-            if (e.Row.RowState == DataControlRowState.Alternate)
-                e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(../images/grd_alt.png) repeat-x top';");
-            else
-                e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
+         //   e.Row.Attributes.Add("onmouseover", "this.style.cursor='hand';this.style.background='Yellow';");
+         //   if (e.Row.RowState == DataControlRowState.Alternate)
+          //      e.Row.Attributes.Add("onmouseout", "this.style.background='#fcfcfc url(../images/grd_alt.png) repeat-x top';");
+         //   else
+         //       e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
 
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvEvents_" + e.Row.RowIndex.ToString()));
         }
@@ -268,10 +301,8 @@ public partial class objtypes : System.Web.UI.Page
         {
             ddlBaseType.Items[i].Attributes.Add("title", baseTypeData.Tables[0].Rows[i]["Tooltip"].ToString());
         }
-        if (ddlBaseType.Items.Count == 0)
-            ddlBaseType.Visible = false;
-        else
-            ddlBaseType.Visible = true;
+        if (ddlBaseType.Items.Count == 0) ddlBaseType.Visible = false;
+        else ddlBaseType.Visible = true;
 
         ddlBaseType.Items.Insert(0, new ListItem(String.Empty, String.Empty));
 
@@ -296,24 +327,37 @@ public partial class objtypes : System.Web.UI.Page
 
     private void loadProperties()
     {
-        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_datatype, property_object_type, property_default, property_tooltip, track_history, property_required, property_id FROM osae_v_object_type_property where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY property_name");
+        gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_datatype, property_object_type, property_default, track_history, property_required, property_tooltip, property_id FROM osae_v_object_type_property where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY property_name");
         gvProperties.DataBind();
     }
 
     private void loadStates()
     {
+        txtStateName.Text = "";
+        txtStateLabel.Text = "";
+        txtStateTooltip.Text = "";
         gvStates.DataSource = OSAESql.RunSQL("SELECT state_name, state_label, state_tooltip FROM osae_v_object_type_state where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY state_name");
         gvStates.DataBind();
     }
 
     private void loadMethods()
     {
+        txtMethodName.Text = "";
+        txtMethodLabel.Text = "";
+        txtParam1Label.Text = "";
+        txtParam2Label.Text = "";
+        txtParam1Default.Text = "";
+        txtParam2Default.Text = "";
+        txtMethodTooltip.Text = "";
         gvMethods.DataSource = OSAESql.RunSQL("SELECT method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default, method_tooltip FROM osae_v_object_type_method where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY method_name");
         gvMethods.DataBind();
     }
 
     private void loadEvents()
     {
+        txtEventName.Text = "";
+        txtEventLabel.Text = "";
+        txtEventTooltip.Text = "";
         gvEvents.DataSource = OSAESql.RunSQL("SELECT event_name, event_label, event_tooltip FROM osae_v_object_type_event where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY event_name");
         gvEvents.DataBind();
     }
@@ -324,6 +368,7 @@ public partial class objtypes : System.Web.UI.Page
         txtName.Text = type.Name;
         txtDescr.Text = type.Description;
         txtObjectTypeTooltip.Text = type.Tooltip;
+        ddlOwnedBy.SelectedIndex = 0;
         try
         { ddlOwnedBy.SelectedValue = type.OwnedBy; }
         catch
@@ -368,7 +413,7 @@ public partial class objtypes : System.Web.UI.Page
             Response.Write("<script>alert('You must select an Object Type!');</script>");
         else
         {
-            OSAEObjectTypeManager.ObjectTypePropertyUpdate(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString(), txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedValue, txtPropDefault.Text, hdnSelectedObjectName.Text,txtPropertyTooltip.Text, chkTrackChanges.Checked, chkRequired.Checked);
+            OSAEObjectTypeManager.ObjectTypePropertyUpdate(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString(), txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedValue, txtPropDefault.Text, hdnSelectedObjectName.Text, chkTrackChanges.Checked, chkRequired.Checked, txtPropertyTooltip.Text);
             loadProperties();
         }
     }
@@ -390,12 +435,10 @@ public partial class objtypes : System.Web.UI.Page
     protected void btnPropAdd_Click(object sender, EventArgs e)
     {
         if (ddlPropType.SelectedValue == "Object Type" & ddlBaseType2.SelectedValue == "")
-        {
             Response.Write("<script>alert('You must select an Object Type!');</script>");
-        }
         else
         {
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(hdnSelectedObjectName.Text, txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedItem.ToString(), txtPropDefault.Text, chkTrackChanges.Checked, chkRequired.Checked);
+            OSAEObjectTypeManager.ObjectTypePropertyAdd(hdnSelectedObjectName.Text, txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedItem.ToString(), txtPropDefault.Text, chkTrackChanges.Checked, chkRequired.Checked, txtPropertyTooltip.Text);
             loadProperties();
         }
     }
@@ -515,24 +558,18 @@ public partial class objtypes : System.Web.UI.Page
     {
         get
         {
-            if (ViewState["sortOrder"].ToString() == "desc")
-                ViewState["sortOrder"] = "asc";
-            else
-                ViewState["sortOrder"] = "desc";
+            if (ViewState["sortOrder"].ToString() == "desc") ViewState["sortOrder"] = "asc";
+            else ViewState["sortOrder"] = "desc";
 
             return ViewState["sortOrder"].ToString();
         }
-        set
-        {
-            ViewState["sortOrder"] = value;
-        }
+        set { ViewState["sortOrder"] = value; }
+
     }
     protected void ddlPropType_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (ddlPropType.SelectedItem.Value == "Integer")
-            txtPropDefault.Text = "0";
-        else
-            txtPropDefault.Text = "";
+        if (ddlPropType.SelectedItem.Value == "Integer") txtPropDefault.Text = "0";
+        else txtPropDefault.Text = "";
 
         //string s = ddlBaseType2.SelectedItem.Text.ToUpper();
         hdnSelectedPropDataType.Text = ddlPropType.SelectedValue.ToString();

@@ -90,6 +90,21 @@
         #gvProperties tr.rowHover1 {background-color: none;}
         #gvProperties tr.rowHoverAlt1:hover {background-color: Yellow;}
         #gvProperties tr.rowHoverAlt1 {background-color: #f4f4f4;}
+
+        #gvStates tr.rowHover1:hover {background-color: Yellow;}
+        #gvStates tr.rowHover1 {background-color: none;}
+        #gvStates tr.rowHoverAlt1:hover {background-color: Yellow;}
+        #gvStates tr.rowHoverAlt1 {background-color: #f4f4f4;}
+
+        #gvMethods tr.rowHover1:hover {background-color: Yellow;}
+        #gvMethods tr.rowHover1 {background-color: none;}
+        #gvMethods tr.rowHoverAlt1:hover {background-color: Yellow;}
+        #gvMethods tr.rowHoverAlt1 {background-color: #f4f4f4;}
+
+        #gvEvents tr.rowHover1:hover {background-color: Yellow;}
+        #gvEvents tr.rowHover1 {background-color: none;}
+        #gvEvents tr.rowHoverAlt1:hover {background-color: Yellow;}
+        #gvEvents tr.rowHoverAlt1 {background-color: #f4f4f4;}
     </style>
 
     <div class="row-fluid">
@@ -170,33 +185,27 @@
                         <h3 style="float:right; margin-right:10px;">States</h3>
                         <br />
                         <div class="span5"  id="stateGrid" style="overflow: auto; max-height:300px;"  onscroll="SetStateDivPosition()">
-                           <asp:GridView runat="server" ID="gvStates"
-                                AutoGenerateColumns="False"  
-                                GridLines="None"  
-                                CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvStates_RowDataBound" DataKeyNames="state_name, state_label, state_tooltip" ShowHeaderWhenEmpty="true">  
+                           <asp:GridView runat="server" ID="gvStates" AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" 
+                               CssClass="mGrid"  ClientIDMode="Static" OnRowDataBound="gvStates_RowDataBound" 
+                               DataKeyNames="state_name, state_label, state_tooltip" ShowHeaderWhenEmpty="true">  
+                                <RowStyle CssClass="rowHover1"></RowStyle>
+                                <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
+                                <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle> 
                                 <Columns>  
                                     <asp:BoundField DataField="state_name" HeaderText="Name" /> 
                                     <asp:BoundField DataField="state_label" HeaderText="Label" /> 
                                     <asp:BoundField DataField="state_tooltip" HeaderText="Tooltip" Visible="false" /> 
                                 </Columns>  
-
                             </asp:GridView>
                         </div>
                         <div class="span6">
                             <asp:Panel runat="server" ID="pnlStateForm">
-                                
-                                    Name: <asp:TextBox  runat="server" ID="txtStateName" style="width:225px;" ToolTip="Enter the Name of the State. (On/Off)"></asp:TextBox>
-                                    <br />
-                                    Label: <asp:TextBox  runat="server" ID="txtStateLabel" style="width:225px;" ToolTip="Enter the Stae Lable. (Running/Stopped, Online/Offline)"></asp:TextBox>
-                                    <br />
-                                    Tooltip: <asp:TextBox  runat="server" ID="txtStateTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's state."></asp:TextBox>
-                                    <br />
-
+                                    Name: <asp:TextBox  runat="server" ID="txtStateName" style="width:225px;" ToolTip="Enter the Name of the State. (On/Off)"></asp:TextBox><br />
+                                    Label: <asp:TextBox  runat="server" ID="txtStateLabel" style="width:225px;" ToolTip="Enter the Stae Lable. (Running/Stopped, Online/Offline)"></asp:TextBox><br />
+                                    Tooltip: <asp:TextBox  runat="server" ID="txtStateTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's state."></asp:TextBox><br />
                                     <asp:Button class="btn btn" runat="server" ID="btnStateSave" Text="Save" OnClick="btnStateSave_Click" ToolTip="This will UPDATE the State information above." />
                                     <asp:Button class="btn btn" runat="server" ID="btnStateAdd" Text="Add" OnClick="btnStateAdd_Click" ToolTip="This will ADD the newly entered State information above." />
                                     <asp:Button class="btn btn" runat="server" ID="btnStateDelete" Text="Delete" OnClick="btnStateDelete_Click"  ToolTip="This will DELETE the selected State above." />
-                                
                            </asp:Panel>
                         </div>
                     </div>
@@ -206,11 +215,12 @@
                         <h3 style="float:right; margin-right:10px;">Methods</h3>
                         <br />
                         <div class="span5" id="methodGrid" style="overflow: auto;max-height:300px;"  onscroll="SetMethodDivPosition()">
-                            <asp:GridView runat="server" ID="gvMethods"
-                                AutoGenerateColumns="False"  
-                                GridLines="None"  
-                                CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvMethods_RowDataBound" DataKeyNames="method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default, method_tooltip" ShowHeaderWhenEmpty="true">  
+                            <asp:GridView runat="server" ID="gvMethods" AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None"  
+                                CssClass="mGrid" ClientIDMode="Static" OnRowDataBound="gvMethods_RowDataBound" 
+                                DataKeyNames="method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default, method_tooltip" ShowHeaderWhenEmpty="true">  
+                                <RowStyle CssClass="rowHover1"></RowStyle>
+                                <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
+                                <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle> 
                                 <Columns>  
                                     <asp:BoundField DataField="method_name" HeaderText="Name" /> 
                                     <asp:BoundField DataField="method_label" HeaderText="Label" />  
@@ -220,31 +230,21 @@
                                     <asp:BoundField DataField="param_2_default" Visible="false" /> 
                                     <asp:BoundField DataField="method_tooltip" Visible="false" /> 
                                 </Columns>  
-
                             </asp:GridView>
                         </div>
                         <div class="span6">
                             <asp:Panel runat="server" ID="pnlMethodForm">
-                                
-                                    Name: <asp:TextBox  runat="server" ID="txtMethodName" style="width:225px;" ToolTip="Enter the name of this Method"></asp:TextBox>
-                                    <br />
-                                    Label: <asp:TextBox  runat="server" ID="txtMethodLabel" style="width:225px;" ToolTip="Enter the Lable for this method"></asp:TextBox>
-                                    <br />
-                                    Parameter Labels / Default Values
-                                    <br />
-                                    <asp:TextBox  runat="server" ID="txtParam1Label" style="width:100px;" ToolTip="Enter Parmeter-1 Lable"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam1Default" style="width:100px;" ToolTip="Enter Parmeter-1 Default Value"></asp:TextBox>
-                                    <br />
-                                    <asp:TextBox  runat="server" ID="txtParam2Label" style="width:100px;" ToolTip="Enter Parameter-2 Lable"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam2Default" style="width:100px;" ToolTip="Enter Parameter-2 Default Value"></asp:TextBox>
-                                    <br />
-                                    Tooltip: <asp:TextBox  runat="server" ID="txtMethodTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's method."></asp:TextBox>
-                                    <br />
+                                    Name: <asp:TextBox  runat="server" ID="txtMethodName" style="width:225px;" ToolTip="Enter the name of this Method"></asp:TextBox><br />
+                                    Label: <asp:TextBox  runat="server" ID="txtMethodLabel" style="width:225px;" ToolTip="Enter the Lable for this method"></asp:TextBox><br />
+                                    Parameter Labels / Default Values<br />
+                                    <asp:TextBox  runat="server" ID="txtParam1Label" style="width:100px;" ToolTip="Enter Parmeter-1 Lable"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam1Default" style="width:100px;" ToolTip="Enter Parmeter-1 Default Value"></asp:TextBox><br />
+                                    <asp:TextBox  runat="server" ID="txtParam2Label" style="width:100px;" ToolTip="Enter Parameter-2 Lable"></asp:TextBox><asp:TextBox  runat="server" ID="txtParam2Default" style="width:100px;" ToolTip="Enter Parameter-2 Default Value"></asp:TextBox><br />
+                                    Tooltip: <asp:TextBox  runat="server" ID="txtMethodTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's method."></asp:TextBox><br />
                                     <asp:Button class="btn btn" runat="server" ID="btnMethodSave" Text="Save" OnClick="btnMethodSave_Click" ToolTip="This will UPDATE Method information above." />
                                     <asp:Button class="btn btn" runat="server" ID="btnMethodAdd" Text="Add" OnClick="btnMethodAdd_Click" ToolTip="This will ADD the newly entered Method information above." />
                                     <asp:Button class="btn btn" runat="server" ID="btnMethodDelete" Text="Delete" OnClick="btnMethodDelete_Click" ToolTip="This will DELETE the selected Method above." />
-                                
-                           </asp:Panel>
+                            </asp:Panel>
                         </div>
-
                     </div>
                 </div>
                 <div  runat="server" ID="divEvents" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;">
@@ -252,36 +252,29 @@
                         <h3 style="float:right; margin-right:10px;">Events</h3>
                         <br />
                         <div class="span5" ID="eventGrid" style="overflow: auto; max-height:300px;"  onscroll="SetEventDivPosition()">
-                            <asp:GridView runat="server" ID="gvEvents"
-                                AutoGenerateColumns="False"  
-                                GridLines="None"  
-                                CssClass="mGrid"  
-                                AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvEvents_RowDataBound" DataKeyNames="event_name, event_label, event_tooltip" ShowHeaderWhenEmpty="true">  
+                            <asp:GridView runat="server" ID="gvEvents" AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None"  
+                                CssClass="mGrid" ClientIDMode="Static" OnRowDataBound="gvEvents_RowDataBound" 
+                                DataKeyNames="event_name, event_label, event_tooltip" ShowHeaderWhenEmpty="true"> 
+                                <RowStyle CssClass="rowHover1"></RowStyle>
+                                <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
+                                <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle> 
                                 <Columns>  
                                     <asp:BoundField DataField="event_name" HeaderText="Name" /> 
                                     <asp:BoundField DataField="event_label" HeaderText="Label" /> 
                                     <asp:BoundField DataField="event_tooltip" HeaderText="Label" Visible="false"/> 
                                 </Columns>  
-
                             </asp:GridView>
                         </div>
                         <div class="span6">
                             <asp:Panel runat="server" ID="pnlEventForm">
-                                
-                                    Name: <asp:TextBox  runat="server" ID="txtEventName" style="width:225px;" ToolTip="Enter the Name of this Event"></asp:TextBox>
-                                    <br />
-                                    Label: <asp:TextBox  runat="server" ID="txtEventLabel" style="width:225px;" ToolTip="Enter the Label of this Event"></asp:TextBox>
-                                    <br />
-                                    Tooltip: <asp:TextBox  runat="server" ID="txtEventTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's event."></asp:TextBox>
-                                    <br />
-
+                                    Name: <asp:TextBox  runat="server" ID="txtEventName" style="width:225px;" ToolTip="Enter the Name of this Event"></asp:TextBox><br />
+                                    Label: <asp:TextBox  runat="server" ID="txtEventLabel" style="width:225px;" ToolTip="Enter the Label of this Event"></asp:TextBox><br />
+                                    Tooltip: <asp:TextBox  runat="server" ID="txtEventTooltip" TextMode="MultiLine" Rows="2" Height="39px" Width="215px" ToolTip="Enter Help Text to be displayed on the Objects page for this object's event."></asp:TextBox><br />
                                     <asp:Button class="btn btn" runat="server" ID="btnEventSave" Text="Save" OnClick="btnEventSave_Click" ToolTip="This will UPDATE the Event information above."/>
                                     <asp:Button class="btn btn" runat="server" ID="btnEventAdd" Text="Add" OnClick="btnEventAdd_Click" ToolTip="This will ADD the newly entered Event information above."/>
                                     <asp:Button class="btn btn" runat="server" ID="btnEventDelete" Text="Delete" OnClick="btnEventDelete_Click" ToolTip="This will DELETE the selected Event above."/>
-                                
                            </asp:Panel>
                         </div>
-
                     </div>
                 </div>
                 <div  runat="server" ID="divProps" class="hero-unit" style="padding: 10px; padding-right: 0px; margin-bottom: 10px;">
@@ -289,9 +282,9 @@
                         <h3 style="float:right; margin-right:10px;">Properties</h3>
                         <br />
                         <div class="span5" id="propGrid" style="overflow: auto; max-height:300px;" onscroll="SetPropDivPosition()">
-                            <asp:GridView runat="server" ID="gvProperties" 
-                                AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" CssClass="mGrid" ClientIDMode="Static"  
-                                OnRowDataBound="gvProperties_RowDataBound" DataKeyNames="property_name, property_datatype, property_object_type, property_default, property_tooltip, track_history, property_required, property_id" ShowHeaderWhenEmpty="true"> 
+                            <asp:GridView runat="server" ID="gvProperties" AutoGenerateColumns="False" SelectedIndex ="0" GridLines="None" 
+                                CssClass="mGrid" ClientIDMode="Static" OnRowDataBound="gvProperties_RowDataBound" 
+                                DataKeyNames="property_name, property_datatype, property_object_type, property_default, property_tooltip, track_history, property_required, property_id" ShowHeaderWhenEmpty="true"> 
                                 <RowStyle CssClass="rowHover1"></RowStyle>
                                 <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
                                 <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle> 
@@ -309,7 +302,6 @@
                         </div>
                         <div class="span6">
                             <asp:Panel runat="server" ID="panelPropForm">
-                                
                                 Name: <asp:TextBox  runat="server" ID="txtPropName" style="width:225px;" ToolTip="Enter the Name of this Property"></asp:TextBox>
                                 <br />
                                 Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;"  AutoPostBack="true" OnSelectedIndexChanged="ddlPropType_SelectedIndexChanged" ToolTip="Choose the Data Type of this property.">
