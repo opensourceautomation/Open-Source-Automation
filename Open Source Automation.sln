@@ -57,6 +57,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web", "http://localhost:539
 		Release.AspNetCompiler.Debug = "False"
 		SlnRelativePath = "UI\Web\"
 		DefaultWebSiteLanguage = "Visual C#"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.WUnderground", "Plugins\OSAE.WUnderground\OSAE.WUnderground.csproj", "{84834D6F-8606-4912-BB48-8811162F3F97}"

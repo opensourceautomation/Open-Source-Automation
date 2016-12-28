@@ -31,17 +31,24 @@
             var intY = document.getElementById("propGrid").scrollTop;
             document.cookie = "yPos=$~" + intY + "~$";
         }
-        function selectPropListItem(name, element) {
+        function selectPropListItem(name, label, element) {
             if (lastSelected != null) {
                 lastSelected.style.backgroundColor = 'white';
                 $(lastSelected).attr("onmouseout", "this.style.cursor='hand';this.style.background='white';");
                 $(lastSelected).attr("onmouseover", "this.style.cursor='hand';this.style.background='lightblue';");
             }
+            lastSelected = element;
             $('#<%=hdnPropListItemName.ClientID%>').val(name);
             element.style.backgroundColor = 'lightblue';
             $(element).removeAttr("onmouseout");
+            var strName = name;
+            strName = strName.replace("^^^", "'");
+            $('#<%=txtListItem.ClientID%>').val(strName);
+
+            var strLabel = label;
+            strLabel = strLabel.replace("^^^", "'");
+            $('#<%=txtListItemLabel.ClientID%>').val(strLabel);
             
-            lastSelected = element;
         }
         $(function () {
             if ($('#<%=hdnEditingPropList.ClientID%>').val() == "1") {
@@ -292,7 +299,7 @@
         <asp:GridView runat="server" ID="gvPropList"
             AutoGenerateColumns="False"  
             GridLines="None"  
-            CssClass="mGrid"  
+            CssClass="mGrid" 
             AlternatingRowStyle-CssClass="alt" OnRowDataBound="gvPropList_RowDataBound" DataKeyNames="item_name,item_label" ShowHeaderWhenEmpty="true">  
             <Columns>  
                 <asp:BoundField DataField="item_name" HeaderText="Item" ItemStyle-Width="50%" />
@@ -311,7 +318,7 @@
         </div>
           
         <br />
-        <asp:Button class="btn btn-primary" runat="server" ID="btnAddListItem" Text="Add" OnClick="btnListItemSave_Click"/>
+        <asp:Button class="btn btn-primary" runat="server" ID="btnAddListItem" Text="Add" OnClick="btnListItemAdd_Click"/>
         <asp:Button class="btn btn" runat="server" ID="btnListItemUpdate" Text="Update" OnClick="btnListItemUpdate_Click"/>
         <asp:Button class="btn btn" runat="server" ID="btnListItemDelete" Text="Delete" OnClick="btnListItemDelete_Click"/>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
@@ -336,5 +343,7 @@
     <asp:Label runat="server" ID="hdnSelectedPropName" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedPropType" Visible="false"></asp:Label>
     <asp:HiddenField runat="server" ID="hdnEditingPropList"/>
+    <asp:HiddenField runat="server" ID="hdnPropListItemRow"/>
     <asp:HiddenField runat="server" ID="hdnPropListItemName"/>
+
 </asp:Content>

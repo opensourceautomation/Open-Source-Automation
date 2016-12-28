@@ -201,16 +201,16 @@
         /// <param name="propertyName"></param>
         /// <param name="propertyValue"></param>
         /// <param name="propertyLabel"></param>
-        public static void ObjectPropertyArrayUpdate(string objectName, string propertyName, string oldPropertyValue, string newPropertyValue, string newPropertyLabel)
+        public static void ObjectPropertyArrayUpdate(string objectName, string propertyName, string oldPropertyValue, string newPropertyValue, string PropertyLabel)
         {
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_property_array_add (@ObjectName, @PropertyName, @OldPropertyValue, @NewPropertyValue, @NewPropertyLabel)";
+                command.CommandText = "CALL osae_sp_object_property_array_update (@ObjectName, @PropertyName, @OldPropertyValue, @NewPropertyValue, @PropertyLabel)";
                 command.Parameters.AddWithValue("@ObjectName", objectName);
                 command.Parameters.AddWithValue("@PropertyName", propertyName);
                 command.Parameters.AddWithValue("@OldPropertyValue", oldPropertyValue);
                 command.Parameters.AddWithValue("@NewPropertyValue", newPropertyValue);
-                command.Parameters.AddWithValue("@PropertyLabel", newPropertyLabel);
+                command.Parameters.AddWithValue("@PropertyLabel", PropertyLabel);
 
                 try
                 {

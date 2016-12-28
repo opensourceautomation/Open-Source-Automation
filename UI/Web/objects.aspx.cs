@@ -52,7 +52,7 @@ public partial class home : System.Web.UI.Page
             lblPropLastUpd.Text = "Last Updated: " + gvProperties.DataKeys[gvProperties.SelectedIndex]["last_updated"].ToString();
             hdnSelectedPropType.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString();
             lblPropType.Text = "Type: " + hdnSelectedPropType.Text;
-            if(propRequired) lblRequired.Visible = true;
+            if (propRequired) lblRequired.Visible = true;
             else lblRequired.Visible = false;
 
             if (gvProperties.DataKeys[gvProperties.SelectedIndex]["property_datatype"].ToString() == "List")
@@ -164,7 +164,11 @@ public partial class home : System.Web.UI.Page
                 ddlPropValue.Visible = false;
             }
         }
-    }
+        else if (args[0] == "gvPropList")
+        {
+            txtListItem.Text = gvPropList.DataKeys[gvPropList.SelectedIndex]["item_name"].ToString();
+        }
+        }
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -173,9 +177,7 @@ public partial class home : System.Web.UI.Page
 
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < adSet.ObjectsTrust)
-        {
             Response.Redirect("~/permissionError.aspx");
-        }
 
         bool hideControls = Convert.ToBoolean(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Hide Controls").Value);
         if (hideControls)
@@ -278,7 +280,7 @@ public partial class home : System.Web.UI.Page
                 if (propRequired)
                 {
                     e.Row.Cells[1].ToolTip = "ERROR: This property is REQUIRED and MUST have a value!";
-                   e.Row.Cells[1].Attributes.Add("style", "background-color: red;");
+                    e.Row.Cells[1].Attributes.Add("style", "background-color: red;");
                     objPropError = true;
                 }
             }
@@ -297,7 +299,9 @@ public partial class home : System.Web.UI.Page
             else
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
 
-            e.Row.Attributes.Add("onclick", "selectPropListItem('" + gvPropList.DataKeys[e.Row.RowIndex]["item_name"].ToString() + "', this);");
+             e.Row.Attributes.Add("onclick", "selectPropListItem('" + gvPropList.DataKeys[e.Row.RowIndex]["item_name"].ToString().Replace("'","^^^") + "', '" + gvPropList.DataKeys[e.Row.RowIndex]["item_label"].ToString().Replace("'", "^^^") + "', this);");
+         //  e.Row.Attributes.Add("onclick", "selectPropListItem(" + e.Row.RowIndex.ToString() + ", this);");
+        
         }
     }
 
@@ -428,9 +432,9 @@ public partial class home : System.Web.UI.Page
 
     private void loadPropertyList()
     {
-        gvPropList.DataSource = OSAESql.RunSQL("SELECT item_name, item_label FROM osae_object_property_array WHERE object_property_id = " + gvProperties.DataKeys[gvProperties.SelectedIndex]["object_property_id"].ToString());
+        gvPropList.DataSource = OSAESql.RunSQL("SELECT item_name, item_label FROM osae_object_property_array WHERE object_property_id = " + gvProperties.DataKeys[gvProperties.SelectedIndex]["object_property_id"].ToString() + " ORDER BY item_name");
         gvPropList.DataBind();
-        btnListItemUpdate.Enabled = false;
+        //btnListItemUpdate.Enabled = false;
     }
 
     private void loadDetails()
@@ -588,23 +592,26 @@ public partial class home : System.Web.UI.Page
         }
     }
 
-    protected void btnListItemSave_Click(object sender, EventArgs e)
+    protected void btnListItemAdd_Click(object sender, EventArgs e)
     {
-        OSAEObjectPropertyManager.ObjectPropertyArrayAdd(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), hdnSelectedPropName.Text, txtListItem.Text, txtListItemLabel.Text);
+        OSAEObjectPropertyManager.ObjectPropertyArrayAdd(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtListItem.Text, txtListItemLabel.Text);
         hdnEditingPropList.Value = "1";
         loadPropertyList();
     }
 
     protected void btnListItemUpdate_Click(object sender, EventArgs e)
     {
-        //OSAEObjectPropertyManager.ObjectPropertyArrayUpdate(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, hdnPropListItemName.Value);
+        OSAEObjectPropertyManager.ObjectPropertyArrayUpdate(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, hdnPropListItemName.Value,txtListItem.Text,txtListItemLabel.Text);
         hdnEditingPropList.Value = "1";
         loadPropertyList();
     }
 
     protected void btnListItemDelete_Click(object sender, EventArgs e)
     {
-        OSAEObjectPropertyManager.ObjectPropertyArrayDelete(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), hdnSelectedPropName.Text, hdnPropListItemName.Value);
+        //     OSAEObjectPropertyManager.ObjectPropertyArrayDelete(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), hdnSelectedPropName.Text, hdnPropListItemName.Value);
+       // OSAEObjectPropertyManager.ObjectPropertyArrayDelete(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), hdnSelectedPropName.Text, gvPropList.DataKeys[gvPropList.SelectedIndex]["item_name"].ToString());
+        OSAEObjectPropertyManager.ObjectPropertyArrayDelete(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtListItem.Text);
+
         hdnEditingPropList.Value = "1";
         loadPropertyList();
     }
@@ -1366,22 +1373,10 @@ public partial class home : System.Web.UI.Page
                         eRr = "Object With Same Name Already Exist!";
                     }
                     if(gVa1 == true && gVa2 == true && gVa3 == true && gVa4 == true) { gV = true; }
-                    if (string.IsNullOrEmpty(txtAlias.Text))
-                    {
-                        mSg = "Object Alias NOT specified! <br>";
-                    }
-                    if (string.IsNullOrEmpty(txtDescr.Text))
-                    {
-                        mSg += "Object Description NOT specified! <br>";
-                    }
-                    if (string.IsNullOrEmpty(ddlContainer.SelectedValue))
-                    {
-                        mSg += "Object Container NOT specified! <br>";
-                    }
-                    if (string.IsNullOrEmpty(txtAddress.Text))
-                    {
-                        mSg += "Object Address NOT specified! <br>";
-                    }
+                    if (string.IsNullOrEmpty(txtAlias.Text)) mSg = "Object Alias NOT specified! <br>";
+                    if (string.IsNullOrEmpty(txtDescr.Text)) mSg += "Object Description NOT specified! <br>";
+                    if (string.IsNullOrEmpty(ddlContainer.SelectedValue)) mSg += "Object Container NOT specified! <br>";
+                    if (string.IsNullOrEmpty(txtAddress.Text)) mSg += "Object Address NOT specified! <br>";
                     break;
                 }
 
@@ -1410,22 +1405,10 @@ public partial class home : System.Web.UI.Page
                         eRr = "This Object does NOT Exist!";
                     }
                     if (gVa1 == true && gVa2 == true && gVa3 == true && gVa4 == true) { gV = true; }
-                    if (string.IsNullOrEmpty(txtAlias.Text))
-                    {
-                        mSg = "Object Alias NOT specified! <br>";
-                    }
-                    if (string.IsNullOrEmpty(txtDescr.Text))
-                    {
-                        mSg += "Object Description NOT specified! <br>";
-                    }
-                    if (string.IsNullOrEmpty(ddlContainer.SelectedValue))
-                    {
-                        mSg += "Object Container NOT specified! <br>";
-                    }
-                    if (string.IsNullOrEmpty(txtAddress.Text))
-                    {
-                        mSg += "Object Address NOT specified! <br>";
-                    }
+                    if (string.IsNullOrEmpty(txtAlias.Text)) mSg = "Object Alias NOT specified! <br>";
+                    if (string.IsNullOrEmpty(txtDescr.Text)) mSg += "Object Description NOT specified! <br>";
+                    if (string.IsNullOrEmpty(ddlContainer.SelectedValue)) mSg += "Object Container NOT specified! <br>";
+                    if (string.IsNullOrEmpty(txtAddress.Text)) mSg += "Object Address NOT specified! <br>";
                     break;
                 }
 
