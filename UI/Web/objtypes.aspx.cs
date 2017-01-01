@@ -69,7 +69,7 @@ public partial class objtypes : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx?ReturnUrl=objtypes.aspx");
         int objSet = OSAEAdminManager.GetAdminSettingsByName("ObjectType Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");

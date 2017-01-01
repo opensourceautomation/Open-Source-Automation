@@ -173,7 +173,7 @@ public partial class home : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null)
-            Response.Redirect("~/Default.aspx");
+            Response.Redirect("~/Default.aspx?ReturnUrl=objects.aspx");
 
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < adSet.ObjectsTrust)
@@ -181,7 +181,7 @@ public partial class home : System.Web.UI.Page
 
         bool hideControls = Convert.ToBoolean(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Hide Controls").Value);
         if (hideControls)
-            objectSQL = "SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address, object_type_tooltip FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN') order by container_name, object_name";
+            objectSQL = "SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address, object_type_tooltip FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN','USER CONTROL') order by container_name, object_name";
         else
             objectSQL = "SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address, object_type_tooltip FROM osae_v_object order by container_name, object_name";
 
