@@ -92,10 +92,8 @@ namespace OSAE.Jabber
                 if (gDebug) Log.Debug("Message: " + method.Parameter2);
                 OSAEObjectProperty prop = OSAEObjectPropertyManager.GetObjectPropertyValue(method.Parameter1, "JabberID");
 
-                if (prop != null)
-                    to = prop.Value;
-                else
-                    to = method.Parameter1;
+                if (prop != null) to = prop.Value;
+                else to = method.Parameter1;
 
                 if (to == "") to = method.Parameter1;
 
@@ -156,8 +154,8 @@ namespace OSAE.Jabber
             Log.Info(Common.PatternParse("Setting " + gAnswerObject + "'s " + gAnswerProperty + " to " + answer));
             OSAEObjectPropertyManager.ObjectPropertySet(gAnswerObject, gAnswerProperty, answer, gCurrentUser);
             //Trust is enforced in the storedProc, but maybe it can be checked here for better replies.
-                gAnswerObject = "";
-                gAnswerProperty = "";
+            gAnswerObject = "";
+            gAnswerProperty = "";
         }
 
         public override void Shutdown()
