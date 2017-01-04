@@ -89,7 +89,7 @@
         /// <param name="TypeOwner"></param>
         /// <param name="System"></param>
         /// <param name="Container">The container for the new object type</param>
-        public static void ObjectTypeAdd(string Name, string Description, string OwnedBy, string BaseType, bool TypeOwner, bool SystemType, bool Container, bool HideRedundantEvents)
+        public static void ObjectTypeAdd(string Name, string Description, string OwnedBy, string BaseType, bool TypeOwner, bool SystemType, bool Container, bool HideRedundantEvents, string Tooltip)
         {
             int iTypeOwner = 0, iSystemType = 0, iContainer = 0, iHideRedundantEvents = 0;
             if (TypeOwner) iTypeOwner = 1;
@@ -99,7 +99,7 @@
 
             using (MySqlCommand command = new MySqlCommand())
             {
-                command.CommandText = "CALL osae_sp_object_type_add (@Name, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents)";
+                command.CommandText = "CALL osae_sp_object_type_add (@Name, @Description, @OwnedBy, @BaseType, @TypeOwner, @System, @Container, @HideRedundantEvents, @Tooltip)";
                 command.Parameters.AddWithValue("@Name", Name);
                 command.Parameters.AddWithValue("@Description", Description);
                 command.Parameters.AddWithValue("@OwnedBy", OwnedBy);
@@ -108,6 +108,7 @@
                 command.Parameters.AddWithValue("@System", iSystemType);
                 command.Parameters.AddWithValue("@Container", iContainer);
                 command.Parameters.AddWithValue("@HideRedundantEvents", iHideRedundantEvents);
+                command.Parameters.AddWithValue("@Tooltip", Tooltip);
 
                 try
                 { OSAESql.RunQuery(command); }
