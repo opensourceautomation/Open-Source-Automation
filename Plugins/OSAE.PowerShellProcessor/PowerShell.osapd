@@ -2,15 +2,20 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>PowerShell</plugin-name>
 <plugin-id>ee8cea7f-affe-4085-a151-2f8d3d1b86f1</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>
 Allows OSA Scripts to be processed by PowerShell</short-description>
 <author>Matthew Stebbings</author>
 <destination-folder>PowerShell</destination-folder>
-<main-file></main-file>
+<main-file>OSAE.PowerShellProcessor.dll</main-file>
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=PowerShell</wiki-url>
 <additional-assemblies>
+<name>Google.GData.AccessControl.DLL</name>
+<name>Google.GData.Calendar.dll</name>
+<name>Google.GData.Client.dll</name>
+<name>Google.GData.Extensions.dll</name>
+<name>System.Management.Automation.dll</name>
 </additional-assemblies>
 <x64-additional-assemblies>
 </x64-additional-assemblies>

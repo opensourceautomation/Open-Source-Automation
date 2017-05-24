@@ -80,7 +80,7 @@
                     if (OSAEObjectPropertyManager.GetObjectPropertyValue(pName, feedTitle).Value == "")
                     {
                         Log.Debug("Adding property to object type");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(feedTitle, "List", "","", "RSS", false);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(feedTitle, "List", "","", "RSS", false, false, "RSS List");
                     }
                     OSAEObjectPropertyManager.ObjectPropertyArrayDeleteAll(pName, feedTitle);
                     Log.Debug("Cleared feed data");

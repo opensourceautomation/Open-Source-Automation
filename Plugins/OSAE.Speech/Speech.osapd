@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Speech</plugin-name>
 <plugin-id>8d3cff59-97db-48dd-91a3-fb935bb57ed8</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>C# Speech Client</short-description>
 <author>Vaughn Rupp</author>

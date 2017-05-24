@@ -12,8 +12,7 @@ namespace OSAE.XBMC
 {
     public class XBMC : OSAEPluginBase
     {
-        //OSAELog
-        private OSAE.General.OSAELog Log;// = new General.OSAELog();
+        private OSAE.General.OSAELog Log;
         private List<XBMCSystem> Systems = new List<XBMCSystem>();
         private string gAppName;
         Boolean gDebug = false;
@@ -127,7 +126,7 @@ namespace OSAE.XBMC
             OSAEObjectType oType = OSAEObjectTypeManager.ObjectTypeLoad("XBMC");
             if (oType.OwnedBy == "")
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip);
                 Log.Info("XBMC Plugin took ownership of the XBMC Object Type.");
             }
             else
@@ -136,7 +135,7 @@ namespace OSAE.XBMC
             oType = OSAEObjectTypeManager.ObjectTypeLoad("XBMC SYSTEM");
             if (oType.OwnedBy == "")
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, gAppName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip);
                 Log.Info("XBMC Plugin took ownership of the XBMC SYSTEM Object Type.");
             }
             else

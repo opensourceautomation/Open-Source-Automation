@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>USBUIRT</plugin-name>
 <plugin-id>442e198d-7c3e-42b1-9c5a-6ba60e2f0545</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>SEND Only USB-UIRT driver</short-description>
 <author>Vaughn Rupp</author>

@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Onkyo</plugin-name>
 <plugin-id>5c2faa55-8205-4cee-8afd-67d898513fdb</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Control your Onkyo A/V receiver</short-description>
 <author>Brian</author>

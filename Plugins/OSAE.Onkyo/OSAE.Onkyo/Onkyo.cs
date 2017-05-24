@@ -152,7 +152,7 @@
             Log.Debug("Running interface");
 
             OSAEObjectType objt = OSAEObjectTypeManager.ObjectTypeLoad("ONKYO RECEIVER");
-            OSAEObjectTypeManager.ObjectTypeUpdate(objt.Name, objt.Name, objt.Description, pName, "THING", objt.Owner, objt.SysType, objt.Container, objt.HideRedundant);
+            OSAEObjectTypeManager.ObjectTypeUpdate(objt.Name, objt.Name, objt.Description, pName, "THING", objt.Owner, objt.SysType, objt.Container, objt.HideRedundant, objt.Tooltip);
 
             _UDPListen = new UDPListen();
             _UDPSend = new UDPSend();

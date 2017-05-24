@@ -8,6 +8,7 @@
 //     2014-03-04  0.0.4    Per Tobiasson   Adjusted for OSA version 4.4
 //     2014-11-13  0.0.5    Per Tobiasson   Changed behaviour of Debug
 //     2016-07-13  0.4.8    Per Tobiasson   Adjusted for OSA version 4.8
+//     2017-05-04  0.4.9    Per Vaughn      Removed hard coded sql, should just read install.sql for restores
 //**********************************************************************************************************
 using System;
 using System.ServiceProcess;
@@ -25,10 +26,6 @@ using System.Globalization;
 
 namespace OSAE.Tellstick
 {
-    [AddIn("Tellstick", Version = "0.4.8")]
-    /// <summary>
-    ///  Class for Tellstick OpenSourceAutomation plugin
-    /// </summary>
     public class Tellstick : OSAEPluginBase
     {
         //int trustLevel = 100;   // The trustLevel this plugin will use to update objects, 100 is default will be adjusted in RunInterface
@@ -384,14 +381,8 @@ namespace OSAE.Tellstick
                 pos = 1; OSAEObject obj = OSAEObjectManager.GetObjectByName(method.ObjectName);
                 pos = 2; log("ProcessCommand", obj.Name, method.MethodName + " Run method on object.");
                 pos = 3;
-                if (obj.Name == Name)
-                {
-                    pluginCommands(obj, obj.Property(propAddrComputerName).Value, method);  // do commands on the Tellstick plugin object
-                }
-                else
-                {
-                    doCommand(obj, obj.Property(propDevId).Value, method);       // do commands on the Tellstick devices
-                }
+                if (obj.Name == Name)  pluginCommands(obj, obj.Property(propAddrComputerName).Value, method);  // do commands on the Tellstick plugin object
+                else doCommand(obj, obj.Property(propDevId).Value, method);       // do commands on the Tellstick devices
                 pos = 5;
             }
             catch (Exception ex)
@@ -514,17 +505,17 @@ namespace OSAE.Tellstick
                         break;
                     case propDevId:
                         logW("getPropertyValue", o.Name, "Property " + p + " does not exist, property will be recreated.");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propDevId, "Integer", "", "", true);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propDevId, "Integer", "", "", true,false, propDevId);
                        s="";
                         break;
                     case sensDTTemp:
                         logW("getPropertyValue", o.Name, "Property " + p + " does not exist, property will be recreated.");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propTemp, "Float", "", "0", true);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propTemp, "Float", "", "0", true, false, propHum);
                         s="0";
                         break;
                     case sensDTHum:
                         logW("getPropertyValue", o.Name, "Property " + p + " does not exist, property will be recreated.");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propHum, "Float", "", "0", true);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propHum, "Float", "", "0", true, false, propHum);
                         s="0";
                         break;
                     case propMinHum:
@@ -534,7 +525,7 @@ namespace OSAE.Tellstick
                     case propAvgHum:
                     case propAvgTemp:
                         logW("getPropertyValue", o.Name, "Property " + p + " does not exist, property will be recreated.");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, p, "Float", "", "0", true);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, p, "Float", "", "0", true, false, "Integer");
                         s = "0";
                         break;
                 }
@@ -565,29 +556,29 @@ namespace OSAE.Tellstick
                     case propAvgHum:
                     case propAvgTemp:
                         logW("setPropertyValue", o.Name, "Property " + p + " does not exist, property will be recreated.");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, p, "Float", "", "0", true);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, p, "Float", "", "0", true, false, p);
                         o.SetProperty(p, v, Name);
                         break;
                     case propDevId:
                     case propLevel:
                         logW("setPropertyValue", o.Name, "Property " + p + " does not exist, property will be recreated.");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, p, "Integer", "", "", true);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, p, "Integer", "", "", true, false, p);
                         o.SetProperty(p, v, Name);
                         break;
                     case propMethods:
                     case propLastCmd:
                         logW("setPropertyValue", o.Name, "Property " + p + " does not exist, property will be recreated.");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, p, "String", "", "", true);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, p, "String", "", "", true, false, p);
                         o.SetProperty(p, v, Name);
                         break;
                     case sensDTTemp:
                         logW("setPropertyValue", o.Name, "Property " + p + " does not exist, property will be recreated.");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propTemp, "Float", "", "0", true);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propTemp, "Float", "", "0", true, false, propTemp);
                         o.SetProperty(p, v, Name);
                         break;
                     case sensDTHum:
                         logW("setPropertyValue", o.Name, "Property " + p + " does not exist, property will be recreated.");
-                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propHum, "Float", "", "0", true);
+                        OSAEObjectTypeManager.ObjectTypePropertyAdd(o.Type, propHum, "Float", "", "0", true, false, propTemp);
                         o.SetProperty(p, v, Name);
                         break;
                 }
@@ -787,7 +778,6 @@ namespace OSAE.Tellstick
 
         #endregion
 
-        #region private methods
 
         /// <summary>
         ///  OnAverageEvent will be called regulary to calculate average values for sensors.
@@ -988,8 +978,6 @@ namespace OSAE.Tellstick
             if (!OSAEObjectManager.ObjectExists(Name))
             {
                 logW("initPlugin", Name, "Object is missing!");
-                if (!OSAEObjectTypeManager.ObjectTypeExists(Name))
-                    restoreTellstickObjectType(Name);
                 OSAEObjectManager.ObjectAdd(Name, "", "Tellstick plugin", "TELLSTICK", "", "SYSTEM", 50, true);
                 log("initPlugin", Name, "Object have been restored!");
             }
@@ -1000,7 +988,7 @@ namespace OSAE.Tellstick
             logD("initPlugin", propDebug, "Checking on the Tellstick Object Type.");
             if (oType.OwnedBy != Name)
             {
-                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, Name, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant);
+                OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, Name, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant,oType.Tooltip);
                 logE("initPlugin", propDebug, Name + " Plugin took ownership of the Tellstick Object Type.", null);
             }
             debug = (getPropertyValue(o, propDebug).ToUpper() == "TRUE");
@@ -1045,9 +1033,6 @@ namespace OSAE.Tellstick
                     case objMtdInit:
                         initPlugin(Name);
                         break;
-                    case pluginMtdRestore:
-                        restoreObjectTypes(Name);
-                        break;
                     default:
                         logE("pluginCommands", o.Name, method.MethodName + " Unsuported method: ", null);
                         break;
@@ -1061,19 +1046,6 @@ namespace OSAE.Tellstick
             }
         }
         
-        private void restoreObjectTypes(string Name)
-        {
-            restoreTellstickObjectType(Name);
-            restoreTellstickBellObjectType(Name);
-            restoreTellstickMultiLevelswitchObjectType(Name);
-            restoreTellstickGroupDeviceObjectType(Name);
-            restoreTellstickHumiditySensorObjectType(Name);
-            restoreTellstickBinarySwitchObjectType(Name);
-            restoreTellstickTemperatureSensorObjectType(Name);
-            restoreTellstickTempHumiditySensorObjectType(Name);
-            restoreUpDownDeviceObjectType(Name);
-        }
-
         private int doCommand(OSAEObject o, string addr, OSAEMethod method)
         {
             try
@@ -1258,35 +1230,7 @@ namespace OSAE.Tellstick
                         default:
                             logE("doCommand", o.Name, method.MethodName + "Unsuported method: ", null);
                             break;
-                        case objMtdRestore:
-                            switch (o.Type)
-                            {
-                                case objTypeBell:
-                                    restoreTellstickBellObjectType(Name);
-                                    break;
-                                case objTypeDim:
-                                    restoreTellstickMultiLevelswitchObjectType(Name);
-                                    break;
-                                case objTypeGroup:
-                                    restoreTellstickGroupDeviceObjectType(Name);
-                                    break;
-                                case objTypeHum:
-                                    restoreTellstickHumiditySensorObjectType(Name);
-                                    break;
-                                case objTypeOnOff:
-                                    restoreTellstickBinarySwitchObjectType(Name);
-                                    break;
-                                case objTypeTemp:
-                                    restoreTellstickTemperatureSensorObjectType(Name);
-                                    break;
-                                case objTypeTempHum:
-                                    restoreTellstickTempHumiditySensorObjectType(Name);
-                                    break;
-                                case objTypeUpDown:
-                                    restoreUpDownDeviceObjectType(Name);
-                                    break;
-                            }
-                            break;
+
                     }
                 } // if
                 else
@@ -1507,9 +1451,7 @@ namespace OSAE.Tellstick
                 for (int x = 0; x < noSensors; x = x + 1)
                 {
                     if ((string)Registry.GetValue(pathSensors + "\\" + x + "\\values", "id", null) == deviceId.ToString())
-                    {
                         return (string)Registry.GetValue(pathSensors + "\\" + x + "\\values", parameter, null);
-                    }
                 }
                 return "";
             }
@@ -1575,10 +1517,8 @@ namespace OSAE.Tellstick
         {
             try
             {
-                if (debug)
-                {
-                    logger.Debug(procedur.PadRight(v) + pos.ToString().PadRight(3) + value.PadRight(w) + text);
-                }
+                if (debug) logger.Debug(procedur.PadRight(v) + pos.ToString().PadRight(3) + value.PadRight(w) + text);
+                
             }
             catch
             {
@@ -1587,411 +1527,10 @@ namespace OSAE.Tellstick
 
         private void logD(string procedur, string value, string text)
         {
-            if (debug)
-            {
-                logger.Debug(procedur.PadRight(v) + pos.ToString().PadRight(3) + value.PadRight(w) + text);
+            if (debug) logger.Debug(procedur.PadRight(v) + pos.ToString().PadRight(3) + value.PadRight(w) + text);
             }
         }
 
-        private void restoreTellstickObjectType(string Name)
-        {
-            log("restoreTellstickObjectType", Name, "Start check and restoring Tellstick object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd(Name, "Tellstick Plugin", "SYSTEM", "PLUGIN", true, true, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd(Name, "OFF", "Stopped");
-            OSAEObjectTypeManager.ObjectTypeStateAdd(Name, "ON", "Running");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd(Name, "OFF", "Stop", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd(Name, "ON", "Start", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd(Name, "REINIT", "Re-initialise", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd(Name, "DEBUGON", "Debug ON", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd(Name, "DEBUGOFF", "Debug OFF", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd(Name, "RESTORE", "Restore Object types", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeEventAdd(Name, "OFF", "Stopped");
-            OSAEObjectTypeManager.ObjectTypeEventAdd(Name, "ON", "Started");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propNoDev, "Integer", "", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propAddrPrefix, "String", "TellstickId-", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propAddrPrefixSensor, "String", "TellstickSensor-", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propRawEvents, "Boolean", "FALSE", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propDebug, "Boolean", "FALSE", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propAvgSensors, "Integer", "10", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propAddDevices, "Boolean", "TRUE", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propAddSensors, "Boolean", "TRUE", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propAddrComputerName, "String", "", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propPort, "String", "USB", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propSystemPlugin, "Boolean", "FALSE", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propAuthor, "String", "Per Tobiasson", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propTrustLevel, "Integer", "50", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd(Name, propVersion, "String", "", "", true);
-            //--***** Containers to place Tellstic objects in *****
-            OSAEObjectManager.ObjectAdd ("SENSORS", "SENSORS", "Container for sensors", "CONTAINER", "", "Unknown", 50, true);
-            OSAEObjectManager.ObjectAdd("SWITCHES", "SWITCHES", "Container for SWITCHES", "CONTAINER", "", "Unknown", 50, true);
-            log("restoreTellstickObjectType", Name, "Object type restored.");
-        }
 
-        //-- ***** Base Object types needed by Tellstick
-        private void restoreBinarySwitchObjectType(string Name)
-        {
-            log("restoreBinarySwitchObjectType", Name, "Start check and restoring TELLSTICK BINARY SWITCH object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("BINARY SWITCH","Binary Switch","","BINARY SWITCH", false, true, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("BINARY SWITCH","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("BINARY SWITCH","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("BINARY SWITCH","ON","On");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("BINARY SWITCH","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("BINARY SWITCH","ON","On","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("BINARY SWITCH","OFF","Off","","","","");
-            log("restoreBinarySwitchObjectType", Name, "Object type restored.");
-        }
 
-        private void restoreHumidityMeterObjectType(string Name)
-        {
-            log("restoreHumidityMeterObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("HUMIDITY METER","Humidity Meter","","HUMIDITY METER", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeEventAdd("HUMIDITY METER","HUMIDITY","Humidity Changed");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("HUMIDITY METER","Humidity","String", "0","", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("HUMIDITY METER","Status","String", "0","", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("HUMIDITY METER","Battery","String", "0","", false);
-            log("restoreHumidityMeterObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreMultiLevelSwitchObjectType(string Name)
-        {
-            log("restoreMultiLevelSwitchObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("MULTILEVEL SWITCH","Multilevel Switch","","MULTILEVEL SWITCH", false, true, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("MULTILEVEL SWITCH","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("MULTILEVEL SWITCH","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("MULTILEVEL SWITCH","ON","On");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("MULTILEVEL SWITCH","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("MULTILEVEL SWITCH","ON","On","Level","100","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("MULTILEVEL SWITCH","OFF","Off","","","","");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("MULTILEVEL SWITCH","Level","String", "0","", false);
-            log("restoreMultiLevelSwitchObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreTempHumMeterObjectType(string Name)
-        {
-            log("restoreTempHumMeterObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TEMP HUM METER","Temperature and Humidity Meter","","TEMP HUM METER", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TEMP HUM METER","HUMIDITY","Humidity Changed");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TEMP HUM METER","Temperature","String", "0", "", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TEMP HUM METER","Humidity","String", "0", "", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TEMP HUM METER","Status","String", "0", "", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TEMP HUM METER","Battery","String", "0", "", false);
-            log("restoreTempHumMeterObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreTemperatureSensorObjectType(string Name)
-        {
-            log("restoreTemperatureSensorObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TEMPERATURE SENSOR","Temperature sensor","","TEMPERATURE SENSOR", false, true, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TEMPERATURE SENSOR","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TEMPERATURE SENSOR","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TEMPERATURE SENSOR","Temperature","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TEMPERATURE SENSOR","Unit","String", "0", "C", true);
-            log("restoreTemperatureSensorObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreUpDownDeviceObjectType(string Name)
-        {
-            log("restoreUpDownDeviceObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("UP-DOWN DEVICE","UP-DOWN Device","","UP-DOWN DEVICE", false, true, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("UP-DOWN DEVICE","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("UP-DOWN DEVICE","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("UP-DOWN DEVICE","UP","Up");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("UP-DOWN DEVICE","DOWN","Down");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("UP-DOWN DEVICE","STOP","Stop");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("UP-DOWN DEVICE","UP","Up","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("UP-DOWN DEVICE","DOWN","Down","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("UP-DOWN DEVICE","STOP","Stop","","","","");
-            log("restoreTellstickUpDownDeviceObjectType", Name, "Object type restored.");
-        }
-
-////-- ***** Object types for different Tellstick devices*****
-        private void restoreTellstickBellObjectType(string Name)
-        {
-            log("restoreTellstickBellObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TELLSTICK BELL","BELL Device on Tellstick Plugin","Tellstick","TELLSTICK BELL", false, false, false, false);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK BELL","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK BELL","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK BELL","DISABLE","Disabled");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK BELL","UNKNOWN","Unknown");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK BELL","BELL","Bell");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK BELL","LEARN","Learn");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BELL","DISABLE","Disable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BELL","ENABLE","Enable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BELL","BELL","Bell","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BELL","LEARN","Learn","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BELL","DEBUGON","Debug ON","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BELL", "DEBUGOFF", "Debug OFF", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BELL", "RESTORE", "Restore Object type", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","DeviceId","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","Model","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","Protocol","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","LastSentCommand","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","Level","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","DeviceType","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","Methods","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","DeviceAddress","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","DeviceChangeEvents","Boolean", "0", "TRUE", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BELL","Debug","Boolean", "0", "TRUE", false);
-            log("restoreTellstickBellObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreTellstickBinarySwitchObjectType(string Name)
-        {
-            log("restoreTellstickBinarySwitchObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TELLSTICK BINARY SWITCH","ON-OFF Device on Tellstick Plugin","Tellstick","BINARY SWITCH", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK BINARY SWITCH","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK BINARY SWITCH","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK BINARY SWITCH","DISABLE","Disabled");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK BINARY SWITCH","UNKNOWN","Unknown");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK BINARY SWITCH","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK BINARY SWITCH","ON","On");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK BINARY SWITCH","TOGGLE","Toggle");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK BINARY SWITCH","LEARN","Learn");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BINARY SWITCH","OFF","Off","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BINARY SWITCH","ON","On","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BINARY SWITCH","TOGGLE","Toggle","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BINARY SWITCH","LEARN","Learn","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BINARY SWITCH","DISABLE","Disable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BINARY SWITCH","ENABLE","Enable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BINARY SWITCH","DEBUGOFF","Debug OFF","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BINARY SWITCH", "DEBUGON", "Debug ON", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK BINARY SWITCH", "RESTORE", "Restore Object type", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","DeviceId","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","Model","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","Protocol","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","LastSentCommand","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","Level","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","DeviceType","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","Methods","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","DeviceAddress","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","DeviceChangeEvents","Boolean", "0", "TRUE", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK BINARY SWITCH","Debug","Boolean", "0", "TRUE", false);
-            log("restoreTellstickBinarySwitchObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreTellstickGroupDeviceObjectType(string Name)
-        {
-            log("restoreTellstickGroupDeviceObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TELLSTICK GROUP DEVICE","Device on Tellstick Plugin","Tellstick","TELLSTICK", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK GROUP DEVICE","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK GROUP DEVICE","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK GROUP DEVICE","DISABLE","Disabled");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK GROUP DEVICE","UNKNOWN","Unknown");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","ON","On");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","STOP","Stop");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","TOGGLE","Toggle");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","DIM","Dim");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","UP","Up");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","DOWN","Down");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","EXECUTE","Execute");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","LEARN","Learn");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK GROUP DEVICE","BELL","Bell");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","OFF","Off","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","ON","On","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","UP","Up","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","DOWN","Down","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","STOP","Stop","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","TOGGLE","Toggle","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","EXECUTE","Execute","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","DIM","Dim","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","LEARN","Learn","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","BELL","Bell","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE","DISABLE","Disable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE", "ENABLE", "Enable", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK GROUP DEVICE", "RESTORE", "Restore Object type", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK GROUP DEVICE","DeviceId","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK GROUP DEVICE","Model","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK GROUP DEVICE","Protocol","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK GROUP DEVICE","LastSentCommand","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK GROUP DEVICE","Level","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK GROUP DEVICE","DeviceType","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK GROUP DEVICE","Methods","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK GROUP DEVICE","DeviceAddress","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK GROUP DEVICE","DeviceChangeEvents","Boolean", "0", "TRUE", true);
-            log("restoreTellstickGroupDeviceObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreTellstickHumiditySensorObjectType(string Name)
-        {
-            log("restoreTellstickHumiditySensorObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TELLSTICK HUMIDITY SENSOR","Humidity sensor","Tellstick","HUMIDITY METER", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK HUMIDITY SENSOR","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK HUMIDITY SENSOR","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK HUMIDITY SENSOR","DISABLE","Disabled");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK HUMIDITY SENSOR","UNKNOWN","Unknown");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK HUMIDITY SENSOR","HUMIDITY","Humidity");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK HUMIDITY SENSOR","AVERAGEHUM","AverageHum");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK HUMIDITY SENSOR","MAXHUM","MaxHum");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK HUMIDITY SENSOR","MINHUM","MinHum");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK HUMIDITY SENSOR","ENABLE","Enable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK HUMIDITY SENSOR","DISABLE","Disable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK HUMIDITY SENSOR","DEBUGON","Debug ON","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK HUMIDITY SENSOR","DEBUGOFF","Debug OFF","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK HUMIDITY SENSOR", "RESETMAXMIN", "Reset Max-Min", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK HUMIDITY SENSOR", "RESTORE", "Restore Object type", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","Humidity","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","DeviceAddress","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","DeviceId","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","DeviceType","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","Model","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","Protocol","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","OFF TIMER","Integer", "0", "600", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","Status","String", "0", "Not Implemented", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","Battery","String", "0", "Not Implemented", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","Debug","Boolean", "0", "TRUE", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","AverageHum","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","MaxHum","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK HUMIDITY SENSOR","MinHum","Float", "0", "100", true);
-            log("restoreTellstickHumiditySensorObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreTellstickMultiLevelswitchObjectType(string Name)
-        {
-            log("restoreTellstickMultiLevelswitchObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TELLSTICK MULTILEVEL SWITCH","DIM Device on Tellstick Plugin","Tellstick","MULTILEVEL SWITCH", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK MULTILEVEL SWITCH","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK MULTILEVEL SWITCH","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK MULTILEVEL SWITCH","DISABLE","Disabled");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK MULTILEVEL SWITCH","UNKNOWN","Unknown");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK MULTILEVEL SWITCH","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK MULTILEVEL SWITCH","ON","On");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK MULTILEVEL SWITCH","TOGGLE","Toggle");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK MULTILEVEL SWITCH","DIM","Dim");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK MULTILEVEL SWITCH","LEARN","Learn");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH","OFF","Off","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH","ON","On","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH","TOGGLE","Toggle","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH","DIM","Dim","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH","LEARN","Learn","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH","DISABLE","Disable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH","ENABLE","Enable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH","DEBUGON","Debug ON","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH", "DEBUGOFF", "Debug OFF", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK MULTILEVEL SWITCH", "RESTORE", "Restore Object type", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","DeviceId","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","Model","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","Protocol","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","LastSentCommand","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","Level","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","DeviceType","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","Methods","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","DeviceAddress","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","DeviceChangeEvents","Boolean", "0", "TRUE", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK MULTILEVEL SWITCH","Debug","Boolean","TRUE", "0", false);
-            log("restoreTellstickMultiLevelswitchObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreTellstickTemperatureSensorObjectType(string Name)
-        {
-            log("restoreTellstickTemperatureSensorObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TELLSTICK TEMPERATURE SENSOR","Temperature sensor","Tellstick","TEMPERATURE SENSOR", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK TEMPERATURE SENSOR","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK TEMPERATURE SENSOR","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK TEMPERATURE SENSOR","DISABLE","Disabled");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK TEMPERATURE SENSOR","UNKNOWN","Unknown");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMPERATURE SENSOR","TEMPERATURE","Temperature");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMPERATURE SENSOR","MAXTEMP","MaxTemp");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMPERATURE SENSOR","MINTEMP","MinTemp");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMPERATURE SENSOR","AVERAGETEMP","AverageTemp");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMPERATURE SENSOR","ENABLE","Enable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMPERATURE SENSOR","DISABLE","Disable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMPERATURE SENSOR","DEBUGON","Debug ON","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMPERATURE SENSOR","DEBUGOFF","Debug OFF","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMPERATURE SENSOR", "RESETMAXMIN", "Reset Max-Min", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMPERATURE SENSOR", "RESTORE", "Restore Object type", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","Temperature","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","Unit","String", "0", "C", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","DeviceId","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","DeviceType","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","Model","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","Protocol","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","DeviceAddress","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","OFF TIMER","Integer", "0", "600", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","Debug","Boolean", "0", "TRUE", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","AverageTemp","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","MinTemp","Float", "0", "255", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMPERATURE SENSOR","MaxTemp", "Float", "0", "-255", true);
-            log("restoreTellstickTemperatureSensorObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreTellstickTempHumiditySensorObjectType(string Name)
-        {
-            log("restoreTellstickTempHumiditySensorObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TELLSTICK TEMP-HUMIDITY SENSOR","Temperature & humidity sensor","Tellstick","TEMP HUM METER", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK TEMP-HUMIDITY SENSOR","DISABLE","Disabled");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK TEMP-HUMIDITY SENSOR","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK TEMP-HUMIDITY SENSOR","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK TEMP-HUMIDITY SENSOR","UNKNOWN","Unknown");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMP-HUMIDITY SENSOR","TEMPERATURE","Temperature");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMP-HUMIDITY SENSOR","HUMIDITY","Humidity");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMP-HUMIDITY SENSOR","AVERAGEHUM","AverageHum");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMP-HUMIDITY SENSOR","AVERAGETEMP","AverageTemp");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMP-HUMIDITY SENSOR","MAXTEMP","MaxTemp");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMP-HUMIDITY SENSOR","MINTEMP","MinTemp");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMP-HUMIDITY SENSOR","MINHUM","MinHum");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK TEMP-HUMIDITY SENSOR","MAXHUM","MaxHum");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMP-HUMIDITY SENSOR","DISABLE","Disable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMP-HUMIDITY SENSOR","ENABLE","Enable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMP-HUMIDITY SENSOR","DEBUGOFF","Debug OFF","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMP-HUMIDITY SENSOR","DEBUGON","Debug ON","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMP-HUMIDITY SENSOR", "RESETMAXMIN", "Reset Max-Min", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK TEMP-HUMIDITY SENSOR", "RESTORE", "Restore Object type", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","DeviceAddress","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","DeviceId","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","DeviceType","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","Model","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","Protocol","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","Temperature","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","Unit","String", "0", "C", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","Humidity","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","OFF TIMER","Integer", "0", "600", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","Status","String", "0", "Not Implemented", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","Battery","String", "0", "Not Implemented", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","Debug","Boolean", "0", "TRUE", false);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","AverageTemp","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","AverageHum","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","MinHum","Float", "0", "100", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","MaxHum","Float", "0", "0", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","MaxTemp","Float", "0", "-255", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK TEMP-HUMIDITY SENSOR","MinTemp","Float", "0", "255", true);
-            log("restoreTellstickTempHumiditySensorObjectType", Name, "Object type restored.");
-        }
-
-        private void restoreTellstickUpDownDeviceObjectType(string Name)
-        {
-            log("restoreTellstickUpDownDeviceObjectType", Name, "Start check and restoring TELLSTICK HUMIDITY METER object type.");
-            OSAEObjectTypeManager.ObjectTypeAdd("TELLSTICK UP-DOWN DEVICE","UP-DOWN Device on Tellstick Plugin","Tellstick","UP-DOWN DEVICE", true, true, false, true);
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK UP-DOWN DEVICE","OFF","Off");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK UP-DOWN DEVICE","ON","On");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK UP-DOWN DEVICE","DISABLE","Disabled");
-            OSAEObjectTypeManager.ObjectTypeStateAdd("TELLSTICK UP-DOWN DEVICE","UNKNOWN","Unknown");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK UP-DOWN DEVICE","STOP","Stop");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK UP-DOWN DEVICE","UP","Up");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK UP-DOWN DEVICE","DOWN","Down");
-            OSAEObjectTypeManager.ObjectTypeEventAdd("TELLSTICK UP-DOWN DEVICE","LEARN","Learn");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK UP-DOWN DEVICE","UP","Up","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK UP-DOWN DEVICE","DOWN","Down","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK UP-DOWN DEVICE","STOP","Stop","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK UP-DOWN DEVICE","DISABLE","Disable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK UP-DOWN DEVICE","ENABLE","Enable","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK UP-DOWN DEVICE","LEARN","Learn","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK UP-DOWN DEVICE","DEBUGON","Debug ON","","","","");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK UP-DOWN DEVICE", "DEBUGOFF", "Debug OFF", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypeMethodAdd("TELLSTICK UP-DOWN DEVICE", "RESTORE", "Restore Object type", "", "", "", "");
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","DeviceId","Integer", "0","", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","Model","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","Protocol","Integer", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","LastSentCommand","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","Level","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","DeviceType","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","Methods","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","DeviceAddress","String", "0", "", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","DeviceChangeEvents","Boolean", "0", "TRUE", true);
-            OSAEObjectTypeManager.ObjectTypePropertyAdd("TELLSTICK UP-DOWN DEVICE","Debug","Boolean", "0", "TRUE", false);
-            log("restoreTellstickUpDownDeviceObjectType", Name, "Object type restored.");
-        }
-
-        #endregion
-        }
     }

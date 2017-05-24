@@ -255,8 +255,16 @@ Public Class ScriptProcessor
                                         OSAEObjectStateManager.ObjectStateSet(sObject, sMethod, gAppName)
                                         If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set State: " & sObject & "." & sMethod)
                                     ElseIf sOption.ToUpper = "SET CONTAINER" Then
+                                        iMethodPos = sWorking.IndexOf("=")
+                                        If iMethodPos = -1 Then
+                                            sMethod = sWorking
+                                            sWorking = ""
+                                        Else
+                                            sMethod = sWorking.Substring(0, iMethodPos).Trim
+                                            'sWorking = sWorking.Substring(iMethodPos + 1, sWorking.Length - (iMethodPos + 1))
+                                        End If
                                         OSAEObjectManager.ObjectUpdate(oCurrentObject.Name, oCurrentObject.Name, oCurrentObject.Alias, oCurrentObject.Description, oCurrentObject.Type, oCurrentObject.Address, sMethod, oCurrentObject.MinTrustLevel, oCurrentObject.Enabled)
-                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Container: " & sObject & "." & sMethod)
+                                        If gDebug Then Log.Debug(iLoop + 1 & " L" & iNestingLevel & " EXEC: Set Container: " & sObject & " = " & sMethod)
                                     ElseIf sOption.ToUpper = "SET PROPERTY" Then
                                         iOptionPos = sWorking.IndexOf("+=")
                                         If iOptionPos <= 0 Then iOptionPos = sWorking.IndexOf("=")

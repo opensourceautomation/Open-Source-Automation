@@ -72,7 +72,7 @@ Public Class ComputerPower
         Dim oType As OSAEObjectType
         oType = OSAEObjectTypeManager.ObjectTypeLoad("COMPUTER POWER")
         If oType.OwnedBy = "" Then
-            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant)
+            OSAEObjectTypeManager.ObjectTypeUpdate(oType.Name, oType.Name, oType.Description, pName, oType.BaseType, oType.Owner, oType.SysType, oType.Container, oType.HideRedundant, oType.Tooltip)
             Log.Info("Computer Power Plugin took ownership of the COMPUTER POWER Object Type.")
         Else
             Log.Info("The Computer Power Plugin correctly owns the COMPUTER POWER Object Type.")

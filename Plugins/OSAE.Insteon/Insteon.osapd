@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Insteon</plugin-name>
 <plugin-id>b3d3163d-dde5-4be8-bd3d-82876becbfa6</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>Insteon PLM Plugin</short-description>
 <author>Vaughn Rupp</author>

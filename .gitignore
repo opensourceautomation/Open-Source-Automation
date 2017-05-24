@@ -41,3 +41,5 @@ output/
 *.PDF  diff=astextplain
 *.rtf  diff=astextplain
 *.RTF  diff=astextplain
+DB/0.4.8-0.4.9 - Kirk.sql
+Plugins/OSAE.NetworkMonitor/Install - Copy.sql

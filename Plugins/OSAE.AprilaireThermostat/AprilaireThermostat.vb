@@ -51,9 +51,7 @@ Public Class AprilaireThermostat
     Dim ThermostatObjects As OSAEObjectCollection
 
     Public Overrides Sub RunInterface(ByVal pluginName As String)
-
         Try
-
             pName = pluginName
             logging.AddToLog("Initializing plugin: " & pName, True)
 
@@ -62,7 +60,7 @@ Public Class AprilaireThermostat
             ThermostatObjects = OSAEObjectManager.GetObjectsByType("THERMOSTAT")
             If ThermostatObjects.Count = 0 Then
                 OSAEObjectManager.ObjectAdd("THERMOSTAT", "", "Aprilaire Thermostat", "THERMOSTAT", "1", "", 90, True)
-                OSAEObjectPropertyManager.ObjectPropertySet(pName, "IPAddress", "192.168.1.11", pName)
+                OSAEObjectPropertyManager.ObjectPropertySet(pName, "IP Address", "192.168.1.11", pName)
                 OSAEObjectPropertyManager.ObjectPropertySet(pName, "Port", "10001", pName)
                 ThermostatName = "THERMOSTAT"
             Else
@@ -83,20 +81,20 @@ Public Class AprilaireThermostat
             End If
 
 
-            IPAddress = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "IPAddress").Value()
+            IPAddress = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "IP Address").Value()
             Port = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value
 
 
-            If Not Integer.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "CoolSP").Value, CoolSP) Then
+            If Not Integer.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "Cool Setpoint").Value, CoolSP) Then
                 CoolSP = 78
             End If
-            If Not Integer.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "HeatSP").Value, HeatSP) Then
+            If Not Integer.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "Heat Setpoint").Value, HeatSP) Then
                 HeatSP = 68
             End If
             If Not Integer.TryParse(OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "Temperature").Value, Temperature) Then
                 Temperature = 75
             End If
-            FanMode = OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "FANMODE").Value
+            FanMode = OSAEObjectPropertyManager.GetObjectPropertyValue(ThermostatName, "Fan Mode").Value
 
 
             logging.AddToLog("Finished setting properties", False)
@@ -279,7 +277,7 @@ Public Class AprilaireThermostat
                 Valid = True
                 OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Cooling", "TRUE", pName)
                 If Not Cooling Then
-                    logging.EventLogAdd(ThermostatName, "COOLON")
+                    logging.EventLogAdd(ThermostatName, "COOL ON")
                     logging.AddToLog("Cool On", False)
                 End If
                 Cooling = True
@@ -287,7 +285,7 @@ Public Class AprilaireThermostat
                 Valid = True
                 OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Cooling", "FALSE", pName)
                 If Cooling Then
-                    logging.EventLogAdd(ThermostatName, "COOLOFF")
+                    logging.EventLogAdd(ThermostatName, "COOL OFF")
                     logging.AddToLog("Cool Off", False)
                 End If
                 Cooling = False
@@ -297,7 +295,7 @@ Public Class AprilaireThermostat
                 Valid = True
                 OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Heating", "TRUE", pName)
                 If Not Heating Then
-                    logging.EventLogAdd(ThermostatName, "HEATON")
+                    logging.EventLogAdd(ThermostatName, "HEAT ON")
                     logging.AddToLog("Heat On", False)
                 End If
                 Heating = True
@@ -305,7 +303,7 @@ Public Class AprilaireThermostat
                 Valid = True
                 OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Heating", "FALSE", pName)
                 If Heating Then
-                    logging.EventLogAdd(ThermostatName, "HEATOFF")
+                    logging.EventLogAdd(ThermostatName, "HEAT OFF")
                     logging.AddToLog("Heat off", False)
                 End If
                 Heating = False
@@ -316,7 +314,7 @@ Public Class AprilaireThermostat
                 If Not Heating And Not Cooling Then
                     OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Fan", "TRUE", pName)
                     If Not Fan Then
-                        logging.EventLogAdd(ThermostatName, "FANON")
+                        logging.EventLogAdd(ThermostatName, "FAN ON")
                         logging.AddToLog("Fan On", False)
                     End If
                     Fan = True
@@ -325,7 +323,7 @@ Public Class AprilaireThermostat
                 Valid = True
                 OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Fan", "FALSE", pName)
                 If Fan Then
-                    logging.EventLogAdd(ThermostatName, "FANOFF")
+                    logging.EventLogAdd(ThermostatName, "FAN OFF")
                     logging.AddToLog("Fan Off", False)
                 End If
                 Fan = False
@@ -340,8 +338,8 @@ Public Class AprilaireThermostat
             HeatSPNew = Mid(Data, 4, 2)
             If HeatSPNew <> HeatSP Then
                 HeatSP = HeatSPNew
-                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "HeatSP", HeatSP, pName)
-                logging.EventLogAdd(ThermostatName, "HEATSPCHANGE")
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Heat Setpoint", HeatSP, pName)
+                logging.EventLogAdd(ThermostatName, "HEAT SP CHANGED")
                 logging.AddToLog("New heat setpoint " & HeatSP, True)
             End If
 
@@ -349,16 +347,16 @@ Public Class AprilaireThermostat
             CoolSPNew = Mid(Data, 4, 2)
             If CoolSPNew <> CoolSP Then
                 CoolSP = CoolSPNew
-                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "CoolSP", CoolSP, pName)
-                logging.EventLogAdd(ThermostatName, "COOLSPCHANGE")
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Cool Setpoint", CoolSP, pName)
+                logging.EventLogAdd(ThermostatName, "COOL SP CHANGED")
                 logging.AddToLog("New cool setpoint " & CoolSP, True)
             End If
         ElseIf Left(Data, 2) = "F=" Then
             FanModeNew = Mid(Data, 3)
             If FanModeNew <> FanMode Then
                 FanMode = FanModeNew
-                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "FANMODE", FanMode, pName)
-                logging.EventLogAdd(ThermostatName, "FANMODECHANGE")
+                OSAEObjectPropertyManager.ObjectPropertySet(ThermostatName, "Fan Mode", FanMode, pName)
+                logging.EventLogAdd(ThermostatName, "FAN MODE CHANGED")
                 logging.AddToLog("Fan mode has changed to " & FanMode, True)
             End If
 
@@ -413,7 +411,6 @@ Public Class AprilaireThermostat
             Return ""
         End If
     End Function
-
 
     Sub InitThermostat()
         SendString("SN" + TSAddress + " C1=ON" & vbCr)

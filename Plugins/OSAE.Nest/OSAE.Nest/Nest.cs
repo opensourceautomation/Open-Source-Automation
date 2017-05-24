@@ -34,9 +34,9 @@
             Log = new General.OSAELog(pName);
 
             //make sure object types are owned by the Nest Plugin
-            OSAEObjectTypeManager.ObjectTypeUpdate("NEST STRUCTURE", "NEST STRUCTURE", "Nest Structure", pluginName, "NEST STRUCTURE", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeUpdate("NEST THERMOSTAT", "NEST THERMOSTAT", "Nest Thermostat", pluginName, "NEST THERMOSTAT", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeUpdate("NEST PROTECT", "NEST PROTECT", "Nest Protect", pluginName, "NEST PROTECT", false, false, false, true);
+            OSAEObjectTypeManager.ObjectTypeUpdate("NEST STRUCTURE", "NEST STRUCTURE", "Nest Structure", pluginName, "NEST STRUCTURE", false, false, false, true, "Nest Structure");
+            OSAEObjectTypeManager.ObjectTypeUpdate("NEST THERMOSTAT", "NEST THERMOSTAT", "Nest Thermostat", pluginName, "NEST THERMOSTAT", false, false, false, true, "Nest Thermostat");
+            OSAEObjectTypeManager.ObjectTypeUpdate("NEST PROTECT", "NEST PROTECT", "Nest Protect", pluginName, "NEST PROTECT", false, false, false, true, "Nest Protect");
 
             Log.Info("Starting Nest...");
 

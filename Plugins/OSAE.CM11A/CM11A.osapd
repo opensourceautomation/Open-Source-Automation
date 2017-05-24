@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>CM11A</plugin-name>
 <plugin-id>18759dcb-c6f5-4d29-bc39-af88ba81b700</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>CM11A Plugin</short-description>
 <author>Vaughn Rupp</author>

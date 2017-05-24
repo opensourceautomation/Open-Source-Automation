@@ -1399,11 +1399,11 @@ public partial class home : System.Web.UI.Page
                         gVa3 = false;
                         eRr = "Missing Object Trust Level";
                     }
-                    if (!OSAEObjectManager.ObjectExists(txtName.Text))
-                    {
-                        gVa4 = false;
-                        eRr = "This Object does NOT Exist!";
-                    }
+                    //if (!OSAEObjectManager.ObjectExists(txtName.Text))
+                    //{
+                    //    gVa4 = false;
+                    //    eRr = "This Object does NOT Exist!";
+                    //}
                     if (gVa1 == true && gVa2 == true && gVa3 == true && gVa4 == true) { gV = true; }
                     if (string.IsNullOrEmpty(txtAlias.Text)) mSg = "Object Alias NOT specified! <br>";
                     if (string.IsNullOrEmpty(txtDescr.Text)) mSg += "Object Description NOT specified! <br>";

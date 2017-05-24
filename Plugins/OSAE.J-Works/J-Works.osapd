@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>J-Works</plugin-name>
 <plugin-id>ef9bf28e-4724-4f10-8cd0-33f10c2ba145</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>Plug-in for J-Works JSB34x/JSB/38x/JSB39x series (http://www.j-works.com)</short-description>
 <author>Jim Kearney</author>

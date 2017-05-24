@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Meter Reader</plugin-name>
 <plugin-id>1edf7c06-ca98-4783-8607-071001942918</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>Read Utility Meters using AMRUSB-1</short-description>
 <author>Automate</author>

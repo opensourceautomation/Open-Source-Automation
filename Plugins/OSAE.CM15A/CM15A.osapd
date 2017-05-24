@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>CM15A</plugin-name>
 <plugin-id>031d1870-2202-4e5d-9d1a-648158d44230</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>stable</plugin-state>
 <short-description>X10 CM15A/19A Plugin.  Needs Special install for 64-bit!!!</short-description>
 <author>Vaughn Rupp</author>

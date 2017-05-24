@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>RSS</plugin-name>
 <plugin-id>91598ecf-e4e2-4e67-b421-2f21223555e9</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>stable</plugin-state>
 <short-description>Download all your favorite RSS feeds to OSA</short-description>
 <author>Brian Woodworth</author>

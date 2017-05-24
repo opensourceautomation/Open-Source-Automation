@@ -2,13 +2,15 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>RCS-TR40</plugin-name>
 <plugin-id>636e475a-24f4-4828-8fb5-e9e329ff1668</plugin-id>
-<plugin-version>0.1.0</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Utility to read and control an RCS TR40 serial thermostat</short-description>
 <author>Dan Bemowski</author>
 <destination-folder>RCSTR40</destination-folder>
-<main-file></main-file>
+<main-file>OSAE.RCSTR40.dll</main-file>
 <wiki-url></wiki-url>
 <additional-assemblies>
 </additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
 </plugin-description>

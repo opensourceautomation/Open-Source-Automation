@@ -305,11 +305,11 @@ namespace OSAE.Zwave
                                 {
                                     if (value.Label == "Sensor")
                                     {
-                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "ON", "On" );
-                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "OFF", "Off");
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "ON", "On");
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "OFF", "Off");
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "ALARM", "Alarm");
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "ON", "On", "On");
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "OFF", "Off", "Off");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "ON", "On", "On");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "OFF", "Off", "Off");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "ALARM", "Alarm", "Alarm");
                                     }
                                     else
                                     {
@@ -321,8 +321,8 @@ namespace OSAE.Zwave
                                         else
                                             propType = "String";
 
-                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(objType, value.Label, propType,"", "", false);
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, value.Label, value.Label);
+                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(objType, value.Label, propType,"", "", false,false, value.Label);
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, value.Label, value.Label, value.Label);
                                     }
                                 }
                             }
@@ -333,16 +333,16 @@ namespace OSAE.Zwave
                                 {
                                     if (value.Label == "Switch" || value.Label == "Level")
                                     {
-                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "ON", "On");
-                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "OFF", "Off");
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "ON", "On");
-                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "OFF", "Off");
-                                        OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "ON", "On", "", "", "", "");
-                                        OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "OFF", "Off", "", "", "", "");
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "ON", "On", "On");
+                                        OSAEObjectTypeManager.ObjectTypeStateAdd(objType, "OFF", "Off", "Off");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "ON", "On", "On");
+                                        OSAEObjectTypeManager.ObjectTypeEventAdd(objType, "OFF", "Off", "Off");
+                                        OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "ON", "On", "", "", "", "", "Turm On");
+                                        OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "OFF", "Off", "", "", "", "", "Turn Off");
                                         if (value.Label == "Level")
-                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "ON", "On", "Level", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "ON", "On", "Level", "", "", "", "Turm On");
                                         else
-                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "ON", "On", "", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, "ON", "On", "", "", "", "", "Turm Off");
                                     }
                                     else
                                     {
@@ -350,20 +350,20 @@ namespace OSAE.Zwave
                                         if (value.Type == ZWValueID.ValueType.Byte || value.Type == ZWValueID.ValueType.Decimal || value.Type == ZWValueID.ValueType.Int)
                                         {
                                             Log.Debug("Adding method: " + value.Label);
-                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, value.Label, "Set " + value.Label, "Value", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, value.Label, "Set " + value.Label, "Value", "", "", "", "Set " + value.Label);
                                             Log.Debug("Adding property: " + value.Label);
                                         }
                                         else if (value.Type == ZWValueID.ValueType.Button)
-                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, value.Label, value.Label, "", "", "", "");
+                                            OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, value.Label, value.Label, "", "", "", "", value.Label);
                                         else if (value.Type == ZWValueID.ValueType.List)
                                         {
                                             String[] options;
                                             if (m_manager.GetValueListItems(value.ValueID, out options))
                                             {
                                                 foreach (string option in options)
-                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, value.Label + " - " + option, value.Label + " - " + option, "", "", "", "");
+                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(objType, value.Label + " - " + option, value.Label + " - " + option, "", "", "", "", value.Label + " - " + option);
 
-                                                OSAEObjectTypeManager.ObjectTypePropertyAdd(objType, value.Label, "String", "", "", false);
+                                                OSAEObjectTypeManager.ObjectTypePropertyAdd(objType, value.Label, "String", "", "", false, false, value.Label);
                                             }
                                         }
                                     }
@@ -561,10 +561,10 @@ namespace OSAE.Zwave
                                         }
                                 }
 
-                                OSAEObjectTypeManager.ObjectTypeAdd(node.Product, node.Label, pName, baseType,  false, false, false, true);
-                                OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, "NODE NEIGHBOR UPDATE", "Node Neighbor Update", "", "", "", "");
-                                OSAEObjectTypeManager.ObjectTypePropertyAdd(node.Product, "Home ID", "String", "", "", false);
-                                OSAEObjectTypeManager.ObjectTypePropertyAdd(node.Product, "Poll", "Boolean", "", "", false);
+                                OSAEObjectTypeManager.ObjectTypeAdd(node.Product, node.Label, pName, baseType,  false, false, false, true, node.Label);
+                                OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, "NODE NEIGHBOR UPDATE", "Node Neighbor Update", "", "", "", "", "Node Neighbor Update");
+                                OSAEObjectTypeManager.ObjectTypePropertyAdd(node.Product, "Home ID", "String", "", "", false, false, "Home ID");
+                                OSAEObjectTypeManager.ObjectTypePropertyAdd(node.Product, "Poll", "Boolean", "", "", false, false, "Poll");
 
                                 string propType;
                                 foreach (Value v in node.Values)
@@ -578,7 +578,7 @@ namespace OSAE.Zwave
                                         else
                                             propType = "String";
 
-                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(node.Product, v.Label, propType, "", "", false);
+                                        OSAEObjectTypeManager.ObjectTypePropertyAdd(node.Product, v.Label, propType, "", "", false, false, v.Label);
                                     }
                                     else
                                     {
@@ -586,19 +586,19 @@ namespace OSAE.Zwave
                                         {
                                             if (v.Label == "Switch" || v.Label == "Level")
                                             {
-                                                OSAEObjectTypeManager.ObjectTypeStateAdd(node.Product, "ON", "On");
-                                                OSAEObjectTypeManager.ObjectTypeStateAdd(node.Product, "OFF", "Off");
-                                                OSAEObjectTypeManager.ObjectTypeEventAdd(node.Product, "ON", "On");
-                                                OSAEObjectTypeManager.ObjectTypeEventAdd(node.Product, "OFF", "Off");
-                                                OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, "ON", "On", "", "", "", "");
-                                                OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, "OFF", "Off", "", "", "", "");
+                                                OSAEObjectTypeManager.ObjectTypeStateAdd(node.Product, "ON", "On", "On");
+                                                OSAEObjectTypeManager.ObjectTypeStateAdd(node.Product, "OFF", "Off", "Off");
+                                                OSAEObjectTypeManager.ObjectTypeEventAdd(node.Product, "ON", "On", "On");
+                                                OSAEObjectTypeManager.ObjectTypeEventAdd(node.Product, "OFF", "Off", "Off");
+                                                OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, "ON", "On", "", "", "", "", "Turn On");
+                                                OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, "OFF", "Off", "", "", "", "", "Turn Off");
                                             }
                                             else
                                             {
                                                 if (v.Type == ZWValueID.ValueType.Byte || v.Type == ZWValueID.ValueType.Decimal || v.Type == ZWValueID.ValueType.Int)
-                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, v.Label, v.Label, "Value", "", "", "");
+                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, v.Label, v.Label, "Value", "", "", "", v.Label);
                                                 else if (v.Type == ZWValueID.ValueType.Button)
-                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, v.Label, v.Label, "", "", "", "");
+                                                    OSAEObjectTypeManager.ObjectTypeMethodAdd(node.Product, v.Label, v.Label, "", "", "", "", v.Label);
                                             }
                                         }
                                     }

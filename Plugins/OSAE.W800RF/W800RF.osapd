@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>W800RF</plugin-name>
 <plugin-id>fdb9648e-6d74-4592-a0af-69016882ce26</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>W800RF Antenna Application</short-description>
 <author>Vaughn Rupp</author>

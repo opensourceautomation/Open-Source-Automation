@@ -245,8 +245,8 @@ namespace OSAE.JWorks
                 pollInterval = UInt32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Polling Interval").Value);
 
             // point subobject classes at this instance (I think)
-            OSAEObjectTypeManager.ObjectTypeUpdate("JWORKS INPUT", "JWORKS INPUT", "J-Works Input", pName, "JWORKS INPUT", false, false, false, true);
-            OSAEObjectTypeManager.ObjectTypeUpdate("JWORKS OUTPUT", "JWORKS OUTPUT", "J-Works Output", pName, "JWORKS OUTPUT", false, false, false, true);
+            OSAEObjectTypeManager.ObjectTypeUpdate("JWORKS INPUT", "JWORKS INPUT", "J-Works Input", pName, "JWORKS INPUT", false, false, false, true, "J-Works Input");
+            OSAEObjectTypeManager.ObjectTypeUpdate("JWORKS OUTPUT", "JWORKS OUTPUT", "J-Works Output", pName, "JWORKS OUTPUT", false, false, false, true, "J-Works Output");
 
             // enumerate JSB34x inputs and outputs
             short numDevs = Jsb34xNumberOfModules();

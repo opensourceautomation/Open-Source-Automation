@@ -2,16 +2,15 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Phidget-IK</plugin-name>
 <plugin-id>a4b11c52-5b16-4698-8b32-291ec3f837d9</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>
 Plugin for Phidget 8/8/8 and other controllers</short-description>
 <author>Vaughn Rupp</author>
 <destination-folder>Phidget-IK</destination-folder>
-<main-file></main-file>
+<main-file>OSAE.Phidget-IK.dll</main-file>
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=Phidget-IK</wiki-url>
 <additional-assemblies>
-<name>Phidget21.NET.dll</name>
 </additional-assemblies>
 <x64-additional-assemblies>
 </x64-additional-assemblies>

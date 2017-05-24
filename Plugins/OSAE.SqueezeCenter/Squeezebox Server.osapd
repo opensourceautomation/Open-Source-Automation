@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Squeezebox Server</plugin-name>
 <plugin-id>c975c8be-949a-4bf2-b6a5-db237f32894b</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Control your Squeezebox Server and Squeezeboxes</short-description>
 <author>Brian Woodworth</author>

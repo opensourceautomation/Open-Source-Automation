@@ -1,11 +1,11 @@
 -- ***** Object type for the TELLSTICK plugin *****
-CALL osae_sp_object_type_add ('TELLSTICK','TELLSTICK Plugin','Tellstick','PLUGIN',1,1,0,1);
-CALL osae_sp_object_type_state_add('TELLSTICK','OFF','Stopped');
-CALL osae_sp_object_type_state_add('TELLSTICK','ON','Running');
-CALL osae_sp_object_type_event_add('TELLSTICK','OFF','Stopped');
-CALL osae_sp_object_type_event_add('TELLSTICK','ON','Started');
-CALL osae_sp_object_type_method_add('TELLSTICK','OFF','Stop','','','','');
-CALL osae_sp_object_type_method_add('TELLSTICK','ON','Start','','','','');
+CALL osae_sp_object_type_add ('TELLSTICK','TELLSTICK Plugin','Tellstick','PLUGIN',1,1,0,1,'TELLSTICK Plugin');
+CALL osae_sp_object_type_state_add('TELLSTICK','OFF','Stopped','TELLSTICK Plugin');
+CALL osae_sp_object_type_state_add('TELLSTICK','ON','Running','TELLSTICK Plugin');
+CALL osae_sp_object_type_event_add('TELLSTICK','OFF','Stopped','TELLSTICK Plugin');
+CALL osae_sp_object_type_event_add('TELLSTICK','ON','Started','TELLSTICK Plugin');
+CALL osae_sp_object_type_method_add('TELLSTICK','OFF','Stop','','','','','TELLSTICK Plugin');
+CALL osae_sp_object_type_method_add('TELLSTICK','ON','Start','','','','','TELLSTICK Plugin');
 CALL osae_sp_object_type_method_add('TELLSTICK','DEBUGON','Debug ON','','','','');
 CALL osae_sp_object_type_method_add('TELLSTICK','DEBUGOFF','Debug OFF','','','','');
 CALL osae_sp_object_type_method_add('TELLSTICK','REINIT','Re-initialise','','','','');

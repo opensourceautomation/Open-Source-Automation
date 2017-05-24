@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>1Wire</plugin-name>
 <plugin-id>339c4251-0f7f-4e8c-a19e-2150db05b869</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Monitor your 1-Wire network</short-description>
 <author>Brian</author>
@@ -11,6 +11,7 @@
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=OneWire</wiki-url>
 <additional-assemblies>
 <name>OneWireAPI.NET.dll</name>
+<name>vjslib.dll</name>
 </additional-assemblies>
 <x64-additional-assemblies>
 </x64-additional-assemblies>

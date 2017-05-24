@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Computer Power</plugin-name>
 <plugin-id>4cb2ad80-df1a-4f0a-b9d5-aa5351da892b</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>Monitor Computer Power (Laptop or UPS)</short-description>
 <author>Automate</author>

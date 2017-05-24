@@ -26,7 +26,7 @@
             Log = new General.OSAELog(pName);
 
             OSAEObjectType objt = OSAEObjectTypeManager.ObjectTypeLoad("KILLAWATT MODULE");
-            OSAEObjectTypeManager.ObjectTypeUpdate(objt.Name, objt.Name, objt.Description, pName, "THING", objt.Owner, objt.SysType, objt.Container, objt.HideRedundant);
+            OSAEObjectTypeManager.ObjectTypeUpdate(objt.Name, objt.Name, objt.Description, pName, "THING", objt.Owner, objt.SysType, objt.Container, objt.HideRedundant, objt.Tooltip);
 
             xb = new xbee(Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Port").Value));
             xb.xbeePacketReceived += new xbee.xbeePacketReceivedEventHandler(xb_xbeePacketReceived);

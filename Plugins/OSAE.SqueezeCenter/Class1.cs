@@ -81,7 +81,7 @@ namespace OSAE.SqueezeboxServer
             Log = new General.OSAELog(pName);
             Log.Info("Initializing Plugin");
             OSAEObjectType objt = OSAEObjectTypeManager.ObjectTypeLoad("SQUEEZEBOX");
-            OSAEObjectTypeManager.ObjectTypeUpdate(objt.Name, objt.Name, objt.Description, pName, "SQUEEZEBOX", objt.Owner, objt.SysType, objt.Container, objt.HideRedundant);
+            OSAEObjectTypeManager.ObjectTypeUpdate(objt.Name, objt.Name, objt.Description, pName, "SQUEEZEBOX", objt.Owner, objt.SysType, objt.Container, objt.HideRedundant, objt.Tooltip);
 
             sbsAddress = OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "Server Address").Value;
             sbsPort = Int32.Parse(OSAEObjectPropertyManager.GetObjectPropertyValue(pName, "CLI Port").Value);

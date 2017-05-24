@@ -32,6 +32,7 @@
         private bool webstarting = false;
         private bool MySQLstarting = false;
         private bool UWSenabled = false;
+        private bool isCient = false;
         private const string Unique = "OSAE Manager";
 
         [STAThread]
@@ -83,15 +84,12 @@
             ServiceController myService = new ServiceController();
             ServiceController[] services = ServiceController.GetServices();
             UWSenabled = false;
-            foreach (ServiceController service in services)
+            if (isCient == true)
             {
-                if (service.ServiceName == "UltiDev Web Server Pro") UWSenabled = true;
-            }
-            if (!UWSenabled)
-            {
-                btnWebService.Visibility = Visibility.Hidden;
-                lblUWS.Visibility = Visibility.Hidden;
-                lbl_isWebRunning.Visibility = Visibility.Hidden;
+                foreach (ServiceController service in services)
+                {
+                    if (service.ServiceName == "UltiDev Web Server Pro") UWSenabled = true;
+                }
             }
 
             try
@@ -115,6 +113,7 @@
                 {
                     myService.ServiceName = "OSAE Client";
                     string svcStatus = myService.Status.ToString();
+                    isCient = true;
                     if (svcStatus == "Running")
                     {
                         lbl_isRunning.Content = "RUNNING";
@@ -131,6 +130,20 @@
                     lbl_isRunning.Content = "NOT INSTALLED";
                     btnService.IsEnabled = false;
                 }
+            }
+
+            if (!UWSenabled || isCient == true)
+            {
+                btnWebService.Visibility = Visibility.Hidden;
+                lblUWS.Visibility = Visibility.Hidden;
+                lbl_isWebRunning.Visibility = Visibility.Hidden;
+            }
+
+            if (isCient == true)
+            {
+                btnMySQLService.Visibility = Visibility.Hidden;
+                lblMySQL.Visibility = Visibility.Hidden;
+                lbl_isMySQLRunning.Visibility = Visibility.Hidden;
             }
 
             Clock.Interval = 2000;
@@ -156,7 +169,7 @@
             if (UWSenabled == true) CheckWebService();
 
 
-            CheckMySQLService();
+            if (isCient != true) CheckMySQLService();
 
             /*
             string svcStatus = myService.Status.ToString();
@@ -275,12 +288,12 @@
 
         private void CheckOSAEService()
         {
+            ServiceController osaService = new ServiceController();
             try
             {
-                ServiceController osaService = new ServiceController();
                 osaService.ServiceName = "OSAE";
                 string svcStatus = osaService.Status.ToString();
-
+                isCient = false;
                 if (svcStatus == "Running")
                 {
                     setLabel(Brushes.Green, "RUNNING");
@@ -303,10 +316,41 @@
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Log.Error("Error checking OSA Service", ex);
-            } 
+                try
+                {
+                    osaService.ServiceName = "OSAE Client";
+                    string svcStatus = osaService.Status.ToString();
+                    isCient = true;
+                    if (svcStatus == "Running")
+                    {
+                        setLabel(Brushes.Green, "RUNNING");
+                        setButton("Stop", true);
+                        setInstallButton(true);
+                        starting = false;
+                    }
+                    else
+                    {
+                        setLabel(Brushes.Red, "STOPPED");
+                        setButton("Start", true);
+                        setInstallButton(false);
+                        if (!clicked)
+                        {
+                            Log.Info("OSAE Services died.  Attempting to restart.");
+                            clicked = false;
+                            System.Threading.Thread.Sleep(5000);
+                            Thread m_WorkerThreadStart = new Thread(new ThreadStart(this.StartService));
+                            m_WorkerThreadStart.Start();
+                        }
+                    }
+                }
+                catch
+                {
+                    lbl_isRunning.Content = "NOT INSTALLED";
+                    btnService.IsEnabled = false;
+                }
+            }
         }
 
         private void StartService()
@@ -315,13 +359,14 @@
             {
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 ServiceController osaService = new ServiceController();
-                osaService.ServiceName = "OSAE";
+                if (isCient == true) osaService.ServiceName = "OSAE Client";
+                else osaService.ServiceName = "OSAE";
                 osaService.Start();
                 osaService.WaitForStatus(ServiceControllerStatus.Running, ts);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error stopping service.  Make sure you are running Manager as Administrator");
+                MessageBox.Show("Error starting service.  " + ex);
                 Log.Error("Error starting service", ex);
                 starting = false;
             }
@@ -333,13 +378,14 @@
             {
                 System.TimeSpan ts = new TimeSpan(0, 0, 30);
                 ServiceController osaService = new ServiceController();
-                osaService.ServiceName = "OSAE";
+                if (isCient == true) osaService.ServiceName = "OSAE Client";
+                else osaService.ServiceName = "OSAE";
                 osaService.Stop();
                 osaService.WaitForStatus(ServiceControllerStatus.Stopped, ts);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error stopping service.  Make sure you are running Manager as Administrator");
+                MessageBox.Show("Error stopping service.  " + ex);
                 Log.Error("Error stopping service", ex);
             }
         }

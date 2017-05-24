@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Nest</plugin-name>
 <plugin-id>e228b1a3-aea3-4230-a35b-1ec0428de96a</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Plugin for communicating with Nest thermostats and smoke alarms</short-description>
 <author>Brian Bridger</author>
@@ -11,7 +11,6 @@
 <wiki-url></wiki-url>
 <additional-assemblies>
 <name>FirebaseSharp.Portable.dll</name>
-<name>Newtonsoft.Json.dll</name>
 </additional-assemblies>
 <x64-additional-assemblies>
 </x64-additional-assemblies>

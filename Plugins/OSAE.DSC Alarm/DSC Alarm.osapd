@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>DSC Alarm</plugin-name>
 <plugin-id>f2b47eb9-4ed8-4b9f-a739-ee171e46dee5</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>DSC Alarm System</short-description>
 <author>Automate</author>

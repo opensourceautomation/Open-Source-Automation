@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>ZWave</plugin-name>
 <plugin-id>c2481db0-5871-4cd8-b6c6-2d12273b8758</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>Control your Z-Wave devices</short-description>
 <author>Brian Woodworth</author>
@@ -10,7 +10,6 @@
 <main-file>OSAE.Zwave.dll</main-file>
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=Z-Wave</wiki-url>
 <additional-assemblies>
-<name>OpenZWaveDotNet.dll</name>
 </additional-assemblies>
 <x64-additional-assemblies>
 <name>OpenZWaveDotNet.dll.x64</name>

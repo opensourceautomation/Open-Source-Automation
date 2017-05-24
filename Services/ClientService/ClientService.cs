@@ -104,11 +104,13 @@ namespace OSAE.ClientService
             try
             {
                 Log.Debug("Starting UDP listener");
+                string ip = Common.LocalIPAddress();
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Plugin", PluginMessageReceived);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Commmand", MethodMessageReceived);
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Method", MethodMessageReceived);
                 //Start listening for incoming UDP data
-                UDPConnection.StartListening(new IPEndPoint(IPAddress.Any, 10051));
+                //UDPConnection.StartListening(new IPEndPoint(IPAddress.Any, 10051));
+                TCPConnection.StartListening(new IPEndPoint(IPAddress.Parse(ip), 10051));
                 Log.Debug("UPD Listener started");
             }
             catch (Exception ex)

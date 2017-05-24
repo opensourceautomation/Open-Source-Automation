@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>XBMC</plugin-name>
 <plugin-id>501c5519-d072-4953-9cc7-005007f3490c</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>alpha</plugin-state>
 <short-description>Control XBMC and receive event notifications</short-description>
 <author>Brian Woodworth</author>
@@ -10,7 +10,6 @@
 <main-file>OSAE.XBMC.dll</main-file>
 <wiki-url>http://www.opensourceautomation.com/wiki/index.php?title=XBMC</wiki-url>
 <additional-assemblies>
-<name>Newtonsoft.Json.dll</name>
 <name>XBMCRPC.dll</name>
 </additional-assemblies>
 <x64-additional-assemblies>

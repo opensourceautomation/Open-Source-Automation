@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>Script Processor</plugin-name>
 <plugin-id>5ec40c86-b942-4123-8ea3-45fd7a9dc956</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>Script Processor handles all OSA scripts</short-description>
 <author>Vaughn Rupp</author>

@@ -2,7 +2,7 @@
 <plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
 <plugin-name>CM17A</plugin-name>
 <plugin-id>e2a94f62-14ff-4458-bc30-e7af479d5b77</plugin-id>
-<plugin-version>0.4.8</plugin-version>
+<plugin-version>0.4.9</plugin-version>
 <plugin-state>beta</plugin-state>
 <short-description>X10 CM17A FireCracker</short-description>
 <author>Automate</author>
