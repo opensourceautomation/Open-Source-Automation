@@ -9,7 +9,7 @@ public partial class _Default : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         DataSet dataset = new DataSet();
-        dataset = OSAE.OSAESql.RunSQL("select count(object_id)from osae_v_object_property where object_type = 'PERSON' and property_name = 'password' and length(property_value) > 0");
+        dataset = OSAE.OSAESql.RunSQL("select count(object_id) from osae_v_object_property where object_type = 'PERSON' and property_name = 'password' and length(property_value) > 0");
         if (Convert.ToInt16(dataset.Tables[0].Rows[0][0].ToString()) > 0) txtUserName.Focus();
         else Response.Redirect("~/firstrun.aspx");
     }

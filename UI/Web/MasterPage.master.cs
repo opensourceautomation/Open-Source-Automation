@@ -41,8 +41,10 @@ public partial class MasterPage : System.Web.UI.MasterPage
         {
             cog.ToolTip = "Config Settings: OSA service is running.";
         }
-
-        btnUser.Text = Session["UserName"].ToString();
+        if (Session["UserName"] != null)
+        {
+            btnUser.Text = Session["UserName"].ToString();
+        }
        // if (Session["SecurityLevel"].ToString() != "Admin") btnAdmin.Visible = false;
     }
 

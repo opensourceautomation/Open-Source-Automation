@@ -359,7 +359,8 @@ BEGIN
   END LOOP get_properties;
   CLOSE property_cursor;
 
-  SELECT vResults;END
+  SELECT vResults;
+END
 $$
 
 --
@@ -416,6 +417,25 @@ DECLARE vPropertyObjectTypeID INT;
         END IF;
         INSERT INTO osae_object_type_property (property_name,property_datatype,property_object_type_id,property_default,object_type_id,track_history,property_required,property_tooltip) VALUES(ppropertyname,ppropertytype,vPropertyObjectTypeID,pdefault,vObjectTypeID,ptrackhistory,prequired,ptooltip) ON DUPLICATE KEY UPDATE property_datatype=ppropertytype,object_type_id=vObjectTypeID,property_required=prequired,property_tooltip=ptooltip;
     END IF; 
+END
+$$
+
+--
+-- Alter procedure "osae_sp_object_type_property_option_add"
+--
+DROP PROCEDURE osae_sp_object_type_property_option_add$$
+CREATE PROCEDURE osae_sp_object_type_property_option_add(IN pobjecttype VARCHAR(200),
+                                                  IN pproperty   VARCHAR(200),
+                                                  IN pvalue      VARCHAR(200)
+                                                  )
+BEGIN
+  DECLARE vObjectTypePropertyID INT;
+
+  SELECT property_id INTO vObjectTypePropertyID FROM  osae_v_object_type_property
+  WHERE upper(object_type) = upper(pobjecttype) AND upper(property_name) = upper(pproperty);
+  IF vObjectTypePropertyID IS NOT NULL THEN
+      INSERT INTO osae_object_type_property_option (option_name, property_id) VALUES (pvalue, vObjectTypePropertyID) ON DUPLICATE KEY UPDATE option_name = pvalue;
+  END IF;
 END
 $$
 
@@ -802,25 +822,6 @@ $$
 --
 -- Alter procedure "osae_sp_system_process_methods"
 --
-DROP PROCEDURE osae_sp_object_type_property_option_add$$
-CREATE PROCEDURE osae.osae_sp_object_type_property_option_add(IN pobjecttype VARCHAR(200),
-                                                  IN pproperty   VARCHAR(200),
-                                                  IN pvalue      VARCHAR(200)
-                                                  )
-BEGIN
-  DECLARE vObjectTypePropertyID INT;
-
-  SELECT property_id INTO vObjectTypePropertyID FROM  osae_v_object_type_property
-  WHERE upper(object_type) = upper(pobjecttype) AND upper(property_name) = upper(pproperty);
-  IF vObjectTypePropertyID IS NOT NULL THEN
-      INSERT INTO osae_object_type_property_option (option_name, property_id) VALUES (pvalue, vObjectTypePropertyID) ON DUPLICATE KEY UPDATE option_name = pvalue;
-  END IF;
-END
-$$
-
---
--- Alter procedure "osae_sp_system_process_methods"
---
 DROP PROCEDURE osae_sp_system_process_methods$$
 CREATE PROCEDURE osae_sp_system_process_methods()
 BEGIN
@@ -881,7 +882,6 @@ $$
 --
 -- Create function "osae_fn_object_exists"
 --
-DROP FUNCTION IF EXISTS osae_fn_object_exists$$
 CREATE FUNCTION osae_fn_object_exists(pobjectname varchar(200))
   RETURNS int(11)
 BEGIN
@@ -899,7 +899,6 @@ $$
 --
 -- Create function "osae_fn_object_getid"
 --
-DROP FUNCTION IF EXISTS osae_fn_object_getid$$
 CREATE FUNCTION osae_fn_object_getid(pobjectname varchar(200))
   RETURNS int(11)
 BEGIN
@@ -912,7 +911,6 @@ $$
 --
 -- Create function "osae_fn_object_property_exists"
 --
-DROP FUNCTION IF EXISTS osae_fn_object_property_exists$$
 CREATE FUNCTION osae_fn_object_property_exists(pobjectname varchar(200), ppropertyname varchar(200))
   RETURNS int(11)
 BEGIN
@@ -934,7 +932,6 @@ $$
 --
 -- Create function "osae_fn_plugin_count"
 --
-DROP FUNCTION IF EXISTS osae_fn_plugin_count$$
 CREATE FUNCTION osae_fn_plugin_count()
   RETURNS int(11)
 BEGIN
@@ -957,7 +954,6 @@ $$
 --
 -- Create function "osae_fn_plugin_enabled_count"
 --
-DROP FUNCTION IF EXISTS osae_fn_plugin_enabled_count$$
 CREATE FUNCTION osae_fn_plugin_enabled_count()
   RETURNS int(11)
 BEGIN
@@ -981,7 +977,6 @@ $$
 --
 -- Create function "osae_fn_plugin_running_count"
 --
-DROP FUNCTION IF EXISTS osae_fn_plugin_running_count$$
 CREATE FUNCTION osae_fn_plugin_running_count()
   RETURNS int(11)
 BEGIN
@@ -1008,7 +1003,6 @@ $$
 --
 -- Create function "osae_fn_trust_level_property_exists"
 --
-DROP FUNCTION IF EXISTS osae_fn_trust_level_property_exists$$
 CREATE FUNCTION osae_fn_trust_level_property_exists(pname      varchar(200))
   RETURNS int(11)
 BEGIN
@@ -1122,7 +1116,7 @@ AS
 --
 -- Create view "osae_v_object_off_timer_ready"
 --
-CREATE OR REPLACE
+CREATE
 VIEW osae_v_object_off_timer_ready
 AS
 SELECT
@@ -1211,12 +1205,12 @@ AS
 CREATE OR REPLACE 
 VIEW osae_v_system_occupied_rooms
 AS
-	select `osae_rooms`.`object_name` AS `room`,count(`osae_occupants`.`object_name`) AS `occupant_count` from ((`osae_object` `osae_rooms` join `osae_object_type` `osae_room_type` on((`osae_rooms`.`object_type_id` = `osae_room_type`.`object_type_id`))) left join `osae_object` `osae_occupants` on((`osae_rooms`.`object_id` = `osae_occupants`.`container_id`))) where (`osae_room_type`.`object_type` = 'ROOM') group by `osae_rooms`.`object_name`;
+	select `osae_rooms`.`object_name` AS `room`,count(`osae_occupants`.`object_name`) AS `occupant_count` from (((`osae_object` `osae_rooms` join `osae_object_type` `osae_room_type` on((`osae_rooms`.`object_type_id` = `osae_room_type`.`object_type_id`))) left join `osae_object` `osae_occupants` on((`osae_rooms`.`object_id` = `osae_occupants`.`container_id`))) left join `osae_object_type` `osae_occupant_type` on((`osae_occupants`.`object_type_id` = `osae_occupant_type`.`object_type_id`))) where ((`osae_room_type`.`object_type` = 'ROOM') and (`osae_occupant_type`.`object_type` = 'PERSON')) group by `osae_rooms`.`object_name`;
 
 --
 -- Create view "osae_v_system_plugins_errored"
 --
-CREATE OR REPLACE
+CREATE
 VIEW osae_v_system_plugins_errored
 AS
 SELECT
@@ -1250,7 +1244,7 @@ AS
 --
 -- Create view "osae_v_object_type_method_list_full"
 --
-CREATE OR REPLACE
+CREATE
 VIEW osae_v_object_type_method_list_full
 AS
 SELECT
@@ -1352,7 +1346,6 @@ DELIMITER ;
 -- Enable foreign keys
 --
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-
 -- Container Object
 CALL osae_sp_object_type_add ('CONTAINER','Core Type: Container','','CONTAINER',0,1,1,1,'Container that can hold other objects.
 This is a Core-Type object and is usually NOT USED by users.');

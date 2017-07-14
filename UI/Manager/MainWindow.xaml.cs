@@ -159,7 +159,6 @@
             }
             catch (Exception ex)
             { Log.Error("Error starting listener", ex); }
-
         }
 
         private void CheckService(object sender, EventArgs e)
@@ -167,8 +166,6 @@
             CheckOSAEService();
 
             if (UWSenabled == true) CheckWebService();
-
-
             if (isCient != true) CheckMySQLService();
 
             /*
@@ -209,8 +206,6 @@
             }
             */
         }
-
-
 
         private void CheckWebService()
         {
@@ -809,10 +804,8 @@
 
             if (items[0].Trim() == "SERVICE-" + Common.ComputerName)
             {
-                if (items[1].Trim() == "ON")
-                    StartService();
-                else if (items[1].Trim() == "OFF")
-                    StopService();
+                if (items[1].Trim() == "ON") StartService();
+                else if (items[1].Trim() == "OFF") StopService();
             }
         }
 
