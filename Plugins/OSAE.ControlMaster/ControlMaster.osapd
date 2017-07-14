@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin-description xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="3.0">
+<plugin-name>Control Master</plugin-name>
+<plugin-id>a8a99518-0605-4c0e-8f31-6653237afc75</plugin-id>
+<plugin-version>0.2.2</plugin-version>
+<plugin-state>beta</plugin-state>
+<short-description>
+Plugin for the Control Master distributed I/O system</short-description>
+<author>mattw</author>
+<destination-folder>Control Master</destination-folder>
+<main-file>bin\x86\Release\OSAE.ControlMaster.dll</main-file>
+<wiki-url></wiki-url>
+<additional-assemblies>
+<name>mas.dll</name>
+</additional-assemblies>
+<x64-additional-assemblies>
+</x64-additional-assemblies>
+</plugin-description>
