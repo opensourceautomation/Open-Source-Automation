@@ -116,9 +116,12 @@
             gDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue(gAppName, "Debug").Value);
 
             // uh maybe this should have code for no screens here, since the resize code went it.  if above fix dont work
-            if (gCurrentScreen == "") Set_Default_Screen();
-
-            Load_Screen(gCurrentScreen);
+            if (gCurrentScreen == "")
+            {
+                Set_Default_Screen();
+                menuCreateScreen.IsEnabled = true;
+            }
+            else Load_Screen(gCurrentScreen);
 
             OSAE.OSAEObjectStateManager.ObjectStateSet(gAppName, "ON", gAppName);
 
