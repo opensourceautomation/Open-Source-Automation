@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 
 namespace OSAE.UI.Controls
 {
     /// <summary>
-    /// Interaction logic for NavigationImage.xaml
+    /// Interaction logic for UserSelector.xaml
     /// </summary>
     public partial class UserSelector : UserControl
     {
@@ -33,60 +24,52 @@ namespace OSAE.UI.Controls
         public UserSelector(OSAEObject sObject, string appName)
         {
             InitializeComponent();
-            userGrid.Height = 25;
+            userGrid.Height = cboUsers.Height;
             _AppName = appName;
             screenObject = sObject;
             cboUsers.Items.Add("Log In/Out");
             cboUsers.SelectedIndex = 1;
 
             string currentUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(_AppName, "Current User").Value;
-
-            cboUsers.Background = new SolidColorBrush(Colors.Yellow);
-
+            lock_Red();
             OSAEObjectCollection userList = OSAEObjectManager.GetObjectsByType("PERSON");
             foreach (OSAE.OSAEObject obj in userList)
             {
-                cboUsers.Items.Add (obj.Name);
-                if (obj.Name == currentUser)
+                //Only load accounts with a PIN
+                _usersPIN = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(obj.Name, "PIN").Value;
+                if (_usersPIN != "")
                 {
-                    cboUsers.SelectedIndex = cboUsers.Items.Count - 1;
-                    _CurrentUser = currentUser;
-                    _CurrentUserTrust = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(_CurrentUser, "Trust Level").Value);
-                    cboUsers.Background = new SolidColorBrush(Colors.Green);
+                    cboUsers.Items.Add(obj.Name);
+                    if (obj.Name == currentUser)
+                    {
+                        cboUsers.SelectedIndex = cboUsers.Items.Count - 1;
+                        _CurrentUser = currentUser;
+                        _CurrentUserTrust = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(_CurrentUser, "Trust Level").Value);
+                        lock_Green();
+                        // Add Remember me option
+                        ContextMenu ctmRembMe = new ContextMenu();
+                        MenuItem miRembMe = new MenuItem();
+                        miRembMe.Name = "rememberMode";
+                        miRembMe.IsCheckable = true;
+                        miRembMe.Checked += rememberMode_Checked;
+                        miRembMe.Unchecked += rememberMode_Unchecked;
+                        miRembMe.Header = "LogOut on Close";
+                        string remUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(_AppName, "LogOut on Close").Value;
+                        bool loUser = Convert.ToBoolean(remUser);
+                        if (loUser == true) miRembMe.IsChecked = true;
+                        else miRembMe.IsChecked = false;
 
-                    // Add Remember me option
-                    ContextMenu ctmRembMe = new ContextMenu();
-                    MenuItem miRembMe = new MenuItem();
-                    miRembMe.Name = "rememberMode";
-                    miRembMe.IsCheckable = true;
-                    miRembMe.Checked += rememberMode_Checked;
-                    miRembMe.Unchecked += rememberMode_Unchecked;
-                    miRembMe.Header = "LogOut on Close";
-                    string remUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(_AppName, "LogOut on Close").Value;
-                    bool loUser = Convert.ToBoolean(remUser);
-                    if (loUser == true)
-                    {
-                        miRembMe.IsChecked = true;
+                        ctmRembMe.Items.Add(miRembMe);
+                        cboUsers.ContextMenu = ctmRembMe;
                     }
-                    else
-                    {
-                        miRembMe.IsChecked = false;
-                    }
-                    ctmRembMe.Items.Add(miRembMe);
-                    cboUsers.ContextMenu = ctmRembMe;
                 }
             }
-            
-            
-
-            // string imgName = screenObject.Property("Image").Value;
-            // OSAEImage img = imgMgr.GetImage(imgName);
-
-            //  if (img != null)
-            // DataSet dataSet = OSAESql.RunSQL("SELECT state_name FROM osae_v_object_state where object_name = '" + cboObject.SelectedValue + "' order by state_name");
-            //cboState1.ItemsSource = dataSet.Tables[0].DefaultView;
-
             loadingFlag = false;
+        }
+
+        private void imgLock_Click(object sender, RoutedEventArgs e)
+        {
+            userGrid.Width = 175;
         }
 
         private void cboUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -100,8 +83,8 @@ namespace OSAE.UI.Controls
             lblPIN.Content = "";
             if (cboUsers.SelectedIndex == 1)
             {
-                userGrid.Height = 25;
-                cboUsers.Background = new SolidColorBrush(Colors.Yellow);
+                userGrid.Height = cboUsers.Height;
+                lock_Red();
                 OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "Current User", "", "SYSTEM");
                 cboUsers.ContextMenu = null;
                 OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "LogOut on Close", "TRUE", _CurrentUser);
@@ -112,8 +95,8 @@ namespace OSAE.UI.Controls
                 _usersPIN = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(cboUsers.SelectedItem.ToString(), "PIN").Value;
                 if (_usersPIN == "")
                 {
-                    userGrid.Height = 25;
-                    cboUsers.Background = new SolidColorBrush(Colors.Green);
+                    userGrid.Height = 184;
+                    lock_Green();
                     _CurrentUserTrust = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(cboUsers.SelectedItem.ToString(), "Trust Level").Value);
                     _CurrentUser = cboUsers.SelectedItem.ToString();
                     OSAE.OSAEObjectPropertyManager.ObjectPropertySet(_AppName, "Current User", _CurrentUser, "SYSTEM");
@@ -128,17 +111,10 @@ namespace OSAE.UI.Controls
                     miRembMe.Header = "LogOut on Close";
                     string remUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(_AppName, "LogOut on Close").Value;
                     bool loUser = Convert.ToBoolean(remUser);
-                    if (loUser == true)
-                    {
-                        miRembMe.IsChecked = true;
-                    }
-                    else
-                    {
-                        miRembMe.IsChecked = false;
-                    }
+                    if (loUser == true) miRembMe.IsChecked = true;
+                    else miRembMe.IsChecked = false;
                     ctmRembMe.Items.Add(miRembMe);
                     cboUsers.ContextMenu = ctmRembMe;
-
                 }
                 else
                     userGrid.Height = 184;
@@ -150,8 +126,9 @@ namespace OSAE.UI.Controls
             _pwbuff += _number;
             if (_pwbuff == _usersPIN)
             {
-                userGrid.Height = 25;
-                cboUsers.Background = new SolidColorBrush(Colors.Green);
+                userGrid.Height = cboUsers.Height;
+                //cboUsers.Background = new SolidColorBrush(Colors.Green);
+                lock_Green();
                 _CurrentUserTrust = Convert.ToUInt16(OSAEObjectPropertyManager.GetObjectPropertyValue(cboUsers.SelectedItem.ToString(), "Trust Level").Value);
                 _CurrentUser = cboUsers.SelectedItem.ToString();
                 //For a User to use a screen, they are oviously here and in the same room as the screen
@@ -172,17 +149,43 @@ namespace OSAE.UI.Controls
                 string remUser = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue(_AppName, "LogOut on Close").Value;
                 bool loUser = Convert.ToBoolean(remUser);
                 if (loUser == true)
-                {
                     miRembMe.IsChecked = true;
-                }
                 else
-                {
                     miRembMe.IsChecked = false;
-                }
+
                 ctmRembMe.Items.Add(miRembMe);
                 cboUsers.ContextMenu = ctmRembMe;
             }
+            else
+            lock_Red();
+
             lblPIN.Content  += "* ";
+        }
+
+        private void lock_Red()
+        {
+            OSAEImage img1 = imgMgr.GetImage("Lock - Red");
+            MemoryStream ms1 = new MemoryStream(img1.Data);
+            BitmapImage bitmapImage = new BitmapImage();
+
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = ms1;
+            bitmapImage.EndInit();
+
+            imgLock.Source = bitmapImage;
+        }
+
+        private void lock_Green()
+        {
+            OSAEImage img1 = imgMgr.GetImage("Lock - Green");
+            MemoryStream ms1 = new MemoryStream(img1.Data);
+            BitmapImage bitmapImage = new BitmapImage();
+
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = ms1;
+            bitmapImage.EndInit();
+
+            imgLock.Source = bitmapImage;
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
@@ -232,8 +235,8 @@ namespace OSAE.UI.Controls
 
         private void buttonCancel_Click(object sender, RoutedEventArgs e)
         {
-            _pwbuff = "";
-            lblPIN.Content = "";
+            _pwbuff = _pwbuff.Substring(0, _pwbuff.Length - 1);
+            lblPIN.Content = _pwbuff;
         }
 
         private void button0_Click(object sender, RoutedEventArgs e)
@@ -243,7 +246,9 @@ namespace OSAE.UI.Controls
 
         private void buttonGo_Click(object sender, RoutedEventArgs e)
         {
-
+            _pwbuff = "";
+            lblPIN.Content = "";
+            cboUsers.SelectedIndex = 1;
         }
 
         private void rememberMode_Checked(object sender, RoutedEventArgs e)

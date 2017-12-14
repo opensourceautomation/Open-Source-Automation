@@ -3,23 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Height="183.999" Width="122.666">
-    <Grid x:Name="userGrid" Width="114" Margin="6,0,3,0" Height="184" VerticalAlignment="Top">
-        <ComboBox x:Name="cboUsers" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" SelectionChanged="cboUsers_SelectionChanged" Height="23" Margin="2,0,0,0" RenderTransformOrigin="0.491,0.304">
+             mc:Ignorable="d" Height="183.999" Width="141.548">
+    <Grid x:Name="userGrid" Height="184" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138">
+        <ComboBox x:Name="cboUsers" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" SelectionChanged="cboUsers_SelectionChanged" Height="23" Margin="0" RenderTransformOrigin="0.491,0.304">
             <ListBoxItem ContentStringFormat="Sign In"/>
         </ComboBox>
-        <Button x:Name="button1" Content="1" HorizontalAlignment="Left" Margin="2,37,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button1_Click"/>
-        <Button x:Name="button2" Content="2" HorizontalAlignment="Left" Margin="39,37,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button2_Click"/>
-        <Button x:Name="button3" Content="3" HorizontalAlignment="Left" Margin="76,37,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button3_Click"/>
-        <Button x:Name="button4" Content="4" HorizontalAlignment="Left" Margin="2,73,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button4_Click"/>
-        <Button x:Name="button5" Content="5" HorizontalAlignment="Left" Margin="39,73,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button5_Click"/>
-        <Button x:Name="button7" Content="7" HorizontalAlignment="Left" Margin="2,110,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button7_Click"/>
-        <Button x:Name="button8" Content="8" HorizontalAlignment="Left" Margin="39,110,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button8_Click"/>
-        <Button x:Name="button9" Content="9" HorizontalAlignment="Left" Margin="76,110,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button9_Click"/>
-        <Button x:Name="buttonCancel" Content="X" HorizontalAlignment="Left" Margin="2,147,0,-6" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="buttonCancel_Click"/>
-        <Button x:Name="button0" Content="0" HorizontalAlignment="Left" Margin="39,147,0,-6" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button0_Click"/>
-        <Button x:Name="buttonGo" Content="-&gt;" HorizontalAlignment="Left" Margin="76,147,0,-6" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="buttonGo_Click"/>
-        <Button x:Name="button6" Content="6" HorizontalAlignment="Left" Margin="76,73,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button6_Click"/>
-        <Label x:Name="lblPIN" Content="" HorizontalAlignment="Left" Margin="2,17,0,0" VerticalAlignment="Top" Height="26" Width="106" FontSize="16"/>
+        <Button x:Name="button1" Content="1" HorizontalAlignment="Left" Margin="0,40,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button1_Click"/>
+        <Button x:Name="button2" Content="2" HorizontalAlignment="Left" Margin="37,40,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button2_Click"/>
+        <Button x:Name="button3" Content="3" HorizontalAlignment="Left" Margin="74,40,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button3_Click" RenderTransformOrigin="1.562,0.578"/>
+        <Button x:Name="button4" Content="4" HorizontalAlignment="Left" Margin="0,77,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button4_Click"/>
+        <Button x:Name="button5" Content="5" HorizontalAlignment="Left" Margin="36,76,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button5_Click"/>
+        <Button x:Name="button7" Content="7" HorizontalAlignment="Left" Margin="0,113,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button7_Click"/>
+        <Button x:Name="button8" Content="8" HorizontalAlignment="Left" Margin="35,113,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button8_Click"/>
+        <Button x:Name="button9" Content="9" HorizontalAlignment="Left" Margin="72,113,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button9_Click"/>
+        <Button x:Name="buttonBack" Content="DEL" HorizontalAlignment="Left" Margin="0,150,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="buttonCancel_Click"/>
+        <Button x:Name="button0" Content="0" HorizontalAlignment="Left" Margin="35,150,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button0_Click"/>
+        <Button x:Name="buttonGo" Content="X" HorizontalAlignment="Left" Margin="72,150,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="buttonGo_Click"/>
+        <Button x:Name="button6" Content="6" HorizontalAlignment="Left" Margin="73,76,0,0" VerticalAlignment="Top" Width="32" Height="32" FontSize="16" Click="button6_Click"/>
+        <Label x:Name="lblPIN" Content="" HorizontalAlignment="Left" Margin="0,23,0,0" VerticalAlignment="Top" Height="17" Width="106" FontSize="16" Background="White" FontWeight="Bold" />
+        <Image x:Name="image" HorizontalAlignment="Left" Height="22" Margin="85,4,0,0" VerticalAlignment="Top" Width="19"/>
+        <Image x:Name="imgLock" HorizontalAlignment="Left" Height="23" Margin="109,0,0,0" VerticalAlignment="Top" Width="24"/>
     </Grid>
 </UserControl>

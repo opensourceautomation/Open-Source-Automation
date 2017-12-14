@@ -23,8 +23,8 @@ public partial class images : System.Web.UI.Page
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
         if (!Page.IsPostBack)
             loadImages();
-        else
-            if (fileUpload.HasFile) txtName.Text = fileUpload.FileName;
+        //else
+      
 
         applyObjectSecurity();
     }
@@ -50,6 +50,7 @@ public partial class images : System.Web.UI.Page
                 {
                     if (fileUpload.PostedFile.ContentLength < 2502400) //202400
                     {
+                        if (fileUpload.HasFile && txtName.Text.Length == 0) txtName.Text = fileUpload.FileName;
                         OSAEImage img = new OSAEImage();
                         img.Data = fileUpload.FileBytes;
                         img.Name = txtName.Text;
@@ -57,7 +58,7 @@ public partial class images : System.Web.UI.Page
 
                         var imageManager = new OSAE.OSAEImageManager();
                         imageManager.AddImage(img);
-
+                        txtName.Text = "";
                         loadImages();
                     }
                     else

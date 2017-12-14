@@ -42,7 +42,15 @@ namespace OSAE.General
                 }
             }
 
-            bPrune = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value);
+            try
+            {
+                bPrune = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value);
+            }
+            catch
+            {
+                bPrune = false;
+            }
+
             bDebug = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Debug").Value);
             var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;
             var attachable = root as log4net.Core.IAppenderAttachable;
