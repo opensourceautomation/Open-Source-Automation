@@ -4,6 +4,7 @@ namespace OSAE.Service
 {
     using System;
     using System.Timers;
+    using System.Net;
     using NetworkCommsDotNet;
     using System.Windows.Forms;
 
@@ -110,6 +111,14 @@ namespace OSAE.Service
                 Log.Fatal("Unable to connect to database: " + dbConnectionStatus.CaughtException.Message);
                 return;
             }
+
+            try
+            {
+                string externalip = new System.Net.WebClient().DownloadString("https://api.ipify.org");
+                OSAEObjectPropertyManager.ObjectPropertySet("SYSTEM", "WAN IP", externalip, "SERVICE");
+            }
+            catch (Exception ex)
+            { Log.Fatal("Error getting registry settings and/or deleting logs: " + ex.Message, ex); }
 
             try
             {

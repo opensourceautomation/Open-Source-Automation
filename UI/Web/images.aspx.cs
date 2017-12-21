@@ -50,11 +50,14 @@ public partial class images : System.Web.UI.Page
                 {
                     if (fileUpload.PostedFile.ContentLength < 2502400) //202400
                     {
-                        if (fileUpload.HasFile && txtName.Text.Length == 0) txtName.Text = fileUpload.FileName;
-                        OSAEImage img = new OSAEImage();
-                        img.Data = fileUpload.FileBytes;
-                        img.Name = txtName.Text;
-                        img.Type = System.IO.Path.GetExtension(fileUpload.FileName).ToLower().Substring(1);
+                        if (fileUpload.HasFile && txtName.Text.Length == 0) txtName.Text = fileUpload.FileName.Replace(System.IO.Path.GetExtension(fileUpload.FileName).ToLower(), "");
+
+                        OSAEImage img = new OSAEImage
+                        {
+                            Data = fileUpload.FileBytes,
+                            Name = txtName.Text,
+                            Type = System.IO.Path.GetExtension(fileUpload.FileName).ToLower().Substring(1)
+                        };                    
 
                         var imageManager = new OSAE.OSAEImageManager();
                         imageManager.AddImage(img);

@@ -94,15 +94,17 @@ public partial class screens : System.Web.UI.Page
         #region Camera Viewer
         else if (obj.Type == "CONTROL CAMERA VIEWER")
         {
+
             // Create instance of the UserControl SimpleControl
-            ASP.ctrlEmbedded ctrl = (ASP.ctrlEmbedded)LoadControl("~/controls/ctrlEmbedded.ascx");
-            // Set the Public Properties
-            ctrl.screenObject = OSAEObjectManager.GetObjectByName(obj.Name);
-            //ctrl.initialize();
-            ctrl.Source = OSAEObjectManager.GetObjectByName(ctrl.screenObject.Property("Object Name").Value).Property("Stream Address").Value;
-            ctrl.width = "400";
-            ctrl.height = "300";
-            StaticPlaceholder.Controls.Add(ctrl);
+            try
+            {
+                ASP.VideoStreamViewer ctrl = (ASP.VideoStreamViewer)LoadControl("~/controls/VideoStreamViewer.ascx");
+                //ASP.ctrlEmbedded ctrl = (ASP.ctrlEmbedded)LoadControl("~/controls/ctrlEmbedded.ascx");
+                ctrl.screenObject = OSAEObjectManager.GetObjectByName(obj.Name);
+                StaticPlaceholder.Controls.Add(ctrl);
+            }
+            catch
+            { return; }
         }
         #endregion
 
