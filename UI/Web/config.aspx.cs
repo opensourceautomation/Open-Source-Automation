@@ -10,10 +10,11 @@ public partial class config : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx?ReturnUrl=config.aspx");
         int objSet = OSAEAdminManager.GetAdminSettingsByName("Config Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
+        SetSessionTimeout();
         if (!IsPostBack)
         {
             lblVersion.Text = OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "DB Version").Value;
@@ -165,5 +166,20 @@ public partial class config : System.Web.UI.Page
         DataSet d = OSAESql.RunSQL("CALL osae_sp_object_history_clear");
     }
 
-    
+    private void SetSessionTimeout()
+    {
+        try
+        {
+            int timeout = 0;
+            if (int.TryParse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value, out timeout))
+                Session.Timeout = timeout;
+            else Session.Timeout = 60;
+        }
+        catch (Exception ex)
+        {
+            Master.Log.Error("Error setting session timeout", ex);
+            Response.Redirect("~/error.aspx");
+        }
+    }
+
 }

@@ -17,14 +17,15 @@ public partial class images : System.Web.UI.Page
     
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx?ReturnUrl=images.aspx");
         int objSet = OSAEAdminManager.GetAdminSettingsByName("Images Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
+        SetSessionTimeout();
         if (!Page.IsPostBack)
             loadImages();
-        //else
-      
+        else
+            if (fileUpload.HasFile) txtName.Text = fileUpload.FileName;
 
         applyObjectSecurity();
     }
@@ -50,18 +51,14 @@ public partial class images : System.Web.UI.Page
                 {
                     if (fileUpload.PostedFile.ContentLength < 2502400) //202400
                     {
-                        if (fileUpload.HasFile && txtName.Text.Length == 0) txtName.Text = fileUpload.FileName.Replace(System.IO.Path.GetExtension(fileUpload.FileName).ToLower(), "");
-
-                        OSAEImage img = new OSAEImage
-                        {
-                            Data = fileUpload.FileBytes,
-                            Name = txtName.Text,
-                            Type = System.IO.Path.GetExtension(fileUpload.FileName).ToLower().Substring(1)
-                        };                    
+                        OSAEImage img = new OSAEImage();
+                        img.Data = fileUpload.FileBytes;
+                        img.Name = txtName.Text;
+                        img.Type = System.IO.Path.GetExtension(fileUpload.FileName).ToLower().Substring(1);
 
                         var imageManager = new OSAE.OSAEImageManager();
                         imageManager.AddImage(img);
-                        txtName.Text = "";
+
                         loadImages();
                     }
                     else
@@ -109,6 +106,22 @@ public partial class images : System.Web.UI.Page
         {
             e.Row.Cells[6].Enabled = false;
 
+        }
+    }
+
+    private void SetSessionTimeout()
+    {
+        try
+        {
+            int timeout = 0;
+            if (int.TryParse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value, out timeout))
+                Session.Timeout = timeout;
+            else Session.Timeout = 60;
+        }
+        catch (Exception ex)
+        {
+            Master.Log.Error("Error setting session timeout", ex);
+            Response.Redirect("~/error.aspx");
         }
     }
 }

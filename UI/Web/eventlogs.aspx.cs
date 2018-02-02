@@ -14,12 +14,13 @@ public partial class eventlogs : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx?ReturnUrl=eventlogs.aspx");
         int objSet = OSAEAdminManager.GetAdminSettingsByName("Event Log Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
         if (!IsPostBack) BindData();
         applySecurity();
+        SetSessionTimeout();
     }
 
     private void BindData()
@@ -57,4 +58,20 @@ public partial class eventlogs : System.Web.UI.Page
         }
     }
     #endregion
+
+    private void SetSessionTimeout()
+    {
+        try
+        {
+            int timeout = 0;
+            if (int.TryParse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value, out timeout))
+                Session.Timeout = timeout;
+            else Session.Timeout = 60;
+        }
+        catch (Exception ex)
+        {
+            Master.Log.Error("Error setting session timeout", ex);
+            Response.Redirect("~/error.aspx");
+        }
+    }
 }

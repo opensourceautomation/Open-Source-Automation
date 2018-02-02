@@ -8,6 +8,7 @@
 <%@ Reference Control="~/controls/ctrlNavigationImage.ascx"  %>
 <%@ Reference Control="~/controls/ctrlEmbedded.ascx"  %>
 <%@ Reference Control="~/controls/ctrlBrowser.ascx"  %>
+<%@ Reference Control="~/controls/VideoStreamViewer.ascx"  %>
 <%@ Register src="~/controls/ctrlUserControl.ascx" TagName = "ctrlUserControl" TagPrefix ="ctrlUserControl"  %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder" Runat="Server">
@@ -30,7 +31,6 @@
             startRefresh();
         });
 
-
         function startRefresh() {
             setTimeout(startRefresh, 5000);
             $('#<%=UpdateButton.ClientID %>').click();
@@ -50,8 +50,9 @@
                     if (p2 == null) { p2 = 'null'; }  // Check to see if user clicked Cancel
                     if (p2.replace(/\s/g, "") == "") { p2 = 'null'; }   // Check to see if user entered any data, if NOT, Do not execute.
                 }   
-    	        if (p1 != 'null' && p2 != 'null') {
-	                $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&callback=?', null, function (data) {
+                if (p1 != 'null' && p2 != 'null') {
+                    ak = document.getElementById('authkey2').value;
+    	            $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/object/' + object + '/' + method + '?param1=' + p1 + '&param2=' + p2 + '&ak=' + ak + '&callback=?', null, function (data) {
 	                return data;
                 });
                 }
@@ -61,7 +62,8 @@
         function setProperty(object, prop, p1, objTrust) {
             if (Number(objTrust) <= Number(<%= hdnUserTrust.Value %>)) {
                 var JSONObj = {};
-                $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/property/update?objName=' + object + '&propName=' + prop + '&propVal=' + p1 + '&callback=?', null, function (data) {
+                ak = document.getElementById('authkey2').value;
+                $.post('http://' + host + ':<%= hdnRestPort.Value %>/api/property/update?objName=' + object + '&propName=' + prop + '&propVal=' + p1 + '&ak=' + ak + '&callback=?', null, function (data) {
                     return data;
                 });
             }
@@ -72,14 +74,14 @@
         <div class="span10">
             <asp:UpdatePanel runat="server" id="UpdatePanel" updatemode="Conditional">
                 <ContentTemplate>
-                    <asp:Button runat="server" id="UpdateButton" onclick="UpdateButton_Click" text="Update" style="display:none;"/>
+                    <asp:Button runat="server" id="UpdateButton" onclick="UpdateButton_Click" text="Update" style="display:none;" />
                     <asp:PlaceHolder runat="server" ID="UpdatePlaceholder" />
                 </ContentTemplate>
             </asp:UpdatePanel>
             <asp:PlaceHolder runat="server" ID="StaticPlaceholder" />
             <asp:Image ID="imgBackground" CssClass="screen-bg" runat="server" />
          </div>   
--        <div class="span1"></div>                     
+        <div class="span1"></div>                     
     </div>
 
     <asp:HiddenField runat="server" ID="hdnRestPort" />

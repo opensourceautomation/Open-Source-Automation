@@ -12,7 +12,7 @@
     void Application_End(object sender, EventArgs e)
     {
         //  Code that runs on application shutdown
-
+        Session.Abandon();
     }
 
     void Application_Error(object sender, EventArgs e)
@@ -35,11 +35,11 @@
 
     }
 
-    //void Application_BeginRequest(object sender, EventArgs e)
-    //{
-    //    string culture = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("System", "Culture").Value;
-    //    System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(culture);
-    //    System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(culture);
-    //}
+    void Application_BeginRequest(object sender, EventArgs e)
+    {
+        string culture = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("System", "Culture").Value;
+        System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(culture);
+        System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(culture);
+    }
 
 </script>

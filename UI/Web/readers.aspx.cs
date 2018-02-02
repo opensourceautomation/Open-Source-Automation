@@ -24,10 +24,11 @@ public partial class readers : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx?ReturnUrl=readers.aspx");
         int objSet = OSAEAdminManager.GetAdminSettingsByName("Reader Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
+        SetSessionTimeout();
         loadReaders();
 
         if (!this.IsPostBack) loadObjects();
@@ -151,4 +152,20 @@ public partial class readers : System.Web.UI.Page
         }
     }
     #endregion
+
+    private void SetSessionTimeout()
+    {
+        try
+        {
+            int timeout = 0;
+            if (int.TryParse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value, out timeout))
+                Session.Timeout = timeout;
+            else Session.Timeout = 60;
+        }
+        catch (Exception ex)
+        {
+            Master.Log.Error("Error setting session timeout", ex);
+            Response.Redirect("~/error.aspx");
+        }
+    }
 }

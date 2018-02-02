@@ -73,7 +73,7 @@ public partial class objtypes : System.Web.UI.Page
         int objSet = OSAEAdminManager.GetAdminSettingsByName("ObjectType Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
-
+        SetSessionTimeout();
         if (!IsPostBack)
         {
             ViewState["sortOrder"] = "";
@@ -232,12 +232,15 @@ public partial class objtypes : System.Web.UI.Page
 
     private void loadProperties()
     {
+        txtPropName.Text = "";
+        txtPropertyTooltip.Text = "";
+        ddlPropType.ClearSelection();
         gvProperties.DataSource = OSAESql.RunSQL("SELECT property_name, property_datatype, property_object_type, property_default, track_history, property_required, property_tooltip, property_id FROM osae_v_object_type_property where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY property_name");
         gvProperties.DataBind();
         gvProperties.SelectedIndex = 0;
         try
         {
-
+           
             txtPropName.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString();
             txtPropDefault.Text = gvProperties.DataKeys[gvProperties.SelectedIndex]["property_default"].ToString();
             chkTrackChanges.Checked = (bool)gvProperties.DataKeys[gvProperties.SelectedIndex]["track_history"];
@@ -250,6 +253,9 @@ public partial class objtypes : System.Web.UI.Page
 
     private void loadStates()
     {
+        txtStateName.Text = "";
+        txtStateLabel.Text = "";
+        txtStateTooltip.Text = "";
         gvStates.DataSource = OSAESql.RunSQL("SELECT state_name, state_label, state_tooltip FROM osae_v_object_type_state where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY state_name");
         gvStates.DataBind();
         if (gvStates.Rows.Count > 0)
@@ -258,6 +264,7 @@ public partial class objtypes : System.Web.UI.Page
             try
             {
                 hdnSelectedStateRow.Text = gvStates.SelectedIndex.ToString();
+                hdnSelectedStateName.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_name"].ToString();
                 txtStateName.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_name"].ToString();
                 txtStateLabel.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_label"].ToString();
                 txtStateTooltip.Text = gvStates.DataKeys[gvStates.SelectedIndex]["state_tooltip"].ToString();
@@ -268,6 +275,9 @@ public partial class objtypes : System.Web.UI.Page
 
     private void loadMethods()
     {
+        txtMethodName.Text = "";
+        txtMethodLabel.Text = "";
+        txtMethodTooltip.Text = "";
         gvMethods.DataSource = OSAESql.RunSQL("SELECT method_name, method_label, param_1_label, param_2_label, param_1_default, param_2_default, method_tooltip FROM osae_v_object_type_method where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY method_name");
         gvMethods.DataBind();
         if (gvMethods.Rows.Count > 0)
@@ -276,6 +286,7 @@ public partial class objtypes : System.Web.UI.Page
             try
             {
                 hdnSelectedMethodRow.Text = gvMethods.SelectedIndex.ToString();
+                hdnSelectedMethodName.Text = gvMethods.DataKeys[gvMethods.SelectedIndex]["method_name"].ToString();
                 txtMethodName.Text = gvMethods.DataKeys[gvMethods.SelectedIndex]["method_name"].ToString();
                 txtMethodLabel.Text = gvMethods.DataKeys[gvMethods.SelectedIndex]["method_label"].ToString();
                 txtParam1Label.Text = gvMethods.DataKeys[Int32.Parse(hdnSelectedMethodRow.Text)]["param_1_label"].ToString();
@@ -290,6 +301,9 @@ public partial class objtypes : System.Web.UI.Page
 
     private void loadEvents()
     {
+        txtEventName.Text = "";
+        txtEventLabel.Text = "";
+        txtEventTooltip.Text = "";
         gvEvents.DataSource = OSAESql.RunSQL("SELECT event_name, event_label, event_tooltip FROM osae_v_object_type_event where object_type='" + hdnSelectedObjectName.Text + "' ORDER BY event_name");
         gvEvents.DataBind();
         if (gvEvents.Rows.Count > 0)
@@ -297,6 +311,7 @@ public partial class objtypes : System.Web.UI.Page
             gvEvents.SelectedIndex = 0;
             try
             {
+                hdnSelectedEventName.Text = gvEvents.DataKeys[gvEvents.SelectedIndex]["event_name"].ToString();
                 hdnSelectedEventRow.Text = gvEvents.SelectedIndex.ToString();
                 txtEventName.Text = gvEvents.DataKeys[gvEvents.SelectedIndex]["event_name"].ToString();
                 txtEventLabel.Text = gvEvents.DataKeys[gvEvents.SelectedIndex]["event_label"].ToString();
@@ -328,6 +343,7 @@ public partial class objtypes : System.Web.UI.Page
     protected void btnStateSave_Click(object sender, EventArgs e)
     {
         OSAEObjectTypeManager.ObjectTypeStateUpdate(hdnSelectedStateName.Text, txtStateName.Text, txtStateLabel.Text, hdnSelectedObjectName.Text, txtStateTooltip.Text);
+        loadStates();
     }
 
     protected void btnStateAdd_Click(object sender, EventArgs e)
@@ -350,7 +366,10 @@ public partial class objtypes : System.Web.UI.Page
         if (ddlPropType.SelectedValue == "Object Type" & ddlBaseType2.SelectedValue == "")
             Response.Write("<script>alert('You must select an Object Type!');</script>");
         else
+        {
             OSAEObjectTypeManager.ObjectTypePropertyUpdate(gvProperties.DataKeys[gvProperties.SelectedIndex]["property_name"].ToString(), txtPropName.Text, ddlPropType.SelectedValue, ddlBaseType2.SelectedValue, txtPropDefault.Text, hdnSelectedObjectName.Text, chkTrackChanges.Checked, chkRequired.Checked, txtPropertyTooltip.Text);
+            loadProperties();
+        }
     }
 
     protected void btnMethodSave_Click(object sender, EventArgs e)
@@ -573,6 +592,22 @@ public partial class objtypes : System.Web.UI.Page
             btnEventDelete.Enabled = true;
             btnPropDelete.Enabled = true;
         }
-        #endregion
+    }
+    #endregion
+
+    private void SetSessionTimeout()
+    {
+        try
+        {
+            int timeout = 0;
+            if (int.TryParse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value, out timeout))
+                Session.Timeout = timeout;
+            else Session.Timeout = 60;
+        }
+        catch (Exception ex)
+        {
+            Master.Log.Error("Error setting session timeout", ex);
+            Response.Redirect("~/error.aspx");
+        }
     }
 }

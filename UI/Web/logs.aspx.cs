@@ -13,12 +13,15 @@ public partial class logs : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        if (Session["Username"] == null) Response.Redirect("~/Default.aspx?ReturnUrl=logs.aspx");
         int objSet = OSAEAdminManager.GetAdminSettingsByName("Server Log Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
+        SetSessionTimeout();
         if (!IsPostBack) GetLogs();
-
+        DropDownList ddlSource2 = (DropDownList)gvLog.HeaderRow.FindControl("ddlSource");
+        btnClear.ToolTip = "Clears " + ddlSource2.Text + " Log Entries";
+        btnClear2.ToolTip = "Clears " + ddlSource2.Text + " Log Entries";
         // Apply Security Admin Settings
         applySecurity();
     }
@@ -54,9 +57,19 @@ public partial class logs : System.Web.UI.Page
     }
     protected void btnClear_Click(object sender, EventArgs e)
     {
-        OSAE.General.OSAELog.Clear();
+        DropDownList ddlSource2 = (DropDownList)gvLog.HeaderRow.FindControl("ddlSource");
+        if (ddlSource2.Text == "All")
+        {
+            OSAE.General.OSAELog.Clear();
+        }
+        else
+        {
+            OSAE.General.OSAELog.Clear_Log(ddlSource2.Text);
+            Response.Redirect("~/logs.aspx");
+        }
         GetLogs();   
     }
+
     protected void CheckedChanged(object sender, EventArgs e)
     {
         GetLogs();
@@ -75,4 +88,20 @@ public partial class logs : System.Web.UI.Page
         }
     }
     #endregion
+
+    private void SetSessionTimeout()
+    {
+        try
+        {
+            int timeout = 0;
+            if (int.TryParse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value, out timeout))
+                Session.Timeout = timeout;
+            else Session.Timeout = 60;
+        }
+        catch (Exception ex)
+        {
+            Master.Log.Error("Error setting session timeout", ex);
+            Response.Redirect("~/error.aspx");
+        }
+    }
 }

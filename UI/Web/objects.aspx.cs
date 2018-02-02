@@ -168,7 +168,7 @@ public partial class home : System.Web.UI.Page
         {
             txtListItem.Text = gvPropList.DataKeys[gvPropList.SelectedIndex]["item_name"].ToString();
         }
-        }
+    }
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -178,7 +178,7 @@ public partial class home : System.Web.UI.Page
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < adSet.ObjectsTrust)
             Response.Redirect("~/permissionError.aspx");
-
+        SetSessionTimeout();
         bool hideControls = Convert.ToBoolean(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Hide Controls").Value);
         if (hideControls)
             objectSQL = "SELECT object_id, container_name, object_name, object_type, state_label, state_name, DATE_FORMAT(last_updated,'%m/%d %h:%i:%s %p') as last_updated, address, object_type_tooltip FROM osae_v_object WHERE base_type NOT IN ('CONTROL','SCREEN','USER CONTROL') order by container_name, object_name";
@@ -301,7 +301,7 @@ public partial class home : System.Web.UI.Page
 
              e.Row.Attributes.Add("onclick", "selectPropListItem('" + gvPropList.DataKeys[e.Row.RowIndex]["item_name"].ToString().Replace("'","^^^") + "', '" + gvPropList.DataKeys[e.Row.RowIndex]["item_label"].ToString().Replace("'", "^^^") + "', this);");
          //  e.Row.Attributes.Add("onclick", "selectPropListItem(" + e.Row.RowIndex.ToString() + ", this);");
-        
+
         }
     }
 
@@ -608,12 +608,28 @@ public partial class home : System.Web.UI.Page
 
     protected void btnListItemDelete_Click(object sender, EventArgs e)
     {
-        //     OSAEObjectPropertyManager.ObjectPropertyArrayDelete(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), hdnSelectedPropName.Text, hdnPropListItemName.Value);
+         //     OSAEObjectPropertyManager.ObjectPropertyArrayDelete(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), hdnSelectedPropName.Text, hdnPropListItemName.Value);
        // OSAEObjectPropertyManager.ObjectPropertyArrayDelete(gvObjects.DataKeys[gvObjects.SelectedIndex]["object_name"].ToString(), hdnSelectedPropName.Text, gvPropList.DataKeys[gvPropList.SelectedIndex]["item_name"].ToString());
         OSAEObjectPropertyManager.ObjectPropertyArrayDelete(hdnSelectedObjectName.Text, hdnSelectedPropName.Text, txtListItem.Text);
 
         hdnEditingPropList.Value = "1";
         loadPropertyList();
+    }
+
+    private void SetSessionTimeout()
+    {
+        try
+        {
+            int timeout = 0;
+            if (int.TryParse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value, out timeout))
+                Session.Timeout = timeout;
+            else Session.Timeout = 60;
+        }
+        catch (Exception ex)
+        {
+            Master.Log.Error("Error setting session timeout", ex);
+            Response.Redirect("~/error.aspx");
+        }
     }
 
     #region Trust Settings
@@ -1399,11 +1415,11 @@ public partial class home : System.Web.UI.Page
                         gVa3 = false;
                         eRr = "Missing Object Trust Level";
                     }
-                    //if (!OSAEObjectManager.ObjectExists(txtName.Text))
-                    //{
-                    //    gVa4 = false;
-                    //    eRr = "This Object does NOT Exist!";
-                    //}
+                    if (!OSAEObjectManager.ObjectExists(txtName.Text))
+                    {
+                        gVa4 = false;
+                        eRr = "This Object does NOT Exist!";
+                    }
                     if (gVa1 == true && gVa2 == true && gVa3 == true && gVa4 == true) { gV = true; }
                     if (string.IsNullOrEmpty(txtAlias.Text)) mSg = "Object Alias NOT specified! <br>";
                     if (string.IsNullOrEmpty(txtDescr.Text)) mSg += "Object Description NOT specified! <br>";

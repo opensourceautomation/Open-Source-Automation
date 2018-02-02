@@ -11,12 +11,15 @@ public partial class MasterPage : System.Web.UI.MasterPage
     protected void Page_Load(object sender, EventArgs e)
     {
 
-        if (Request.Headers["User-Agent"] != null && (Request.Browser["IsMobileDevice"] == "true" || Request.UserAgent.ToUpper().Contains("MIDP") || Request.UserAgent.ToUpper().Contains("CLDC") || Request.UserAgent.ToLower().Contains("iphone") || Request.UserAgent.ToLower().Contains("avant") || Request.UserAgent.ToLower().Contains("nokia") || Request.UserAgent.ToLower().Contains("pda") || Request.UserAgent.ToLower().Contains("moto") || Request.UserAgent.ToLower().Contains("windows ce") || Request.UserAgent.ToLower().Contains("hand") || Request.UserAgent.ToLower().Contains("mobi") || Request.UserAgent.ToUpper().Contains("HTC") || Request.UserAgent.ToLower().Contains("sony") || Request.UserAgent.ToLower().Contains("panasonic") || Request.UserAgent.ToLower().Contains("blackberry") || Request.UserAgent.ToLower().Contains("240x320") || Request.UserAgent.ToLower().Contains("voda")))
+        if (Request.Headers["User-Agent"] != null && (Request.Browser["IsMobileDevice"] == "true" || Request.UserAgent.ToUpper().Contains("MIDP") || Request.UserAgent.ToUpper().Contains("CLDC") || Request.UserAgent.ToLower().Contains("iphone") || Request.UserAgent.ToLower().Contains("avant") || Request.UserAgent.ToLower().Contains("nokia") || Request.UserAgent.ToLower().Contains("pda") || Request.UserAgent.ToLower().Contains("moto") || Request.UserAgent.ToLower().Contains("windows ce") || Request.UserAgent.ToLower().Contains("hand") || Request.UserAgent.ToLower().Contains("mobi") || Request.UserAgent.ToUpper().Contains("HTC") || Request.UserAgent.ToLower().Contains("sony") || Request.UserAgent.ToLower().Contains("panasonic") || Request.UserAgent.ToLower().Contains("SAMSUNG") || Request.UserAgent.ToLower().Contains("blackberry") || Request.UserAgent.ToLower().Contains("240x320") || Request.UserAgent.ToLower().Contains("voda")))
+        {
+            Log.Debug("Request User-Agent: " + Request.Headers["User-Agent"].ToString() + ". Redirecting to Mobile Site");
             Response.Redirect("mobile/index.aspx");
+        }
 
         OSAEObjectCollection screens = OSAEObjectManager.GetObjectsByType("SCREEN");
 
-        SetSessionTimeout();       
+        //SetSessionTimeout();       
 
         foreach (OSAEObject s in screens)
         {
@@ -41,10 +44,8 @@ public partial class MasterPage : System.Web.UI.MasterPage
         {
             cog.ToolTip = "Config Settings: OSA service is running.";
         }
-        if (Session["UserName"] != null)
-        {
-            btnUser.Text = Session["UserName"].ToString();
-        }
+
+        btnUser.Text = Session["UserName"].ToString();
        // if (Session["SecurityLevel"].ToString() != "Admin") btnAdmin.Visible = false;
     }
 
@@ -79,9 +80,4 @@ public partial class MasterPage : System.Web.UI.MasterPage
         Session.Abandon();
         Response.Redirect("default.aspx");
     }
-
-   // protected void btnAdmin_Click(object sender, EventArgs e)
-   // {
-   //     Response.Redirect("admin.aspx");
-   // }
 }

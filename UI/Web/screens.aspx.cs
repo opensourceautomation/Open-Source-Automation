@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 using OSAE;
 
 public partial class screens : System.Web.UI.Page
@@ -6,18 +8,26 @@ public partial class screens : System.Web.UI.Page
     private int restPort = 8732;
     public string gScreen;
     private OSAEImageManager imgMgr = new OSAEImageManager();
+    private string currentuser;
+    protected HiddenField authkey2 = new HiddenField();
 
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["Username"] == null) Response.Redirect("~/Default.aspx");
+        currentuser = Session["Username"].ToString();
         int objSet = OSAEAdminManager.GetAdminSettingsByName("Screen Trust");
         int tLevel = Convert.ToInt32(Session["TrustLevel"].ToString());
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
-
+        SetSessionTimeout();
         getRestPort();
         hdnUserTrust.Value = Session["TrustLevel"].ToString();
         debuglabel.Text = Session["TrustLevel"].ToString();
+        authkey2.ID = "authkey2";
+        authkey2.ClientIDMode = ClientIDMode.Static;
+        authkey2.Value = OSAESecurity.generateCurrentAuthKey(currentuser);
+        UpdatePlaceholder.Controls.Add(authkey2);
         gScreen = Request.QueryString["id"];
+        
         try
         {
             OSAEObject screen = OSAEObjectManager.GetObjectByName(gScreen);
@@ -27,7 +37,7 @@ public partial class screens : System.Web.UI.Page
             OSAEImage img = imgMgr.GetImage(sImg);
             imgBackground.ImageUrl = "~/ImageHandler.ashx?id=" + img.ID;
             foreach (OSAEObject obj in screenObjects)
-                LoadControl(obj);            
+                LoadControl(obj);
         }
         catch
         { return; }
@@ -94,17 +104,11 @@ public partial class screens : System.Web.UI.Page
         #region Camera Viewer
         else if (obj.Type == "CONTROL CAMERA VIEWER")
         {
-
             // Create instance of the UserControl SimpleControl
-            try
-            {
-                ASP.VideoStreamViewer ctrl = (ASP.VideoStreamViewer)LoadControl("~/controls/VideoStreamViewer.ascx");
-                //ASP.ctrlEmbedded ctrl = (ASP.ctrlEmbedded)LoadControl("~/controls/ctrlEmbedded.ascx");
-                ctrl.screenObject = OSAEObjectManager.GetObjectByName(obj.Name);
-                StaticPlaceholder.Controls.Add(ctrl);
-            }
-            catch
-            { return; }
+            ASP.VideoStreamViewer ctrl = (ASP.VideoStreamViewer)LoadControl("~/controls/VideoStreamViewer.ascx");
+            // Set the Public Properties
+            ctrl.screenObject = OSAEObjectManager.GetObjectByName(obj.Name);
+            StaticPlaceholder.Controls.Add(ctrl);
         }
         #endregion
 
@@ -143,6 +147,7 @@ public partial class screens : System.Web.UI.Page
         //        control.Update();
         //    }
         //}
+        authkey2.Value = OSAESecurity.generateCurrentAuthKey(currentuser);
     }
 
     private void getRestPort()
@@ -156,5 +161,21 @@ public partial class screens : System.Web.UI.Page
             catch (ArgumentNullException) { }
         }
         hdnRestPort.Value = restPort.ToString();
+    }
+
+    private void SetSessionTimeout()
+    {
+        try
+        {
+            int timeout = 0;
+            if (int.TryParse(OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Web Server", "Timeout").Value, out timeout))
+                Session.Timeout = timeout;
+            else Session.Timeout = 60;
+        }
+        catch (Exception ex)
+        {
+            Master.Log.Error("Error setting session timeout", ex);
+            Response.Redirect("~/error.aspx");
+        }
     }
 }
