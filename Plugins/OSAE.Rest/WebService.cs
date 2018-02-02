@@ -9,59 +9,64 @@
     using System.Speech;
     using System.Speech.Recognition;
     using OSAE;
+    using System.IO;
+    using System.Text;
+    using System.Security.Cryptography;
+    using System.Linq;
+    using System.Web;
     
     [ServiceContract]
     public interface IRestService
     {
         [OperationContract]
-        [WebGet(UriTemplate = "object/{name}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        OSAEObject GetObject(string name);
+        [WebGet(UriTemplate = "object/{name}?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        OSAEObject GetObject(string name, string authkey);
         
         [OperationContract]
-        [WebGet(UriTemplate = "object/{name}/state", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        OSAEObjectState GetObjectState(string name);
+        [WebGet(UriTemplate = "object/{name}/state?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        OSAEObjectState GetObjectState(string name, string authkey);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/{name}/setstate/{state}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean SetObjectState(string name, string state);
+        [WebInvoke(UriTemplate = "object/{name}/setstate/{state}?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        Boolean SetObjectState(string name, string state, string authkey);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/{name}/{method}?param1={param1}&param2={param2}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean ExecuteMethod(string name, string method, string param1, string param2);
+        [WebInvoke(UriTemplate = "object/{name}/{method}?param1={param1}&param2={param2}&ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        Boolean ExecuteMethod(string name, string method, string param1, string param2, string authkey);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/add?name={name}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&mintrustlevel={mintrustlevel}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/add?name={name}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&mintrustlevel={mintrustlevel}&enabled={enabled}&ak={authkey}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean AddObject(string name, string alias, string description, string type, string address, string container, int mintrustlevel, string enabled);
+        Boolean AddObject(string name, string alias, string description, string type, string address, string container, int mintrustlevel, string enabled, string authkey);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "object/update?oldName={oldName}&newName={newName}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&mintrustlevel={mintrustlevel}&enabled={enabled}",
+        [WebInvoke(UriTemplate = "object/update?oldName={oldName}&newName={newName}&alias={alias}&desc={description}&type={type}&address={address}&container={container}&mintrustlevel={mintrustlevel}&enabled={enabled}&ak={authkey}",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, int mintrustlevel, string enabled);
+        Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, int mintrustlevel, string enabled, string authkey);
 
         [OperationContract]
-        [WebGet(UriTemplate = "objects/type/{type}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        OSAEObjectCollection GetObjectsByType(string type);
+        [WebGet(UriTemplate = "objects/type/{type}?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        OSAEObjectCollection GetObjectsByType(string type, string authkey);
 
         [OperationContract]
-        [WebGet(UriTemplate = "objects/basetype/{type}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        OSAEObjectCollection GetObjectsByBaseType(string type);
+        [WebGet(UriTemplate = "objects/basetype/{type}?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        OSAEObjectCollection GetObjectsByBaseType(string type, string authkey);
 
         [OperationContract]
-        [WebGet(UriTemplate = "objects/container/{container}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        OSAEObjectCollection GetObjectsByContainer(string container);
+        [WebGet(UriTemplate = "objects/container/{container}?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        OSAEObjectCollection GetObjectsByContainer(string container, string authkey);
 
         [OperationContract]
-        [WebGet(UriTemplate = "object/propertylist/{objName}/{propName}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        List<string> getPropertyList(string objName, string propName);
+        [WebGet(UriTemplate = "object/propertylist/{objName}/{propName}?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        List<string> getPropertyList(string objName, string propName, string authkey);
 
         [OperationContract]
-        [WebGet(UriTemplate = "plugins", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        OSAEObjectCollection GetPlugins();
+        [WebGet(UriTemplate = "plugins?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        OSAEObjectCollection GetPlugins(string authkey);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "namedscript/{match}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean SendPattern(string match);
+        [WebInvoke(UriTemplate = "namedscript/{match}?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        Boolean SendPattern(string match, string authkey);
 
         //[OperationContract]
         //[WebGet(UriTemplate = "namedscript/update?name={name}&oldName={oldName}&script={script}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -76,21 +81,21 @@
         //Boolean UpdateScript(string objName, string objEvent, string script);
     
         [OperationContract]
-        [WebGet(UriTemplate = "system/states", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        List<string> GetSystemStates();
+        [WebGet(UriTemplate = "system/states?ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        List<string> GetSystemStates(string authkey);
 
         [OperationContract]        
-        [WebInvoke(UriTemplate = "property/update?objName={objName}&propName={propName}&propVal={propVal}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        Boolean SetObjectProperty(string objName, string propName, string propVal);
+        [WebInvoke(UriTemplate = "property/update?objName={objName}&propName={propName}&propVal={propVal}&ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        Boolean SetObjectProperty(string objName, string propName, string propVal, string authkey);
 
 
         [OperationContract]
-        [WebGet(UriTemplate = "analytics/{objName}/{propName}?f={from}&t={to}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare )]
-        List<OSAEPropertyHistory> GetPropertyHistory(string objName, string propName, string from, string to);
+        [WebGet(UriTemplate = "analytics/{objName}/{propName}?f={from}&t={to}&ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare )]
+        List<OSAEPropertyHistory> GetPropertyHistory(string objName, string propName, string from, string to, string authkey);
 
         [OperationContract]
-        [WebGet(UriTemplate = "analytics/state/{objName}?f={from}&t={to}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
-        List<OSAEStateHistory> GetStateHistory(string objName, string from, string to);
+        [WebGet(UriTemplate = "analytics/state/{objName}?f={from}&t={to}&ak={authkey}", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
+        List<OSAEStateHistory> GetStateHistory(string objName, string from, string to, string authkey);
     }
 
     public class api : IRestService
@@ -99,30 +104,52 @@
         private OSAE.General.OSAELog Log = new OSAE.General.OSAELog("Rest");
         SpeechRecognitionEngine oRecognizer = new SpeechRecognitionEngine();
      
-        public OSAEObject GetObject(string name)
+        public OSAEObject GetObject(string name, string authkey)
         {
             // lookup object 
-            OSAEObject OSAEobj = OSAEObjectManager.GetObjectByName(name);
-            OSAEobj.Properties = getProperties(OSAEobj.Name);
-            Log.Debug("Retrieving object:  " + name + ".");
-            return OSAEobj;
+            if (OSAESecurity.Authorize(authkey, name))
+            {
+                OSAEObject OSAEobj = OSAEObjectManager.GetObjectByName(name);
+                OSAEobj.Properties = getProperties(OSAEobj.Name);
+                Log.Debug("Retrieving object:  " + name + ".");
+                return OSAEobj;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public OSAEObjectState GetObjectState(string name)
+        public OSAEObjectState GetObjectState(string name, string authkey)
         {
-            OSAEObjectState state = OSAEObjectStateManager.GetObjectStateValue(name);
-            Log.Debug("Looking up object state:  " + name + ".  I Found " + state.StateLabel + ".");
-            return state;
+            if (OSAESecurity.Authorize(authkey, name))
+            {
+                OSAEObjectState state = OSAEObjectStateManager.GetObjectStateValue(name);
+                Log.Debug("Looking up object state:  " + name + ".  I Found " + state.StateLabel + ".");
+                return state;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public Boolean SetObjectState(string name, string state)
+        public Boolean SetObjectState(string name, string state, string authkey)
         {
-            OSAEObjectStateManager.ObjectStateSet(name, state, "Rest");
-            Log.Debug("Setting object state:  " + name + " set to: " + state + ".");
-            return true;
+            string uAuth = OSAESecurity.DecryptUser(authkey);
+            if (uAuth != null)
+            {
+                OSAEObjectStateManager.ObjectStateSet(name, state, uAuth);
+                Log.Debug("Setting object state:  " + name + " set to: " + state + ".");
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public OSAEObjectCollection GetObjectsByType(string type)
+        public OSAEObjectCollection GetObjectsByType(string type, string authkey)
         {
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByType(type);
 
@@ -134,7 +161,7 @@
             return objects;
         }
 
-        public OSAEObjectCollection GetObjectsByBaseType(string type)
+        public OSAEObjectCollection GetObjectsByBaseType(string type, string authkey)
         {
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByBaseType(type);
             foreach (OSAEObject oObj in objects)
@@ -145,7 +172,7 @@
             return objects;
         }
 
-        public OSAEObjectCollection GetObjectsByContainer(string container)
+        public OSAEObjectCollection GetObjectsByContainer(string container, string authkey)
         {
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByContainer(container);
 
@@ -157,30 +184,38 @@
             return objects;
         }
 
-        public Boolean ExecuteMethod(string name, string method, string param1, string param2)
+        public Boolean ExecuteMethod(string name, string method, string param1, string param2, string authkey)
         {
-            // execute a method on an object 
-            OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, "Rest");
-            Log.Debug("Executing Method:  " + name + "." + method + "."+ param1 + "." + param2);
-            return true;
+            string uAuth = OSAESecurity.DecryptUser(authkey);
+            if (uAuth != null)
+            {
+                // execute a method on an object 
+                OSAEMethodManager.MethodQueueAdd(name, method, param1, param2, uAuth);
+                Log.Debug("Executing Method:  " + name + "." + method + "." + param1 + "." + param2);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public Boolean SendPattern(string match)
+        public Boolean SendPattern(string match, string authkey)
         {
 
-          //  try
-          //  {
-           //     oRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(oRecognizer_SpeechRecognized);
-                //oRecognizer.AudioStateChanged += new EventHandler<AudioStateChangedEventArgs>(oRecognizer_StateChanged);
-         //   }
-         //   catch (Exception ex)
-         //   {
-          //      Log.Error("Unable to configure oRecognizer", ex);
-         //   }
+            //  try
+            //  {
+            //     oRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(oRecognizer_SpeechRecognized);
+            //oRecognizer.AudioStateChanged += new EventHandler<AudioStateChangedEventArgs>(oRecognizer_StateChanged);
+            //   }
+            //   catch (Exception ex)
+            //   {
+            //      Log.Error("Unable to configure oRecognizer", ex);
+            //   }
 
-         //   oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
-         //   oRecognizer = OSAEGrammar.Load_Voice_Grammars(oRecognizer);
-          //  oRecognizer = OSAEGrammar.Load_Text_Only_Grammars(oRecognizer);
+            //   oRecognizer = OSAEGrammar.Load_Direct_Grammar(oRecognizer);
+            //   oRecognizer = OSAEGrammar.Load_Voice_Grammars(oRecognizer);
+            //  oRecognizer = OSAEGrammar.Load_Text_Only_Grammars(oRecognizer);
 
             //REPLACE WITH GRAMMAR
 
@@ -189,28 +224,48 @@
             // string patternName = Common.MatchPattern(match,"");
             // if (patternName != "")
             //  {
-                 OSAEScriptManager.RunScript(match, "", "Rest");
-                 Log.Debug("Executing Script:  " + match);
-            return true;
+            string uAuth = OSAESecurity.DecryptUser(authkey);
+            if (uAuth != null)
+            {
+                OSAEScriptManager.RunScript(match, "", "Rest");
+                Log.Debug("Executing Script:  " + match);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
             //  }
             //  else
             //return false;
         }
 
-        public Boolean AddObject(string name, string alias, string description, string type, string address, string container, int mintruestlevel, string enabled)
+        public Boolean AddObject(string name, string alias, string description, string type, string address, string container, int mintruestlevel, string enabled, string authkey)
         {
-
-            OSAEObjectManager.ObjectAdd(name, alias, description, type, address, container, mintruestlevel, StringToBoolean(enabled));
-            Log.Debug("Oject Add:  " + name + ", " + alias + ", " + description + ", " + type + ", " + address + ", " + container + ", " + mintruestlevel + ", " + enabled);
-            return true;
+            if (OSAESecurity.Authorize(authkey, name))
+            {
+                OSAEObjectManager.ObjectAdd(name, alias, description, type, address, container, mintruestlevel, StringToBoolean(enabled));
+                Log.Debug("Oject Add:  " + name + ", " + alias + ", " + description + ", " + type + ", " + address + ", " + container + ", " + mintruestlevel + ", " + enabled);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, int mintruestlevel, string enabled)
+        public Boolean UpdateObject(string oldName, string newName, string alias, string description, string type, string address, string container, int mintruestlevel, string enabled, string authkey)
         {
-            OSAEObjectManager.ObjectUpdate(oldName, newName, alias, description, type, address, container, mintruestlevel, Convert.ToBoolean(StringToBoolean(enabled)));
-            Log.Debug("Oject Update:  " + oldName + ", " + newName + ", " + alias + ", " + description + ", " + type + ", " + address + ", " + container + ", " + mintruestlevel + ", " + enabled);
-
-            return true;
+            if (OSAESecurity.Authorize(authkey, oldName))
+            {
+                OSAEObjectManager.ObjectUpdate(oldName, newName, alias, description, type, address, container, mintruestlevel, Convert.ToBoolean(StringToBoolean(enabled)));
+                Log.Debug("Oject Update:  " + oldName + ", " + newName + ", " + alias + ", " + description + ", " + type + ", " + address + ", " + container + ", " + mintruestlevel + ", " + enabled);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         //public Boolean AddScript(string objName, string objEvent, string script)
@@ -231,43 +286,61 @@
         //    return true;
         //}
 
-        public OSAEObjectCollection GetPlugins()
+        public OSAEObjectCollection GetPlugins(string authkey)
         {
             OSAEObjectCollection objects = OSAEObjectManager.GetObjectsByBaseType("plugin");
 
             foreach (OSAEObject oObj in objects)
                 oObj.Properties = getProperties(oObj.Name);
-
             return objects;
         }
 
-        public List<string> GetSystemStates()
+        public List<string> GetSystemStates(string authkey)
         {
-            List<string> states = new List<string>();
-
-            DataSet ds = OSAESql.RunSQL("select state_name from osae_v_object_state where object_name = 'SYSTEM'");
-            foreach (DataRow dr in ds.Tables[0].Rows)
-                states.Add(dr["state_name"].ToString());
-
-            return states;
+            if (OSAESecurity.Authorize(authkey, "System"))
+            {
+                List<string> states = new List<string>();
+                DataSet ds = OSAESql.RunSQL("select state_name from osae_v_object_state where object_name = 'SYSTEM'");
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                    states.Add(dr["state_name"].ToString());
+            
+                return states;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public Boolean SetObjectProperty(string objName, string propName, string propVal)
+        public Boolean SetObjectProperty(string objName, string propName, string propVal, string authkey)
         {
-            OSAEObjectPropertyManager.ObjectPropertySet(objName, propName, propVal, "Web ");
-
-            return true;
+            string uAuth = OSAESecurity.DecryptUser(authkey);
+            if (uAuth != null)
+            {
+                OSAEObjectPropertyManager.ObjectPropertySet(objName, propName, propVal, uAuth);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public List<string> getPropertyList(string objName, string propName)
-        {         
-            List<string> list = new List<string>();
-            DataSet ds = OSAEObjectPropertyManager.ObjectPropertyArrayGetAll(objName, propName);
-
-            foreach (DataRow dr in ds.Tables[0].Rows)
-                list.Add(dr["item_name"].ToString());
-
-            return list;
+        public List<string> getPropertyList(string objName, string propName, string authkey)
+        {
+            if (OSAESecurity.Authorize(authkey, objName))
+            {
+                List<string> list = new List<string>();
+                DataSet ds = OSAEObjectPropertyManager.ObjectPropertyArrayGetAll(objName, propName);
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                    list.Add(dr["item_name"].ToString());
+            
+                return list;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private OSAEObjectPropertyCollection getProperties(string objName)
@@ -304,40 +377,53 @@
             return booleanvalue;
         }
 
-        public List<OSAEPropertyHistory> GetPropertyHistory(string objName, string propName, string from, string to)
+        public List<OSAEPropertyHistory> GetPropertyHistory(string objName, string propName, string from, string to, string authkey)
         {
-            List<OSAEPropertyHistory> list = new List<OSAEPropertyHistory>();
-            DataSet ds = OSAEObjectPropertyManager.ObjectPropertyHistoryGet(objName, propName, from, to);
-            OSAEPropertyHistory ph = new OSAEPropertyHistory();
-            ph.label = objName + " - " + propName;
-            List<List<double>> vals = new List<List<double>>();
-            ph.data = vals;
-
-            foreach (DataRow dr in ds.Tables[0].Rows)
+            if (OSAESecurity.Authorize(authkey, objName))
             {
-                List<double> p = new List<double>();
-                p.Add((double)Common.GetJavascriptTimestamp(DateTime.Parse(dr["history_timestamp"].ToString())));
-                p.Add(double.Parse(dr["property_value"].ToString()));
-                vals.Add(p);
+                List<OSAEPropertyHistory> list = new List<OSAEPropertyHistory>();
+                DataSet ds = OSAEObjectPropertyManager.ObjectPropertyHistoryGet(objName, propName, from, to);
+                OSAEPropertyHistory ph = new OSAEPropertyHistory();
+                ph.label = objName + " - " + propName;
+                List<List<double>> vals = new List<List<double>>();
+                ph.data = vals;
+
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    List<double> p = new List<double>();
+                    p.Add((double)Common.GetJavascriptTimestamp(DateTime.Parse(dr["history_timestamp"].ToString())));
+                    p.Add(double.Parse(dr["property_value"].ToString()));
+                    vals.Add(p);
+                }
+                list.Add(ph);
+                return list;
             }
-            list.Add(ph);
-            return list;
+            else
+            {
+                return null;
+            }
         }
 
-        public List<OSAEStateHistory> GetStateHistory(string objName, string from, string to)
+        public List<OSAEStateHistory> GetStateHistory(string objName, string from, string to, string authkey)
         {
-            List<OSAEStateHistory> list = new List<OSAEStateHistory>();
-            DataSet ds = OSAEObjectStateManager.ObjectStateHistoryGet(objName, from, to);
-
-            foreach (DataRow dr in ds.Tables[0].Rows)
+            if (OSAESecurity.Authorize(authkey, objName))
             {
-                OSAEStateHistory sh = new OSAEStateHistory();
-                sh.obj = dr["object_name"].ToString();
-                sh.state = dr["state_label"].ToString();
-                sh.datetime = (double)Common.GetJavascriptTimestamp(DateTime.Parse(dr["history_timestamp"].ToString()));
-                list.Add(sh);
+                List<OSAEStateHistory> list = new List<OSAEStateHistory>();
+                DataSet ds = OSAEObjectStateManager.ObjectStateHistoryGet(objName, from, to);
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    OSAEStateHistory sh = new OSAEStateHistory();
+                    sh.obj = dr["object_name"].ToString();
+                    sh.state = dr["state_label"].ToString();
+                    sh.datetime = (double)Common.GetJavascriptTimestamp(DateTime.Parse(dr["history_timestamp"].ToString()));
+                    list.Add(sh);
+                }
+                return list;
             }
-            return list;
+            else
+            {
+                return null;
+            }
         }
 
         private void oRecognizer_SpeechRecognized(object sender, System.Speech.Recognition.SpeechRecognizedEventArgs e)

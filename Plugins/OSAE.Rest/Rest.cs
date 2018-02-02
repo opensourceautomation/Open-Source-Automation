@@ -6,6 +6,8 @@
     using System.ServiceModel.Activation;
     using System.ServiceModel.Description;
     using System.ServiceModel.Web;
+    using System.Security.Cryptography;
+    using System.Web;
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class Rest : OSAEPluginBase
@@ -29,7 +31,20 @@
         /// <param name="method">Method containging the command to run</param>
         public override void ProcessCommand(OSAEMethod method)
         {
+            Log.Info("Processing Method: " + method.MethodLabel);
             //No commands to process
+            if(method.MethodLabel== "GenerateApiKey")
+            {
+                OSAESecurity.GenerateAPIKey();
+            }
+            if (method.MethodLabel == "GenerateSecurityKey")
+            {
+                OSAESecurity.GenerateSecurityKey();
+            }
+            if (method.MethodLabel == "GenerateCurrentAuthKey")
+            {
+                Log.Info("currentAPIAuthKey: " + OSAESecurity.generateCurrentAuthKey(method.Parameter1));
+            }
         }
 
         /// <summary>
@@ -68,13 +83,15 @@
                 
                 WebHttpBinding binding = new WebHttpBinding(WebHttpSecurityMode.None); 
                 binding.CrossDomainScriptAccessEnabled = true;
+                
                 var endpoint = serviceHost.AddServiceEndpoint(typeof(IRestService), binding, "");
 
                 ServiceDebugBehavior sdb = serviceHost.Description.Behaviors.Find<ServiceDebugBehavior>();
                 sdb.HttpHelpPageEnabled = false;
                 if (showHelp) serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
 
-                Log.Info("Starting RESTful Interface");
+                OSAESecurity.GenerateAPIKey();
+                OSAESecurity.GenerateSecurityKey();
                 serviceHost.Open();                                
             }
             catch (Exception ex)
