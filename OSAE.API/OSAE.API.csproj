@@ -94,6 +94,7 @@
     <Compile Include="OSAEScreenControl\OSAEScreenControlManager.cs" />
     <Compile Include="OSAEScript\OSAEScriptProcessor.cs" />
     <Compile Include="OSAEService\OSAEServiceBase.cs">
+    <Compile Include="OSAEService\OSAEServiceBase.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="OSAEService\OSAEServiceController.cs">
