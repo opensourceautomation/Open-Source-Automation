@@ -42,7 +42,7 @@ namespace OSAE.General
                 }
             }
 
-            try
+             try
             {
                 bPrune = Convert.ToBoolean(OSAEObjectPropertyManager.GetObjectPropertyValue("SYSTEM", "Prune Logs").Value);
             }
@@ -145,6 +145,19 @@ namespace OSAE.General
             using (MySqlCommand command = new MySqlCommand())
             {
                 command.CommandText = "CALL osae_sp_server_log_clear";
+                try
+                { OSAESql.RunQuery(command); }
+                catch (Exception ex)
+                { throw ex; }
+            }
+        }
+
+        public static void Clear_Log(string log)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_server_log_clear_logger(@log)";
+                command.Parameters.AddWithValue("@log", log);
                 try
                 { OSAESql.RunQuery(command); }
                 catch (Exception ex)

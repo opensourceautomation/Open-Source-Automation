@@ -58,7 +58,7 @@ public partial class logs : System.Web.UI.Page
     protected void btnClear_Click(object sender, EventArgs e)
     {
         DropDownList ddlSource2 = (DropDownList)gvLog.HeaderRow.FindControl("ddlSource");
-        if (ddlSource2.Text == "All")
+        if (ddlSource2.Text == "ALL")
         {
             OSAE.General.OSAELog.Clear();
         }
