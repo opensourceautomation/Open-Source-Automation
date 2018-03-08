@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSAE.Jabber", "Plugins\OSAE.Jabber\OSAE.Jabber.csproj", "{589EDA2C-421D-40F1-9682-D4360E02897A}"
 EndProject
@@ -39,7 +39,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web", "http://localhost:53994", "{E730B38F-5144-4AA2-9369-5287A3667CB0}"
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.7.1"
 		ProjectReferences = "{022f45f1-c988-41a1-a203-39e97be928b6}|OSAE.API.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_53994"
 		Debug.AspNetCompiler.PhysicalPath = "UI\Web\"
@@ -310,5 +310,8 @@ Global
 		{35DEF1F9-4FFE-494F-AE8D-0AF15B278C22} = {CC992324-4B93-4E9B-9A2F-AF1D06833965}
 		{394D2B41-4B78-4701-8D36-BF04EB42EAA4} = {2A452081-FFE5-43C4-82D1-7202917BC509}
 		{770F99D6-26C6-495A-905D-0EA3ACC5D5D2} = {2A452081-FFE5-43C4-82D1-7202917BC509}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9A3E0F1C-67F1-4541-8D86-07D1093CC76D}
 	EndGlobalSection
 EndGlobal

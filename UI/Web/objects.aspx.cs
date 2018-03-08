@@ -167,6 +167,7 @@ public partial class home : System.Web.UI.Page
         else if (args[0] == "gvPropList")
         {
             txtListItem.Text = gvPropList.DataKeys[gvPropList.SelectedIndex]["item_name"].ToString();
+
         }
     }
 
