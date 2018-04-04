@@ -68,6 +68,22 @@
         }
 
         /// <summary>
+        /// Get Export script for schedules
+        /// </summary>
+        /// <param name="schedule_name">The name of the schedule</param>
+        public static string ScheduleExport(string ScheduleName)
+        {
+            using (MySqlCommand command = new MySqlCommand())
+            {
+                command.CommandText = "CALL osae_sp_schedule_export (@schedule_name)";
+                command.Parameters.AddWithValue("@schedule_name", ScheduleName);
+                DataSet ds = OSAESql.RunQuery(command);
+
+                return ds.Tables[0].Rows[0][0].ToString();
+            }
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="scheduleName"></param>
