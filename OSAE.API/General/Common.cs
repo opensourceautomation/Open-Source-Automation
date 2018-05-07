@@ -109,7 +109,7 @@
                     "DATABASE=" + registry.Read("DBNAME") + ";" +
                     "PORT=" + registry.Read("DBPORT") + ";" +
                     "UID=" + registry.Read("DBUSERNAME") + ";" +
-                    "PASSWORD=" + registry.Read("DBPASSWORD") + ";";
+                    "PASSWORD=" + registry.Read("DBPASSWORD") + ";Allow User Variables=True;";
 
                 return connectionString;
             }
