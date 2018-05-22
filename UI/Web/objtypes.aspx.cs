@@ -595,6 +595,14 @@ public partial class objtypes : System.Web.UI.Page
     }
     #endregion
 
+    #region Export
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        string objName = hdnSelectedObjectName.Text;
+        Response.Redirect(@"~/importexport.aspx?eType=ObjectType&eObject=" + objName);
+    }
+    #endregion
+
     private void SetSessionTimeout()
     {
         try

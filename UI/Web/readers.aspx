@@ -113,6 +113,10 @@
         <div id="exportModalBody" class="modal-body">
             <asp:TextBox ID="lblExportReaders" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
         </div>
+        <div class="modal-footer">
+            <asp:Button runat="server" ID="btnExport" Text="Export" ToolTip="Export to an SQL file" Class="btn" OnClick="btnExport_Click" />
+            <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
     </div>
         
     <asp:Label runat="server" ID="hdnSelectedReadersRow" Visible="false"></asp:Label>

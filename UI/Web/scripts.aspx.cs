@@ -303,6 +303,14 @@ public partial class scripts : System.Web.UI.Page
     }
     #endregion
 
+    #region Export
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        string objName = hdnSelectedScriptName.Text;
+        Response.Redirect(@"~/importexport.aspx?eType=Script&eObject=" + objName);
+    }
+    #endregion
+
     private void SetSessionTimeout()
     {
         try

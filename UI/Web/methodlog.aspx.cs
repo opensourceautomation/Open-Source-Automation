@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -58,6 +59,13 @@ public partial class methodlog : System.Web.UI.Page
             clearLogButton.Enabled = true;
             clearLogButton2.Enabled = true;
         }
+    }
+    #endregion
+
+    #region Export
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("~/importexport.aspx?eType=Log&eObject=Method%20Log");
     }
     #endregion
 

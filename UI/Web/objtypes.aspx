@@ -173,7 +173,7 @@
                         <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click" ToolTip="This will ADD the newly enter Object information above." />&nbsp
                         <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" ToolTip="This will UPDATE the above Object information." />&nbsp
                         <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" OnClientClick="return confirm('Are you sure you want to delete the object type?');" ToolTip="This will Delete the above selected Object." />
-                        <a href="#linkModal" role="button" class="btn" data-toggle="modal" title="This display the Export SQL for the above selected object."  >Export</a>
+                        <a href="#linkModal" role="button" class="btn" data-toggle="modal" title="This displays the Export SQL for the above selected object."  >Export</a>
                     </div>
                 </div>
             </div>
@@ -305,16 +305,23 @@
                                 Name: <asp:TextBox  runat="server" ID="txtPropName" style="width:225px;" ToolTip="Enter the Name of this Property"></asp:TextBox>
                                 <br />
                                 Type: <asp:DropDownList runat="server" ID="ddlPropType" datatextfield="Text" datavaluefield="Value" style="width:200px;"  AutoPostBack="true" OnSelectedIndexChanged="ddlPropType_SelectedIndexChanged" ToolTip="Choose the Data Type of this property.">
-                                        <asp:ListItem Selected = "True" Text = "String" Value = "String"></asp:ListItem>
                                         <asp:ListItem Text = "Boolean" Value = "Boolean"></asp:ListItem>
                                         <asp:ListItem Text = "DateTime" Value = "DateTime"></asp:ListItem>
+                                        <asp:ListItem Text = "Currency" Value = "Currency"></asp:ListItem>
+                                        <asp:ListItem Text = "Email" Value = "Email"></asp:ListItem>
                                         <asp:ListItem Text = "File" Value = "File"></asp:ListItem>
                                         <asp:ListItem Text = "Float" Value = "Float"></asp:ListItem>
+                                        <asp:ListItem Text = "Image" Value = "Image"></asp:ListItem>
                                         <asp:ListItem Text = "Integer" Value = "Integer"></asp:ListItem>
                                         <asp:ListItem Text = "List" Value = "List"></asp:ListItem>
                                         <asp:ListItem Text = "Object" Value = "Object"></asp:ListItem>
                                         <asp:ListItem Text = "Object Type" Value = "Object Type"></asp:ListItem>
                                         <asp:ListItem Text = "Password" Value = "Password"></asp:ListItem>
+                                        <asp:ListItem Text = "Percent" Value = "Percent"></asp:ListItem>
+                                        <asp:ListItem Text = "PhoneNum" Value = "PhoneNum"></asp:ListItem>
+                                        <asp:ListItem Text = "ReadOnly" Value = "ReadOnly"></asp:ListItem>
+                                        <asp:ListItem Selected = "True" Text = "String" Value = "String"></asp:ListItem>    
+                                        <asp:ListItem Text = "URL" Value = "URL"></asp:ListItem>
                                 </asp:DropDownList>
                                 <br />
                                 <asp:Label runat="server" ID="lblPropObjectType" Text="Object Type: "></asp:Label>
@@ -344,7 +351,7 @@
     <!-- Property Options Modal -->
     <div id="myPropOptionsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       </div>
       <div ID="dvmodalbody" class="modal-body">
         <asp:GridView runat="server" ID="gvPropOptions"
@@ -373,6 +380,10 @@
         </div>
         <div id="exportModalBody" class="modal-body">
             <asp:TextBox ID="lblExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
+        </div>
+        <div class="modal-footer">
+            <asp:Button runat="server" ID="btnExport" Text="Export" ToolTip="Export to an SQL file" Class="btn" OnClick="btnExport_Click" />
+            <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
         </div>
     </div>
 

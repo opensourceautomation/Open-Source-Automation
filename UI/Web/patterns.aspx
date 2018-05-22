@@ -158,6 +158,10 @@
         <div id="exportModalBody" class="modal-body">
             <asp:TextBox ID="lblExportPattern" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
         </div>
+        <div class="modal-footer">
+            <asp:Button runat="server" ID="btnExport" Text="Export" ToolTip="Export to an SQL file" Class="btn" OnClick="btnExport_Click" />
+            <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
     </div>
         
     <asp:HiddenField  runat="server" ID="hdnScript"></asp:HiddenField>

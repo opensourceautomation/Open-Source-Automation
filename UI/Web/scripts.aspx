@@ -271,7 +271,8 @@
           <asp:TextBox ID="lblExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
       </div>
       <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          <asp:Button runat="server" ID="btnExport" Text="Export" ToolTip="Export to an SQL file" Class="btn" OnClick="btnExport_Click" />
+          <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>
     </div>
 

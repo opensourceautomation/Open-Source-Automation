@@ -244,6 +244,14 @@ public partial class patterns : System.Web.UI.Page
     }
     #endregion
 
+    #region Export
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        string objName = hdnSelectedPatternName.Text;
+        Response.Redirect(@"~/importexport.aspx?eType=Pattern&eObject=" + objName);
+    }
+    #endregion
+
     private void SetSessionTimeout()
     {
         try

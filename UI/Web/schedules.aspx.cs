@@ -47,8 +47,10 @@ public partial class schedules : System.Web.UI.Page
             hdnSelectedRecurringName.Text = gvRecurring.DataKeys[Int32.Parse(hdnSelectedRecurringRow.Text)]["schedule_name"].ToString();
             btnUpdate.Visible = true;
             btnDelete.Visible = true;
+            
             loadDetails();
             alert.Visible = false;
+            txtExportSchedule.Text = OSAEScheduleManager.ScheduleExport(hdnSelectedRecurringName.Text);
         }
         else if (args[0] == "gvRecurring" && txtName.Text == "")
         {
@@ -89,6 +91,7 @@ public partial class schedules : System.Web.UI.Page
             gvRecurring.Rows[Int32.Parse(hdnSelectedRecurringRow.Text)].Style.Add("background", "lightblue");
         }
         txtPickedDate.Text = txtPickedDate.Text;
+        txtExportSchedule.Text = OSAEScheduleManager.ScheduleExport(hdnSelectedRecurringName.Text);
     }
 
     protected void gvQueue_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -397,6 +400,15 @@ public partial class schedules : System.Web.UI.Page
             btnDelete.Enabled = true;
             btnQueueDelete.Enabled = true;
         }
+    }
+    #endregion
+
+    #region Export
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        string objName = hdnSelectedRecurringName.Text;
+
+        Response.Redirect(@"~/importexport.aspx?eType=Schedule&eObject=" + objName);
     }
     #endregion
 

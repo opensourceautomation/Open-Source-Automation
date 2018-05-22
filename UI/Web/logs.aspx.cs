@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Data;
 using System.Web.UI.WebControls;
+using System.Web;
 
 public partial class logs : System.Web.UI.Page
 {
@@ -22,6 +23,8 @@ public partial class logs : System.Web.UI.Page
         DropDownList ddlSource2 = (DropDownList)gvLog.HeaderRow.FindControl("ddlSource");
         btnClear.ToolTip = "Clears " + ddlSource2.Text + " Log Entries";
         btnClear2.ToolTip = "Clears " + ddlSource2.Text + " Log Entries";
+        btnExport.ToolTip = "Exports " + ddlSource2.Text + " Log Entries";
+        btnExport2.ToolTip = "Exports " + ddlSource2.Text + " Log Entries";
         // Apply Security Admin Settings
         applySecurity();
     }
@@ -69,6 +72,23 @@ public partial class logs : System.Web.UI.Page
         }
         GetLogs();   
     }
+
+    #region Export
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        DropDownList ddlSource2 = (DropDownList)gvLog.HeaderRow.FindControl("ddlSource");
+        string myExportLog = "";
+        if (ddlSource2.SelectedValue == "ALL")
+        {
+            myExportLog = "Server%20Log";
+        }
+        else
+        {
+            myExportLog = ddlSource2.SelectedValue.Replace(" ", "%20");
+        }
+        Response.Redirect(@"~/importexport.aspx?eType=Log&eObject=" + myExportLog);
+    }
+    #endregion
 
     protected void CheckedChanged(object sender, EventArgs e)
     {

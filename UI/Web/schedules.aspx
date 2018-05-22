@@ -219,6 +219,7 @@
                     <asp:Button runat="server" ID="btnAdd" Text="Add" class="btn" OnClick="btnAdd_Click" Visible="false" ToolTip="ADDs the above enterd Schedule to the database."/>&nbsp
                     <asp:Button runat="server" ID="btnUpdate" Text="Update" class="btn" OnClick="btnUpdate_Click" Visible="false" ToolTip="UPDATEs the above information to the selected Schedule above."/>&nbsp
                     <asp:Button runat="server" ID="btnDelete" Text="Delete" class="btn" OnClick="btnDelete_Click" Visible="false" OnClientClick="return confirm('Are you sure you want to delete the schedule?');" ToolTip="DELETEs the above selected Schedule." />
+                    <a href="#linkModal" role="button" class="btn" data-toggle="modal" title="This displays the Export SQL for the above selected object." id="BtnExport">Export</a>
                     <br />
                     <br />
                     <div class="alert alert-success" runat="server" id="alert" visible="false">
@@ -228,6 +229,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div id="linkModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="H1">Schedules</h3>
+        </div>
+        <div id="exportModalBody" class="modal-body">
+            <asp:TextBox ID="txtExportSchedule" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
+        </div>
+        <div class="modal-footer">
+            <asp:Button runat="server" ID="btnExport" Text="Export" ToolTip="Export to an SQL file" Class="btn" OnClick="btnExport_Click" />
+            <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </div>
+
+
     <asp:TextBox runat="server" ID="txtPickedDate" style="display:none;"></asp:TextBox>
     <asp:Label runat="server" ID="hdnSelectedQueueRow" Visible="false"></asp:Label>
     <asp:Label runat="server" ID="hdnSelectedQueueID" Visible="false"></asp:Label>

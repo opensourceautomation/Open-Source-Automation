@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Data;
 using OSAE;
 
 public partial class debuglog : System.Web.UI.Page
@@ -57,6 +58,13 @@ public partial class debuglog : System.Web.UI.Page
             clearLogButton.Enabled = true;
             clearLogButton2.Enabled = true;
         }
+    }
+    #endregion
+
+    #region Export
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("~/importexport.aspx?eType=Log&eObject=Debug%20Log");
     }
     #endregion
 

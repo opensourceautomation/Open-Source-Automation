@@ -30,12 +30,9 @@ public partial class readers : System.Web.UI.Page
         if (tLevel < objSet) Response.Redirect("~/permissionError.aspx");
         SetSessionTimeout();
         loadReaders();
-
         if (!this.IsPostBack) loadObjects();
-
         if (hdnSelectedReadersRow.Text != "")
         { }
-
         applyObjectSecurity();
     }
 
@@ -83,7 +80,6 @@ public partial class readers : System.Web.UI.Page
                 e.Row.Attributes.Add("onmouseout", "this.style.background='none';");
             e.Row.Attributes.Add("onclick", ClientScript.GetPostBackClientHyperlink(this, "gvReaders_" + e.Row.RowIndex.ToString()));
         }
-
     }
 
 
@@ -91,7 +87,6 @@ public partial class readers : System.Web.UI.Page
     {
         gvReaders.DataSource = OSAESql.RunSQL("SELECT object_name,property_name,object_property_scraper_id,object_id,object_property_id,URL,search_prefix,search_prefix_offset,search_suffix,update_interval FROM osae_v_object_property_scraper ORDER BY object_name,property_name");
         gvReaders.DataBind();
-       
     }
 
     private void loadObjects()
@@ -105,8 +100,6 @@ public partial class readers : System.Web.UI.Page
         ddlProperties.DataSource = OSAESql.RunSQL("SELECT DISTINCT(property_name) as property_name,property_id FROM osae_v_object_property WHERE object_id=" + ddlObjects.SelectedValue + " ORDER BY property_name");
         ddlProperties.DataBind();
     }
-
-
 
     protected void btnReaderAdd_Click(object sender, EventArgs e)
     {
@@ -150,6 +143,15 @@ public partial class readers : System.Web.UI.Page
             btnReaderDelete.Enabled = true;
 
         }
+    }
+    #endregion
+
+    #region Export
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        string objName = hdnSelectedReadersName.Text;
+        Response.Redirect(@"~/importexport.aspx?eType=Reader&eObject=" + objName);
+
     }
     #endregion
 

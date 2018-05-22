@@ -90,13 +90,14 @@
                         <SelectedRowStyle backcolor="lightblue" BorderStyle="Outset" BorderWidth="1px"></SelectedRowStyle>  
                         <AlternatingRowStyle CssClass="rowHoverAlt"></AlternatingRowStyle>
                         <Columns>
-                            <asp:BoundField DataField="container_name" HeaderText="Container" SortExpression="container_name"/>  
-                            <asp:BoundField DataField="object_name" HeaderText="Object" SortExpression="object_name" />  
-                            <asp:BoundField DataField="object_type" HeaderText="Type" SortExpression="object_type" />  
-                            <asp:BoundField DataField="state_label" HeaderText="State" SortExpression="state_label" />  
+                            <asp:BoundField DataField="container_name" HeaderText="Container" SortExpression="container_name"/>
+                            <asp:BoundField DataField="object_name" HeaderText="Object" SortExpression="object_name"/>
+			    <asp:BoundField DataField="object_type" HeaderText="Type" SortExpression="object_type" />
+                            <asp:BoundField DataField="state_label" HeaderText="State" SortExpression="state_label" />
                             <asp:BoundField DataField="last_updated" HeaderText="Updated" ItemStyle-Width="10em" SortExpression="last_updated" />
+
                             <asp:BoundField DataField="address" HeaderText="Address" SortExpression="address" />
-                            <asp:BoundField DataField="object_type_tooltip" Visible="false" />  
+                            <asp:BoundField DataField="object_type_tooltip" Visible="false" />
                         </Columns>
                     </asp:GridView>
                 </div>
@@ -242,6 +243,7 @@
                                 <AlternatingRowStyle CssClass="rowHoverAlt1"></AlternatingRowStyle>
                                 <Columns>
                                     <asp:BoundField DataField="property_name" HeaderText="Property" />
+
                                     <asp:BoundField DataField="property_value" HeaderText="Value" />
                                     <asp:BoundField DataField="property_datatype" Visible="false" />
                                     <asp:BoundField DataField="object_property_id" Visible="false" />
@@ -319,7 +321,9 @@
           
         <br />
         <asp:Button class="btn btn-primary" runat="server" ID="btnAddListItem" Text="Add" OnClick="btnListItemAdd_Click"/>
+
         <asp:Button class="btn btn" runat="server" ID="btnListItemUpdate" Text="Update" OnClick="btnListItemUpdate_Click"/>
+
         <asp:Button class="btn btn" runat="server" ID="btnListItemDelete" Text="Delete" OnClick="btnListItemDelete_Click"/>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>
@@ -335,7 +339,8 @@
             <asp:TextBox ID="txtExportScript" runat="server" TextMode="MultiLine" Font-Size="Smaller"></asp:TextBox>
         </div>
       <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <asp:Button runat="server" ID="btnExport" Text="Export" class="btn" OnClick="btnExport_Click" ToolTip="Exports selected Object to an SQL or ZIP file." />
+          <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>
     </div>
     

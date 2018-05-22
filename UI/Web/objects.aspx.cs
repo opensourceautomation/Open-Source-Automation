@@ -8,8 +8,12 @@ using System.Globalization;
 using System.Web.UI.WebControls;
 using System.Data;
 using System.IO;
+using System.IO.Compression;
+using System.Text;
 using System.Xml.Serialization;
 using OSAE;
+
+
 
 public partial class home : System.Web.UI.Page
 {
@@ -167,7 +171,6 @@ public partial class home : System.Web.UI.Page
         else if (args[0] == "gvPropList")
         {
             txtListItem.Text = gvPropList.DataKeys[gvPropList.SelectedIndex]["item_name"].ToString();
-
         }
     }
 
@@ -632,6 +635,22 @@ public partial class home : System.Web.UI.Page
             Response.Redirect("~/error.aspx");
         }
     }
+
+    #region Export
+    protected void btnExport_Click(object sender, EventArgs e)
+    {
+        string objName = hdnSelectedObjectName.Text;
+        OSAEObject tObj = OSAEObjectManager.GetObjectByName(objName);
+        if (tObj.Type == "SCREEN")
+        {
+            Response.Redirect(@"~/importexport.aspx?eType=Screen&eObject=" + objName);
+        }
+        else
+        {
+            Response.Redirect(@"~/importexport.aspx?eType=Object&eObject=" + objName);
+        }
+    }
+    #endregion
 
     #region Trust Settings
     protected void applyPersonPropertySecurity(string objName, string objMinTrust, string propName, string propType, string propTrust)
