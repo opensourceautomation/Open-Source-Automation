@@ -310,10 +310,12 @@ namespace OSAE.Jabber
         {
             Log.Info("-> " + name + ": " + message + " (" + address + ")");
             // Send a message
-            agsXMPP.protocol.client.Message msg = new agsXMPP.protocol.client.Message();
-            msg.Type = agsXMPP.protocol.client.MessageType.chat;
-            msg.To = new Jid(address);
-            msg.Body = message;
+            agsXMPP.protocol.client.Message msg = new agsXMPP.protocol.client.Message
+            {
+                Type = agsXMPP.protocol.client.MessageType.chat,
+                To = new Jid(address),
+                Body = message
+            };
 
             xmppCon.Send(msg);
         }
