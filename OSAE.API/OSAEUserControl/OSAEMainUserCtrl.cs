@@ -7,6 +7,9 @@
     using System.Text;
     using System.Windows.Controls;
 
+    /// <summary>
+    /// Class holds an instance of a Static CustomUserControl
+    /// </summary>
     [Serializable]
     public class OSAEMainUserCtrl : UserControl
     {

@@ -12,6 +12,9 @@
     using Dapper;
     using System.Linq;
 
+    /// <summary>
+    /// Class used to manage OSAEImage
+    /// </summary>
     public class OSAEImageManager
     {
         /// <summary>

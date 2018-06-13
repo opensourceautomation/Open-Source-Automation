@@ -5,7 +5,7 @@
     using MySql.Data.MySqlClient;
 
     /// <summary>
-    /// The class is used to manage OSA ObjectTypes
+    /// This class is used to manage an OSAEObjectType in OSA
     /// </summary>
     public class OSAEObjectTypeManager
     {

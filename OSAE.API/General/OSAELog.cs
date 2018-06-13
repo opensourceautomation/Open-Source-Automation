@@ -9,6 +9,9 @@ using System.Threading;
 
 namespace OSAE.General
 {
+    /// <summary>
+    /// Public class used to hold an instance of the OSAELog system.
+    /// </summary>
     [Serializable]
     public class OSAELog
     {
@@ -16,6 +19,11 @@ namespace OSAE.General
         private Type logSource;
         private bool bDebug = false;
         private bool bPrune = false;
+        /// <summary>
+        /// Used to create an instance of an OSAELog
+        /// </summary>
+        /// <param name="source">
+        /// The name of the Log to create an instance of.</param>
         public OSAELog(string source)
         {
             StackFrame frame = new StackFrame(1);
@@ -80,37 +88,73 @@ namespace OSAE.General
                 }
             }
         }
-
+        /// <summary>
+        /// Appends information to log as "Standard Information"
+        /// </summary>
+        /// <param name="log">
+        /// Sting text to append to log instance</param>
         public void Info(string log)
         {
             Log.Info(log);
         }
 
+        /// <summary>
+        /// Appends information to log as "Debug Information"
+        /// </summary>
+        /// <param name="log">
+        /// Sting text to append to log instance</param>
         public void Debug(string log)
         {
             if (bDebug) Log.Debug(log);
         }
 
+        /// <summary>
+        /// Appends information to log as "Error Information"
+        /// </summary>
+        /// <param name="log">
+        /// Sting text to append to log instance</param>
         public void Error(string log)
         {
             Log.Error(log);
         }
 
+        /// <summary>
+        /// Appends information to log as "Error Information" with the Exception text
+        /// </summary>
+        /// <param name="log">
+        /// Sting text to append to log instance</param>
+        /// <param name="ex">
+        /// Exception text provided by MS .net</param>
         public void Error(string log, Exception ex)
         {
             Log.Error(log, ex);
         }
 
+        /// <summary>
+        /// Appends information to log as "Fatal Information" 
+        /// </summary>
+        /// <param name="log">
+        /// Sting text to append to log instance</param>
         public void Fatal(string log)
         {
             Log.Fatal(log);
         }
 
+        /// <summary>
+        /// Appends information to log as "Fatal Information" with the Exception text
+        /// </summary>
+        /// <param name="log">
+        /// Sting text to append to log instance</param>
+        /// <param name="ex">
+        /// Exception text provided by MS .net</param>
         public void Fatal(string log, Exception ex)
         {
             Log.Fatal(log, ex);
         }
 
+        /// <summary>
+        /// Used to flush the log4net buffers
+        /// </summary>
         public static void FlushBuffers()
         {
             log4net.Repository.ILoggerRepository rep = LogManager.GetRepository();
@@ -140,6 +184,9 @@ namespace OSAE.General
             }
         }
 
+        /// <summary>
+        /// Clears ALL Server Log entries
+        /// </summary>
         public static void Clear()
         {
             using (MySqlCommand command = new MySqlCommand())
@@ -152,6 +199,11 @@ namespace OSAE.General
             }
         }
 
+        /// <summary>
+        /// Clears ALL Server log entries for the specified Server Log
+        /// </summary>
+        /// <param name="log">
+        /// The name of the Server log to clear</param>
         public static void Clear_Log(string log)
         {
             using (MySqlCommand command = new MySqlCommand())
@@ -198,6 +250,11 @@ namespace OSAE.General
             return size;
         }
 
+        /// <summary>
+        /// Used to add logging entries to the Debug Log
+        /// </summary>
+        /// <param name="entry">
+        /// text to append to the Debug Log</param>
         public void DebugLogAdd(string entry)
         {
             try

@@ -228,7 +228,7 @@
         }
 
         /// <summary>
-        /// Data Class for Available Plugin.  Holds and instance of the loaded Plugin, as well as the Plugin's Assembly Path
+        /// Data Class for Available Plugin.  Holds an instance of the loaded Plugin, as well as the Plugin's Assembly Path
         /// </summary>
         public class AvailablePlugin
         {

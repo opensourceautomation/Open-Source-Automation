@@ -3,6 +3,9 @@
     using System;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// This class is used to hold information about the Type of an OSAEObject. 
+    /// </summary>
     [Serializable, DataContract]
     public class OSAEObjectType
     {

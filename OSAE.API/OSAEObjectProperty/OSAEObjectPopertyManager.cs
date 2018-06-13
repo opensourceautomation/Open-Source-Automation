@@ -6,7 +6,7 @@
     using MySql.Data.MySqlClient;
 
     /// <summary>
-    /// Can be used to manager the properties of an object in OSA
+    /// Class is used to manage an OSAEObjectProperty in OSA 
     /// </summary>
     public class OSAEObjectPropertyManager
     {

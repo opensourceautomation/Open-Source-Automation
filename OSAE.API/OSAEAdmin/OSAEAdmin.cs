@@ -3,7 +3,7 @@
     using System;
 
     /// <summary>
-    /// Class used for WebUI Admin settings
+    /// Class used to hold user trust levels for security administration
     /// </summary>
     [Serializable]
     public class OSAEAdmin

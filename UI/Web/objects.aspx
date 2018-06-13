@@ -92,10 +92,9 @@
                         <Columns>
                             <asp:BoundField DataField="container_name" HeaderText="Container" SortExpression="container_name"/>
                             <asp:BoundField DataField="object_name" HeaderText="Object" SortExpression="object_name"/>
-			    <asp:BoundField DataField="object_type" HeaderText="Type" SortExpression="object_type" />
+			                <asp:BoundField DataField="object_type" HeaderText="Type" SortExpression="object_type" />
                             <asp:BoundField DataField="state_label" HeaderText="State" SortExpression="state_label" />
                             <asp:BoundField DataField="last_updated" HeaderText="Updated" ItemStyle-Width="10em" SortExpression="last_updated" />
-
                             <asp:BoundField DataField="address" HeaderText="Address" SortExpression="address" />
                             <asp:BoundField DataField="object_type_tooltip" Visible="false" />
                         </Columns>
@@ -318,12 +317,9 @@
                 <asp:Textbox class="input-large" runat="server" ID="txtListItemLabel"></asp:Textbox>
             </div>
         </div>
-          
         <br />
         <asp:Button class="btn btn-primary" runat="server" ID="btnAddListItem" Text="Add" OnClick="btnListItemAdd_Click"/>
-
         <asp:Button class="btn btn" runat="server" ID="btnListItemUpdate" Text="Update" OnClick="btnListItemUpdate_Click"/>
-
         <asp:Button class="btn btn" runat="server" ID="btnListItemDelete" Text="Delete" OnClick="btnListItemDelete_Click"/>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>

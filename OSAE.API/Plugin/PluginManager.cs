@@ -10,7 +10,7 @@
         /// Returns a Dataset with all of the properties and their values for a plugin object
         /// </summary>
         /// <param name="ObjectName"></param>
-        /// <returns></returns>
+        /// <returns>A Dataset with all the Properties of the Object with that matches the specified ObjectName</returns>
         public static DataSet GetPluginSettings(string ObjectName)
         {
             using (MySqlCommand command = new MySqlCommand())

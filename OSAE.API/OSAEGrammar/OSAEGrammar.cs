@@ -5,6 +5,9 @@
     using System.Data;
     using System.Speech.Recognition;
 
+    /// <summary>
+    /// Class used for Speech Recognition Engine and processing Grammer
+    /// </summary>
     public class OSAEGrammar
     {
        

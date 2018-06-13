@@ -4,6 +4,9 @@
     using System.Collections.ObjectModel;
     using System.Text;
 
+    /// <summary>
+    /// Collection class for managing an OSAEMethod of an OSA object 
+    /// </summary>
     public class OSAEMethodCollection : Collection<OSAEMethod>
     {
         public void AddRange(List<OSAEMethod> osaeObjects)

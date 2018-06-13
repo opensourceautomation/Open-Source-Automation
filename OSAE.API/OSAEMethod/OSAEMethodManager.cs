@@ -5,6 +5,9 @@
     using System.Collections.Generic;
     using System.Data;
 
+    /// <summary>
+    /// Can be used to manage the OSAEMethod of an object in OSA 
+    /// </summary>
     public class OSAEMethodManager
     {
         /// <summary>

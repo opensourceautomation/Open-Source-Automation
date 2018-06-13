@@ -6,6 +6,9 @@
     
     [Obsolete("Please use OSAELog class")]
     [Serializable]
+    /// <summary>
+    ///OBSOLETE - Please use OSAELog class
+    /// </summary>
     public class Logging
     {
         /// <summary>

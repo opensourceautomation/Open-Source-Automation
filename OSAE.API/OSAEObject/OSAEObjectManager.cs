@@ -5,6 +5,9 @@
     using System.Data;
     using MySql.Data.MySqlClient;
 
+    /// <summary>
+    /// Class is used to manage an OSAEObject in OSA 
+    /// </summary>
     public class OSAEObjectManager
     {
         

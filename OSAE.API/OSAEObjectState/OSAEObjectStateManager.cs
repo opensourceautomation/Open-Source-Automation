@@ -4,6 +4,9 @@
     using System.Data;
     using MySql.Data.MySqlClient;
 
+    /// <summary>
+    /// Can be used to manage the OSAEObjectState of an OSAEObject in OSA 
+    /// </summary>
     public class OSAEObjectStateManager
     {
         /// <summary>

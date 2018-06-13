@@ -1,5 +1,8 @@
 ﻿namespace OSAE
 {
+    /// <summary>
+    /// This class holds an Instant of an OSA Image 
+    /// </summary>
     public class OSAEImage
     {
         /// <summary>

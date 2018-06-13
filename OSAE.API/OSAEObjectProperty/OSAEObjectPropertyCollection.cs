@@ -5,7 +5,7 @@
     using System.Text;
 
     /// <summary>
-    /// Collection class for managing properties of an OSA object
+    /// Collection class for management of an OSAEObjectProperty
     /// </summary>
     public class OSAEObjectPropertyCollection : Collection<OSAEObjectProperty>
     {

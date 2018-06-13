@@ -3,6 +3,9 @@
     using System;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Class used to hold an instance of an OSA Object
+    /// </summary>
     [Serializable, DataContract]
     public class OSAEObject
     {
