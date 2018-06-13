@@ -90,6 +90,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\OSA\NetworkCommsDotNetComplete.dll</HintPath>
     </Reference>
+    <Reference Include="OSAE.API, Version=1.0.1.0, Culture=neutral, PublicKeyToken=f47a6446f36f79f7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\OSAE.API.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -174,10 +178,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\OSAE.API\OSAE.API.csproj">
-      <Project>{022F45F1-C988-41A1-A203-39E97BE928B6}</Project>
-      <Name>OSAE.API</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OSAE.UI.Controls\OSAE.UI.Controls.csproj">
       <Project>{503092C1-23FE-4AD8-B855-CF1D24D632A9}</Project>
       <Name>OSAE.UI.Controls</Name>
