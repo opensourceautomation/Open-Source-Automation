@@ -7,6 +7,7 @@
         <div class="span10">
             <asp:Button class="btn" runat="server" ID="clearLogButton" Text="Clear Method Log" OnClick="clearLogButton_Click" ToolTip="Clears the Method Log." />
             <asp:Button runat="server" ID="btnRefresh" Text="Refresh" class="btn" OnClick="btnRefresh_Click" ToolTip="Refreshes the Method Log."/>
+            <asp:Button runat="server" ID="btnExport" Text="Export" class="btn" OnClick="btnExport_Click" ToolTip="Exports the Method log to a CVS file." />
             <asp:GridView ID="methodLogGridView" AutoGenerateColumns="False" runat="server" GridLines="None" CssClass="mGrid" AlternatingRowStyle-CssClass="alt" EmptyDataText="No Entries Found">
 <AlternatingRowStyle CssClass="alt"></AlternatingRowStyle>
                 <Columns>
@@ -20,6 +21,7 @@
             </asp:GridView>
             <asp:Button class="btn" runat="server" ID="clearLogButton2" Text="Clear Method Log" OnClick="clearLogButton_Click" ToolTip="Clears the Method Log." />
             <asp:Button runat="server" ID="btnRefresh2" Text="Refresh" class="btn" OnClick="btnRefresh_Click" ToolTip="Refreshes the method log."/>
+            <asp:Button runat="server" ID="btnExport2" Text="Export" class="btn" OnClick="btnExport_Click" ToolTip="Exports the Method log to a CVS file." />
         </div>   
         <div class="span1"></div>           
     </div>
