@@ -54,4 +54,4 @@ CALL osae_sp_object_type_state_add('X10 PHOTOCELL','OFF','Light','Light');
 CALL osae_sp_object_type_event_add('X10 PHOTOCELL','ON','Dark','Dark');
 CALL osae_sp_object_type_event_add('X10 PHOTOCELL','OFF','Light','Light');
 CALL osae_sp_object_type_property_add('X10 PHOTOCELL','Off Timer','Integer','','-1',0,1,'Off Timer');
-CALL osae_sp_object_type_property_add('X10 PHOTOCELL','Level','Integer','','0',1,'Level');
+CALL osae_sp_object_type_property_add('X10 PHOTOCELL','Level','Integer','','0',0,1,'Level');
