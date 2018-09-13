@@ -109,6 +109,7 @@
                     "DATABASE=" + registry.Read("DBNAME") + ";" +
                     "PORT=" + registry.Read("DBPORT") + ";" +
                     "UID=" + registry.Read("DBUSERNAME") + ";" +
+                    "SslMode = none;" +
                     "PASSWORD=" + registry.Read("DBPASSWORD") + ";Allow User Variables=True;";
 
                 return connectionString;

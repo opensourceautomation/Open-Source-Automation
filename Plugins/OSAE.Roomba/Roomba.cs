@@ -142,7 +142,7 @@
                 if (data != null)
                 {
                     Console.WriteLine(data.Temperature.ToString());
-                    osae.ObjectPropertySet(
+                    //osae.ObjectPropertySet(
 
                 }
             }

@@ -45,7 +45,7 @@ namespace OSAE.RadioThermostat
             Log.Info("Running Interface!");
 
             OSAEObjectType objt = OSAEObjectTypeManager.ObjectTypeLoad("RADIO THERMOSTAT DEVICE");
-            OSAEObjectTypeManager.ObjectTypeUpdate(objt.Name, objt.Name, "Radio Thermostat Device", pName, "RADIO THERMOSTAT DEVICE", objt.Owner, objt.SysType, objt.Container, objt.HideRedundant);
+            OSAEObjectTypeManager.ObjectTypeUpdate(objt.Name, objt.Name, "Radio Thermostat Device", pName, "RADIO THERMOSTAT DEVICE", objt.Owner, objt.SysType, objt.Container, objt.HideRedundant, objt.Tooltip);
             OSAEObjectCollection devices = OSAEObjectManager.GetObjectsByType("RADIO THERMOSTAT DEVICE");
 
             foreach (OSAEObject obj in devices)

@@ -2123,6 +2123,7 @@ CALL osae_sp_object_type_property_add('SYSTEM','Plugins Running','Integer','','0
 CALL osae_sp_object_type_property_add('SYSTEM','Plugins Enabled','Integer','','0',1,0,'Total number of Plugins that are Enabled and will startup automatically.');
 CALL osae_sp_object_type_property_add('SYSTEM','Plugins Errored','Integer','','0',1,0,'The number of Plugins that failed to start.');
 CALL osae_sp_object_type_property_add('SYSTEM','Plugins','String','','',0,0,'Total number of Plugins that the system is aware of.');
+CALL osae_sp_object_type_property_add('SYSTEM','WAN IP','String','','',0,0,'This is the main WAN IP');
 CALL osae_sp_object_type_property_add('SYSTEM','AI Focused on Object Type','String','','',0,0,'System is curious about this Object Type.');
 CALL osae_sp_object_type_property_add('SYSTEM','AI Focused on Property','String','','',0,0,'This is what property of the object the system is curious about.');
 CALL osae_sp_object_type_property_add('SYSTEM','Trust Level','Integer','','50',0,0,'This is how much the system is trusted.  ');

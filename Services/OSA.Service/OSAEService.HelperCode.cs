@@ -73,11 +73,12 @@
         /// </summary>
         private void StartThreads(string serviceName)
         {
-            Log.Debug("Starting Threads");
+            Log.Debug("Starting Command Queue Thread");
             Thread QueryCommandQueueThread = new Thread(new ThreadStart(QueryCommandQueue));
             QueryCommandQueueThread.Start();
 
-         //   Thread loadPluginsThread = new Thread(new ParameterizedThreadStart(LoadPlugins));
+            //   Thread loadPluginsThread = new Thread(new ParameterizedThreadStart(LoadPlugins));
+            Log.Debug("Starting Load Plugins Thread");
             Thread loadPluginsThread = new Thread(() => LoadPlugins(serviceObject));
             loadPluginsThread.Start();
 
