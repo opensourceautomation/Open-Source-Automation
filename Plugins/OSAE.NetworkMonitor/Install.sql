@@ -1,4 +1,4 @@
-CALL osae_sp_object_type_add ('NETWORK MONITOR','Network Monitor Plugin','Network Monitor','PLUGIN',1,0,0,1,'his object represents the Network Monitor plugin.
+CALL osae_sp_object_type_add ('NETWORK MONITOR','Network Monitor Plugin','Network Monitor','PLUGIN',1,0,0,1,'This object represents the Network Monitor plugin.
 The Network Monitor simply pings network devices to determine their availability.');
 CALL osae_sp_object_type_state_add('NETWORK MONITOR','ON','Running','The Network Monitor plugin is Running.');
 CALL osae_sp_object_type_state_add('NETWORK MONITOR','OFF','Stopped','The Network Monitor plugin is Stopped.');

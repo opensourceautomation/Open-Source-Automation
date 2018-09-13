@@ -21,4 +21,4 @@ CALL osae_sp_object_type_event_add('BLUETOOTH DEVICE','ON','Arrived','Device arr
 CALL osae_sp_object_type_event_add('BLUETOOTH DEVICE','OFF','Left','Device Left');
 CALL osae_sp_object_type_method_add('BLUETOOTH DEVICE','ON','Arriving','','','','','Set Device to here');
 CALL osae_sp_object_type_method_add('BLUETOOTH DEVICE','OFF','Leaving','','','','','Set Device to gone');
-CALL osae_sp_object_type_property_add('BLUETOOTH DEVICE','Discover Type','String','','',0,0,'');
+CALL osae_sp_object_type_property_add('BLUETOOTH DEVICE','Discover Type','String','','',0,0,'This Bluetooth device Discoveryt type');
