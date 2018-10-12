@@ -275,77 +275,21 @@ namespace OSAE
 
         #region Generate Rest API Key
         /// <summary>
-        /// Determines if the Rest Plugin has an APIKEY property.
-        /// If property exist, will verify it contains a valid Key.
-        /// If no key is found, a new key is created.
-        /// If Property does not exist, will create and populate a new property.
+        /// Returns a new Random API KEY.
         /// </summary>
-        public static void GenerateAPIKey()
+        public static string GenerateAPIKey()
         {
-            string apiKey = "";
-            try
-            {
-                Log.Info("Checking if REST API Key exist");
-                string cRAK = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Rest", "APIKEY").Value;
-                if (cRAK == " ")
-                {
-                    Log.Info("REST API Key found, but is empty.");
-                    Log.Info("Generating a new Rest API Key...");
-                    apiKey = GenerateRandomCryptographicKey(24);
-                    OSAEObjectPropertyManager.ObjectPropertySet("Rest", "APIKEY", apiKey, "Rest");
-                }
-                else
-                {
-                    Log.Info("REST API Key found.");
-                }
-            }
-            catch
-            {
-                Log.Info("REST API Key does not exist..");
-                Log.Info("Creating Rest Plugin property: APIKEY.");
-                OSAEObjectTypeManager.ObjectTypePropertyAdd("Rest", "APIKEY", "String", "", "", false, true, "This is the Rest Plugin API Key. This property isused by remote clients and devices to encrypt and decrypt user information for authentication.");
-                Log.Info("Generating a new Rest API Key...");
-                apiKey = GenerateRandomCryptographicKey(24);
-                OSAEObjectPropertyManager.ObjectPropertySet("Rest", "APIKEY", apiKey, "Rest"); ;
-            }
+            return GenerateRandomCryptographicKey(24);
         }
         #endregion
 
         #region Generate System Security Key
         /// <summary>
-        /// Determines if the System object has a SecurityKey property.
-        /// If property exist, will verify it contains a valid Key.
-        /// If no key is found, a new key is created.
-        /// If Property does not exist, will create and populate a new property.
+        /// Returns a new Random Security Key.
         /// </summary>
-        public static void GenerateSecurityKey()
+        public static string GenerateSecurityKey()
         {
-            string securityKey = "";
-            try
-            {
-                Log.Info("Checking if System Security Key exist");
-                string cSSK = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("System", "SecurityKey").Value;
-                if (cSSK == " ")
-                {
-                    Log.Info("System Security Key found, but is empty.");
-                    Log.Info("Generating a new Security Key...");
-                    securityKey = GenerateRandomCryptographicKey(12);
-                    OSAEObjectPropertyManager.ObjectPropertySet("System", "SecurityKey", securityKey, "Rest");
-                }
-                else
-                {
-                    Log.Info("System Security Key found.");
-                }
-            }
-            catch
-            {
-                Log.Info("System Security Key does not exist..");
-                Log.Info("Creating System object property: SecurityKey.");
-                OSAEObjectTypeManager.ObjectTypePropertyAdd("System", "SecurityKey", "String", "", "", false, true, "This key is used in HTTP and Rest authorization. Must be 16 characters.");
-                Log.Info("Generating a new Security Key...");
-                securityKey = GenerateRandomCryptographicKey(12);
-                OSAEObjectPropertyManager.ObjectPropertySet("System", "SecurityKey", securityKey, "Rest");
-            }
+            return GenerateRandomCryptographicKey(12);
         }
         #endregion
     }

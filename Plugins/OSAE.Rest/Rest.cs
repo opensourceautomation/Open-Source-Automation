@@ -33,13 +33,15 @@
         {
             Log.Info("Processing Method: " + method.MethodLabel);
             //No commands to process
-            if(method.MethodLabel== "GenerateApiKey")
+            if(method.MethodLabel == "GenerateApiKey")
             {
-                OSAESecurity.GenerateAPIKey();
+                OSAEObjectPropertyManager.ObjectPropertySet("Rest", "APIKEY", OSAESecurity.GenerateAPIKey(), "Rest");
+                Log.Debug("New APIKEY Generated");
             }
             if (method.MethodLabel == "GenerateSecurityKey")
             {
-                OSAESecurity.GenerateSecurityKey();
+                OSAEObjectPropertyManager.ObjectPropertySet("System", "SecurityKey", OSAESecurity.GenerateSecurityKey(), "Rest");
+                Log.Debug("New SecurityKey Generated");
             }
             if (method.MethodLabel == "GenerateCurrentAuthKey")
             {
@@ -90,8 +92,9 @@
                 sdb.HttpHelpPageEnabled = false;
                 if (showHelp) serviceHost.Description.Endpoints[0].Behaviors.Add(new WebHttpBehavior { HelpEnabled = true });
 
-                OSAESecurity.GenerateAPIKey();
-                OSAESecurity.GenerateSecurityKey();
+
+                checkAPIKey();
+                checkSecurityKey();
                 serviceHost.Open();                                
             }
             catch (Exception ex)
@@ -118,6 +121,60 @@
         public override void Shutdown()
         {
             serviceHost.Close();
+        }
+
+        private void checkAPIKey()
+        {
+            try
+            {
+                Log.Info("Checking if REST API Key exist");
+                string cRAK = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("Rest", "APIKEY").Value;
+                if (cRAK == " " || cRAK == "" || cRAK.Length <32)
+                {
+                    Log.Info("REST API Key found, but is not valid.");
+                    Log.Info("Creating a new REST API Key...");
+                    OSAEObjectPropertyManager.ObjectPropertySet("Rest", "APIKEY", OSAESecurity.GenerateAPIKey(), "Rest");
+                }
+                else
+                {
+                    Log.Info("REST API Key found.");
+                }
+            }
+            catch
+            {
+                Log.Info("REST API Key does not exist..");
+                Log.Info("Creating Rest Plugin property: APIKEY.");
+                OSAEObjectTypeManager.ObjectTypePropertyAdd("Rest", "APIKEY", "String", "", "", false, true, "This is the Rest Plugin API Key. This property is used by remote clients and devices to encrypt and decrypt user information for authentication.");
+                Log.Info("Generating a new REST API Key...");
+                OSAEObjectPropertyManager.ObjectPropertySet("Rest", "APIKEY", OSAESecurity.GenerateAPIKey(), "Rest");
+            }
+        }
+
+        private void checkSecurityKey()
+        {
+            try
+            {
+                Log.Info("Checking if System Security Key exist");
+                string cSSK = OSAE.OSAEObjectPropertyManager.GetObjectPropertyValue("System", "SecurityKey").Value;
+                if (cSSK == " " || cSSK == "" || cSSK.Length < 16)
+                {
+                    Log.Info("System Security Key found, but is not valid.");
+                    Log.Info("Generating a new Security Key...");
+                    OSAEObjectPropertyManager.ObjectPropertySet("System", "SecurityKey", OSAESecurity.GenerateSecurityKey(), "Rest");
+                }
+                else
+                {
+                    Log.Info("System Security Key found.");
+                }
+            }
+            catch
+            {
+                Log.Info("System Security Key does not exist..");
+                Log.Info("Creating System object property: SecurityKey.");
+                OSAEObjectTypeManager.ObjectTypePropertyAdd("System", "SecurityKey", "String", "", "", false, true, "This key is used in HTTP and Rest authorization. Must be 16 characters.");
+                Log.Info("Generating a new Security Key...");
+                OSAEObjectPropertyManager.ObjectPropertySet("System", "SecurityKey", OSAESecurity.GenerateSecurityKey(), "Rest");
+            }
         }
     }
 }
